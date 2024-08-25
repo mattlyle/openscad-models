@@ -4,22 +4,17 @@ include <rounded-cube.scad>
 
 module EInkDisplay()
 {
-    display_height = 10;
-    display_width = 20;
-    display_depth = 2;
+    display_height = 71.3;
+    display_width = 46.0;
+    display_depth = 1.0;
 
-    circuit_board_height = 20;
-    circuit_board_width = 30;
-    circuit_board_depth = 2;
-    circuit_board_radius = 0.5;
+    display_offset_x = 0;
+    display_offset_y = 0;
 
-    // RoundedCube(
-    //     width = circuit_board_width,
-    //     height = circuit_board_height,
-    //     depth = circuit_board_depth,
-    //     radius = circuit_board_radius,
-    //     center = false,
-    //     fn = 50);
+    circuit_board_height = 85.0;
+    circuit_board_width = 47.7;
+    circuit_board_depth = 3.6;
+    circuit_board_radius = 0.75;
 
     RoundedCube( size = [ 10, 10, 10 ], center = false, radius = 0.5, fn=10 );
 }
