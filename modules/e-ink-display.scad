@@ -2,29 +2,29 @@
 
 include <rounded-cube.scad>
 
+e_ink_display_screen_height = 71.3;
+e_ink_display_screen_width = 46.0;
+e_ink_display_screen_depth = 1.0;
+
+e_ink_display_screen_offset_height = 7.0;
+e_ink_display_screen_offset_width = 0.8;
+
+e_ink_display_circuit_board_height = 85.0;
+e_ink_display_circuit_board_width = 47.7;
+e_ink_display_circuit_board_depth = 3.6;
+e_ink_display_circuit_board_radius = 0.75;
+
 module EInkDisplay()
 {
-    display_height = 71.3;
-    display_width = 46.0;
-    display_depth = 1.0;
-
-    display_offset_height = 7.0;
-    display_offset_width = 0.8;
-
-    circuit_board_height = 85.0;
-    circuit_board_width = 47.7;
-    circuit_board_depth = 3.6;
-    circuit_board_radius = 0.75;
-
     color([ 0.0, 0.4, 0.5 ])
         RoundedCube(
-            size = [ circuit_board_width, circuit_board_height, circuit_board_depth ],
+            size = [ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, e_ink_display_circuit_board_depth ],
             center = false,
-            radius = circuit_board_radius,
+            radius = e_ink_display_circuit_board_radius,
             fn = 30 );
 
     color([ 0.7, 0.7, 0.7 ])
-        translate([ display_offset_width, display_offset_height, circuit_board_depth ])
-            cube([ display_width, display_height, display_depth ]);
+        translate([ e_ink_display_screen_offset_width, e_ink_display_screen_offset_height, e_ink_display_circuit_board_depth ])
+            cube([ e_ink_display_screen_width, e_ink_display_screen_height, e_ink_display_screen_depth ]);
 
 }
