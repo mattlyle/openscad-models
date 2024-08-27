@@ -9,6 +9,9 @@ tap_handle_fn = 50;
 
 display_offset_height = tap_handle_height - e_ink_display_circuit_board_height - 20;
 
+threaded_fitting_radius = 8;
+threaded_fitting_height = 20;
+
 // the offset from the front of the tap handle to recess the screen
 screen_depth_offset = 2.0;
 
@@ -31,8 +34,9 @@ render()
             cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, tap_handle_depth - e_ink_display_screen_depth - screen_depth_offset ]);
 
         // cutout for the threaded fitting
-        // TODO finish!
-
+        translate([ tap_handle_width / 2, 0, tap_handle_depth / 2 ])
+            rotate([ 270, 0, 0 ])
+                cylinder(h = threaded_fitting_height, r = threaded_fitting_radius);
     }
 
 // draw the e-ink display next to it for design help
