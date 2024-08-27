@@ -153,6 +153,6 @@ z_offset = 0.5;
 if( draw_screen_above_plate )
 {
 translate([ 0, 0, z_offset ])
-    translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset ])
+        translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
         EInkDisplay();
 }
