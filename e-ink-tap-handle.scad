@@ -29,6 +29,7 @@ model_spacing = 10.0;
 
 // TODO also cover the parts of the screen that don't actually show the pixels
 // TODO how to secure it in place with a 'snap' or something?
+// TODO the horizontal support doesn't touch because the measurement include the connectors and other BS
 
 // handle
 if( draw_tap_handle )
@@ -56,42 +57,92 @@ render()
             rotate([ 270, 0, 0 ])
                 cylinder( h = threaded_fitting_height, r = threaded_fitting_radius );
     }
-}
+
+    // add the screen bezel
+    screen_bezel_size = min( e_ink_display_screen_bezel_top, e_ink_display_screen_bezel_bottom, e_ink_display_screen_bezel_width );
+    screen_bezel_depth = screen_depth_offset - e_ink_display_screen_depth;
+
+    // slope the bezel sides
+    translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height, tap_handle_depth - screen_depth_offset + screen_bezel_depth ])
+    {
+        bezel_points = [
+            // top
+            [ 0, e_ink_display_screen_height, screen_bezel_depth ], // A = 0
+            [ e_ink_display_screen_width, e_ink_display_screen_height, screen_bezel_depth ], // B = 1
+            [ e_ink_display_screen_width, 0, screen_bezel_depth ], // C = 2
+            [ 0, 0, screen_bezel_depth ], // D = 3
+
+            // inside
+                [ screen_bezel_size, e_ink_display_screen_height - screen_bezel_size, 0 ], // E = 4
+                [ e_ink_display_screen_width - screen_bezel_size, e_ink_display_screen_height - screen_bezel_size, 0 ], // F = 5
+                [ e_ink_display_screen_width - screen_bezel_size, screen_bezel_size, 0 ], // G = 6
+                [ screen_bezel_size, screen_bezel_size, 0 ], // H = 7
+
+                // bottom
+                [ 0, e_ink_display_screen_height, 0 ], // I = 8
+                [ e_ink_display_screen_width, e_ink_display_screen_height, 0 ], // J = 9
+                [ e_ink_display_screen_width, 0, 0 ], // K = 10
+                [ 0, 0, 0 ] // L = 11
+            ];
+
+            bezel_faces = [
+                // top
+                [ 0, 1, 5, 4 ],
+                [ 1, 2, 6, 5 ],
+                [ 2, 3, 7, 6 ],
+                [ 0, 4, 7, 3 ],
+
+                // outside
+                [ 0, 3, 11, 8 ],
+                [ 0, 8, 9, 1 ],
+                [ 2, 1, 9, 10 ],
+                [ 3, 2, 10, 11 ],
+
+                // bottom
+                [ 11, 10, 6, 7 ],
+                [ 6, 10, 9, 5 ],
+                [ 4, 5, 9, 8 ],
+                [ 11, 7, 4, 8 ],
+            ];
+
+            polyhedron(points = bezel_points, faces = bezel_faces);
+        }
+    }
 }
 
 // back plate
 if( draw_back_plate )
 {
-translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
-{
-    cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, back_plate_wall_width ]);
+    translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
+    {
+        cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, back_plate_wall_width ]);
 
-    corner_peg_width = e_ink_display_circuit_board_screw_hole_corner_offset * 2;
-    corner_peg_height = tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset - back_plate_wall_width;
+        corner_peg_width = e_ink_display_circuit_board_screw_hole_corner_offset * 2;
+        corner_peg_height = tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset - back_plate_wall_width;
 
-    // corner pegs
-    translate([ 0, 0, back_plate_wall_width ])
-        cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
-    translate([ e_ink_display_circuit_board_width - corner_peg_width, 0, back_plate_wall_width ])
-        cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
-    translate([ 0, e_ink_display_circuit_board_height - corner_peg_width, back_plate_wall_width ])
-        cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
-    translate([ e_ink_display_circuit_board_width - corner_peg_width, e_ink_display_circuit_board_height - corner_peg_width, back_plate_wall_width ])
-        cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
+        // corner pegs
+        translate([ 0, 0, back_plate_wall_width ])
+            cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
+        translate([ e_ink_display_circuit_board_width - corner_peg_width, 0, back_plate_wall_width ])
+            cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
+        translate([ 0, e_ink_display_circuit_board_height - corner_peg_width, back_plate_wall_width ])
+            cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
+        translate([ e_ink_display_circuit_board_width - corner_peg_width, e_ink_display_circuit_board_height - corner_peg_width, back_plate_wall_width ])
+            cube([ corner_peg_width, corner_peg_width, corner_peg_height ]);
 
-    // cylinders on pegs
-    translate([ corner_peg_width / 2, corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
-    translate([ e_ink_display_circuit_board_width - corner_peg_width / 2, corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
-    translate([ corner_peg_width / 2, e_ink_display_circuit_board_height - corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
-    translate([ e_ink_display_circuit_board_width - corner_peg_width / 2, e_ink_display_circuit_board_height - corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+        // cylinders on pegs
+        translate([ corner_peg_width / 2, corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+        translate([ e_ink_display_circuit_board_width - corner_peg_width / 2, corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+        translate([ corner_peg_width / 2, e_ink_display_circuit_board_height - corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+        translate([ e_ink_display_circuit_board_width - corner_peg_width / 2, e_ink_display_circuit_board_height - corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
 
-    // horizontal support
-    translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
-        cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
+        // horizontal support
+        translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
+            cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
     }
 }
 
