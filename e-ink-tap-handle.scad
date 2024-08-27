@@ -1,5 +1,6 @@
 include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
+include <modules/connectors.scad>
 
 // options
 
@@ -24,6 +25,9 @@ threaded_fitting_height = 20;
 screen_depth_offset = 2.0;
 
 back_plate_wall_width = 2.0;
+
+snap_connector_width = 10.0;
+snap_connector_height = 2.0;
 
 model_spacing = 10.0;
 
@@ -107,6 +111,14 @@ render()
 
             polyhedron( points = bezel_points, faces = bezel_faces );
         }
+
+        // bottom connector
+        translate([ ( tap_handle_width - snap_connector_width ) / 2, display_offset_height - e_ink_display_screen_offset_height, 0 ])
+            SnapConnectorOverMe( snap_connector_width, snap_connector_height );
+
+        // top connector
+        translate([ ( tap_handle_width - snap_connector_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + e_ink_display_circuit_board_height - snap_connector_height, 0 ])
+            SnapConnectorOverMe( snap_connector_width, snap_connector_height );
     }
 }
 
@@ -143,6 +155,14 @@ if( draw_back_plate )
         // horizontal support
         translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
             cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
+
+        // bottom connector
+        translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2, 0, back_plate_wall_width ])
+            SnapConnectorOver( snap_connector_width, snap_connector_height );
+
+        translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2 + snap_connector_width, e_ink_display_circuit_board_height, back_plate_wall_width ])
+            rotate([ 0, 0, 180 ])
+                SnapConnectorOver( snap_connector_width, snap_connector_height );
     }
 }
 
