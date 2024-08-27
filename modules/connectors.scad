@@ -8,8 +8,20 @@ module SnapConnectorOver( width, height, clearance = 0.25 )
         cube([ width, height, height + clearance ]);
 
     // horizontal over part
-    translate([ 0, 0, height + clearance ])
-        cube([ width, height * 2 + clearance, height ]);
+    render()
+    {
+        difference()
+        {
+            connector_cutout_size = sqrt( ( height  ) * ( height  ) * 2 );
+            
+            translate([ 0, clearance, height + clearance ])
+                cube([ width, height * 2, height ]);
+
+            translate([ 0, clearance, clearance ])
+                rotate([ 45, 0, 0 ])
+                cube([ width, connector_cutout_size, connector_cutout_size ]);
+        }
+    }
 }
 
 // the part that the other goes over
