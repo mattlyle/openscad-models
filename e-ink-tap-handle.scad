@@ -1,6 +1,14 @@
 include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
 
+// options
+
+draw_tap_handle = true;
+draw_back_plate = true;
+draw_screen_above_plate = true;
+
+// measured values
+
 tap_handle_width = 56; // previous size was 50, but need more for stregth
 tap_handle_height = 210; // previous height was 190
 tap_handle_depth = 25;
@@ -23,6 +31,8 @@ model_spacing = 10.0;
 // TODO how to secure it in place with a 'snap' or something?
 
 // handle
+if( draw_tap_handle )
+{
 render()
 {
     difference()
@@ -47,7 +57,11 @@ render()
                 cylinder( h = threaded_fitting_height, r = threaded_fitting_radius );
     }
 }
+}
+
 // back plate
+if( draw_back_plate )
+{
 translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
 {
     cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, back_plate_wall_width ]);
@@ -78,12 +92,16 @@ translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_disp
     // horizontal support
     translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
         cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
+    }
 }
 
 // this is just a debugging var to show the e-ink display above the plane if you want to see the back plate better
 z_offset = 0.5;
 
 // draw the e-ink display next to it for design help
+if( draw_screen_above_plate )
+{
 translate([ 0, 0, z_offset ])
     translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset ])
         EInkDisplay();
+}
