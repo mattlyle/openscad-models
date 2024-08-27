@@ -16,8 +16,8 @@ e_ink_display_screen_bezel_top = 8.4;
 e_ink_display_screen_bezel_bottom = 3.0;
 e_ink_display_screen_bezel_width = 3.0;
 
-e_ink_display_circuit_board_height = 85.0; // spec: 84.5
-e_ink_display_circuit_board_width = 47.0; // spec: 47.5
+e_ink_display_circuit_board_height = 83.5; // spec: 84.5
+e_ink_display_circuit_board_width = 46.5; // spec: 47.5
 e_ink_display_circuit_board_depth = 1.6;
 e_ink_display_circuit_board_backside_clearance_depth = 2.0; // clearance for connectors on the backside
 e_ink_display_circuit_board_rounding_radius = 0.75;
