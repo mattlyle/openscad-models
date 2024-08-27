@@ -73,6 +73,10 @@ translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_disp
     translate([ e_ink_display_circuit_board_width - corner_peg_width / 2, e_ink_display_circuit_board_height - corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
         cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
 
+    // horizontal support
+    translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
+        cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
+
     // TODO how to secure it in place with a 'snap' or something?
 }
 

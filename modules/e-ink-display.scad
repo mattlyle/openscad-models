@@ -2,6 +2,8 @@
 
 include <rounded-cube.scad>
 
+// measured values
+
 e_ink_display_screen_height = 71.3;
 e_ink_display_screen_width = 46.0;
 e_ink_display_screen_depth = 1.0;
@@ -19,6 +21,11 @@ e_ink_display_circuit_board_rounding_radius = 0.75;
 
 e_ink_display_circuit_board_screw_hole_corner_offset = 3.25; // the offset from the edge to the center of the corner screw hole
 e_ink_display_circuit_board_screw_hole_radius = 2.0;
+
+e_ink_display_circuit_board_horizonal_support_offset = 50.5; // the offset from the bottom to the bottom of the support
+e_ink_display_circuit_board_horizonal_support_height = 3.5;
+
+// calculated values
 
 e_ink_display_screen_usable_height = e_ink_display_screen_height - e_ink_display_screen_bezel_top - e_ink_display_screen_bezel_bottom;
 e_ink_display_screen_usable_width = e_ink_display_screen_width - e_ink_display_screen_bezel_width * 2;
