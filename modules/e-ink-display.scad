@@ -34,7 +34,9 @@ module EInkDisplay()
 {
     // circuit board
     color([ 0.0, 0.4, 0.5 ])
+    {
         render()
+        {
             difference()
             {
                 RoundedCube(
@@ -53,6 +55,8 @@ module EInkDisplay()
                 translate([ e_ink_display_circuit_board_width - e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_height - e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
                     cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
             }
+        }
+    }
 
     // screen
     translate([ e_ink_display_screen_offset_width, e_ink_display_screen_offset_height, e_ink_display_circuit_board_depth ])

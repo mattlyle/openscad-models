@@ -20,9 +20,11 @@ back_plate_wall_width = 2.0;
 model_spacing = 10.0;
 
 // TODO also cover the parts of the screen that don't actually show the pixels
+// TODO how to secure it in place with a 'snap' or something?
 
 // handle
 render()
+{
     difference()
     {
         RoundedCube(
@@ -44,7 +46,7 @@ render()
             rotate([ 270, 0, 0 ])
                 cylinder( h = threaded_fitting_height, r = threaded_fitting_radius );
     }
-
+}
 // back plate
 translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
 {
@@ -76,8 +78,6 @@ translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_disp
     // horizontal support
     translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
         cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
-
-    // TODO how to secure it in place with a 'snap' or something?
 }
 
 // this is just a debugging var to show the e-ink display above the plane if you want to see the back plate better
@@ -87,4 +87,3 @@ z_offset = 0.5;
 translate([ 0, 0, z_offset ])
     translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset ])
         EInkDisplay();
-
