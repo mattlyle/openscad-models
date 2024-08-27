@@ -2,6 +2,8 @@
 
 include <rounded-cube.scad>
 
+// data sheet: https://www.waveshare.com/2.7inch-nfc-powered-e-paper-module.htm
+
 // measured values
 
 e_ink_display_screen_height = 71.3;
@@ -14,13 +16,13 @@ e_ink_display_screen_bezel_top = 8.4;
 e_ink_display_screen_bezel_bottom = 3.0;
 e_ink_display_screen_bezel_width = 3.0;
 
-e_ink_display_circuit_board_height = 85.0;
-e_ink_display_circuit_board_width = 47.7;
+e_ink_display_circuit_board_height = 85.0; // spec: 84.5
+e_ink_display_circuit_board_width = 47.0; // spec: 47.5
 e_ink_display_circuit_board_depth = 3.6;
 e_ink_display_circuit_board_rounding_radius = 0.75;
 
-e_ink_display_circuit_board_screw_hole_corner_offset = 3.25; // the offset from the edge to the center of the corner screw hole
-e_ink_display_circuit_board_screw_hole_radius = 2.0;
+e_ink_display_circuit_board_screw_hole_corner_offset = 2.5; // the offset from the edge to the center of the corner screw hole
+e_ink_display_circuit_board_screw_hole_radius = 1.35; // spec: 1.5
 
 e_ink_display_circuit_board_horizonal_support_offset = 50.5; // the offset from the bottom to the bottom of the support
 e_ink_display_circuit_board_horizonal_support_height = 3.5;
