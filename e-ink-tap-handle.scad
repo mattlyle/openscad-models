@@ -115,11 +115,11 @@ render()
         }
 
         // bottom connector
-        translate([ ( tap_handle_width - snap_connector_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance, 0 ])
+        translate([ ( tap_handle_width - snap_connector_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance, back_plate_wall_width ])
             SnapConnectorOverMe( snap_connector_width, snap_connector_height );
 
         // top connector
-        translate([ ( tap_handle_width - snap_connector_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + e_ink_display_circuit_board_height - snap_connector_height + back_plate_clearance * 3, 0 ])
+        translate([ ( tap_handle_width - snap_connector_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + e_ink_display_circuit_board_height - snap_connector_height + back_plate_clearance * 3, back_plate_wall_width ])
             SnapConnectorOverMe( snap_connector_width, snap_connector_height );
     }
 }
