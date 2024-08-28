@@ -2,12 +2,12 @@ include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
 include <modules/connectors.scad>
 
-// drawing options
+// drawing options -- comment out to hide
 
-draw_tap_handle = true;
-draw_back_plate = true;
-draw_screen_above_plate = true;
-draw_sample_connector = false;
+hide_tap_handle = true;
+hide_back_plate = true;
+// hide_screen_above_plate = true;
+// hide_sample_connector = true;
 
 // measured values
 
@@ -38,20 +38,20 @@ snap_connector_height = 2.0;
 model_spacing = 10.0;
 
 // handle
-if( draw_tap_handle )
+if( hide_tap_handle )
 {
-render()
-{
-    difference()
+    render()
     {
-        RoundedCube(
-            size = [ tap_handle_width, tap_handle_height, tap_handle_depth ],
-            radius = tap_handle_radius,
-            center = false,
-            fn = tap_handle_fn );
+        difference()
+        {
+            RoundedCube(
+                size = [ tap_handle_width, tap_handle_height, tap_handle_depth ],
+                radius = tap_handle_radius,
+                center = false,
+                fn = tap_handle_fn );
 
-        // cutout for the screen to show through
-        translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height, tap_handle_depth - e_ink_display_screen_depth - screen_depth_offset ])
+            // cutout for the screen to show through
+            translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height, tap_handle_depth - e_ink_display_screen_depth - screen_depth_offset ])
                 cube([ e_ink_display_screen_width, e_ink_display_screen_height, e_ink_display_screen_depth + screen_depth_offset ]);
 
             // cutout through the back
@@ -60,25 +60,25 @@ render()
 
             // cutout for the threaded fitting
             translate([ tap_handle_width / 2, 0, tap_handle_depth / 2 ])
-            rotate([ 270, 0, 0 ])
-                cylinder( h = threaded_fitting_height, r = threaded_fitting_radius );
-    }
+                rotate([ 270, 0, 0 ])
+                    cylinder( h = threaded_fitting_height, r = threaded_fitting_radius );
+        }
 
-    // add the screen bezel
-    screen_bezel_size = min( e_ink_display_screen_bezel_top, e_ink_display_screen_bezel_bottom, e_ink_display_screen_bezel_width );
-    screen_bezel_depth = screen_depth_offset - e_ink_display_screen_depth;
+        // add the screen bezel
+        screen_bezel_size = min( e_ink_display_screen_bezel_top, e_ink_display_screen_bezel_bottom, e_ink_display_screen_bezel_width );
+        screen_bezel_depth = screen_depth_offset - e_ink_display_screen_depth;
 
-    // slope the bezel sides
-    translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height, tap_handle_depth - screen_depth_offset + screen_bezel_depth ])
-    {
-        bezel_points = [
-            // top
-            [ 0, e_ink_display_screen_height, screen_bezel_depth ], // A = 0
-            [ e_ink_display_screen_width, e_ink_display_screen_height, screen_bezel_depth ], // B = 1
-            [ e_ink_display_screen_width, 0, screen_bezel_depth ], // C = 2
-            [ 0, 0, screen_bezel_depth ], // D = 3
+        // slope the bezel sides
+        translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height, tap_handle_depth - screen_depth_offset + screen_bezel_depth ])
+        {
+            bezel_points = [
+                // top
+                [ 0, e_ink_display_screen_height, screen_bezel_depth ], // A = 0
+                [ e_ink_display_screen_width, e_ink_display_screen_height, screen_bezel_depth ], // B = 1
+                [ e_ink_display_screen_width, 0, screen_bezel_depth ], // C = 2
+                [ 0, 0, screen_bezel_depth ], // D = 3
 
-            // inside
+                // inside
                 [ screen_bezel_size, e_ink_display_screen_height - screen_bezel_size, 0 ], // E = 4
                 [ e_ink_display_screen_width - screen_bezel_size, e_ink_display_screen_height - screen_bezel_size, 0 ], // F = 5
                 [ e_ink_display_screen_width - screen_bezel_size, screen_bezel_size, 0 ], // G = 6
@@ -89,7 +89,7 @@ render()
                 [ e_ink_display_screen_width, e_ink_display_screen_height, 0 ], // J = 9
                 [ e_ink_display_screen_width, 0, 0 ], // K = 10
                 [ 0, 0, 0 ] // L = 11
-            ];
+                ];
 
             bezel_faces = [
                 // top
@@ -125,7 +125,7 @@ render()
 }
 
 // back plate
-if( draw_back_plate )
+if( hide_back_plate )
 {
     translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
     {
@@ -180,18 +180,18 @@ if( draw_back_plate )
     }
 }
 
-// this is just a debugging var to show the e-ink display above the plane if you want to see the back plate better
-z_offset = 0.5;
-
 // draw the e-ink display next to it for design help
-if( draw_screen_above_plate )
+if( hide_screen_above_plate )
 {
-translate([ 0, 0, z_offset ])
+    // this is just a debugging var to show the e-ink display above the plane if you want to see the back plate better
+    z_offset = 0.5;
+
+    translate([ 0, 0, z_offset ])
         translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
             EInkDisplay();
 }
 
-if( draw_sample_connector )
+if( hide_sample_connector )
 {
     translate([ 100, 0, 0 ])
     {
