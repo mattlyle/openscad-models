@@ -2,7 +2,7 @@ include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
 include <modules/connectors.scad>
 
-// options
+// drawing options
 
 draw_tap_handle = true;
 draw_back_plate = true;
@@ -16,7 +16,7 @@ tap_handle_depth = 25;
 tap_handle_radius = 5.0;
 tap_handle_fn = 60;
 
-back_plate_clearance = 0.5; // clearance on all sides for the backplate to slide in
+back_plate_clearance = 0.35; // clearance on all sides for the backplate to slide in
 
 display_offset_height = tap_handle_height - e_ink_display_circuit_board_height - 20;
 
