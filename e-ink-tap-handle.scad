@@ -73,20 +73,20 @@ if( hide_tap_handle )
         {
             bezel_points = [
                 // top
-                [ 0, e_ink_display_screen_height, screen_bezel_depth ], // A = 0
-                [ e_ink_display_screen_width, e_ink_display_screen_height, screen_bezel_depth ], // B = 1
+                [ 0, e_ink_display_screen_usable_height + screen_bezel_size * 2, screen_bezel_depth ], // A = 0
+                [ e_ink_display_screen_width, e_ink_display_screen_usable_height + screen_bezel_size * 2, screen_bezel_depth ], // B = 1
                 [ e_ink_display_screen_width, 0, screen_bezel_depth ], // C = 2
                 [ 0, 0, screen_bezel_depth ], // D = 3
 
                 // inside
-                [ screen_bezel_size, e_ink_display_screen_height - screen_bezel_size, 0 ], // E = 4
-                [ e_ink_display_screen_width - screen_bezel_size, e_ink_display_screen_height - screen_bezel_size, 0 ], // F = 5
+                [ screen_bezel_size, e_ink_display_screen_usable_height + screen_bezel_size, 0 ], // E = 4
+                [ e_ink_display_screen_width - screen_bezel_size, e_ink_display_screen_usable_height + screen_bezel_size, 0 ], // F = 5
                 [ e_ink_display_screen_width - screen_bezel_size, screen_bezel_size, 0 ], // G = 6
                 [ screen_bezel_size, screen_bezel_size, 0 ], // H = 7
 
                 // bottom
-                [ 0, e_ink_display_screen_height, 0 ], // I = 8
-                [ e_ink_display_screen_width, e_ink_display_screen_height, 0 ], // J = 9
+                [ 0, e_ink_display_screen_usable_height + screen_bezel_size * 2, 0 ], // I = 8
+                [ e_ink_display_screen_width, e_ink_display_screen_usable_height + screen_bezel_size * 2, 0 ], // J = 9
                 [ e_ink_display_screen_width, 0, 0 ], // K = 10
                 [ 0, 0, 0 ] // L = 11
                 ];
@@ -113,6 +113,11 @@ if( hide_tap_handle )
 
             polyhedron( points = bezel_points, faces = bezel_faces );
         }
+
+        // add the extra gap for the screan offset
+        color([ 0.5, 0, 0 ])
+            translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height + screen_bezel_size * 2 + e_ink_display_screen_usable_height, tap_handle_depth - screen_bezel_depth ])
+                cube([ e_ink_display_circuit_board_width, e_ink_display_screen_bezel_top, screen_bezel_depth ]); // TODO: This is technically wrong and overlaps
 
         // bottom connector
         translate([ ( tap_handle_width - snap_connector_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance, back_plate_wall_width ])
