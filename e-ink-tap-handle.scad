@@ -4,10 +4,15 @@ include <modules/connectors.scad>
 
 // drawing options -- comment out to hide
 
-hide_tap_handle = true;
-hide_back_plate = true;
-// hide_screen_above_plate = true;
-// hide_sample_connector = true;
+hide_tap_handle = false;
+hide_back_plate = false;
+hide_screen_above_plate = false;
+hide_sample_connector = false;
+hide_back_plate_below_tap_handle = false;
+
+hide_clearance_areas = false;
+
+// TODO: should add a variable to rotate the tap handle 180 about X because that's how it's printed
 
 // measured values
 
@@ -22,8 +27,6 @@ back_plate_clearance = 0.35; // clearance on all sides for the backplate to slid
 back_plate_finger_hole_radius = 8.0;
 back_plate_finger_hole_height_offset = 30.0;
 
-display_offset_height = tap_handle_height - e_ink_display_circuit_board_height - 20;
-
 threaded_fitting_radius = 8;
 threaded_fitting_height = 20;
 
@@ -37,8 +40,58 @@ snap_connector_height = 2.0;
 
 model_spacing = 10.0;
 
+// calculate values
+
+display_offset_height = tap_handle_height - e_ink_display_circuit_board_height - 20;
+
+back_plate_width = e_ink_display_circuit_board_width;
+back_plate_height = e_ink_display_circuit_board_height;
+
 // handle
-if( hide_tap_handle )
+if( !hide_tap_handle )
+{
+    TapHandle();
+}
+
+// back plate
+if( !hide_back_plate )
+{
+    translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
+        BackPlate();
+}
+
+// draw the e-ink display next to it for design help
+if( !hide_screen_above_plate )
+{
+    // this is just a debugging var to show the e-ink display above the plane if you want to see the back plate better
+    z_offset = 0.5;
+
+    translate([ 0, 0, z_offset ])
+        translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
+            EInkDisplay( hide_clearance_areas );
+}
+
+if( !hide_back_plate_below_tap_handle )
+{
+    demo_depth = 10;
+
+    color([ 0.4, 0, 0 ])
+        translate([ ( tap_handle_width - back_plate_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance, -demo_depth ])
+            BackPlate();
+}
+
+if( !hide_sample_connector )
+{
+    translate([ 100, 0, 0 ])
+    {
+        SnapConnectorOver( snap_connector_width, snap_connector_height );
+
+        color([ 0.4, 0, 0 ])
+            SnapConnectorOverMe( snap_connector_width, snap_connector_height );
+    }
+}
+
+module TapHandle()
 {
     render()
     {
@@ -129,21 +182,18 @@ if( hide_tap_handle )
     }
 }
 
-// back plate
-if( hide_back_plate )
+module BackPlate()
 {
-    translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
-    {
-        // back plate
-        render()
+    // back plate
+    render()
         {
-            difference()
-            {
-                // main face
-                cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, back_plate_wall_width ]);
+        difference()
+        {
+            // main face
+            cube([ back_plate_width, back_plate_height, back_plate_wall_width ]);
 
-                // remove the finger whole
-                translate([ e_ink_display_circuit_board_width / 2, back_plate_finger_hole_height_offset, 0 ])
+            // remove the finger whole
+            translate([ e_ink_display_circuit_board_width / 2, back_plate_finger_hole_height_offset, 0 ])
                     cylinder( h = back_plate_wall_width, r = back_plate_finger_hole_radius );
             }
         }
@@ -179,30 +229,20 @@ if( hide_back_plate )
         translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2, 0, back_plate_wall_width ])
             SnapConnectorOver( snap_connector_width, snap_connector_height );
 
-        translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2 + snap_connector_width, e_ink_display_circuit_board_height, back_plate_wall_width ])
-            rotate([ 0, 0, 180 ])
-                SnapConnectorOver( snap_connector_width, snap_connector_height );
-    }
-}
+    translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2 + snap_connector_width, e_ink_display_circuit_board_height, back_plate_wall_width ])
+        rotate([ 0, 0, 180 ])
+            SnapConnectorOver( snap_connector_width, snap_connector_height );
 
-// draw the e-ink display next to it for design help
-if( hide_screen_above_plate )
-{
-    // this is just a debugging var to show the e-ink display above the plane if you want to see the back plate better
-    z_offset = 0.5;
-
-    translate([ 0, 0, z_offset ])
-        translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
-            EInkDisplay();
-}
-
-if( hide_sample_connector )
-{
-    translate([ 100, 0, 0 ])
+    // clearance
+    if( !hide_clearance_areas )
     {
-        SnapConnectorOver( snap_connector_width, snap_connector_height );
-
-        color([ 0.4, 0, 0 ])
-            SnapConnectorOverMe( snap_connector_width, snap_connector_height );
+        # translate([ 0, -back_plate_clearance, 0 ])
+            cube([ back_plate_width, back_plate_clearance, back_plate_wall_width ]);
+        # translate([ back_plate_width, 0, 0 ])
+            cube([ back_plate_clearance, back_plate_height, back_plate_wall_width ]);
+        # translate([ 0, back_plate_height, 0 ])
+            cube([ back_plate_width, back_plate_clearance, back_plate_wall_width ]);
+        # translate([ -back_plate_clearance, 0, 0 ])
+            cube([ back_plate_clearance, back_plate_height, back_plate_wall_width ]);
     }
 }

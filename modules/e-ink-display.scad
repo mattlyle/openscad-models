@@ -35,7 +35,7 @@ e_ink_display_screen_usable_width = e_ink_display_screen_width - e_ink_display_s
 
 e_ink_display_circuit_board_combined_depth = e_ink_display_circuit_board_depth + e_ink_display_circuit_board_backside_clearance_depth;
 
-module EInkDisplay()
+module EInkDisplay( hide_clearance_areas = true )
 {
     // circuit board
     translate([ 0, 0, e_ink_display_circuit_board_backside_clearance_depth ])
@@ -67,9 +67,12 @@ module EInkDisplay()
     }
 
     // circuit board clearance
-    # translate([ e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
-        cube([ e_ink_display_circuit_board_width - e_ink_display_circuit_board_screw_hole_corner_offset * 2, e_ink_display_circuit_board_height - e_ink_display_circuit_board_screw_hole_corner_offset * 2, e_ink_display_circuit_board_backside_clearance_depth ]);
-
+    if( !hide_clearance_areas )
+    {
+        # translate([ e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
+            cube([ e_ink_display_circuit_board_width - e_ink_display_circuit_board_screw_hole_corner_offset * 2, e_ink_display_circuit_board_height - e_ink_display_circuit_board_screw_hole_corner_offset * 2, e_ink_display_circuit_board_backside_clearance_depth ]);
+    }
+    
     // screen
     translate([ e_ink_display_screen_offset_width, e_ink_display_screen_offset_height, e_ink_display_circuit_board_backside_clearance_depth + e_ink_display_circuit_board_depth ])
     {
