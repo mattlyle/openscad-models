@@ -19,6 +19,9 @@ tap_handle_fn = 60;
 
 back_plate_clearance = 0.35; // clearance on all sides for the backplate to slide in
 
+back_plate_finger_hole_radius = 8.0;
+back_plate_finger_hole_height_offset = 30.0;
+
 display_offset_height = tap_handle_height - e_ink_display_circuit_board_height - 20;
 
 threaded_fitting_radius = 8;
@@ -126,7 +129,19 @@ if( draw_back_plate )
 {
     translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
     {
-        cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, back_plate_wall_width ]);
+        // back plate
+        render()
+        {
+            difference()
+            {
+                // main face
+                cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, back_plate_wall_width ]);
+
+                // remove the finger whole
+                translate([ e_ink_display_circuit_board_width / 2, back_plate_finger_hole_height_offset, 0 ])
+                    cylinder( h = back_plate_wall_width, r = back_plate_finger_hole_radius );
+            }
+        }
 
         corner_peg_width = e_ink_display_circuit_board_screw_hole_corner_offset * 2;
         corner_peg_height = tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset - back_plate_wall_width;
