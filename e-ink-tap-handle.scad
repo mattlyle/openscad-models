@@ -33,10 +33,6 @@ snap_connector_height = 2.0;
 
 model_spacing = 10.0;
 
-// TODO also cover the parts of the screen that don't actually show the pixels
-// TODO how to secure it in place with a 'snap' or something?
-// TODO the horizontal support doesn't touch because the measurement include the connectors and other BS
-
 // handle
 if( draw_tap_handle )
 {
