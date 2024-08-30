@@ -36,6 +36,7 @@ screen_depth_offset = 2.0;
 
 snap_connector_width = 8.0;
 snap_connector_height = 1.8;
+snap_connector_angle = 55;
 snap_connector_clearance = 0.1;
 
 model_spacing = 10.0; // spacing between the tap handle and back plate in the render
@@ -84,7 +85,7 @@ if( !hide_sample_connector )
 {
     translate([ 100, 0, 0 ])
     {
-        SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_clearance );
+        SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_angle, snap_connector_clearance );
 
         color([ 0.4, 0, 0 ])
             SnapConnectorOverMe( snap_connector_width, snap_connector_height );
@@ -227,12 +228,12 @@ module BackPlate()
 
     // bottom connector
     translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2, 0, back_plate_wall_width ])
-        SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_clearance );
+        SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_angle, snap_connector_clearance );
 
     // top connector
     translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2 + snap_connector_width, e_ink_display_circuit_board_height, back_plate_wall_width ])
         rotate([ 0, 0, 180 ])
-            SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_clearance );
+            SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_angle, snap_connector_clearance );
 
     // wall extra (undo the clearance for the back plate)
     translate([ -back_plate_wall_snug_fit, -back_plate_wall_snug_fit, 0 ])
