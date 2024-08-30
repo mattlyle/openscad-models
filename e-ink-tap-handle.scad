@@ -2,7 +2,7 @@ include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
 include <modules/connectors.scad>
 
-// drawing options -- comment out to hide
+// drawing options
 
 hide_tap_handle = false;
 hide_back_plate = false;

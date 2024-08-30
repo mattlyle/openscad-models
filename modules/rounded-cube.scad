@@ -1,10 +1,10 @@
 // model for a rounded cube
 
-module RoundedCube(size = [ 1, 1, 1 ], center = false, radius = 0.5, fn = 10 )
+module RoundedCube( size = [ 1, 1, 1 ], center = false, radius = 0.5, fn = 10 )
 {
     main_translate = ( center == true )
         ? [ 0, 0, 0 ]
-        : [ (size[ 0 ] / 2), (size[ 1 ] / 2), (size[ 2 ] / 2) ];
+        : [ size[ 0 ] / 2, size[ 1 ] / 2, size[ 2 ] / 2 ];
     
     translate( main_translate )
     {
