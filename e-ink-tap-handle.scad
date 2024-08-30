@@ -22,8 +22,9 @@ tap_handle_depth = 25;
 tap_handle_radius = 5.0;
 tap_handle_fn = 60;
 
-back_plate_clearance = 0.35; // clearance on all sides for the backplate to slide in
-
+back_plate_clearance = 0.75; // clearance on all sides for the backplate
+back_plate_wall_snug_fit = 0.65; // eat this back into the clearance for the backplate
+back_plate_wall_width = 1.4;
 back_plate_finger_hole_radius = 8.0;
 back_plate_finger_hole_height_offset = 30.0;
 
@@ -33,12 +34,11 @@ threaded_fitting_height = 20;
 // the offset from the front of the tap handle to recess the screen
 screen_depth_offset = 2.0;
 
-back_plate_wall_width = 2.0;
+snap_connector_width = 8.0;
+snap_connector_height = 1.8;
+snap_connector_clearance = 0.1;
 
-snap_connector_width = 10.0;
-snap_connector_height = 2.0;
-
-model_spacing = 10.0;
+model_spacing = 10.0; // spacing between the tap handle and back plate in the render
 
 // calculate values
 
@@ -73,10 +73,10 @@ if( !hide_screen_above_plate )
 
 if( !hide_back_plate_below_tap_handle )
 {
-    demo_depth = 10;
+    demo_depth = 6;
 
     color([ 0.4, 0, 0 ])
-        translate([ ( tap_handle_width - back_plate_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance, -demo_depth ])
+        translate([ ( tap_handle_width - back_plate_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2, -demo_depth ])
             BackPlate();
 }
 
@@ -84,7 +84,7 @@ if( !hide_sample_connector )
 {
     translate([ 100, 0, 0 ])
     {
-        SnapConnectorOver( snap_connector_width, snap_connector_height );
+        SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_clearance );
 
         color([ 0.4, 0, 0 ])
             SnapConnectorOverMe( snap_connector_width, snap_connector_height );
@@ -225,13 +225,24 @@ module BackPlate()
         translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
             cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
 
-        // bottom connector
-        translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2, 0, back_plate_wall_width ])
-            SnapConnectorOver( snap_connector_width, snap_connector_height );
+    // bottom connector
+    translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2, 0, back_plate_wall_width ])
+        SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_clearance );
 
+    // top connector
     translate([ ( e_ink_display_circuit_board_width - snap_connector_width ) / 2 + snap_connector_width, e_ink_display_circuit_board_height, back_plate_wall_width ])
         rotate([ 0, 0, 180 ])
-            SnapConnectorOver( snap_connector_width, snap_connector_height );
+            SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_clearance );
+
+    // wall extra (undo the clearance for the back plate)
+    translate([ -back_plate_wall_snug_fit, -back_plate_wall_snug_fit, 0 ])
+        cube([ back_plate_width + back_plate_wall_snug_fit * 2, back_plate_wall_snug_fit, back_plate_wall_width ]);
+    translate([ back_plate_width, -back_plate_wall_snug_fit, 0 ])
+        cube([ back_plate_wall_snug_fit, back_plate_height + back_plate_wall_snug_fit * 2, back_plate_wall_width ]);
+    translate([ -back_plate_wall_snug_fit, back_plate_height, 0 ])
+        cube([ back_plate_width + back_plate_wall_snug_fit * 2, back_plate_wall_snug_fit, back_plate_wall_width ]);
+    translate([ -back_plate_wall_snug_fit, -back_plate_wall_snug_fit, 0 ])
+        cube([ back_plate_wall_snug_fit, back_plate_height + back_plate_wall_snug_fit * 2, back_plate_wall_width ]);
 
     // clearance
     if( !hide_clearance_areas )
