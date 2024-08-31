@@ -18,7 +18,7 @@ hide_clearance_areas = false;
 
 tap_handle_width = 56; // previous size was 50, but need more for stregth
 tap_handle_height = 210; // previous height was 190
-tap_handle_depth = 25;
+tap_handle_depth = 20;
 tap_handle_radius = 5.0;
 tap_handle_fn = 60;
 
@@ -28,8 +28,8 @@ back_plate_wall_width = 1.4;
 back_plate_finger_hole_radius = 8.0;
 back_plate_finger_hole_height_offset = 30.0;
 
-threaded_fitting_radius = 8;
-threaded_fitting_height = 20;
+threaded_fitting_radius = 12.3 / 2;
+threaded_fitting_height = 18;
 
 // the offset from the front of the tap handle to recess the screen
 screen_depth_offset = 2.0;
