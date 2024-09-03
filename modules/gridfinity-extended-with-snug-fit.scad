@@ -80,5 +80,18 @@ module gridfinity_baseplate_snug_fit_into( max_x, max_y, grid_cells_x, grid_cell
                     cylinder( r = 3, h = extension_z, $fn = 30 ); // TODO: This isn't correct and overlaps?!
             }
         }
+
+        // extra support in the mdddle
+        render()
+        {
+            difference()
+            {
+                translate([ grid_plate_size_x - extension_merge_overlap, grid_plate_size_y - extension_merge_overlap, 0 ])
+                    cube([ extension_width, extension_size_y, extension_z ]);
+                translate([ grid_plate_size_x - extension_merge_overlap - 0.7, grid_plate_size_y - extension_merge_overlap, 0 ])
+                    cylinder( r = 3, h = extension_z, $fn = 30 ); // TODO: This isn't correct and overlaps?!
+            }
+        }
+
     }
 }
