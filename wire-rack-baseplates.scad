@@ -22,18 +22,20 @@ total_size_y = gf_pitch * grid_cells_y;
 echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> total_size_x", total_size_x );
 echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> total_size_y", total_size_y );
 
+wire_cutout_extra = 0.5;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw wires
 
 num_wire_to_draw = ceil( total_size_x / wire_separation );
 echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> num_wire_to_draw", num_wire_to_draw );
 
-for( wire_n = [ -1 : 1 : num_wire_to_draw ] )
-{
-    translate([ wire_n * wire_separation + wire_separation / 2, -max_y / 4, 0 ])
-        rotate([ -90, 0, 0 ])
-            cylinder( h = max_y, r = wire_diameter/2, $fn=8 );
-}
+// for( wire_n = [ -1 : 1 : num_wire_to_draw ] )
+// {
+//     translate([ wire_n * wire_separation + wire_separation / 2, -max_y / 4, 0 ])
+//         rotate([ -90, 0, 0 ])
+//             cylinder( h = max_y, r = wire_diameter/2, $fn = 16 );
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw wire rack base
@@ -131,12 +133,30 @@ for( wire_n = [ -1 : 1 : num_wire_to_draw ] )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+cutout_side = wire_diameter + wire_cutout_extra * 2;
+cutout_diagonal = sqrt( ( cutout_side / 2 ) * ( cutout_side / 2 ) * 2 );
+
 // v3
+render()
+{
+    difference()
+    {
+        cube([ total_size_x, total_size_y, cutout_diagonal ]);
+
+        for( wire_n = [ -1 : 1 : num_wire_to_draw ] )
+        {
+            translate([ wire_n * wire_separation + wire_separation / 2, 0, 0 ])
+                translate([ -cutout_diagonal, 0, 0 ])
+                rotate([ 0, 45, 0 ])
+                    cube([ cutout_side, total_size_y, cutout_side ]);
+        }
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw gridfinity baseplates
 
-translate([ 0, 0, wire_diameter / 2 ])
+translate([ 0, 0, cutout_diagonal ])
 {
     gridfinity_baseplate(
         num_x = grid_cells_x,
