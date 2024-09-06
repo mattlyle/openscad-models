@@ -10,7 +10,7 @@ max_y = 402;
 
 under_magnet_y = 14.0;
 
-grid_cells_x = 3;
+grid_cells_x = 2;
 grid_cells_y = 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,13 +22,12 @@ total_size_y = gf_pitch * grid_cells_y;
 echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> total_size_x", total_size_x );
 echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> total_size_y", total_size_y );
 
-wire_cutout_extra = 0.5;
+wire_cutout_extra = 0.4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw wires
 
 num_wire_to_draw = ceil( total_size_x / wire_separation );
-echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> num_wire_to_draw", num_wire_to_draw );
 
 // for( wire_n = [ -1 : 1 : num_wire_to_draw ] )
 // {
@@ -39,99 +38,6 @@ echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> num_wire_to_draw", num
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw wire rack base
-
-// v1
-
-// top
-
-// color([ 0.1, 0.3, 0.1 ])
-// {
-//     for( grid_y = [ 0 : 1 : grid_cells_y - 1 ])
-//     {
-//         // near bar
-//         translate([ 0, grid_y * gf_pitch, wire_diameter / 2 ])
-//             cube([ total_size_x, under_magnet_y, wire_floor_depth ]);
-
-//         // far bar
-//         translate([ 0, ( grid_y + 1 ) * gf_pitch - under_magnet_y, wire_diameter / 2 ])
-//             cube([ total_size_x, under_magnet_y, wire_floor_depth ]);
-//     }
-// }
-
-// translate([ 0, 0, wire_diameter / 2 ])
-//     cube([ total_size_x, total_size_y, wire_floor_depth ]);
-
-// ribs in between wires
-// color([ 0.5, 0, 0 ])
-// {
-//     render()
-//     {
-//         for( grid_y = [ 0 : 1 : grid_cells_y - 1 ])
-//         {
-//             translate([ 0, grid_y * gf_pitch, 0 ])
-//             {
-//                 difference()
-//                 {
-//                     cube([ total_size_x, under_magnet_y, wire_diameter / 2 ]);
-
-//                     for( wire_n = [ -1 : 1 : 50 ] )
-//                     {
-//                         translate([ wire_n * wire_separation + wire_separation / 4, 0, 0 ])
-//                             cube([ wire_separation / 2 , under_magnet_y, wire_diameter / 2 ]);
-//                     }
-//                 }
-//             }
-
-//             translate([ 0, ( grid_y + 1 ) * gf_pitch - under_magnet_y, 0 ])
-//             {
-//                 difference()
-//                 {
-//                     cube([ total_size_x, under_magnet_y, wire_diameter / 2 ]);
-
-//                     for( wire_n = [ -1 : 1 : 50 ] )
-//                     {
-//                         translate([ wire_n * wire_separation + wire_separation / 4, 0, 0 ])
-//                             cube([ wire_separation / 2 , under_magnet_y, wire_diameter / 2 ]);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// v2
-
-// render()
-// {
-//     difference()
-//     {
-//         cube([ total_size_x, under_magnet_y, wire_diameter / 2 ]);
-
-//         for( wire_n = [ -1 : 1 : 50 ] )
-//         {
-//             translate([ wire_n * wire_separation + wire_separation / 4, 0, 0 ])
-//                 cube([ wire_separation / 2 , total_size_y, wire_diameter / 2 ]);
-//         }
-//     }
-
-//     translate([ 0, total_size_y - under_magnet_y, 0 ])
-//     {
-//         difference()
-//         {
-//             cube([ total_size_x, under_magnet_y, wire_diameter / 2 ]);
-
-//             for( wire_n = [ -1 : 1 : 50 ] )
-//             {
-//                 translate([ wire_n * wire_separation + wire_separation / 4, 0, 0 ])
-//                     cube([ wire_separation / 2 , total_size_y, wire_diameter / 2 ]);
-//             }
-//         }
-//     }
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 cutout_side = wire_diameter + wire_cutout_extra * 2;
 cutout_diagonal = sqrt( ( cutout_side / 2 ) * ( cutout_side / 2 ) * 2 );
