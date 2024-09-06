@@ -25,12 +25,12 @@ echo( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> total_size_y", total_s
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw wires
 
-// for( wire_n = [ -1 : 1 : 50 ] )
-// {
-//     translate([ wire_n * wire_separation + wire_separation / 2, -max_y / 4, 0 ])
-//         rotate([ -90, 0, 0 ])
-//             cylinder( h = max_y, r = wire_diameter/2, $fn=8 );
-// }
+for( wire_n = [ -1 : 1 : 50 ] )
+{
+    translate([ wire_n * wire_separation + wire_separation / 2, -max_y / 4, 0 ])
+        rotate([ -90, 0, 0 ])
+            cylinder( h = max_y, r = wire_diameter/2, $fn=8 );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw wire rack base
