@@ -13,6 +13,8 @@ under_magnet_y = 14.0;
 grid_cells_x = 2;
 grid_cells_y = 2;
 
+// TODO: How to 'resume' with one to the side so that the bars still line up... will need an x-offset or just X grid cells X-to-the-left
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated vars
 
@@ -47,8 +49,27 @@ render()
 {
     difference()
     {
-        cube([ total_size_x, total_size_y, cutout_diagonal ]);
+        union()
+        {
+            difference()
+            {
+                cube([ total_size_x, total_size_y, cutout_diagonal ]);
 
+                // remove the corner cutouts
+                translate([ 0, 0, 0 ]) cube([ 4, 4, cutout_diagonal ]);
+                translate([ total_size_x - 4, 0, 0 ]) cube([ 4, 4, cutout_diagonal ]);
+                translate([ total_size_x - 4, total_size_y - 4, 0 ]) cube([ 4, 4, cutout_diagonal ]);
+                translate([ 0, total_size_y - 4, 0 ]) cube([ 4, 4, cutout_diagonal ]);
+            }
+
+            // add the rounded corners back
+            translate([ 4, 4, 0 ] ) cylinder(h = cutout_diagonal, r = 4, $fn = 24);
+            translate([ total_size_x - 4, 4, 0 ] ) cylinder(h = cutout_diagonal, r = 4, $fn = 24);
+            translate([ total_size_x - 4, total_size_y - 4, 0 ] ) cylinder(h = cutout_diagonal, r = 4, $fn = 24);
+            translate([ 4, total_size_y - 4, 0 ] ) cylinder(h = cutout_diagonal, r = 4, $fn = 24);
+        }
+
+        // remove the wire cutouts
         for( wire_n = [ -1 : 1 : num_wire_to_draw ] )
         {
             translate([ wire_n * wire_separation + wire_separation / 2, 0, 0 ])
