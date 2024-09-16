@@ -69,6 +69,11 @@ gridfinity_cup(
     lip_style = "none"
 );
 
+// text
+translate([ 8, 3, base_z ]) // TODO this is just eyeball centered?!
+    linear_extrude( 0.5 )
+        text("Husky Screwdriver", size = 6);
+
 combined_x = screwdriver_bits_base_x + screwdriver_holder_radius * 2;
 
 // bits holder
