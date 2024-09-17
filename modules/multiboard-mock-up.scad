@@ -1,4 +1,4 @@
-include <../../3rd-party/MCAD/regular_shapes.scad>
+// include <../../3rd-party/MCAD/regular_shapes.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
