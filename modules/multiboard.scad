@@ -12,7 +12,7 @@ multiboard_cell_height = 6.5;
 multiboard_connector_back_connector_clearance = 0.15;
 multiboard_connector_back_z = 6.5;
 multiboard_connector_back_connector_inner_radius = 15.5 / 2 + multiboard_connector_back_connector_clearance;
-multiboard_connector_back_connector_outer_radius = 19.0 / 2 + multiboard_connector_back_connector_clearance;
+multiboard_connector_back_connector_outer_radius = 20.0 / 2 + multiboard_connector_back_connector_clearance;
 multiboard_connector_back_connector_height = 3 + multiboard_connector_back_connector_clearance;
 multiboard_connector_back_connector_vertical_height = 1.5;
 multiboard_connector_back_edge_overlap = 5.0;
@@ -90,17 +90,20 @@ module MultiboardConnectorBack( num_x, num_y )
                             r1 = multiboard_connector_back_connector_inner_radius,
                             r2 = multiboard_connector_back_connector_outer_radius, $fn = 48 );
 
-                    // cut out from there to the bottom
-                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size, ( back_y - multiboard_cell_size / 2 ) / 2, multiboard_connector_back_connector_height ])
+                    // cut out from there to the bottom...
+
+                    // slanted top
+                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size, ( back_y - multiboard_cell_size / 2 ) / 2, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
                         TrapezoidalPrism(
                             x_top = multiboard_connector_back_connector_outer_radius * 2,
                             x_bottom = multiboard_connector_back_connector_inner_radius * 2,
                             y = back_y - multiboard_cell_size / 2,
                             z = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height );
 
+                    // vertical underneath
                     // also cut out the vertical section under the trapazoid
-                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size - multiboard_connector_back_connector_inner_radius, 0, 0 ])
-                        cube([ multiboard_connector_back_connector_inner_radius * 2, back_y - multiboard_cell_size / 2, multiboard_connector_back_connector_vertical_height ]);
+                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size - multiboard_connector_back_connector_outer_radius, 0, multiboard_connector_back_connector_vertical_height + multiboard_connector_back_connector_clearance ])
+                        cube([ multiboard_connector_back_connector_outer_radius * 2, back_y - multiboard_cell_size / 2, multiboard_connector_back_connector_vertical_height ]);
                 }
             }
         }
