@@ -27,8 +27,6 @@ caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( caliper_box_hol
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// multiboard_core(5,4);
-
 // draw a sample multiboard tile
 if( show_previews )
 {
@@ -48,9 +46,6 @@ if( show_previews )
         CaliperBox();
 }
 
-// translate([ 0, 0, multiboard_cell_height ])
-//     MultiboardConnectorBack( 2, 2 );
-
 ////////////////////////////////////////////////////////////////////////////////
 
 module CaliperBoxHolder()
@@ -58,8 +53,6 @@ module CaliperBoxHolder()
     union()
     {
         // back
-        // cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, caliper_box_holder_thickness ]);
-        // MultiboardConnectorBack( 4, 3 );
         MultiboardConnectorBackAlt( caliper_box_holder_size_x, caliper_box_holder_size_y );
 
         // bottom

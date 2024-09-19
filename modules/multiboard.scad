@@ -81,8 +81,12 @@ module MultiboardConnectorBack( grid_cells_x, num_y )
     MultiboardConnectorBackAlt( back_x, back_y );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 // Calculate the x-offset that will be used for a multiboard back with size 'size_x'
 function MultiboardConnectorBackAltXOffset( size_x ) = ( size_x - floor( size_x / multiboard_cell_size ) * multiboard_cell_size ) / 2;
+
+////////////////////////////////////////////////////////////////////////////////
 
 module MultiboardConnectorBackAlt( size_x, size_y )
 {
