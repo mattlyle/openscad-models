@@ -10,14 +10,14 @@ multiboard_screw_hole_radius = 3.0;
 multiboard_cell_corner_width = 14.0;
 multiboard_cell_height = 6.5;
 
-multiboard_connector_back_connector_clearance = 0.1;
+multiboard_connector_back_connector_clearance = 0.05;
 multiboard_connector_back_z = 6.5;
 multiboard_connector_back_connector_inner_radius = 15.5 / 2 + multiboard_connector_back_connector_clearance;
 multiboard_connector_back_connector_outer_radius = 20.0 / 2 + multiboard_connector_back_connector_clearance;
 multiboard_connector_back_connector_height = 3 + multiboard_connector_back_connector_clearance;
 multiboard_connector_back_connector_vertical_height = 1.5;
-multiboard_connector_back_edge_overlap = 5.0;
-multiboard_connector_back_pin_size = 1.8;
+multiboard_connector_back_pin_size = 1.2;
+multiboard_connector_back_connector_top_offset = 1.5;
 
 ////////////////////////////////////////////////////////////////////////////////
 // calculated
@@ -31,13 +31,13 @@ multiboard_connector_back_connector_wedge_size = multiboard_connector_back_conne
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardMockUpTile( num_x, num_y )
+module MultiboardMockUpTile( grid_cells_x, num_y )
 {
     // % cube( [ multiboard_cell_size, multiboard_cell_size, multiboard_cell_height ] );
 
     render()
     {
-        for( x = [ 0 : num_x - 1 ] )
+        for( x = [ 0 : grid_cells_x - 1 ] )
         {
             for( y = [ 0 : num_y - 1 ] )
             {
@@ -71,23 +71,39 @@ module MultiboardMockUpTile( num_x, num_y )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBack( num_x, num_y )
+module MultiboardConnectorBack( grid_cells_x, num_y )
 {
-    back_x = multiboard_connector_back_edge_overlap * 2 + num_x * multiboard_cell_size;
+    extra_x = 5;
+
+    back_x = extra_x * 2 + grid_cells_x * multiboard_cell_size;
     back_y = multiboard_cell_size * num_y;
+
+    MultiboardConnectorBackAlt( back_x, back_y );
+}
+
+// Calculate the x-offset that will be used for a multiboard back with size 'size_x'
+function MultiboardConnectorBackAltXOffset( size_x ) = ( size_x - floor( size_x / multiboard_cell_size ) * multiboard_cell_size ) / 2;
+
+module MultiboardConnectorBackAlt( size_x, size_y )
+{
+    grid_cells_x = floor( size_x / multiboard_cell_size );
+    offset_x = MultiboardConnectorBackAltXOffset( size_x );
+
+    cone_y = size_y - multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_top_offset;
 
     render()
     {
         difference()
         {
-            cube([ back_x, back_y, multiboard_connector_back_z ]);
+            cube([ size_x, size_y, multiboard_connector_back_z ]);
 
-            for( x = [ 0 : num_x - 1 ] )
+            for( x = [ 0 : grid_cells_x - 1 ] )
             {
                 union()
                 {
-                    // // cut out the cone
-                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size, multiboard_cell_size / 2 + ( num_y - 1 ) * multiboard_cell_size, 0 ])
+                    // cut out the cone
+                    // translate([ offset_x + multiboard_cell_size / 2 + x * multiboard_cell_size, multiboard_cell_size / 2 + size_y, 0 ])
+                    translate([ offset_x + multiboard_cell_size / 2 + x * multiboard_cell_size, cone_y, 0 ])
                         cylinder(
                             h = multiboard_connector_back_connector_height,
                             r1 = multiboard_connector_back_connector_inner_radius,
@@ -96,19 +112,19 @@ module MultiboardConnectorBack( num_x, num_y )
                     // cut out from there to the bottom...
 
                     // slanted top
-                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size, ( back_y - multiboard_cell_size / 2 ) / 2, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
+                    translate([ offset_x + multiboard_cell_size / 2 + x * multiboard_cell_size, cone_y / 2, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
                         TrapezoidalPrism(
                             x_top = multiboard_connector_back_connector_outer_radius * 2,
                             x_bottom = multiboard_connector_back_connector_inner_radius * 2,
-                            y = back_y - multiboard_cell_size / 2,
+                            y = cone_y,
                             z = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height );
 
                     // also cut out the vertical section under the trapazoid
-                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size - multiboard_connector_back_connector_outer_radius, 0, multiboard_connector_back_connector_vertical_height + multiboard_connector_back_connector_clearance ])
-                        cube([ multiboard_connector_back_connector_outer_radius * 2, back_y - multiboard_cell_size / 2, multiboard_connector_back_connector_vertical_height ]);
+                    translate([ offset_x + multiboard_cell_size / 2 + x * multiboard_cell_size - multiboard_connector_back_connector_outer_radius, 0, multiboard_connector_back_connector_vertical_height + multiboard_connector_back_connector_clearance ])
+                        cube([ multiboard_connector_back_connector_outer_radius * 2, cone_y, multiboard_connector_back_connector_vertical_height ]);
 
                     // near wedge
-                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size - multiboard_connector_back_connector_outer_radius + multiboard_connector_back_connector_wedge_size, 0, 0 ])
+                    translate([ offset_x + multiboard_cell_size / 2 + x * multiboard_cell_size - multiboard_connector_back_connector_outer_radius + multiboard_connector_back_connector_wedge_size, 0, 0 ])
                         rotate([ 0, -90, 0 ])
                             TriangularPrism(
                                 x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
@@ -117,7 +133,7 @@ module MultiboardConnectorBack( num_x, num_y )
                             );
 
                     // far wedge
-                    translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size + multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_wedge_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
+                    translate([ offset_x + multiboard_cell_size / 2 + x * multiboard_cell_size + multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_wedge_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
                         rotate([ 0, 90, 0 ])
                             TriangularPrism(
                                 x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
@@ -129,9 +145,9 @@ module MultiboardConnectorBack( num_x, num_y )
         }
 
         // add the divits
-        for( x = [ 0 : num_x - 1 ] )
+        for( x = [ 0 : grid_cells_x - 1 ] )
         {
-            translate([ multiboard_connector_back_edge_overlap + multiboard_cell_size / 2 + x * multiboard_cell_size, multiboard_cell_size / 2 + ( num_y - 1 ) * multiboard_cell_size, multiboard_connector_back_connector_height - multiboard_connector_back_pin_size ])
+            translate([ offset_x + multiboard_cell_size / 2 + x * multiboard_cell_size, cone_y, multiboard_connector_back_connector_height - multiboard_connector_back_pin_size ])
                 cylinder( h = multiboard_connector_back_pin_size, r1 = 0, r2 = multiboard_connector_back_pin_size, $fn = 4 );
         }
     }
