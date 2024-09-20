@@ -21,7 +21,7 @@ caliper_box_z = 26.3;
 ////////////////////////////////////////////////////////////////////////////////
 
 caliper_box_holder_size_x = caliper_box_x + caliper_box_holder_thickness * 2 + clearance * 2;
-caliper_box_holder_size_z = caliper_box_z + caliper_box_holder_thickness * 2 + clearance; // only 1 clearance
+caliper_box_holder_size_z = caliper_box_z + multiboard_connector_back_z + clearance; // only 1 clearance
 
 caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( caliper_box_holder_size_x );
 
@@ -42,7 +42,7 @@ translate( show_previews ? [ multiboard_cell_size - caliper_box_holder_offset_x,
 // draw a preview of the box itseld inside
 if( show_previews )
 {
-    translate([ multiboard_cell_size - caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, caliper_box_holder_thickness ])
+    translate([ multiboard_cell_size - caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
         CaliperBox();
 }
 
@@ -56,8 +56,8 @@ module CaliperBoxHolder()
         MultiboardConnectorBackAlt( caliper_box_holder_size_x, caliper_box_holder_size_y );
 
         // bottom
-        translate([ 0, 0, 0 ])
-            cube([ caliper_box_holder_size_x, caliper_box_holder_thickness, caliper_box_holder_size_z ]);
+        translate([ 0, 0, multiboard_connector_back_z ])
+            cube([ caliper_box_holder_size_x, caliper_box_holder_thickness, caliper_box_holder_size_z - multiboard_connector_back_z]);
 
         // front
         translate([ 0, 0, caliper_box_holder_size_z - caliper_box_holder_thickness ])
