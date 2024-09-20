@@ -1,5 +1,6 @@
 include <trapezoidal-prism.scad>
 include <triangular-prism.scad>
+include <rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -99,7 +100,8 @@ module MultiboardConnectorBackAlt( size_x, size_y )
     {
         difference()
         {
-            cube([ size_x, size_y, multiboard_connector_back_z ]);
+            // cube([ size_x, size_y, multiboard_connector_back_z ]);
+            RoundedCube( size = [ size_x, size_y, multiboard_connector_back_z ], r = 1.0, fn = 36 );
 
             for( x = [ 0 : grid_cells_x - 1 ] )
             {

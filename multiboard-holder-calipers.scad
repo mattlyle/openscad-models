@@ -1,11 +1,14 @@
 // include <../3rd-party/multiboard_parametric_extended/multiboard_parametric_extended.scad>
 include <modules/multiboard.scad>
+include <modules/rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
 
-caliper_box_holder_thickness = 1.8;
+caliper_box_holder_thickness = 1.5;
 caliper_box_holder_size_y = 70;
+
+corner_rounding_radius = 1.0;
 
 clearance = 2.5;
 
@@ -21,7 +24,7 @@ caliper_box_z = 26.3;
 ////////////////////////////////////////////////////////////////////////////////
 
 caliper_box_holder_size_x = caliper_box_x + caliper_box_holder_thickness * 2 + clearance * 2;
-caliper_box_holder_size_z = caliper_box_z + multiboard_connector_back_z + clearance; // only 1 clearance
+caliper_box_holder_size_z = caliper_box_z + multiboard_connector_back_z + clearance * 2; // only 1 clearance
 
 caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( caliper_box_holder_size_x );
 
@@ -50,25 +53,50 @@ if( show_previews )
 
 module CaliperBoxHolder()
 {
-    union()
+    render()
     {
-        // back
-        MultiboardConnectorBackAlt( caliper_box_holder_size_x, caliper_box_holder_size_y );
+        union()
+        {
+            // back
+            // back
+            MultiboardConnectorBackAlt( caliper_box_holder_size_x, caliper_box_holder_size_y );
 
-        // bottom
-        translate([ 0, 0, multiboard_connector_back_z ])
-            cube([ caliper_box_holder_size_x, caliper_box_holder_thickness, caliper_box_holder_size_z - multiboard_connector_back_z]);
+            // join section
+            difference()
+            {
+                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
+                    RoundedCube(
+                        size = [ caliper_box_holder_size_x, caliper_box_holder_size_y, corner_rounding_radius * 3 ],
+                        r = corner_rounding_radius,
+                        fn = 36
+                        );
+                
+                // cut off the bottom
+                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
+                    cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, corner_rounding_radius ]);
+                
+                // cut off the top
+                translate([ 0, 0, multiboard_connector_back_z ])
+                    cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, corner_rounding_radius ]);
+            }
 
-        // front
-        translate([ 0, 0, caliper_box_holder_size_z - caliper_box_holder_thickness ])
-            cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, caliper_box_holder_thickness ]);
+            difference()
+            {
+                // start with a rounded box
+                RoundedCube(
+                    size = [ caliper_box_holder_size_x, caliper_box_holder_size_y, caliper_box_holder_size_z ],
+                    r = corner_rounding_radius,
+                    fn = 36
+                    );
 
-        // left side
-        cube([ caliper_box_holder_thickness, caliper_box_holder_size_y, caliper_box_holder_size_z ]);
+                // remove the back
+                cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, multiboard_connector_back_z ]);
 
-        // right side
-        translate([ caliper_box_holder_size_x - caliper_box_holder_thickness, 0, 0 ])
-            cube([ caliper_box_holder_thickness, caliper_box_holder_size_y, caliper_box_holder_size_z ]);
+                // remove the area for the calipers box
+                translate([ caliper_box_holder_thickness, caliper_box_holder_thickness, multiboard_connector_back_z ])
+                    cube([ caliper_box_x + clearance * 2, caliper_box_y + clearance, caliper_box_z + clearance ]);
+            }
+        }
     }
 
     color([ 0, 0, 0 ])
