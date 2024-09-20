@@ -48,14 +48,14 @@ silver_malco_12ft_holder_offset_x = ( base_x - silver_malco_12ft_holder_x ) / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // base
-// gridfinity_cup(
-//     width = cup_x,
-//     depth = cup_y,
-//     height = cup_z,
-//     position = "zero",
-//     filled_in = true,
-//     lip_style = "none"
-//     );
+gridfinity_cup(
+    width = cup_x,
+    depth = cup_y,
+    height = cup_z,
+    position = "zero",
+    filled_in = true,
+    lip_style = "none"
+    );
 
 // text
 translate([ text_offset_x, text_offset_y, base_z ])
@@ -63,40 +63,40 @@ translate([ text_offset_x, text_offset_y, base_z ])
         text( "Silver Malco", size = 5.1 );
 
 // silver malco 12ft
-// translate([ silver_malco_12ft_holder_offset_x, holder_offset_y, base_z ])
-// {
-//     union()
-//     {
-//         // near wall
-//         cube([ silver_malco_12ft_holder_x, lip_thickness, lip_height ]);
+translate([ silver_malco_12ft_holder_offset_x, holder_offset_y, base_z ])
+{
+    union()
+    {
+        // near wall
+        cube([ silver_malco_12ft_holder_x, lip_thickness, lip_height ]);
 
-//         // right wall
-//         render()
-//         {
-//             difference()
-//             {
-//                 translate([ silver_malco_12ft_holder_x - lip_thickness, 0, 0 ])
-//                     cube([ lip_thickness, silver_malco_12ft_holder_y, lip_height ]);
-//                 translate([ silver_malco_12ft_holder_x - lip_thickness, silver_malco_12ft_clip_y_offset + lip_thickness, silver_malco_12ft_clip_z_offset - clearance ])
-//                     cube([ lip_thickness, silver_malco_12ft_clip_y + clearance * 2, silver_malco_12ft_clip_z ]);
-//             }
-//         }
+        // right wall
+        render()
+        {
+            difference()
+            {
+                translate([ silver_malco_12ft_holder_x - lip_thickness, 0, 0 ])
+                    cube([ lip_thickness, silver_malco_12ft_holder_y, lip_height ]);
+                translate([ silver_malco_12ft_holder_x - lip_thickness, silver_malco_12ft_clip_y_offset + lip_thickness, silver_malco_12ft_clip_z_offset - clearance ])
+                    cube([ lip_thickness, silver_malco_12ft_clip_y + clearance * 2, silver_malco_12ft_clip_z ]);
+            }
+        }
 
-//         // far wall
-//         translate([ 0, silver_malco_12ft_holder_y - lip_thickness, 0 ])
-//             cube([ silver_malco_12ft_holder_x, lip_thickness, lip_height ]);
+        // far wall
+        translate([ 0, silver_malco_12ft_holder_y - lip_thickness, 0 ])
+            cube([ silver_malco_12ft_holder_x, lip_thickness, lip_height ]);
 
-//         // left wall
-//         translate([ 0, 0, 0 ])
-//             cube([ lip_thickness, silver_malco_12ft_holder_y, lip_height ]);
-//     }
+        // left wall
+        translate([ 0, 0, 0 ])
+            cube([ lip_thickness, silver_malco_12ft_holder_y, lip_height ]);
+    }
 
-//     if( show_previews )
-//     {
-//         translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
-//             red_craftsman_8m_26ft_tape_measure();
-//     }
-// }
+    if( show_previews )
+    {
+        translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
+            red_craftsman_8m_26ft_tape_measure();
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

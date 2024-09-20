@@ -24,16 +24,6 @@ red_craftsman_8m26ft_clip_y = 18.6;
 red_craftsman_8m26ft_clip_z = 36.6;
 red_craftsman_8m26ft_clip_z_offset = 18.0;
 
-// silver malco tru-lok 12ft - clip right
-silver_malco_12ft_x = 28.5;
-silver_malco_12ft_y = 71.0;
-silver_malco_12ft_z = 56.7;
-silver_malco_12ft_clip_x = 32.6 - silver_malco_12ft_x;
-silver_malco_12ft_clip_y_offset = 33.2;
-silver_malco_12ft_clip_y = 19.3;
-silver_malco_12ft_clip_z = 35.3;
-silver_malco_12ft_clip_z_offset = 9.5;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
