@@ -1,0 +1,20 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module TextLabel( text_string, font_size )
+{
+    color([ 0, 0, 0 ])
+        linear_extrude( 0.5 )
+            text( text_string, size = font_size );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module CenteredTextLabel( text_string, font_size, centered_in_area_x, centered_in_area_y )
+{
+    text_string_metrics_size = textmetrics( text = text_string, size = font_size ).size;
+    
+    translate([ ( centered_in_area_x - text_string_metrics_size[ 0 ] ) / 2, ( centered_in_area_y - text_string_metrics_size[ 1 ] ) / 2, 0 ])
+        TextLabel( text_string, font_size );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
