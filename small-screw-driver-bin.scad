@@ -19,8 +19,8 @@ screw_driver_handle_flare_length = 15.0;
 // settings
 
 // only choose one
-render_mode = "preview";
-// render_mode = "bin-only";
+// render_mode = "preview";
+render_mode = "bin-only";
 // render_mode = "text-only";
 
 cup_x = 3; // in grid cells
@@ -33,7 +33,7 @@ holder_clearance = 0.15;
 corner_rounding_radius = 3.7;
 
 screw_driver_padding_x = 7;
-screw_driver_padding_y = 8;
+screw_driver_padding_y = 5;
 
 screw_driver_edge_holder_length = 10;
 screw_driver_shaft_clearance = 0.5;
@@ -66,20 +66,19 @@ if( render_mode == "preview" || render_mode == "bin-only" )
         lip_style = "none"
         );
 
-    // render()
-    // {
-    //     difference()
-    //     {
-    // %
-    //             translate([ holder_clearance, holder_clearance, 0 ])
-    //                 RoundedCube(
-    //                     size = [ holder_x, holder_y, holder_z ],
-    //                     r = corner_rounding_radius,
-    //                     fn = 36
-    //                     );
+    render()
+    {
+        difference()
+        {
+                translate([ holder_clearance, holder_clearance, 0 ])
+                    RoundedCube(
+                        size = [ holder_x, holder_y, holder_z ],
+                        r = corner_rounding_radius,
+                        fn = 36
+                        );
 
                 // cut off the area the gridfinity base covers
-                // cube([ base_x, base_y, base_z ]);
+                cube([ base_x, base_y, base_z ]);
 
                 translate([ 0, ( holder_y - screw_driver_full_length ) / 2, holder_z - screw_driver_handle_flare_diameter / 2 - screw_driver_padding_y ])
                 {
@@ -95,7 +94,7 @@ if( render_mode == "preview" || render_mode == "bin-only" )
                                 translate([ offset_x + i * spacing_x, 0, 0 ])
                                     SmallScrewDriverCutout( holder_z - screw_driver_handle_flare_diameter / 2 - screw_driver_padding_y, true );
 
-                                if( render_mode )
+                                if( render_mode == "preview" )
                                 {
                                     % translate([ offset_x + i * spacing_x, 0, 0 ])
                                         SmallScrewDriver();
@@ -107,7 +106,7 @@ if( render_mode == "preview" || render_mode == "bin-only" )
                                     rotate([ 180, 0, 0 ])
                                         SmallScrewDriverCutout( holder_z - screw_driver_handle_flare_diameter / 2 - screw_driver_padding_y, false );
 
-                                if( render_mode )
+                                if( render_mode == "preview" )
                                 {
                                     % translate([ offset_x + i * spacing_x, 0, screw_driver_full_length ])
                                         rotate([ 180, 0, 0 ])
@@ -117,9 +116,8 @@ if( render_mode == "preview" || render_mode == "bin-only" )
                         }
                     }
                 }
-
-    //     }
-    // }
+        }
+    }
 }
 
 // if( render_mode == "preview" || render_mode == "text-only" )
@@ -147,6 +145,7 @@ module SmallScrewDriver()
 module SmallScrewDriverCutout( depth, flip_z )
 {
     flipped_z_offset = flip_z ? -depth : 0;
+    flipped_z_offset_full = flip_z ? -depth : - screw_driver_handle_flare_diameter / 2;
 
     // shaft holder
     translate([ 0, 0, -screw_driver_shaft_clearance ])
@@ -159,6 +158,13 @@ module SmallScrewDriverCutout( depth, flip_z )
         cylinder( h = screw_driver_edge_holder_length, r = screw_driver_handle_flare_diameter / 2 + screw_driver_handle_flare_clearance, $fn = 36 );
     translate([ -screw_driver_handle_flare_diameter / 2 - screw_driver_handle_flare_clearance, flipped_z_offset, screw_driver_full_length - screw_driver_edge_holder_length + screw_driver_shaft_clearance ])
         cube([ screw_driver_handle_flare_diameter + screw_driver_handle_flare_clearance * 2, depth, screw_driver_edge_holder_length ]);
+
+    // center area
+    translate([
+        -screw_driver_handle_flare_diameter / 2 - screw_driver_handle_flare_clearance,
+        flipped_z_offset_full,
+        screw_driver_edge_holder_length - screw_driver_shaft_clearance ])
+        cube([ screw_driver_handle_flare_diameter + screw_driver_handle_flare_clearance * 2, depth + screw_driver_handle_flare_diameter / 2, screw_driver_full_length - screw_driver_edge_holder_length * 2 + screw_driver_shaft_clearance * 2 ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
