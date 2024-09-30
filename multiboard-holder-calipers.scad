@@ -1,6 +1,8 @@
 // include <../3rd-party/multiboard_parametric_extended/multiboard_parametric_extended.scad>
+
 include <modules/multiboard.scad>
 include <modules/rounded-cube.scad>
+// include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -11,27 +13,30 @@ render_mode = "preview";
 // render_mode = "larger-bin-only";
 
 caliper_box_holder_thickness = 1.5;
-caliper_box_holder_size_y = 70;
+
+original_caliper_box_holder_size_y = 70;
 
 corner_rounding_radius = 1.0;
 
 clearance = 2.5;
 
-show_previews = false;
-
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-caliper_box_x = 91.4;
-caliper_box_y = 248;
-caliper_box_z = 26.3;
+original_caliper_box_x = 91.4;
+original_caliper_box_y = 248;
+original_caliper_box_z = 26.3;
 
 ////////////////////////////////////////////////////////////////////////////////
+// calculations
 
-caliper_box_holder_size_x = caliper_box_x + caliper_box_holder_thickness * 2 + clearance * 2;
-caliper_box_holder_size_z = caliper_box_z + multiboard_connector_back_z + clearance * 2; // only 1 clearance
+original_caliper_box_holder_size_x = original_caliper_box_x + caliper_box_holder_thickness * 2 + clearance * 2;
+original_caliper_box_holder_size_z = original_caliper_box_z + multiboard_connector_back_z + clearance * 2; // only 1 clearance
 
-caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( caliper_box_holder_size_x );
+original_caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( original_caliper_box_holder_size_x );
+
+original_caliper_box_spec = [ original_caliper_box_x, original_caliper_box_y, original_caliper_box_z ];
+original_caliper_box_holder_spec = [ original_caliper_box_holder_size_x, original_caliper_box_holder_size_y, original_caliper_box_holder_size_z ];
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -46,77 +51,77 @@ if( render_mode == "preview" )
 // draw the original holder
 if( render_mode == "preview" || render_mode == "original-bin-only" )
 {
-    translate( render_mode == "preview" ? [ multiboard_cell_size - caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
-        CaliperBoxHolder();
+    translate( render_mode == "preview" ? [ multiboard_cell_size - original_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
+        CaliperBoxHolder( original_caliper_box_holder_spec, original_caliper_box_spec );
 }
 
 // draw a preview of the box itself inside
 if( render_mode == "preview" )
 {
-    translate([ multiboard_cell_size - caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
-        CaliperBox();
+    translate([ multiboard_cell_size - original_caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
+        CaliperBox( original_caliper_box_spec );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module CaliperBoxHolder()
+module CaliperBoxHolder( holder_spec, box_spec )
 {
     render()
     {
         union()
         {
             // back
-            MultiboardConnectorBackAlt( caliper_box_holder_size_x, caliper_box_holder_size_y );
+            MultiboardConnectorBackAlt( holder_spec[ 0 ], holder_spec[ 1 ] );
 
             // join section
             difference()
             {
                 translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
                     RoundedCube(
-                        size = [ caliper_box_holder_size_x, caliper_box_holder_size_y, corner_rounding_radius * 3 ],
+                        size = [ holder_spec[ 0 ], holder_spec[ 1 ], corner_rounding_radius * 3 ],
                         r = corner_rounding_radius,
                         fn = 36
                         );
                 
                 // cut off the bottom
                 translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
-                    cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, corner_rounding_radius ]);
+                    cube([ holder_spec[ 0 ], holder_spec[ 1 ], corner_rounding_radius ]);
                 
                 // cut off the top
                 translate([ 0, 0, multiboard_connector_back_z ])
-                    cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, corner_rounding_radius ]);
+                    cube([ holder_spec[ 0 ], holder_spec[ 1 ], corner_rounding_radius ]);
             }
 
             difference()
             {
                 // start with a rounded box
                 RoundedCube(
-                    size = [ caliper_box_holder_size_x, caliper_box_holder_size_y, caliper_box_holder_size_z ],
+                    size = [ holder_spec[ 0 ], holder_spec[ 1 ], holder_spec[ 2 ] ],
                     r = corner_rounding_radius,
                     fn = 36
                     );
 
                 // remove the back
-                cube([ caliper_box_holder_size_x, caliper_box_holder_size_y, multiboard_connector_back_z ]);
+                cube([ holder_spec[ 0 ], holder_spec[ 1 ], multiboard_connector_back_z ]);
 
                 // remove the area for the calipers box
                 translate([ caliper_box_holder_thickness, caliper_box_holder_thickness, multiboard_connector_back_z ])
-                    cube([ caliper_box_x + clearance * 2, caliper_box_y + clearance, caliper_box_z + clearance ]);
+                    cube([ box_spec[ 0 ] + clearance * 2, box_spec[ 1 ] + clearance, box_spec[ 2 ] + clearance ]);
             }
         }
     }
 
     color([ 0, 0, 0 ])
-        translate([ 2, 4, caliper_box_holder_size_z ])
+        translate([ 2, 4, holder_spec[ 2 ] ]) // TODO remove constants
             linear_extrude( 0.5 )
-                text( "Digital Calipers", size = 8 );
+                text( "Digital Calipers", size = 8 ); // TODO: swap with module
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module CaliperBox()
+module CaliperBox( box_spec )
 {
-    % cube([ caliper_box_x, caliper_box_y, caliper_box_z ]);
+    % cube( box_spec );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
