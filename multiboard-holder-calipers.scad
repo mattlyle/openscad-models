@@ -16,9 +16,14 @@ caliper_box_holder_thickness = 1.5;
 
 original_caliper_box_holder_size_y = 70;
 
+larger_caliper_box_holder_size_y = 70;
+
 corner_rounding_radius = 1.0;
 
 clearance = 2.5;
+
+original_caliper_box_holder_cell_offset_x = 0;
+larger_caliper_box_holder_cell_offset_x = 5;
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -27,8 +32,14 @@ original_caliper_box_x = 91.4;
 original_caliper_box_y = 248;
 original_caliper_box_z = 26.3;
 
+larger_caliper_box_x = 127.2;
+larger_caliper_box_y = 425;
+larger_caliper_box_z = 32.1;
+
 ////////////////////////////////////////////////////////////////////////////////
 // calculations
+
+// original box
 
 original_caliper_box_holder_size_x = original_caliper_box_x + caliper_box_holder_thickness * 2 + clearance * 2;
 original_caliper_box_holder_size_z = original_caliper_box_z + multiboard_connector_back_z + clearance * 2; // only 1 clearance
@@ -38,6 +49,16 @@ original_caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( origin
 original_caliper_box_spec = [ original_caliper_box_x, original_caliper_box_y, original_caliper_box_z ];
 original_caliper_box_holder_spec = [ original_caliper_box_holder_size_x, original_caliper_box_holder_size_y, original_caliper_box_holder_size_z ];
 
+// larger box
+
+larger_caliper_box_holder_size_x = larger_caliper_box_x + caliper_box_holder_thickness * 2 + clearance * 2;
+larger_caliper_box_holder_size_z = larger_caliper_box_z + multiboard_connector_back_z + clearance * 2; // only 1 clearance
+
+larger_caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( larger_caliper_box_holder_size_x );
+
+larger_caliper_box_spec = [ larger_caliper_box_x, larger_caliper_box_y, larger_caliper_box_z ];
+larger_caliper_box_holder_spec = [ larger_caliper_box_holder_size_x, larger_caliper_box_holder_size_y, larger_caliper_box_holder_size_z ];
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // draw a sample multiboard tile
@@ -45,21 +66,33 @@ if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
         color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
-            MultiboardMockUpTile( 6, 4 );
+            MultiboardMockUpTile( 12, 4 );
 }
 
 // draw the original holder
 if( render_mode == "preview" || render_mode == "original-bin-only" )
 {
-    translate( render_mode == "preview" ? [ multiboard_cell_size - original_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
+    translate( render_mode == "preview" ? [ ( original_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - original_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
         CaliperBoxHolder( original_caliper_box_holder_spec, original_caliper_box_spec );
 }
 
-// draw a preview of the box itself inside
+// draw the larger holder
+if( render_mode == "preview" || render_mode == "larger-bin-only" )
+{
+    translate( render_mode == "preview" ? [ ( larger_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - larger_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
+        CaliperBoxHolder( larger_caliper_box_holder_spec, larger_caliper_box_spec );
+}
+
+// draw a preview of the boxes inside
 if( render_mode == "preview" )
 {
-    translate([ multiboard_cell_size - original_caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
+    // original
+    translate([ ( original_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - original_caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
         CaliperBox( original_caliper_box_spec );
+
+    // larger
+    translate([ ( larger_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - larger_caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
+        CaliperBox( larger_caliper_box_spec );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
