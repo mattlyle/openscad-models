@@ -13,7 +13,7 @@ folding_knife_y = 109;
 folding_knife_z = 35.8;
 
 // retractable knives
-retractable_knife_x = 18.6;
+retractable_knife_x = 21.5;
 retractable_knife_y = 158;
 retractable_knife_z = 29.3;
 
