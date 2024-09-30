@@ -5,6 +5,11 @@ include <modules/rounded-cube.scad>
 ////////////////////////////////////////////////////////////////////////////////
 // settings
 
+// only choose one
+render_mode = "preview";
+// render_mode = "original-bin-only";
+// render_mode = "larger-bin-only";
+
 caliper_box_holder_thickness = 1.5;
 caliper_box_holder_size_y = 70;
 
@@ -31,19 +36,22 @@ caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( caliper_box_hol
 ////////////////////////////////////////////////////////////////////////////////
 
 // draw a sample multiboard tile
-if( show_previews )
+if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
         color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
             MultiboardMockUpTile( 6, 4 );
 }
 
-// draw the holder
-translate( show_previews ? [ multiboard_cell_size - caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
-    CaliperBoxHolder();
+// draw the original holder
+if( render_mode == "preview" || render_mode == "original-bin-only" )
+{
+    translate( render_mode == "preview" ? [ multiboard_cell_size - caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
+        CaliperBoxHolder();
+}
 
-// draw a preview of the box itseld inside
-if( show_previews )
+// draw a preview of the box itself inside
+if( render_mode == "preview" )
 {
     translate([ multiboard_cell_size - caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
         CaliperBox();
@@ -57,7 +65,6 @@ module CaliperBoxHolder()
     {
         union()
         {
-            // back
             // back
             MultiboardConnectorBackAlt( caliper_box_holder_size_x, caliper_box_holder_size_y );
 
