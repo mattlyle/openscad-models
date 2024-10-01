@@ -3,7 +3,7 @@ use <modules/gridfinity-extended-with-snug-fit.scad>
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-drawer_x = 78;
+drawer_x = 176;
 drawer_y = 420;
 drawer_z = 70;
 
@@ -16,12 +16,13 @@ drawer_demo_thickness = 0.01;
 // calculations
 
 drawer_grid_cells_x = floor( drawer_x / 42.0 );
+echo( "drawer_grid_cells_x: ", drawer_grid_cells_x );
+
+drawer_plate_1_grid_cells_y = floor( 250 / 42.0 );
+echo( "drawer_plate_1_grid_cells_y: ", drawer_plate_1_grid_cells_y, " = ", drawer_plate_1_grid_cells_y * 42 );
 
 ////////////////////////////////////////////////////////////////////////////////
 
-gridfinity_baseplate_snug_fit_into( drawer_x, 0, 4, 4 );
-
-translate([ 0, 42 * 4, 0 ])
-    gridfinity_baseplate_snug_fit_into( drawer_x, drawer_y - 42 * 4, 4, 3 );
+gridfinity_baseplate_snug_fit_into( drawer_x, 0, drawer_grid_cells_x, drawer_plate_1_grid_cells_y );
 
 ////////////////////////////////////////////////////////////////////////////////
