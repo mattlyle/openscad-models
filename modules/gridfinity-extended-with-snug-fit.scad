@@ -1,6 +1,8 @@
 use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_baseplate.scad>
 include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
+////////////////////////////////////////////////////////////////////////////////
+
 module gridfinity_baseplate_snug_fit_into( max_x, max_y, grid_cells_x, grid_cells_y )
 {
     // from https://gridfinity.xyz/specification/
@@ -95,3 +97,5 @@ module gridfinity_baseplate_snug_fit_into( max_x, max_y, grid_cells_x, grid_cell
 
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
