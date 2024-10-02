@@ -3,7 +3,7 @@
 module SVG( svg_path )
 {
     linear_extrude( 0.5 )
-        import( svg_path, $fn = 100 );
+        import( svg_path );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
