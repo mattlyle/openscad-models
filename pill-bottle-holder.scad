@@ -68,7 +68,7 @@ module PillBottleHolder( diameter, y, text_label, font_size )
 
     holder_x = GridfinityCellsToLength( cells_x );
     holder_y = GridfinityCellsToLength( cells_y );
-    holder_z = max( min_holder_z, diameter / 2 );
+    holder_z = max( min_holder_z, diameter / 2 ) + bottle_clearance;
 
     union()
     {
