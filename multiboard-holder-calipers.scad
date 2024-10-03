@@ -42,7 +42,7 @@ if( show_previews )
 translate( show_previews ? [ multiboard_cell_size - caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
     CaliperBoxHolder();
 
-// draw a preview of the box itseld inside
+// draw a preview of the box itself inside
 if( show_previews )
 {
     translate([ multiboard_cell_size - caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
