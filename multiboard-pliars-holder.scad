@@ -23,7 +23,7 @@ ring_wall_height = 12.0;
 floor_height_min = 2.0;
 floor_height_max = 6.0;
 
-holder_y = 110;
+holder_y = 130;
 
 rounded_cube_inset_overlap = 2.0;
 
