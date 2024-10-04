@@ -1,3 +1,5 @@
+use <../3rd-party/MCAD/regular_shapes.scad>
+
 include <modules/multiboard.scad>
 include <modules/triangular-prism.scad>
 include <modules/rounded-cube.scad>
@@ -10,12 +12,13 @@ render_mode = "preview";
 // render_mode = "only-holder";
 // render_mode = "";
 
-num_pliars = 2;
+num_pliars = 3;
+// TODO: first print, use num = 2
 
 handle_clearance = 2;
 
 ring_wall_width = 2.0;
-ring_wall_height = 20.0;
+ring_wall_height = 12.0;
 
 floor_height_min = 2.0;
 floor_height_max = 6.0;
@@ -23,8 +26,6 @@ floor_height_max = 6.0;
 holder_y = 110;
 
 rounded_cube_inset_overlap = 2.0;
-
-// TODO: first print, use num = 2
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -68,10 +69,7 @@ if( render_mode == "preview" )
     // pliars preview
     for( i = [ 0 : num_pliars - 1 ] )
     {
-    // i = 0;
-        translate([ multiboard_cell_size - holder_offset_x, 0, 0 ])
-        translate([ ring_wall_width + handle_clearance + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_min + handle_clearance, multiboard_connector_back_z + handle_clearance ])
-            Pliars();
+        Pliars( i );
     }
 }
 
@@ -82,56 +80,112 @@ module PliarsHolder()
     union()
     {
         // back
-        // MultiboardConnectorBackAlt( holder_x, holder_y );
+        MultiboardConnectorBackAlt( holder_x, holder_y );
 
         // bottom
         translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
             RoundedCubeAlt( holder_x, floor_height_min, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
 
-        // add back floor guide slope
-        // translate([ ring_wall_width, floor_height_min, multiboard_connector_back_z ])
-        //     TriangularPrism( holder_x - ring_wall_width * 2, floor_height_max - floor_height_min, ( holder_z - multiboard_connector_back_z ) / 2 );
+        render()
+        {
+            difference()
+            {
+                translate([ ring_wall_width, ring_wall_width, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                    cube([ holder_x - ring_wall_width * 2, floor_height_max - floor_height_min, holder_z - multiboard_connector_back_z ]);
 
-        // TODO: these slopes are wrong
+                for( i = [ 0 : num_pliars - 1 ] )
+                {
+                    PliarsHolderBaseGuide( i );
+                }
+            }
+        }
 
-        // add near floor guide slope
-        // translate([ holder_x - ring_wall_width, floor_height_min, multiboard_connector_back_z + holder_z - multiboard_connector_back_z ])
-        //     rotate([ 0, 180, 0 ])
-        //         TriangularPrism( holder_x - ring_wall_width * 2, floor_height_max - floor_height_min, ( holder_z - multiboard_connector_back_z ) / 2 );
+        for( i = [ 0 : num_pliars - 2 ] )
+        {
+            PliarsHolderDivider( i );
+        }
 
-        // top ring - left
+        // top ring
         translate([ 0, holder_y - ring_wall_height, 0 ])
-            RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z + multiboard_connector_back_z );
-        // TODO: this will need supports?!
+        {
+            PliarsHolderRing( false );
 
-        // top ring - front
-        // TODO: finish
-
-        // top ring - right
-        // translate([ holder_x - ring_wall_width, holder_y - ring_wall_height, 0 ])
-        //     RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z + multiboard_connector_back_z );
-        // TODO: this will need supports?!
-
-        // dividers
-        // for( i = [ 0 : num_pliars - 2 ] )
-        // {
-        //     translate([ multiboard_cell_size - holder_offset_x + ring_wall_width * 2 + handle_clearance * 2 + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), holder_y - ring_wall_height, 0 ])
-        //         RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z + multiboard_connector_back_z );
-        // }
+            for( i = [ 0 : num_pliars - 2 ] )
+            {
+                PliarsHolderDivider( i );
+            }
+        }
 
         // middle ring
-        // TODO: finish
+        translate([ 0, ( holder_y - ring_wall_height ) / 2, 0 ])
+        {
+            PliarsHolderRing( false );
+
+            for( i = [ 0 : num_pliars - 2 ] )
+            {
+                PliarsHolderDivider( i );
+            }
+        }
 
         // bottom ring
-        // TODO finish
+        translate([ 0, 0, 0 ])
+        {
+            PliarsHolderRing( false );
+
+            for( i = [ 0 : num_pliars - 2 ] )
+            {
+                PliarsHolderDivider( i );
+            }
+        }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module Pliars()
+module PliarsHolderBaseGuide( i )
 {
-    % translate([ 0, 0, 0 ])
+    pyramid_x = pliars_handle_x + handle_clearance * 2;
+    pyramid_y = pliars_handle_z + handle_clearance * 2;
+    pyramid_z = floor_height_max - floor_height_min;
+
+    translate([ pyramid_x / 2 + ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_max, pyramid_y / 2 + multiboard_connector_back_z ])
+        rotate([ 90, 0, 0 ])
+            square_pyramid( pyramid_x, pyramid_y, pyramid_z );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+module PliarsHolderRing( add_support_avoidance )
+{
+    // left
+    translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+        RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
+
+    // front
+    translate([ 0, 0, holder_z - ring_wall_width ])
+        RoundedCubeAlt( holder_x, ring_wall_height, ring_wall_width );
+
+    // right
+    translate([ holder_x - ring_wall_width, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+        RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+module PliarsHolderDivider( i )
+{
+    // bottom divider
+    translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+    {
+        RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+module Pliars( i )
+{
+    % translate([ multiboard_cell_size - holder_offset_x + ring_wall_width + handle_clearance + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_min + handle_clearance, multiboard_connector_back_z + handle_clearance ])
         cube([ pliars_handle_x, pliars_full_y, pliars_handle_z ]);
 }
 
