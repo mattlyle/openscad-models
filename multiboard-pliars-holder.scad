@@ -125,7 +125,7 @@ module PliarsHolder()
         // top ring
         translate([ 0, holder_y - ring_wall_height, 0 ])
         {
-            PliarsHolderRing( false );
+            PliarsHolderRing( true );
 
             for( i = [ 0 : num_pliars - 2 ] )
             {
@@ -136,7 +136,7 @@ module PliarsHolder()
         // middle ring
         translate([ 0, ( holder_y - ring_wall_height ) / 2, 0 ])
         {
-            PliarsHolderRing( false );
+            PliarsHolderRing( true );
 
             for( i = [ 0 : num_pliars - 2 ] )
             {
@@ -172,7 +172,7 @@ module PliarsHolderBaseGuide( i )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderRing( add_support_avoidance )
+module PliarsHolderRing( add_bottom_support )
 {
     // left
     translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
@@ -185,6 +185,96 @@ module PliarsHolderRing( add_support_avoidance )
     // right
     translate([ holder_x - ring_wall_width, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
         RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
+
+    if( add_bottom_support )
+    {
+        support_span = ( holder_z - multiboard_connector_back_z - ring_corner_width );
+        support_edge_length = support_span / 2 / sin( 45 );
+
+        // left back support
+        translate([ 0, rounded_cube_inset_overlap, -support_span / 2  + multiboard_connector_back_z - rounded_cube_inset_overlap ])
+        {
+            render()
+            {
+                difference()
+                {
+                    rotate([ 45, 0, 0 ])
+                        RoundedCubeAlt( ring_wall_width, support_edge_length, support_edge_length );
+                        
+                    // remove the top
+                    translate([ 0, 0, 0 ])
+                        cube([ ring_wall_width, support_span / 2, support_span ]);
+                    
+                    // remove the side
+                    translate([ 0, -support_span / 2, 0 ])
+                        cube([ ring_wall_width, support_span, support_span / 2 ]);
+                }
+            }
+        }
+
+        // left front support
+        translate([ 0, rounded_cube_inset_overlap, holder_z - support_span / 2 - ring_corner_width + rounded_cube_inset_overlap ])
+        {
+            render()
+            {
+                difference()
+                {
+                    rotate([ 45, 0, 0 ])
+                        RoundedCubeAlt( ring_wall_width, support_edge_length, support_edge_length );
+
+                    // remove the top
+                    translate([ 0, 0, 0 ])
+                        cube([ ring_wall_width, support_span / 2, support_span ]);
+
+                    // remove the side
+                    translate([ 0, -support_span / 2, support_span / 2 ])
+                        cube([ ring_wall_width, support_span, support_span / 2 ]);
+                }
+            }
+        }
+
+        // right back support
+        translate([ holder_x - ring_wall_width, rounded_cube_inset_overlap, -support_span / 2  + multiboard_connector_back_z - rounded_cube_inset_overlap ])
+        {
+            render()
+            {
+                difference()
+                {
+                    rotate([ 45, 0, 0 ])
+                        RoundedCubeAlt( ring_wall_width, support_edge_length, support_edge_length );
+                        
+                    // remove the top
+                    translate([ 0, 0, 0 ])
+                        cube([ ring_wall_width, support_span / 2, support_span ]);
+                    
+                    // remove the side
+                    translate([ 0, -support_span / 2, 0 ])
+                        cube([ ring_wall_width, support_span, support_span / 2 ]);
+                }
+            }
+        }
+
+        // right front support
+        translate([ holder_x - ring_wall_width, rounded_cube_inset_overlap, holder_z - support_span / 2 - ring_corner_width + rounded_cube_inset_overlap ])
+        {
+            render()
+            {
+                difference()
+                {
+                    rotate([ 45, 0, 0 ])
+                        RoundedCubeAlt( ring_wall_width, support_edge_length, support_edge_length );
+
+                    // remove the top
+                    translate([ 0, 0, 0 ])
+                        cube([ ring_wall_width, support_span / 2, support_span ]);
+
+                    // remove the side
+                    translate([ 0, -support_span / 2, support_span / 2 ])
+                        cube([ ring_wall_width, support_span, support_span / 2 ]);
+                }
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
