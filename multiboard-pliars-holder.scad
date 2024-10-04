@@ -19,6 +19,7 @@ handle_clearance = 2;
 
 ring_wall_width = 2.0;
 ring_wall_height = 12.0;
+ring_corner_width = 4.0;
 
 floor_height_min = 2.0;
 floor_height_max = 10.0; // TODO: there should be more of a center section, not a point
@@ -104,6 +105,22 @@ module PliarsHolder()
         {
             PliarsHolderDivider( i );
         }
+
+        // corner - left side
+        translate([ 0, 0, holder_z - ring_corner_width ])
+            RoundedCubeAlt( ring_wall_width, holder_y, ring_corner_width );
+
+        // corner - left front
+        translate([ 0, 0, holder_z - ring_wall_width ])
+            RoundedCubeAlt( ring_corner_width, holder_y, ring_wall_width );
+
+        // corner - right side
+        translate([ holder_x - ring_wall_width, 0, holder_z - ring_corner_width ])
+            RoundedCubeAlt( ring_wall_width, holder_y, ring_corner_width );
+
+        // corner - right front
+        translate([ holder_x - ring_corner_width, 0, holder_z - ring_wall_width ])
+            RoundedCubeAlt( ring_corner_width, holder_y, ring_wall_width );
 
         // top ring
         translate([ 0, holder_y - ring_wall_height, 0 ])
