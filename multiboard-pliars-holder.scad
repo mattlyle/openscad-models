@@ -21,7 +21,7 @@ ring_wall_width = 2.0;
 ring_wall_height = 12.0;
 
 floor_height_min = 2.0;
-floor_height_max = 6.0;
+floor_height_max = 10.0; // TODO: there should be more of a center section, not a point
 
 holder_y = 130;
 
