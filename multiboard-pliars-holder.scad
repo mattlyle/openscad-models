@@ -3,6 +3,7 @@ use <../3rd-party/MCAD/regular_shapes.scad>
 include <modules/multiboard.scad>
 include <modules/triangular-prism.scad>
 include <modules/rounded-cube.scad>
+include <modules/flattened-pyramid.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -18,11 +19,11 @@ num_pliars = 3;
 handle_clearance = 2;
 
 ring_wall_width = 2.0;
-ring_wall_height = 12.0;
+ring_wall_height = 15.0;
 ring_corner_width = 4.0;
 
 floor_height_min = 2.0;
-floor_height_max = 10.0; // TODO: there should be more of a center section, not a point
+floor_height_max = 14.0; // TODO: there should be more of a center section, not a point
 
 holder_y = 130;
 
@@ -120,7 +121,6 @@ module PliarsHolder()
         // front column support
         for( i = [ 0 : num_pliars - 2 ] )
         {
-            echo( i );
             translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, holder_z - ring_corner_width ])
                 RoundedCubeAlt( ring_wall_width, holder_y, ring_corner_width );
         }
@@ -171,14 +171,18 @@ module PliarsHolderBaseGuide( i )
     pyramid_y = pliars_handle_z + handle_clearance * 2;
     pyramid_z = floor_height_max - floor_height_min;
 
-    translate([ pyramid_x / 2 + ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_max, pyramid_y / 2 + multiboard_connector_back_z ])
+    // %translate([ pyramid_x / 2 + ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_max, pyramid_y / 2 + multiboard_connector_back_z ])
+    //     rotate([ 90, 0, 0 ])
+    //         square_pyramid( pyramid_x, pyramid_y, pyramid_z );
+
+    translate([ ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_max, multiboard_connector_back_z ])
         rotate([ 90, 0, 0 ])
-            square_pyramid( pyramid_x, pyramid_y, pyramid_z );
+            FlattenedPyramid( pyramid_x, pyramid_y, pyramid_x / 2, pyramid_y / 3, pyramid_z );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderRing( add_bottom_support )
+module PliarsHolderRing( add_support_support, add_bottom_support )
 {
     // left
     translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
