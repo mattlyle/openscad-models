@@ -128,36 +128,36 @@ module PliarsHolder()
         // top ring
         translate([ 0, holder_y - ring_wall_height, 0 ])
         {
-            PliarsHolderRing( true );
+            PliarsHolderRing( false, true );
 
             for( i = [ 0 : num_pliars - 2 ] )
             {
                 translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliarsHolderHorizontalBridgeY( true );
+                    PliarsHolderHorizontalBridgeY( false, true );
             }
         }
 
         // middle ring
         translate([ 0, ( holder_y - ring_wall_height ) / 2, 0 ])
         {
-            PliarsHolderRing( true );
+            PliarsHolderRing( true, true );
 
             for( i = [ 0 : num_pliars - 2 ] )
             {
                 translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliarsHolderHorizontalBridgeY( true );
+                    PliarsHolderHorizontalBridgeY( true, true );
             }
         }
 
         // bottom ring
         translate([ 0, 0, 0 ])
         {
-            PliarsHolderRing( false );
+            PliarsHolderRing( true, false );
 
             for( i = [ 0 : num_pliars - 2 ] )
             {
                 translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliarsHolderHorizontalBridgeY( false );
+                    PliarsHolderHorizontalBridgeY( true, false );
             }
         }
     }
@@ -182,11 +182,11 @@ module PliarsHolderBaseGuide( i )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderRing( add_support_support, add_bottom_support )
+module PliarsHolderRing( add_top_supports, add_bottom_supports )
 {
     // left
     translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-        PliarsHolderHorizontalBridgeY( add_bottom_support );
+        PliarsHolderHorizontalBridgeY( add_top_supports, add_bottom_supports );
 
     // front
     translate([ 0, 0, holder_z - ring_wall_width ])
@@ -194,20 +194,83 @@ module PliarsHolderRing( add_support_support, add_bottom_support )
 
     // right
     translate([ holder_x - ring_wall_width, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-        PliarsHolderHorizontalBridgeY( add_bottom_support );
+        PliarsHolderHorizontalBridgeY( add_top_supports, add_bottom_supports );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderHorizontalBridgeY( add_bottom_support )
+module PliarsHolderHorizontalBridgeY( add_top_supports, add_bottom_supports )
 {
     // horizontal bar
     RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
 
-    if( add_bottom_support )
+    if( add_top_supports )
     {
-        support_span = ( holder_z - multiboard_connector_back_z - ring_corner_width );
-        support_edge_length = support_span / 2 / sin( 45 );
+        PliarsHolderHorizontalBridgeYUpperSupport();
+    }
+
+    if( add_bottom_supports )
+    {
+        PliarsHolderHorizontalBridgeYLowerSupport();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+module PliarsHolderHorizontalBridgeYUpperSupport()
+{
+    support_span = ( holder_z - multiboard_connector_back_z - ring_corner_width );
+    support_edge_length = support_span / 2 / sin( 45 );
+
+    // rear support
+    translate([ 0, ring_wall_height - rounded_cube_inset_overlap, -support_span / 2 ])
+    {
+        render()
+        {
+            difference()
+            {
+                rotate([ 45, 0, 0 ])
+                    RoundedCubeAlt( ring_wall_width, support_edge_length, support_edge_length );
+                    
+                // remove the bottom
+                translate([ 0, -support_span / 2, 0 ])
+                    cube([ ring_wall_width, support_span / 2, support_span ]);
+                
+                // remove the side
+                translate([ 0, -support_span / 2, 0 ])
+                    cube([ ring_wall_width, support_span, support_span / 2 ]);
+            }
+        }
+    }
+
+    // front support
+    translate([ 0, ring_wall_height - rounded_cube_inset_overlap, holder_z - support_span / 2 - multiboard_connector_back_z])
+    {
+        render()
+        {
+            difference()
+            {
+                rotate([ 45, 0, 0 ])
+                    RoundedCubeAlt( ring_wall_width, support_edge_length, support_edge_length );
+
+                // remove the bottom
+                translate([ 0, -support_span / 2, 0 ])
+                    cube([ ring_wall_width, support_span / 2, support_span ]);
+
+                // remove the side
+                translate([ 0, -support_span / 2, support_span / 2 ])
+                    cube([ ring_wall_width, support_span, support_span / 2 ]);
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+module PliarsHolderHorizontalBridgeYLowerSupport()
+{
+    support_span = ( holder_z - multiboard_connector_back_z - ring_corner_width );
+    support_edge_length = support_span / 2 / sin( 45 );
 
         // rear support
         translate([ 0, rounded_cube_inset_overlap, -support_span / 2 ])
@@ -244,10 +307,9 @@ module PliarsHolderHorizontalBridgeY( add_bottom_support )
                     translate([ 0, 0, 0 ])
                         cube([ ring_wall_width, support_span / 2, support_span ]);
 
-                    // remove the side
-                    translate([ 0, -support_span / 2, support_span / 2 ])
-                        cube([ ring_wall_width, support_span, support_span / 2 ]);
-                }
+                // remove the side
+                translate([ 0, -support_span / 2, support_span / 2 ])
+                    cube([ ring_wall_width, support_span, support_span / 2 ]);
             }
         }
     }
