@@ -171,10 +171,6 @@ module PliarsHolderBaseGuide( i )
     pyramid_y = pliars_handle_z + handle_clearance * 2;
     pyramid_z = floor_height_max - floor_height_min;
 
-    // %translate([ pyramid_x / 2 + ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_max, pyramid_y / 2 + multiboard_connector_back_z ])
-    //     rotate([ 90, 0, 0 ])
-    //         square_pyramid( pyramid_x, pyramid_y, pyramid_z );
-
     translate([ ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_max, multiboard_connector_back_z ])
         rotate([ 90, 0, 0 ])
             FlattenedPyramid( pyramid_x, pyramid_y, pyramid_x / 2, pyramid_y / 3, pyramid_z );
