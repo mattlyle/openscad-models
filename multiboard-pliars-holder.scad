@@ -25,7 +25,7 @@ ring_corner_width = 4.0;
 floor_height_min = 2.0;
 floor_height_max = 14.0; // TODO: there should be more of a center section, not a point
 
-holder_y = 130;
+holder_y = 155;
 
 rounded_cube_inset_overlap = 2.0;
 
