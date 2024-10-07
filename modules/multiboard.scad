@@ -20,6 +20,8 @@ multiboard_connector_back_connector_vertical_height = 1.5;
 multiboard_connector_back_pin_size = 1.2;
 multiboard_connector_back_connector_top_offset = 1.5;
 
+workroom_multiboard_color = [ 112.0/255.0, 128.0/255.0, 144.0/255.0 ];
+
 ////////////////////////////////////////////////////////////////////////////////
 // calculated
 

@@ -55,8 +55,8 @@ holder_offset_x = MultiboardConnectorBackAltXOffset( holder_x );
 if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
-        color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
-            MultiboardMockUpTile( 12, 4 );
+        color( workroom_multiboard_color )
+            MultiboardMockUpTile( 6, 5 );
 }
 
 // draw the holder
