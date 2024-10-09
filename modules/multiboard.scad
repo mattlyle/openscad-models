@@ -114,12 +114,12 @@ module MultiboardConnectorBackAlt( size_x, size_y )
                 }
             }
 
-            // add the divits back
+            // add the pins back
             for( i = [ 0 : grid_cells_x - 1 ] )
             {
                 // translate([ 0 , 30, 0 ])
                 translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_pin_size ])
-                    MultiboardConnectorBack_ConnectorDivit( size_y );
+                    MultiboardConnectorBack_ConnectorPin( size_y );
             }
         }
     }
@@ -149,7 +149,7 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBack_ConnectorDivit( length_y )
+module MultiboardConnectorBack_ConnectorPin( length_y )
 {
     // it's really a tiny pyramid, so we set $fn to 4
     translate([ 0, length_y - multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_top_offset, 0 ])
@@ -200,8 +200,8 @@ module MultiboardConnectorBack_ConnectorCutoutInterior( y1, y2 )
             rotate([ 0, -90, 0 ])
                 TriangularPrism(
                     x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
-                                y = multiboard_connector_back_connector_wedge_size * 2,
-                                z = multiboard_connector_back_connector_wedge_size // x
+                    y = multiboard_connector_back_connector_wedge_size * 2,
+                    z = multiboard_connector_back_connector_wedge_size // x
                 );
 
         // far wedge
@@ -209,8 +209,8 @@ module MultiboardConnectorBack_ConnectorCutoutInterior( y1, y2 )
             rotate([ 0, 90, 0 ])
                 TriangularPrism(
                     x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
-                                y = multiboard_connector_back_connector_wedge_size * 2,
-                                z = multiboard_connector_back_connector_wedge_size // x
+                    y = multiboard_connector_back_connector_wedge_size * 2,
+                    z = multiboard_connector_back_connector_wedge_size // x
                 );
     }
 }
