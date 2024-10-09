@@ -129,22 +129,51 @@ module MultiboardConnectorBackAlt( size_x, size_y )
 
 module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 {
-    for( setup = connector_y_setup )
+    grid_cells_x = floor( size_x / multiboard_cell_size );
+    grid_cells_y = floor( size_y / multiboard_cell_size );
+
+    offset_x = MultiboardConnectorBackAltXOffset( size_x );
+
+    echo( "multiboard back - grid cells X:", grid_cells_x );
+    echo( "multiboard back - grid cells Y:", grid_cells_y );
+
+    union()
     {
-        echo( setup );
-        if( len( setup ) == 2 )
+        render()
         {
-            echo("2...");
-        }
-        else if( len( setup ) == 1 )
-        {
-            echo("1...");
-        }
-        else
-        {  
-            echo("unknown");
+            difference()
+            {
+                RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = 1.0, fn = 36 );
+
+                for( setup = connector_y_setup )
+                {
+                    assert( len( setup ) == 1 || len( setup ) == 2, "Only connector_y_setups of length 1 or 2 supported" );
+
+                    if( len( setup ) == 2 )
+                    {
+                        for( i = [ 0 : grid_cells_x - 1 ] )
+                        {
+                            translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
+                                MultiboardConnectorBack_ConnectorCutout(
+                                    setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2,
+                                    setup[ 1 ] * multiboard_cell_size,
+                                    true );
+                        }
+                    }
+                    else
+                    {
+                        for( i = [ 0 : grid_cells_x - 1 ] )
+                        {
+                            translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
+                                MultiboardConnectorBack_ConnectorCutoutToBottom( setup[ 0 ] * multiboard_cell_size );
+                        }
+                    }
+                }
+            }
         }
     }
+
+    // TODO: add the pins for all the cutouts
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -162,64 +191,84 @@ module MultiboardConnectorBack_ConnectorCutoutToBottom( length_y )
 {
     cone_y = length_y - multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_top_offset;
 
-    MultiboardConnectorBack_ConnectorCutoutInterior( 0, cone_y );
+    MultiboardConnectorBack_ConnectorCutout( cone_y, 0, false );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBack_ConnectorCutoutInterior( y1, y2 )
+module MultiboardConnectorBack_ConnectorCutout( cone_y, end_y, add_cutout )
 {
-    length_y = y2 - y1;
+    // make sure they are in the right order!
+    assert( cone_y > end_y );
 
     union()
     {
         // cut out the cone
-        translate([ 0, length_y, 0 ])
+        translate([ 0, cone_y, 0 ])
             cylinder(
                 h = multiboard_connector_back_connector_height,
                 r1 = multiboard_connector_back_connector_inner_radius,
                 r2 = multiboard_connector_back_connector_outer_radius,
                 $fn = 48 );
 
-        // cut out from there to the bottom...
+        // cut out from there to the end...
 
         // slanted top
-        translate([ 0, length_y / 2, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
+        translate([ 0, end_y + ( cone_y - end_y ) / 2, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
             TrapezoidalPrism(
                 x_top = multiboard_connector_back_connector_outer_radius * 2,
                 x_bottom = multiboard_connector_back_connector_inner_radius * 2,
-                y = length_y,
+                y = cone_y - end_y,
                 z = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height );
 
         // also cut out the vertical section under the trapazoid
-        translate([ -multiboard_connector_back_connector_outer_radius, 0, multiboard_connector_back_connector_vertical_height + multiboard_connector_back_connector_clearance ])
-            cube([ multiboard_connector_back_connector_outer_radius * 2, length_y, multiboard_connector_back_connector_vertical_height ]);
+        translate([ -multiboard_connector_back_connector_outer_radius, end_y, multiboard_connector_back_connector_vertical_height ])
+            cube([ multiboard_connector_back_connector_outer_radius * 2, cone_y - end_y, multiboard_connector_back_connector_vertical_height ]);
 
-        // near wedge
-        translate([ -multiboard_connector_back_connector_outer_radius + multiboard_connector_back_connector_wedge_size, 0, 0 ])
-            rotate([ 0, -90, 0 ])
-                TriangularPrism(
-                    x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
-                    y = multiboard_connector_back_connector_wedge_size * 2,
-                    z = multiboard_connector_back_connector_wedge_size // x
-                );
+        if( add_cutout )
+        {
+            translate([ -( multiboard_cell_size - multiboard_wall_width ) / 2, end_y - multiboard_cell_size, 0 ])
+                cube([ multiboard_cell_size - multiboard_wall_width, multiboard_cell_size, multiboard_connector_back_connector_height ]);
 
-        // far wedge
-        translate([ multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_wedge_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
-            rotate([ 0, 90, 0 ])
-                TriangularPrism(
-                    x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
-                    y = multiboard_connector_back_connector_wedge_size * 2,
-                    z = multiboard_connector_back_connector_wedge_size // x
-                );
+            // near wedge
+            translate([ -multiboard_connector_back_connector_outer_radius + multiboard_connector_back_connector_wedge_size, end_y, 0 ])
+                rotate([ 0, -90, 0 ])
+                    TriangularPrism(
+                        x = multiboard_connector_back_connector_height, // z
+                        y = multiboard_connector_back_connector_wedge_size * 3,
+                        z = multiboard_connector_back_connector_wedge_size + 1 // x
+                    );
+
+            // far wedge
+            translate([ multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_wedge_size, end_y, multiboard_connector_back_connector_height ])
+                rotate([ 0, 90, 0 ])
+                    TriangularPrism(
+                        x = multiboard_connector_back_connector_height, // z
+                        y = multiboard_connector_back_connector_wedge_size * 3,
+                        z = multiboard_connector_back_connector_wedge_size + 1 // x
+                    );
+        }
+        else
+        {
+            // near wedge
+            translate([ -multiboard_connector_back_connector_outer_radius + multiboard_connector_back_connector_wedge_size, end_y, 0 ])
+                rotate([ 0, -90, 0 ])
+                    TriangularPrism(
+                        x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
+                        y = multiboard_connector_back_connector_wedge_size * 2,
+                        z = multiboard_connector_back_connector_wedge_size // x
+                    );
+
+            // far wedge
+            translate([ multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_wedge_size, end_y, multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height ])
+                rotate([ 0, 90, 0 ])
+                    TriangularPrism(
+                        x = multiboard_connector_back_connector_height - multiboard_connector_back_connector_vertical_height, // z
+                        y = multiboard_connector_back_connector_wedge_size * 2,
+                        z = multiboard_connector_back_connector_wedge_size // x
+                    );
+        }
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-module MultiboardConnectorBack_ConnectorCutoutHelper(  )
-{
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
