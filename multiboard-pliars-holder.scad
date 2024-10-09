@@ -25,10 +25,13 @@ front_face_column_width = 4.0;
 floor_height_min = 2.0;
 floor_height_max = 14.0; // TODO: there should be more of a center section, not a point
 
-holder_y = 155;
+holder_y = 135; // shorter version
+// holder_y = 155; // taller version
 
 // this helps the two rounded cubes intersect each other without the rounded edges showing
 rounded_cube_inset_overlap = 2.0;
+
+holder_connector_row_setups = [ [5,4], [3,2], [1] ];
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -83,7 +86,7 @@ module PliarsHolder()
     union()
     {
         // back
-        MultiboardConnectorBackAlt( holder_x, holder_y );
+        MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups );
 
         // bottom
         translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])

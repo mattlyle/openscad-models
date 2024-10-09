@@ -110,7 +110,7 @@ module MultiboardConnectorBackAlt( size_x, size_y )
                 for( i = [ 0 : grid_cells_x - 1 ] )
                 {
                     translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
-                        MultiboardConnectorBack_ConnectorCutoutToBottom( size_y );
+                        _MultiboardConnectorBack_ConnectorCutoutToBottom( size_y );
                 }
             }
 
@@ -119,7 +119,7 @@ module MultiboardConnectorBackAlt( size_x, size_y )
             {
                 // translate([ 0 , 30, 0 ])
                 translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_pin_size ])
-                    MultiboardConnectorBack_ConnectorPin( size_y );
+                    _MultiboardConnectorBack_ConnectorPin( size_y );
             }
         }
     }
@@ -154,9 +154,9 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
                         for( i = [ 0 : grid_cells_x - 1 ] )
                         {
                             translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
-                                MultiboardConnectorBack_ConnectorCutout(
-                                    setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2,
-                                    setup[ 1 ] * multiboard_cell_size,
+                                _MultiboardConnectorBack_ConnectorCutout(
+                                    setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2 + multiboard_wall_width / 2,
+                                    setup[ 1 ] * multiboard_cell_size + multiboard_wall_width / 2,
                                     true );
                         }
                     }
@@ -165,7 +165,9 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
                         for( i = [ 0 : grid_cells_x - 1 ] )
                         {
                             translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
-                                MultiboardConnectorBack_ConnectorCutoutToBottom( setup[ 0 ] * multiboard_cell_size );
+                                _MultiboardConnectorBack_ConnectorCutoutToBottom(
+                                    setup[ 0 ] * multiboard_cell_size + multiboard_wall_width / 2
+                                    );
                         }
                     }
                 }
@@ -178,7 +180,7 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBack_ConnectorPin( length_y )
+module _MultiboardConnectorBack_ConnectorPin( length_y )
 {
     // it's really a tiny pyramid, so we set $fn to 4
     translate([ 0, length_y - multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_top_offset, 0 ])
@@ -187,16 +189,16 @@ module MultiboardConnectorBack_ConnectorPin( length_y )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBack_ConnectorCutoutToBottom( length_y )
+module _MultiboardConnectorBack_ConnectorCutoutToBottom( length_y )
 {
     cone_y = length_y - multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_top_offset;
 
-    MultiboardConnectorBack_ConnectorCutout( cone_y, 0, false );
+    _MultiboardConnectorBack_ConnectorCutout( cone_y, 0, false );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBack_ConnectorCutout( cone_y, end_y, add_cutout )
+module _MultiboardConnectorBack_ConnectorCutout( cone_y, end_y, add_cutout )
 {
     // make sure they are in the right order!
     assert( cone_y > end_y );
