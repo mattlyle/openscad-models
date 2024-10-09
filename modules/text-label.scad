@@ -9,7 +9,7 @@ module TextLabel( text_string, font_size, font = "Liberation Sans" )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module CenteredTextLabel( text_string, font_size, font = "Liberation Sans", centered_in_area_x, centered_in_area_y = -1 )
+module CenteredTextLabel( text_string, font_size = 8, font = "Liberation Sans", centered_in_area_x, centered_in_area_y = -1 )
 {
     text_string_metrics_size = textmetrics( text = text_string, size = font_size, font = font ).size;
 

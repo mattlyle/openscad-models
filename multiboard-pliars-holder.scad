@@ -4,14 +4,15 @@ include <modules/multiboard.scad>
 include <modules/triangular-prism.scad>
 include <modules/rounded-cube.scad>
 include <modules/flattened-pyramid.scad>
+include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // only choose one
-// render_mode = "preview";
-render_mode = "only-holder";
-// render_mode = "";
+render_mode = "preview";
+// render_mode = "only-holder";
+// render_mode = "text-only";
 
 num_pliars = 4;
 // TODO: first print, use num = 2
@@ -77,6 +78,13 @@ if( render_mode == "preview" )
     {
         Pliars( i );
     }
+}
+
+if( render_mode == "preview" || render_mode == "text-only" )
+{
+    translate([ render_mode == "preview" ?  multiboard_cell_size - holder_offset_x : 0, holder_y - ring_wall_height, holder_z ])
+        color([ 0, 0, 0.4 ])
+            CenteredTextLabel( "Pliars", font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
