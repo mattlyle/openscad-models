@@ -36,8 +36,6 @@ multiboard_connector_back_connector_wedge_size = multiboard_connector_back_conne
 
 module MultiboardMockUpTile( grid_cells_x, num_y )
 {
-    // % cube( [ multiboard_cell_size, multiboard_cell_size, multiboard_cell_height ] );
-
     render()
     {
         for( x = [ 0 : grid_cells_x - 1 ] )
