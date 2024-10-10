@@ -14,7 +14,7 @@ render_mode = "preview";
 // render_mode = "only-holder";
 // render_mode = "text-only";
 
-num_pliars = 4;
+num_pliers = 4;
 // TODO: first print, use num = 2
 
 handle_clearance = 2;
@@ -26,7 +26,8 @@ front_face_column_width = 4.0;
 floor_height_min = 2.0;
 floor_height_max = 14.0; // TODO: there should be more of a center section, not a point
 
-holder_y = 135; // shorter version
+holder_y = 120; // small version
+// holder_y = 135; // medium version
 // holder_y = 155; // taller version
 
 // this helps the two rounded cubes intersect each other without the rounded edges showing
@@ -37,19 +38,19 @@ holder_connector_row_setups = [ [5,4], [3,2], [1] ];
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-pliars_handle_x = 17.2;
+pliers_handle_x = 17.2;
 
-// pliars_handle_to_pivot_y = 101.2;
-// pliars_top_y = 12.0;
-pliars_full_y = 210;
+// pliers_handle_to_pivot_y = 101.2;
+// pliers_top_y = 12.0;
+pliers_full_y = 210;
 
-pliars_handle_z = 51.8;
+pliers_handle_z = 51.8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // calculations
 
-holder_x = ring_wall_width + ( pliars_handle_x + handle_clearance * 2 + ring_wall_width ) * num_pliars;
-holder_z = multiboard_connector_back_z + pliars_handle_z + ring_wall_width + handle_clearance * 2;
+holder_x = ring_wall_width + ( pliers_handle_x + handle_clearance * 2 + ring_wall_width ) * num_pliers;
+holder_z = multiboard_connector_back_z + pliers_handle_z + ring_wall_width + handle_clearance * 2;
 
 holder_offset_x = MultiboardConnectorBackAltXOffset( holder_x );
 
@@ -67,29 +68,31 @@ if( render_mode == "preview" )
 if( render_mode == "preview" || render_mode == "only-holder" )
 {
     translate( render_mode == "preview" ? [ multiboard_cell_size - holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
-        PliarsHolder();
+        PliersHolder();
 }
 
-// draw a preview of the pliars inside
+// draw a preview of the pliers inside
 if( render_mode == "preview" )
 {
-    // pliars preview
-    for( i = [ 0 : num_pliars - 1 ] )
+    // pliers preview
+    for( i = [ 0 : num_pliers - 1 ] )
     {
-        Pliars( i );
+        Pliers( i );
     }
 }
 
-if( render_mode == "preview" || render_mode == "text-only" )
+// if( render_mode == "preview" || render_mode == "text-only" )
+if( render_mode == "preview" || render_mode == "only-holder" )
 {
     translate([ render_mode == "preview" ?  multiboard_cell_size - holder_offset_x : 0, holder_y - ring_wall_height, holder_z ])
         color([ 0, 0, 0.4 ])
-            CenteredTextLabel( "Pliars", font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
+            CenteredTextLabel( "Small Pliers", font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
+            // CenteredTextLabel( "prototype 4 - short", font_size = 5, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolder()
+module PliersHolder()
 {
     union()
     {
@@ -107,9 +110,9 @@ module PliarsHolder()
                 translate([ ring_wall_width, ring_wall_width, multiboard_connector_back_z - rounded_cube_inset_overlap ])
                     cube([ holder_x - ring_wall_width * 2, floor_height_max - floor_height_min, holder_z - multiboard_connector_back_z ]);
 
-                for( i = [ 0 : num_pliars - 1 ] )
+                for( i = [ 0 : num_pliers - 1 ] )
                 {
-                    PliarsHolderBaseGuide( i );
+                    PliersHolderBaseGuide( i );
                 }
             }
         }
@@ -131,29 +134,29 @@ module PliarsHolder()
         //     RoundedCubeAlt( front_face_column_width, holder_y, ring_wall_width );
 
         // front column support
-        for( i = [ 0 : num_pliars - 2 ] )
+        for( i = [ 0 : num_pliers - 2 ] )
         {
-            translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, holder_z - front_face_column_width ])
+            translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, holder_z - front_face_column_width ])
                 RoundedCubeAlt( ring_wall_width, holder_y, front_face_column_width );
         }
 
         // top ring
         translate([ 0, holder_y - ring_wall_height, 0 ])
         {
-            PliarsHolderRing( false, true );
+            PliersHolderRing( false, true );
 
-            for( i = [ 0 : num_pliars - 2 ] )
+            for( i = [ 0 : num_pliers - 2 ] )
             {
                 // Y bridge
-                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliarsHolderHorizontalBridgeY( false, true );
+                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                    PliersHolderHorizontalBridgeY( false, true );
 
                 // X support
-                for( i = [ 0 : num_pliars - 1 ] )
+                for( i = [ 0 : num_pliers - 1 ] )
                 {
-                    translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliars_handle_x + handle_clearance * 2 ), 0, holder_z ])
+                    translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
                         rotate([ 0, 90, 0 ])
-                            PliarsHolderHorizontalBridgeLowerSupport( pliars_handle_x + handle_clearance * 2 + ring_wall_width );
+                            PliersHolderHorizontalBridgeLowerSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
                 }
             }
         }
@@ -161,26 +164,26 @@ module PliarsHolder()
         // middle ring
         translate([ 0, ( holder_y - ring_wall_height ) / 2, 0 ])
         {
-            PliarsHolderRing( true, true );
+            PliersHolderRing( true, true );
 
-            for( i = [ 0 : num_pliars - 2 ] )
+            for( i = [ 0 : num_pliers - 2 ] )
             {
                 // Y bridge
-                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliarsHolderHorizontalBridgeY( true, true );
+                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                    PliersHolderHorizontalBridgeY( true, true );
 
                 // X support
-                for( i = [ 0 : num_pliars - 1 ] )
+                for( i = [ 0 : num_pliers - 1 ] )
                 {
-                    translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliars_handle_x + handle_clearance * 2 ), 0, holder_z ])
+                    translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
                     {
                         rotate([ 0, 90, 0 ])
                         {
                             // top support
-                            PliarsHolderHorizontalBridgeUpperSupport( pliars_handle_x + handle_clearance * 2 + ring_wall_width );
+                            PliersHolderHorizontalBridgeUpperSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
 
                             // bottom support
-                            PliarsHolderHorizontalBridgeLowerSupport( pliars_handle_x + handle_clearance * 2 + ring_wall_width );
+                            PliersHolderHorizontalBridgeLowerSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
                         }
                     }
                 }
@@ -190,21 +193,21 @@ module PliarsHolder()
         // bottom ring
         translate([ 0, 0, 0 ])
         {
-            PliarsHolderRing( true, false );
+            PliersHolderRing( true, false );
 
-            for( i = [ 0 : num_pliars - 2 ] )
+            for( i = [ 0 : num_pliers - 2 ] )
             {
                 // Y bridge
-                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliars_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliarsHolderHorizontalBridgeY( true, false );
+                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                    PliersHolderHorizontalBridgeY( true, false );
             }
 
             // X support
-            for( i = [ 0 : num_pliars - 1 ] )
+            for( i = [ 0 : num_pliers - 1 ] )
             {
-                translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliars_handle_x + handle_clearance * 2 ), 0, holder_z ])
+                translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
                     rotate([ 0, 90, 0 ])
-                        PliarsHolderHorizontalBridgeUpperSupport( pliars_handle_x + handle_clearance * 2 + ring_wall_width );
+                        PliersHolderHorizontalBridgeUpperSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
             }
         }
     }
@@ -212,24 +215,24 @@ module PliarsHolder()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderBaseGuide( i )
+module PliersHolderBaseGuide( i )
 {
-    pyramid_x = pliars_handle_x + handle_clearance * 2;
-    pyramid_y = pliars_handle_z + handle_clearance * 2;
+    pyramid_x = pliers_handle_x + handle_clearance * 2;
+    pyramid_y = pliers_handle_z + handle_clearance * 2;
     pyramid_z = floor_height_max - floor_height_min;
 
-    translate([ ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_max, multiboard_connector_back_z ])
+    translate([ ring_wall_width + i * ( ring_wall_width + handle_clearance * 2 + pliers_handle_x ), floor_height_max, multiboard_connector_back_z ])
         rotate([ 90, 0, 0 ])
             FlattenedPyramid( pyramid_x, pyramid_y, pyramid_x / 2, pyramid_y / 3, pyramid_z );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderRing( add_top_supports, add_bottom_supports )
+module PliersHolderRing( add_top_supports, add_bottom_supports )
 {
     // left
     translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-        PliarsHolderHorizontalBridgeY( add_top_supports, add_bottom_supports );
+        PliersHolderHorizontalBridgeY( add_top_supports, add_bottom_supports );
 
     // front
     translate([ 0, 0, holder_z - ring_wall_width ])
@@ -237,12 +240,12 @@ module PliarsHolderRing( add_top_supports, add_bottom_supports )
 
     // right
     translate([ holder_x - ring_wall_width, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-        PliarsHolderHorizontalBridgeY( add_top_supports, add_bottom_supports );
+        PliersHolderHorizontalBridgeY( add_top_supports, add_bottom_supports );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderHorizontalBridgeY( add_top_supports, add_bottom_supports )
+module PliersHolderHorizontalBridgeY( add_top_supports, add_bottom_supports )
 {
     // horizontal bar
     RoundedCubeAlt( ring_wall_width, ring_wall_height, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
@@ -251,18 +254,18 @@ module PliarsHolderHorizontalBridgeY( add_top_supports, add_bottom_supports )
 
     if( add_top_supports )
     {
-        PliarsHolderHorizontalBridgeUpperSupport( support_span_length );
+        PliersHolderHorizontalBridgeUpperSupport( support_span_length );
     }
 
     if( add_bottom_supports )
     {
-        PliarsHolderHorizontalBridgeLowerSupport( support_span_length );
+        PliersHolderHorizontalBridgeLowerSupport( support_span_length );
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderHorizontalBridgeUpperSupport( support_span_length )
+module PliersHolderHorizontalBridgeUpperSupport( support_span_length )
 {
     support_edge_length = support_span_length / 2 / sin( 45 );
 
@@ -311,7 +314,7 @@ module PliarsHolderHorizontalBridgeUpperSupport( support_span_length )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module PliarsHolderHorizontalBridgeLowerSupport( support_span_length )
+module PliersHolderHorizontalBridgeLowerSupport( support_span_length )
 {
     support_edge_length = support_span_length / 2 / sin( 45 );
 
@@ -360,10 +363,10 @@ module PliarsHolderHorizontalBridgeLowerSupport( support_span_length )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module Pliars( i )
+module Pliers( i )
 {
-    % translate([ multiboard_cell_size - holder_offset_x + ring_wall_width + handle_clearance + i * ( ring_wall_width + handle_clearance * 2 + pliars_handle_x ), floor_height_min + handle_clearance, multiboard_connector_back_z + handle_clearance ])
-        cube([ pliars_handle_x, pliars_full_y, pliars_handle_z ]);
+    % translate([ multiboard_cell_size - holder_offset_x + ring_wall_width + handle_clearance + i * ( ring_wall_width + handle_clearance * 2 + pliers_handle_x ), floor_height_min + handle_clearance, multiboard_connector_back_z + handle_clearance ])
+        cube([ pliers_handle_x, pliers_full_y, pliers_handle_z ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
