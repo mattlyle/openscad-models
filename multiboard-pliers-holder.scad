@@ -7,14 +7,25 @@ include <modules/flattened-pyramid.scad>
 include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
+// measurements
+
+pliers_handle_x = 17.2; // small/medium
+// pliers_handle_x = 20.1; // large
+
+// pliers_handle_to_pivot_y = 101.2;
+// pliers_top_y = 12.0;
+pliers_full_y = 210;
+
+pliers_handle_z = 51.8; // small/medium
+// pliers_handle_z = 58.9; // large
+
+////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // only choose one
-render_mode = "preview";
-// render_mode = "only-holder";
+// render_mode = "preview";
+render_mode = "only-holder";
 // render_mode = "text-only";
-
-num_pliers = 4;
 
 handle_clearance = 2;
 
@@ -29,30 +40,22 @@ floor_height_max = 14.0;
 holder_y = 120;
 front_text = "Small Pliers";
 holder_connector_row_setups = [ [4,3], [2] ];
+num_pliers = 4;
 
 // medium version
 // holder_y = 135;
 // front_text = "Medium Pliers";
 // holder_connector_row_setups = [ [5,4], [3,2], [1] ];
+// num_pliers = 8;
 
-// tall version
+// large version
 // holder_y = 155;
-// front_text = "Tall Pliers";
-// holder_connector_row_setups = [ [6,5], [4,3], [2] ];
+// front_text = "Large Pliers";
+// holder_connector_row_setups = [ [6,5], [4,3], [2,1] ];
+// num_pliers = 4;
 
 // this helps the two rounded cubes intersect each other without the rounded edges showing
 rounded_cube_inset_overlap = 2.0;
-
-////////////////////////////////////////////////////////////////////////////////
-// measurements
-
-pliers_handle_x = 17.2;
-
-// pliers_handle_to_pivot_y = 101.2;
-// pliers_top_y = 12.0;
-pliers_full_y = 210;
-
-pliers_handle_z = 51.8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // calculations
