@@ -79,7 +79,8 @@ if( render_mode == "preview" )
 if( render_mode == "preview" || render_mode == "only-holder" )
 {
     translate( render_mode == "preview" ? [ multiboard_cell_size - holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
-        PliersHolder();
+        rotate( render_mode == "only-holder" ? [ 90, 0, 0 ]: [ 0, 0, 0 ] )
+            PliersHolder();
 }
 
 // draw a preview of the pliers inside
@@ -95,9 +96,10 @@ if( render_mode == "preview" )
 // if( render_mode == "preview" || render_mode == "text-only" )
 if( render_mode == "preview" || render_mode == "only-holder" )
 {
-    translate([ render_mode == "preview" ?  multiboard_cell_size - holder_offset_x : 0, holder_y - ring_wall_height, holder_z ])
-        color([ 0, 0, 0.4 ])
-            CenteredTextLabel( front_text, font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
+    rotate( render_mode == "only-holder" ? [ 90, 0, 0 ]: [ 0, 0, 0 ] )
+        translate([ render_mode == "preview" ?  multiboard_cell_size - holder_offset_x : 0, holder_y - ring_wall_height, holder_z ])
+            color([ 0, 0, 0.4 ])
+                CenteredTextLabel( front_text, font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
