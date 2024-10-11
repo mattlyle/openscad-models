@@ -29,6 +29,7 @@ hide_back_plate = false;
 hide_screen_above_plate = false;
 hide_sample_connector = false;
 hide_back_plate_below_tap_handle = false;
+hide_threaded_insert_test = false;
 
 hide_clearance_areas = false;
 
@@ -97,6 +98,25 @@ if( !hide_sample_connector )
             SnapConnectorOverMe( snap_connector_width, snap_connector_height );
     }
 }
+
+if( !hide_threaded_insert_test )
+{
+    translate([ 150, 0, 0 ])
+    {
+        render()
+        {
+            difference()
+            {
+                cube([ threaded_fitting_radius * 4, threaded_fitting_radius * 4, threaded_fitting_height * 1.5 ]);
+
+                translate([ threaded_fitting_radius * 2, threaded_fitting_radius * 2, threaded_fitting_height / 2 ])
+                    cylinder( h = threaded_fitting_height, r = threaded_fitting_radius, $fn = 24 );
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 module TapHandle()
 {
