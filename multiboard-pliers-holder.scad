@@ -15,7 +15,6 @@ render_mode = "preview";
 // render_mode = "text-only";
 
 num_pliers = 4;
-// TODO: first print, use num = 2
 
 handle_clearance = 2;
 
@@ -24,16 +23,25 @@ ring_wall_height = 15.0;
 front_face_column_width = 4.0;
 
 floor_height_min = 2.0;
-floor_height_max = 14.0; // TODO: there should be more of a center section, not a point
+floor_height_max = 14.0;
 
-holder_y = 120; // small version
-// holder_y = 135; // medium version
-// holder_y = 155; // taller version
+// small version
+holder_y = 120;
+front_text = "Small Pliers";
+holder_connector_row_setups = [ [4,3], [2] ];
+
+// medium version
+// holder_y = 135;
+// front_text = "Medium Pliers";
+// holder_connector_row_setups = [ [5,4], [3,2], [1] ];
+
+// tall version
+// holder_y = 155;
+// front_text = "Tall Pliers";
+// holder_connector_row_setups = [ [6,5], [4,3], [2] ];
 
 // this helps the two rounded cubes intersect each other without the rounded edges showing
 rounded_cube_inset_overlap = 2.0;
-
-holder_connector_row_setups = [ [5,4], [3,2], [1] ];
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -61,7 +69,7 @@ if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
         color( workroom_multiboard_color )
-            MultiboardMockUpTile( 6, 5 );
+            MultiboardMockUpTile( 6, 6 );
 }
 
 // draw the holder
@@ -86,8 +94,7 @@ if( render_mode == "preview" || render_mode == "only-holder" )
 {
     translate([ render_mode == "preview" ?  multiboard_cell_size - holder_offset_x : 0, holder_y - ring_wall_height, holder_z ])
         color([ 0, 0, 0.4 ])
-            CenteredTextLabel( "Small Pliers", font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
-            // CenteredTextLabel( "prototype 4 - short", font_size = 5, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
+            CenteredTextLabel( front_text, font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
