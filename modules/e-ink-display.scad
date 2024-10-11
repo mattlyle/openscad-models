@@ -49,7 +49,7 @@ module EInkDisplay( hide_clearance_areas = true )
                     RoundedCube(
                         size = [ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, e_ink_display_circuit_board_depth ],
                         center = false,
-                        radius = e_ink_display_circuit_board_rounding_radius,
+                        r = e_ink_display_circuit_board_rounding_radius,
                         fn = 50 );
 
                     // screw holes

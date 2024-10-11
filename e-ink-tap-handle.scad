@@ -100,7 +100,7 @@ module TapHandle()
         {
             RoundedCube(
                 size = [ tap_handle_width, tap_handle_height, tap_handle_depth ],
-                radius = tap_handle_radius,
+                r = tap_handle_radius,
                 center = false,
                 fn = tap_handle_fn );
 
