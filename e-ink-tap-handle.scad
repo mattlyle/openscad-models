@@ -2,19 +2,8 @@ include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
 include <modules/connectors.scad>
 
-// drawing options
-
-hide_tap_handle = false;
-hide_back_plate = false;
-hide_screen_above_plate = false;
-hide_sample_connector = false;
-hide_back_plate_below_tap_handle = false;
-
-hide_clearance_areas = false;
-
-// TODO: should add a variable to rotate the tap handle 180 about X because that's how it's printed
-
-// measured values
+////////////////////////////////////////////////////////////////////////////////
+// measurements
 
 tap_handle_width = 56; // previous size was 50, but need more for stregth
 tap_handle_height = 210; // previous height was 190
@@ -31,6 +20,20 @@ back_plate_finger_hole_height_offset = 30.0;
 threaded_fitting_radius = 12.3 / 2;
 threaded_fitting_height = 18;
 
+////////////////////////////////////////////////////////////////////////////////
+// settings
+
+// drawing options
+hide_tap_handle = false;
+hide_back_plate = false;
+hide_screen_above_plate = false;
+hide_sample_connector = false;
+hide_back_plate_below_tap_handle = false;
+
+hide_clearance_areas = false;
+
+// TODO: should add a variable to rotate the tap handle 180 about X because that's how it's printed
+
 // the offset from the front of the tap handle to recess the screen
 screen_depth_offset = 2.0;
 
@@ -41,7 +44,10 @@ snap_connector_clearance = 0.1;
 
 model_spacing = 10.0; // spacing between the tap handle and back plate in the render
 
-// calculate values
+////////////////////////////////////////////////////////////////////////////////
+// calculations
+
+////////////////////////////////////////////////////////////////////////////////
 
 display_offset_height = tap_handle_height - e_ink_display_circuit_board_height - 20;
 
