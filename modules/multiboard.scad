@@ -153,6 +153,9 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
                     {
                         for( i = [ 0 : grid_cells_x - 1 ] )
                         {
+                            // make sure the edge of the cutout isn't above the top
+                            assert( setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2 + multiboard_wall_width / 2 + multiboard_connector_back_connector_outer_radius < size_y );
+
                             translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
                                 _MultiboardConnectorBack_ConnectorCutout(
                                     setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2 + multiboard_wall_width / 2,
