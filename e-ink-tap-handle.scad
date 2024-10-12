@@ -17,7 +17,7 @@ back_plate_wall_width = 1.4;
 back_plate_finger_hole_radius = 8.0;
 back_plate_finger_hole_height_offset = 30.0;
 
-threaded_fitting_radius = 12.3 / 2;
+threaded_fitting_radius = 14.4 / 2;
 threaded_fitting_height = 18;
 
 ////////////////////////////////////////////////////////////////////////////////
