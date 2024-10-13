@@ -40,7 +40,7 @@ screen_depth_offset = 2.0;
 
 snap_connector_width = 8.0;
 snap_connector_height = 1.8;
-snap_connector_angle = 55;
+snap_connector_angle = 45;
 snap_connector_clearance = 0.1;
 
 model_spacing = 10.0; // spacing between the tap handle and back plate in the render
