@@ -9,15 +9,15 @@ include <modules/text-label.scad>
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-pliers_handle_x = 17.2; // small/medium
-// pliers_handle_x = 20.1; // large
+pliers_handle_x_small_medium = 17.2;
+pliers_handle_x_large = 20.1;
 
 // pliers_handle_to_pivot_y = 101.2;
 // pliers_top_y = 12.0;
 pliers_full_y = 210;
 
-pliers_handle_z = 51.8; // small/medium
-// pliers_handle_z = 58.9; // large
+pliers_handle_z_small_medium = 51.8;
+pliers_handle_z_large = 69.8;
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -41,18 +41,24 @@ holder_y = 120;
 front_text = "Small Pliers";
 holder_connector_row_setups = [ [4,3], [2] ];
 num_pliers = 4;
+pliers_handle_x = pliers_handle_x_small_medium;
+pliers_handle_z = pliers_handle_z_small_medium;
 
 // medium version
 // holder_y = 135;
 // front_text = "Medium Pliers";
 // holder_connector_row_setups = [ [5,4], [3,2], [1] ];
 // num_pliers = 8;
+// pliers_handle_x = pliers_handle_x_small_medium;
+// pliers_handle_z = pliers_handle_z_small_medium;
 
 // large version
 // holder_y = 155;
 // front_text = "Large Pliers";
 // holder_connector_row_setups = [ [6,5], [4,3], [2,1] ];
 // num_pliers = 4;
+// pliers_handle_x = pliers_handle_x_large;
+// pliers_handle_z = pliers_handle_z_large;
 
 // this helps the two rounded cubes intersect each other without the rounded edges showing
 rounded_cube_inset_overlap = 2.0;
