@@ -8,6 +8,8 @@ include <modules/triangular-prism.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
+// TODO: should add a little bin for cable management in the back?
+
 multimeter_main_body_x = 92.0;
 multimeter_main_body_y = 43.0;
 multimeter_main_body_z = 195.0;
@@ -15,7 +17,13 @@ multimeter_main_body_z = 195.0;
 multimeter_main_body_back_z = 115.0;
 multimeter_main_body_front_z = 55.0;
 multimeter_main_body_front_sides_x = 11.0;
-multimeter_main_body_angle = 15.0;
+multimeter_main_body_angle = 15.0; // TODO: maybe only 10 degrees, not 15
+
+multimeter_probe_tip_radius = 2.1 / 2;
+multimeter_probe_tip_length = 16;
+
+multimeter_probe_handle_radius = 10.1 / 2;
+multimeter_probe_handle_length = 19.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -31,6 +39,11 @@ cup_z = 1;
 
 multimeter_back_clearance = 1.5;
 multimeter_back_sides_width = 2.0;
+
+multimeter_probe_offset_x = 10;
+multimeter_probe_1_offset_y = 14;
+multimeter_probe_2_offset_y = 36;
+multimeter_probe_clearance = 1.0;
 
 corner_rounding_radius = 3.7;
 holder_clearance = 0.15;
@@ -56,15 +69,29 @@ offset_z = base_z + multimeter_back_sides_width + 0.4;
 
 if( render_mode == "preview" || render_mode == "bin-only" )
 {
+    MultimeterHolder();
+}
+
+// if( render_mode == "preview" )
+// {
+//     % translate([ multimeter_main_body_offset_x, multimeter_main_body_offset_y, offset_z + multimeter_main_body_y * sin( multimeter_main_body_angle ) ])
+//         rotate([ -multimeter_main_body_angle, 0, 0 ])
+//             MultimeterBody();
+// }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module MultimeterHolder()
+{
     // base
-    // gridfinity_cup(
-    //     width = cup_x,
-    //     depth = cup_y,
-    //     height = cup_z,
-    //     position = "zero",
-    //     filled_in = true,
-    //     lip_style = "none"
-    //     );
+    gridfinity_cup(
+        width = cup_x,
+        depth = cup_y,
+        height = cup_z,
+        position = "zero",
+        filled_in = true,
+        lip_style = "none"
+        );
 
     back_width = multimeter_main_body_x + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
     back_depth = multimeter_main_body_y + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
@@ -90,20 +117,22 @@ if( render_mode == "preview" || render_mode == "bin-only" )
             // remove the front too
             translate([ multimeter_main_body_offset_x - multimeter_back_sides_width - multimeter_back_clearance, 0, offset_z + back_depth * sin( multimeter_main_body_angle ) ])
                 cube([ back_width, back_depth, multimeter_main_body_front_z ]);
+
+            // remove the probe 1
+            translate([ multimeter_probe_offset_x, multimeter_probe_1_offset_y, holder_z - multimeter_probe_handle_length ])
+                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_radius + multimeter_probe_clearance, $fn = 24 );
+            translate([ multimeter_probe_offset_x, multimeter_probe_1_offset_y, holder_z - multimeter_probe_handle_length - multimeter_probe_tip_length ])
+                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_radius + multimeter_probe_clearance, $fn = 24 );
             
+            // remove the probe 2
+            translate([ multimeter_probe_offset_x, multimeter_probe_2_offset_y, holder_z - multimeter_probe_handle_length ])
+                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_radius + multimeter_probe_clearance, $fn = 24 );
+            translate([ multimeter_probe_offset_x, multimeter_probe_2_offset_y, holder_z - multimeter_probe_handle_length - multimeter_probe_tip_length ])
+                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_radius + multimeter_probe_clearance, $fn = 24 );
         }
     }
 
-
     // now add all the other parts back
-
-
-    // add the back
-    // # translate([
-    //     multimeter_main_body_offset_x + back_width - multimeter_back_sides_width - multimeter_back_clearance,
-    //     multimeter_main_body_offset_y + mult, offset_z ])
-    //     rotate([ 0, 0, 180 ])
-    //         TriangularPrism( x = back_width, y = 20, z = 30 );
 
     color([ 0.4, 0, 0 ])
     {
@@ -148,20 +177,6 @@ if( render_mode == "preview" || render_mode == "bin-only" )
     }
 }
 
-// if( render_mode == "preview" )
-// {
-//     % translate([ multimeter_main_body_offset_x, multimeter_main_body_offset_y, offset_z + multimeter_main_body_y * sin( multimeter_main_body_angle ) ])
-//         rotate([ -multimeter_main_body_angle, 0, 0 ])
-//             MultimeterBody();
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module MultimeterHolder()
-{
-    
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MultimeterBody()
@@ -171,7 +186,7 @@ module MultimeterBody()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module MultimeterTester()
+module MultimeterProbe()
 {
 }
 
