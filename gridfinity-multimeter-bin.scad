@@ -15,7 +15,7 @@ multimeter_main_body_z = 195.0;
 multimeter_main_body_back_z = 115.0;
 multimeter_main_body_front_z = 55.0;
 multimeter_main_body_front_sides_x = 11.0;
-multimeter_main_body_angle = 10.0;
+multimeter_main_body_angle = 15.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -47,9 +47,9 @@ holder_y = base_y - holder_clearance * 2;
 holder_z = cup_z * 42.0;
 
 multimeter_main_body_offset_x = 25;
-multimeter_main_body_offset_y = 5;
+multimeter_main_body_offset_y = 3;
 
-offset_z = base_z + 0.4;
+offset_z = base_z + multimeter_back_sides_width + 0.4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -57,89 +57,103 @@ offset_z = base_z + 0.4;
 if( render_mode == "preview" || render_mode == "bin-only" )
 {
     // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        position = "zero",
-        filled_in = true,
-        lip_style = "none"
-        );
+    // gridfinity_cup(
+    //     width = cup_x,
+    //     depth = cup_y,
+    //     height = cup_z,
+    //     position = "zero",
+    //     filled_in = true,
+    //     lip_style = "none"
+    //     );
+
+    back_width = multimeter_main_body_x + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
+    back_depth = multimeter_main_body_y + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
 
     render()
     {
         difference()
         {
-            union()
+            translate([ holder_clearance, holder_clearance, 0 ])
+                RoundedCube(
+                    size = [ holder_x, holder_y, holder_z ],
+                    r = corner_rounding_radius,
+                    fn = 36 );
+
+            // cut off the area the gridfinity base covers
+            cube([ base_x, base_y, base_z ]);
+
+            // remove the section for the main body
+            translate([ multimeter_main_body_offset_x - multimeter_back_sides_width - multimeter_back_clearance, multimeter_main_body_offset_y - multimeter_back_clearance * 2 - multimeter_back_sides_width, offset_z + back_depth * sin( multimeter_main_body_angle ) - multimeter_back_sides_width ])
+                rotate([ -multimeter_main_body_angle, 0, 0 ])
+                    cube([ back_width, back_depth, multimeter_main_body_z ]);
+
+            // remove the front too
+            translate([ multimeter_main_body_offset_x - multimeter_back_sides_width - multimeter_back_clearance, 0, offset_z + back_depth * sin( multimeter_main_body_angle ) ])
+                cube([ back_width, back_depth, multimeter_main_body_front_z ]);
+            
+        }
+    }
+
+
+    // now add all the other parts back
+
+
+    // add the back
+    // # translate([
+    //     multimeter_main_body_offset_x + back_width - multimeter_back_sides_width - multimeter_back_clearance,
+    //     multimeter_main_body_offset_y + mult, offset_z ])
+    //     rotate([ 0, 0, 180 ])
+    //         TriangularPrism( x = back_width, y = 20, z = 30 );
+
+    color([ 0.4, 0, 0 ])
+    {
+        translate([ multimeter_main_body_offset_x - multimeter_back_sides_width - multimeter_back_clearance, multimeter_main_body_offset_y + multimeter_main_body_y, offset_z ])
+        {
+            rotate([ -multimeter_main_body_angle, 0, 0 ])
             {
-                translate([ holder_clearance, holder_clearance, 0 ])
-                    RoundedCube(
-                        size = [ holder_x, holder_y, holder_z ],
-                        r = corner_rounding_radius,
-                        fn = 36 );
+                // back
+                cube([ back_width, multimeter_back_sides_width, multimeter_main_body_back_z ]);
 
-                back_width = multimeter_main_body_x + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
-                back_depth = multimeter_main_body_y + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
+                // left side - bottom
+                translate([ 0, -back_depth + multimeter_back_sides_width, 0 ])
+                    cube([ multimeter_back_sides_width, back_depth, multimeter_main_body_front_z ]);
 
-                // add the back
-                // # translate([
-                //     multimeter_main_body_offset_x + back_width - multimeter_back_sides_width - multimeter_back_clearance,
-                //     multimeter_main_body_offset_y + mult, offset_z ])
-                //     rotate([ 0, 0, 180 ])
-                //         TriangularPrism( x = back_width, y = 20, z = 30 );
+                // left side - top
+                translate([ multimeter_back_sides_width, 0, multimeter_main_body_front_z ])
+                    rotate([ 0, 0, 180 ])
+                        TriangularPrism( multimeter_back_sides_width, back_depth - multimeter_back_sides_width, multimeter_main_body_back_z - multimeter_main_body_front_z );
 
-                color([ 0.4, 0, 0 ])
-                    translate([ multimeter_main_body_offset_x - multimeter_back_sides_width - multimeter_back_clearance, multimeter_main_body_offset_y + multimeter_main_body_y, offset_z ])
-                        rotate([ -multimeter_main_body_angle, 0, 0 ])
-                        {
-                            // back
-                            cube([ back_width, multimeter_back_sides_width, multimeter_main_body_back_z ]);
+                // right side - bottom
+                translate([ back_width - multimeter_back_sides_width, -back_depth + multimeter_back_sides_width, 0 ])
+                    cube([ multimeter_back_sides_width, back_depth, multimeter_main_body_front_z ]);
 
-                            // left side - bottom
-                            translate([ 0, -back_depth + multimeter_back_sides_width, 0 ])
-                                cube([ multimeter_back_sides_width, back_depth, multimeter_main_body_front_z ]);
+                // right side - top
+                translate([ back_width, 0, multimeter_main_body_front_z ])
+                    rotate([ 0, 0, 180 ])
+                        TriangularPrism( multimeter_back_sides_width, back_depth - multimeter_back_sides_width, multimeter_main_body_back_z - multimeter_main_body_front_z );
 
-                            // left side - top
-                            translate([ multimeter_back_sides_width, 0, multimeter_main_body_front_z ])
-                                rotate([ 0, 0, 180 ])
-                                    TriangularPrism( multimeter_back_sides_width, back_depth - multimeter_back_sides_width, multimeter_main_body_back_z - multimeter_main_body_front_z );
+                // bottom
+                translate([ 0, -back_depth + multimeter_back_sides_width, -multimeter_back_sides_width ])
+                    cube([ back_width, back_depth, multimeter_back_sides_width ]);
 
-                            // right side - bottom
-                            translate([ back_width - multimeter_back_sides_width, -back_depth + multimeter_back_sides_width, 0 ])
-                                cube([ multimeter_back_sides_width, back_depth, multimeter_main_body_front_z ]);
+                // front left
+                translate([ 0, -back_depth + multimeter_back_sides_width, 0 ])
+                    cube([ multimeter_main_body_front_sides_x + multimeter_back_sides_width + multimeter_back_clearance, multimeter_back_sides_width, multimeter_main_body_front_z ]);
 
-                            // right side - top
-                            translate([ back_width, 0, multimeter_main_body_front_z ])
-                                rotate([ 0, 0, 180 ])
-                                    TriangularPrism( multimeter_back_sides_width, back_depth - multimeter_back_sides_width, multimeter_main_body_back_z - multimeter_main_body_front_z );
-
-                            // bottom
-                            translate([ 0, -back_depth + multimeter_back_sides_width, -multimeter_back_sides_width ])
-                                cube([ back_width, back_depth, multimeter_back_sides_width ]);
-
-                            // front left
-                            translate([ 0, -back_depth + multimeter_back_sides_width, 0 ])
-                                cube([ multimeter_main_body_front_sides_x + multimeter_back_sides_width + multimeter_back_clearance, multimeter_back_sides_width, multimeter_main_body_front_z ]);
-
-                            // front right
-                            translate([ back_width - multimeter_main_body_front_sides_x - multimeter_back_sides_width - multimeter_back_clearance, -back_depth + multimeter_back_sides_width, 0 ])
-                                cube([ multimeter_main_body_front_sides_x + multimeter_back_sides_width + multimeter_back_clearance, multimeter_back_sides_width, multimeter_main_body_front_z ]);
-                    }
-                }
-
-                // cut off the area the gridfinity base covers
-                cube([ base_x, base_y, base_z ]);
-
+                // front right
+                translate([ back_width - multimeter_main_body_front_sides_x - multimeter_back_sides_width - multimeter_back_clearance, -back_depth + multimeter_back_sides_width, 0 ])
+                    cube([ multimeter_main_body_front_sides_x + multimeter_back_sides_width + multimeter_back_clearance, multimeter_back_sides_width, multimeter_main_body_front_z ]);
+            }
         }
     }
 }
 
-if( render_mode == "preview" )
-{
-    % translate([ multimeter_main_body_offset_x, multimeter_main_body_offset_y, offset_z + multimeter_main_body_y * sin( multimeter_main_body_angle ) ])
-        rotate([ -multimeter_main_body_angle, 0, 0 ])
-            MultimeterBody();
-}
+// if( render_mode == "preview" )
+// {
+//     % translate([ multimeter_main_body_offset_x, multimeter_main_body_offset_y, offset_z + multimeter_main_body_y * sin( multimeter_main_body_angle ) ])
+//         rotate([ -multimeter_main_body_angle, 0, 0 ])
+//             MultimeterBody();
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
