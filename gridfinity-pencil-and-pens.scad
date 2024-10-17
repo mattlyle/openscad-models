@@ -12,7 +12,7 @@ pencil_radius = 9.55 / 2;
 
 sharpie_radius = 11.6 / 2; // also pens
 
-small_screwdriver_radius = 3.1 / 2;
+small_screwdriver_radius = 4.1 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -29,9 +29,9 @@ cup_z = 1;
 corner_rounding_radius = 3.7;
 holder_clearance = 0.15;
 
-pointed_tip_length = 10;
+pointed_tip_length = 6.0;
 
-pen_pencil_sharpie_clearance = 0.5;
+pen_pencil_sharpie_clearance = 0.4;
 
 cutout_rows = [
     [ pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius, small_screwdriver_radius ],
