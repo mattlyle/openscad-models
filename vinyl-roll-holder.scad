@@ -77,16 +77,21 @@ VinylRollHolderFace( small_roll_radius, cube_shelf_size, 2 );
 
 // formulas: https://www.gigacalculator.com/calculators/hexagon-calculator.php
 
-// r = roll radius
-
 // calculates the hexagon 'a'
 function CalculateHexagonSideLength( r ) = r * 2 / sqrt( 3 );
 
+// calculates the hexagon 'R'
 function CalculateFaceSideLength( roll_radius ) = CalculateHexagonSideLength( roll_radius + roll_clearance + holder_ring_thickness );
 
+// calculates the combined 'r'
 function CalculateCombinedRadius( roll_radius ) = roll_radius + roll_clearance + holder_ring_thickness;
 
-function CalculateXOffset( roll_radius, row_num ) = row_num % 2 == 0 ? 0 : CalculateFaceSideLength( small_roll_radius ) + CalculateFaceSideLength( small_roll_radius ) * cos( 60 );
+// calculates the x-offset for the row starting on row_num
+function CalculateXOffset( roll_radius, is_even_row, i ) = CalculateFaceSideLength( roll_radius ) + 3 * CalculateFaceSideLength( roll_radius ) * i + ( is_even_row
+    ? 0
+    : CalculateFaceSideLength( small_roll_radius ) + CalculateFaceSideLength( small_roll_radius ) * cos( 60 ) );
+
+// calculates the y-offset for the row at row_num
 function CalculateYOffset( roll_radius, row_num ) = CalculateCombinedRadius( roll_radius ) + row_num * CalculateCombinedRadius( roll_radius );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,11 +101,11 @@ module VinylRollHolderFace( roll_radius, max_width, num_rows )
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
 
     max_rolls_even = floor( max_width / outer_hexagon_side_length / 3 );
-    max_rolls_odd = floor( ( max_width - CalculateXOffset( roll_radius, 1 ) ) / outer_hexagon_side_length / 3 );
+    max_rolls_odd = floor( ( max_width - CalculateXOffset( roll_radius, 1, 0 ) ) / outer_hexagon_side_length / 3 );
 
     for( i = [ 0: num_rows - 1 ] )
     {
-        translate([ CalculateXOffset( roll_radius, i ), CalculateYOffset( roll_radius, i ), 0 ])
+        translate([ 0, CalculateYOffset( roll_radius, i ), 0 ])
             _VinylRollHolderRow(
                 roll_radius = roll_radius,
                 num_rolls = i % 2 == 0 ? max_rolls_even : max_rolls_odd,
@@ -112,13 +117,11 @@ module VinylRollHolderFace( roll_radius, max_width, num_rows )
 
 module _VinylRollHolderRow( roll_radius, num_rolls, is_even_row )
 {
-    x_offset = is_even_row ? 0 : 0; // TODO: finish!
-
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
 
     for( i = [ 0 : num_rolls - 1 ] )
     {
-        translate([ x_offset + outer_hexagon_side_length + 3 * outer_hexagon_side_length * i, 0, 0 ])
+        translate([ CalculateXOffset( roll_radius, is_even_row, i ), 0, 0 ])
             _VinylRollHolderHexagon( roll_radius );
     }
 }
