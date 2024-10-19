@@ -1,6 +1,9 @@
 
 use <../3rd-party/MCAD/regular_shapes.scad>
 
+use <modules/triangular-prism.scad>
+use <modules/trapezoidal-prism.scad>
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
@@ -15,11 +18,14 @@ roll_clearance = 2.5;
 
 cube_shelf_size = 281;
 
-holder_ring_depth = 10;
+holder_ring_depth = 20;
 holder_ring_thickness = 1.5;
 // holder_ring_thickness = 0.1;
 
-holder_back_ring_offset = roll_length * 2/3;
+holder_base_clearance = 0.25;
+holder_base_side_width = 20;
+
+// holder_back_ring_offset = roll_length * 2/3;
 
 build_volume_size = 255;
 
@@ -30,7 +36,10 @@ preview_thickness = 0.01;
 
 // only choose one
 // render_mode = "preview";
-render_mode = "render";
+// render_mode = "render-holder";
+render_mode = "render-base";
+
+num_rows = 6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated values
@@ -51,27 +60,21 @@ render_mode = "render";
 if( render_mode == "preview" )
 {
     PrinterBuildPlatePreview();
+
+    translate([ 0, holder_ring_depth, 0 ])
+        rotate([ 90, 0, 0 ])
+            VinylRollHolder( small_roll_radius, cube_shelf_size, num_rows );
 }
 
-// row 0
-// offset_y0 = CalculateYOffset(small_roll_radius,0);
-// translate([0, offset_y0, 0]) 
-//     _VinylRollHolderRow(small_roll_radius, 3, false);
+if( render_mode == "render-holder" )
+{
+    VinylRollHolder( small_roll_radius, cube_shelf_size, num_rows );
+}
 
-// row 1
-// a = CalculateCombinedRadius(small_roll_radius);
-// R = CalculateFaceSideLength(small_roll_radius);
-// offset_x = CalculateXOffset(small_roll_radius);
-// offset_y1 = CalculateYOffset(small_roll_radius,1);
-// translate([ offset_x, offset_y1, 0 ])
-//     _VinylRollHolderRow(small_roll_radius, 3, false);
-
-// row 2
-// offset_y2 = CalculateYOffset(small_roll_radius,2);
-// translate([ 0, offset_y2, 0 ])
-//     _VinylRollHolderRow(small_roll_radius, 3, false);
-
-VinylRollHolderFace( small_roll_radius, cube_shelf_size, 2 );
+if( render_mode == "preview" || render_mode == "render-base" )
+{
+    VinylRollHolderBase( small_roll_radius, cube_shelf_size );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,7 +99,7 @@ function CalculateYOffset( roll_radius, row_num ) = CalculateCombinedRadius( rol
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module VinylRollHolderFace( roll_radius, max_width, num_rows )
+module VinylRollHolder( roll_radius, max_width, num_rows )
 {
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
 
@@ -115,6 +118,49 @@ module VinylRollHolderFace( roll_radius, max_width, num_rows )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module VinylRollHolderBase( roll_radius, max_width )
+{
+    outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
+    max_rolls_even = floor( max_width / outer_hexagon_side_length / 3 );
+    max_rolls_odd = floor( ( max_width - CalculateXOffset( roll_radius, 1, 0 ) ) / outer_hexagon_side_length / 3 );
+
+    base_x = max_rolls_even * CalculateFaceSideLength( roll_radius ) * 2 + max_rolls_odd * CalculateFaceSideLength( roll_radius );
+
+    // flat edge - front
+    translate([ 0, -holder_ring_depth - holder_base_clearance, 0 ])
+        cube([ base_x, holder_base_side_width, holder_ring_thickness ]);
+
+    // flat edge - back
+    translate([ 0, holder_ring_depth + holder_base_clearance, 0 ])
+        cube([ base_x, holder_base_side_width, holder_ring_thickness ]);
+
+    end_cap_x = CalculateFaceSideLength( small_roll_radius ) * cos( 60 );
+    end_cap_y = CalculateCombinedRadius( roll_radius );
+    
+    // before first hexagon
+    translate([ 0, holder_base_side_width + holder_base_clearance, 0 ])
+        rotate([ 0, 0, -90 ])
+            TriangularPrism( holder_base_side_width + holder_base_clearance * 2, end_cap_x, end_cap_y );
+    // TODO: should add clearance?
+
+    // after last hexagon
+    translate([ base_x, -holder_base_clearance, 0 ])
+        rotate([ 0, 0, 90 ])
+            TriangularPrism( holder_base_side_width + holder_base_clearance * 2, end_cap_x, end_cap_y );
+
+    r = CalculateHexagonSideLength( roll_radius );
+    R = CalculateFaceSideLength( roll_radius );
+
+    // in between middle hexagons
+    for( i = [ 0 : max_rolls_odd - 1 ] )
+    {
+        translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance, 0, 0 ])
+            TrapezoidalPrism( x_top = R - holder_base_clearance * 2, x_bottom = R * 2 - holder_base_clearance * 2, y = holder_ring_depth, z = r - holder_base_clearance, center = false );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module _VinylRollHolderRow( roll_radius, num_rolls, is_even_row )
 {
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
@@ -125,20 +171,6 @@ module _VinylRollHolderRow( roll_radius, num_rolls, is_even_row )
             _VinylRollHolderHexagon( roll_radius );
     }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// module _VinylRollHolder( roll_radius )
-// {
-//     // near holder
-//     rotate([ -90, 0, 0 ])
-//         _VinylRollHolderHexagon();
-
-//     // far holder
-//     translate([ 0, holder_back_ring_offset, 0 ])
-//         rotate([ -90, 0, 0 ])
-//             _VinylRollHolderHexagon();
-// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
