@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TrapezoidalPrism( x_top, x_bottom, y, z, center = true)
+module TrapezoidalPrism( x_top, x_bottom, y, z, center = true )
 {
     translate( center ? [ 0, 0, -z ] : [ x_bottom / 2, y / 2, 0 ] )
         polyhedron(
