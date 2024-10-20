@@ -154,8 +154,12 @@ module VinylRollHolderBase( roll_radius, max_width )
     // in between middle hexagons
     for( i = [ 0 : max_rolls_odd - 1 ] )
     {
-        translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance, 0, 0 ])
-            TrapezoidalPrism( x_top = R - holder_base_clearance * 2, x_bottom = R * 2 - holder_base_clearance * 2, y = holder_ring_depth, z = r - holder_base_clearance, center = false );
+        translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance, -holder_base_clearance, 0 ])
+            TrapezoidalPrism(
+                x_top = R - holder_base_clearance * 2,
+                x_bottom = R * 2 - holder_base_clearance * 2,
+                y = holder_ring_depth + holder_base_clearance * 2,
+                z = r - holder_base_clearance, center = false );
     }
 }
 
