@@ -46,7 +46,7 @@ num_rows = 6;
 
 if( render_mode == "preview" )
 {
-    PrinterBuildPlatePreview();
+    // PrinterBuildPlatePreview();
 
     translate([ 0, holder_ring_depth, 0 ])
         rotate([ 90, 0, 0 ])
@@ -214,7 +214,8 @@ module _VinylRollHolderHexagon( roll_radius )
 
     if( render_mode == "preview" )
     {
-        % cylinder( h = preview_thickness, r = small_roll_radius, $fn = 48 );
+        % translate([ 0, 0, -roll_length + holder_base_side_width + holder_ring_depth ])
+            cylinder( h = roll_length, r = small_roll_radius, $fn = 48 );
     }
 
     render()
@@ -252,7 +253,7 @@ module CubeShelfPreview( cube_size )
 }
 */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 module PrinterBuildVolumePreview()
 {
     // bottom
@@ -271,15 +272,15 @@ module PrinterBuildVolumePreview()
     # translate([ -preview_thickness, 0, 0 ])
         cube([ preview_thickness, build_volume_size, build_volume_size ]);
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 module PrinterBuildPlatePreview()
 {
     # translate([ 0, 0, -preview_thickness ])
         cube([ build_volume_size, build_volume_size, preview_thickness ]);
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module VinylRollPreview( r )
