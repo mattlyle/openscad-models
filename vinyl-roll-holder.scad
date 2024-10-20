@@ -14,18 +14,14 @@ small_roll_radius = 46.0 / 2;
 large_roll_radius = 76.5 / 2;
 
 roll_clearance = 2.5;
-// roll_clearance=0;
 
 cube_shelf_size = 281;
 
 holder_ring_depth = 20;
 holder_ring_thickness = 1.5;
-// holder_ring_thickness = 0.1;
 
 holder_base_clearance = 0.25;
 holder_base_side_width = 20;
-
-// holder_back_ring_offset = roll_length * 2/3;
 
 build_volume_size = 255;
 
@@ -46,16 +42,6 @@ num_rows = 6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
-
-// if( render_mode == "preview" )
-// {
-//     CubeShelfPreview( cube_shelf_size );
-
-//     PrinterBuildVolumePreview();
-// }
-
-// % cylinder(h = preview_thickness, r = small_roll_radius, $fn = 100);
-// _VinylRollHolderHexagon( small_roll_radius );
 
 if( render_mode == "preview" )
 {
@@ -201,7 +187,7 @@ module _VinylRollHolderHexagon( roll_radius )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 module CubeShelfPreview( cube_size )
 {
     // bottom
@@ -220,7 +206,7 @@ module CubeShelfPreview( cube_size )
     % translate([ -preview_thickness, 0, 0 ])
         cube([ preview_thickness, cube_size, cube_size ]);
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module PrinterBuildVolumePreview()
