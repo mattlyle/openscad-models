@@ -20,10 +20,11 @@ cube_shelf_size = 281;
 holder_ring_depth = 20;
 holder_ring_thickness = 1.5;
 
-holder_base_clearance = 0.25;
+holder_base_clearance = 0.2;
 holder_base_side_width = 20;
 
-build_volume_size = 255;
+holder_base_spacing_y = roll_length * 0.50;
+holder_base_vertical_support_z = 5;
 
 preview_thickness = 0.01;
 
@@ -59,7 +60,7 @@ if( render_mode == "render-holder" )
 
 if( render_mode == "preview" || render_mode == "render-base" )
 {
-    VinylRollHolderBase( small_roll_radius, cube_shelf_size );
+    VinylRollHolderBase( small_roll_radius, cube_shelf_size, holder_base_spacing_y );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +105,45 @@ module VinylRollHolder( roll_radius, max_width, num_rows )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module VinylRollHolderBase( roll_radius, max_width )
+module VinylRollHolderBase( roll_radius, max_width, y_offset )
+{
+    outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
+    max_rolls_even = floor( max_width / outer_hexagon_side_length / 3 );
+    max_rolls_odd = floor( ( max_width - CalculateXOffset( roll_radius, 1, 0 ) ) / outer_hexagon_side_length / 3 );
+
+    base_x = max_rolls_even * CalculateFaceSideLength( roll_radius ) * 2 + max_rolls_odd * CalculateFaceSideLength( roll_radius );
+
+    // front
+    _VinylRollHolderBase( roll_radius, max_width );
+
+    // rear
+    translate([ 0, y_offset, 0 ])
+        _VinylRollHolderBase( roll_radius, max_width );
+
+    // left horizontal support
+    translate([ 0, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
+      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
+
+    // center horizontal support
+    translate([ (base_x - holder_base_side_width ) / 2, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
+      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
+
+    // right horizontal support
+    translate([ base_x - holder_base_side_width, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
+      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
+
+    // left vertical support
+    translate([ 0, -holder_base_side_width - holder_base_clearance, holder_ring_thickness ])
+        cube([ holder_ring_thickness, holder_base_side_width * 2 + holder_base_clearance * 2 + holder_ring_depth + y_offset, holder_base_vertical_support_z ]);
+
+    // right vertical support
+    translate([ base_x - holder_ring_thickness, -holder_base_side_width - holder_base_clearance, holder_ring_thickness ])
+        cube([ holder_ring_thickness, holder_base_side_width * 2 + holder_base_clearance * 2 + holder_ring_depth + y_offset, holder_base_vertical_support_z ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _VinylRollHolderBase( roll_radius, max_width )
 {
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
     max_rolls_even = floor( max_width / outer_hexagon_side_length / 3 );
