@@ -183,7 +183,12 @@ module _VinylRollHolderBase( roll_radius, max_width )
                 x_top = R - holder_base_clearance * 2,
                 x_bottom = R * 2 - holder_base_clearance * 2,
                 y = holder_ring_depth + holder_base_clearance * 2,
-                z = r - holder_base_clearance, center = false );
+                z = r - holder_base_clearance,
+                center = false );
+
+        // smaller through supports
+        translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance + (R * 2 - holder_base_clearance * 2 - holder_ring_thickness)/2, -holder_base_clearance - holder_base_side_width, holder_ring_thickness ])
+            cube([ holder_base_vertical_support_z, holder_base_side_width * 2 + holder_ring_depth + holder_base_clearance * 2, holder_base_vertical_support_z ]);
     }
 }
 
