@@ -3,6 +3,7 @@ use <../3rd-party/MCAD/regular_shapes.scad>
 
 use <modules/triangular-prism.scad>
 use <modules/trapezoidal-prism.scad>
+include <modules/screw-connectors.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -36,15 +37,12 @@ render_mode = "preview";
 // render_mode = "render-holder";
 // render_mode = "render-base";
 
-num_rows = 6;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+num_rows = 7;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "preview" )
+if( render_mode == "full-preview" || render_mode == "simple-preview")
 {
     // PrinterBuildPlatePreview();
 
@@ -58,7 +56,7 @@ if( render_mode == "render-holder" )
     VinylRollHolder( small_roll_radius, cube_shelf_size, num_rows );
 }
 
-if( render_mode == "preview" || render_mode == "render-base" )
+if( render_mode == "full-preview" || render_mode == "simple-preview" || render_mode == "render-base" )
 {
     VinylRollHolderBase( small_roll_radius, cube_shelf_size, holder_base_spacing_y );
 }
@@ -88,18 +86,22 @@ function CalculateYOffset( roll_radius, row_num ) = CalculateCombinedRadius( rol
 
 module VinylRollHolder( roll_radius, max_width, num_rows )
 {
+    assert( num_rows % 2 == 1, "Must be an odd number!" );
+
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
 
     max_rolls_even = floor( max_width / outer_hexagon_side_length / 3 );
     max_rolls_odd = floor( ( max_width - CalculateXOffset( roll_radius, 1, 0 ) ) / outer_hexagon_side_length / 3 );
 
-    for( i = [ 0: num_rows - 1 ] )
+    for( i = [ 0 : num_rows - 1 ] )
     {
         translate([ 0, CalculateYOffset( roll_radius, i ), 0 ])
             _VinylRollHolderRow(
                 roll_radius = roll_radius,
-                num_rolls = i % 2 == 0 ? max_rolls_even : max_rolls_odd,
-                is_even_row = i % 2 == 0 );
+                num_hexagons = i % 2 == 0 ? max_rolls_even : max_rolls_odd,
+                is_even_row = i % 2 == 0,
+                i == 0,
+                i == num_rows - 1 );
     }
 }
 
@@ -120,15 +122,15 @@ module VinylRollHolderBase( roll_radius, max_width, y_offset )
     translate([ 0, y_offset, 0 ])
         _VinylRollHolderBase( roll_radius, max_width );
 
-    // left horizontal support
+    // left horizontal connector
     translate([ 0, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
       cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
 
-    // center horizontal support
+    // center horizontal connector
     translate([ (base_x - holder_base_side_width ) / 2, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
       cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
 
-    // right horizontal support
+    // right horizontal connector
     translate([ base_x - holder_base_side_width, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
       cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
 
@@ -143,7 +145,7 @@ module VinylRollHolderBase( roll_radius, max_width, y_offset )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _VinylRollHolderBase( roll_radius, max_width )
+module _VinylRollHolderBase( roll_radius, max_width, insert_on_front )
 {
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
     max_rolls_even = floor( max_width / outer_hexagon_side_length / 3 );
@@ -179,29 +181,85 @@ module _VinylRollHolderBase( roll_radius, max_width )
     for( i = [ 0 : max_rolls_odd - 1 ] )
     {
         translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance, -holder_base_clearance, 0 ])
-            TrapezoidalPrism(
-                x_top = R - holder_base_clearance * 2,
-                x_bottom = R * 2 - holder_base_clearance * 2,
-                y = holder_ring_depth + holder_base_clearance * 2,
-                z = r - holder_base_clearance,
-                center = false );
+        {
+            render()
+            {
+                difference()
+                {
+                    TrapezoidalPrism(
+                        x_top = R - holder_base_clearance * 2,
+                        x_bottom = R * 2 - holder_base_clearance * 2,
+                        y = holder_ring_depth + holder_base_clearance - holder_ring_thickness,
+                        z = r - holder_base_clearance,
+                        center = false );
+
+                    translate([ R, holder_ring_depth - holder_ring_thickness + holder_base_clearance, r / 2 ])
+                        rotate([ 90, 0, 0 ])
+                            HeatedInsert( M3x6_INSERT );
+                }
+            }
+        }
 
         // smaller through supports
-        translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance + (R * 2 - holder_base_clearance * 2 - holder_ring_thickness)/2, -holder_base_clearance - holder_base_side_width, holder_ring_thickness ])
-            cube([ holder_base_vertical_support_z, holder_base_side_width * 2 + holder_ring_depth + holder_base_clearance * 2, holder_base_vertical_support_z ]);
+        // translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance + (R * 2 - holder_base_clearance * 2 - holder_ring_thickness)/2, -holder_base_clearance - holder_base_side_width, holder_ring_thickness ])
+        //     cube([ holder_base_vertical_support_z, holder_base_side_width * 2 + holder_ring_depth + holder_base_clearance * 2, holder_base_vertical_support_z ]);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _VinylRollHolderRow( roll_radius, num_rolls, is_even_row )
+module _VinylRollHolderRow( roll_radius, num_hexagons, is_even_row, add_screw_supports_bottom, add_screw_supports_top )
 {
     outer_hexagon_side_length = CalculateFaceSideLength( roll_radius );
 
-    for( i = [ 0 : num_rolls - 1 ] )
+    R = CalculateFaceSideLength( roll_radius );
+    r = CalculateCombinedRadius( roll_radius );
+    a = CalculateHexagonSideLength( roll_radius );
+
+    for( i = [ 0 : num_hexagons - 1 ] )
     {
         translate([ CalculateXOffset( roll_radius, is_even_row, i ), 0, 0 ])
             _VinylRollHolderHexagon( roll_radius );
+
+        if( add_screw_supports_bottom && i > 0 )
+        {
+            translate([ CalculateXOffset( roll_radius, true, i - 1 ) + R / 2, -r, holder_ring_thickness ])
+                rotate([ -90, 0, 0 ])
+                    _VinylRollHolderRowScrewSupport( roll_radius );
+        }
+
+        if( add_screw_supports_top && i > 0 )
+        {
+            translate([ CalculateXOffset( roll_radius, true, i - 1 ) + R / 2, r, 0 ])
+                rotate([ 90, 0, 0 ])
+                    _VinylRollHolderRowScrewSupport( roll_radius );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _VinylRollHolderRowScrewSupport( roll_radius )
+{
+    R = CalculateFaceSideLength( roll_radius );
+    r = CalculateCombinedRadius( roll_radius );
+    a = CalculateHexagonSideLength( roll_radius );
+
+    render()
+    {
+        difference()
+        {
+            TrapezoidalPrism(
+                x_top = R,
+                x_bottom = R * 2,
+                y = holder_ring_thickness,
+                z = r,
+                center = false );
+
+            translate([ R, holder_ring_thickness + 2, r / 2 ]) // TODO: fix... 2???
+                rotate([ 90, 0, 0 ])
+                    ScrewShaft( M3x8 );
+        }
     }
 }
 
@@ -212,7 +270,7 @@ module _VinylRollHolderHexagon( roll_radius )
     outer_radius = CalculateFaceSideLength( roll_radius );
     inner_radius = CalculateHexagonSideLength( roll_radius + roll_clearance );
 
-    if( render_mode == "preview" )
+    if( render_mode == "full-preview" )
     {
         % translate([ 0, 0, -roll_length + holder_base_side_width + holder_ring_depth ])
             cylinder( h = roll_length, r = small_roll_radius, $fn = 48 );
