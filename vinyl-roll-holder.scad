@@ -35,9 +35,9 @@ preview_thickness = 0.01;
 // settings
 
 // only choose one
-// render_mode = "preview";
+render_mode = "preview";
 // render_mode = "render-holder";
-render_mode = "render-base";
+// render_mode = "render-base";
 
 num_rows = 6;
 
@@ -131,7 +131,7 @@ module VinylRollHolderBase( roll_radius, max_width )
         cube([ base_x, holder_base_side_width, holder_ring_thickness ]);
 
     // flat edge - back
-    translate([ 0, holder_ring_depth + holder_base_clearance, 0 ])
+    translate([ 0, holder_ring_depth + holder_base_clearance , 0 ])
         cube([ base_x, holder_base_side_width, holder_ring_thickness ]);
 
     end_cap_x = CalculateFaceSideLength( small_roll_radius ) * cos( 60 );
@@ -141,7 +141,6 @@ module VinylRollHolderBase( roll_radius, max_width )
     translate([ 0, holder_base_side_width + holder_base_clearance, 0 ])
         rotate([ 0, 0, -90 ])
             TriangularPrism( holder_base_side_width + holder_base_clearance * 2, end_cap_x, end_cap_y );
-    // TODO: should add clearance?
 
     // after last hexagon
     translate([ base_x, -holder_base_clearance, 0 ])
@@ -185,7 +184,7 @@ module _VinylRollHolderHexagon( roll_radius )
 
     if( render_mode == "preview" )
     {
-        % cylinder(h = preview_thickness, r = small_roll_radius, $fn = 100);
+        % cylinder( h = preview_thickness, r = small_roll_radius, $fn = 48 );
     }
 
     render()
