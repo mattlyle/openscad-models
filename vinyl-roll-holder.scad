@@ -26,6 +26,7 @@ holder_base_side_width = 20;
 
 holder_base_spacing_y = roll_length * 0.50;
 holder_base_vertical_support_z = 5;
+holder_base_floor_z = 1.0;
 
 preview_thickness = 0.01;
 
@@ -33,9 +34,10 @@ preview_thickness = 0.01;
 // settings
 
 // only choose one
-render_mode = "preview";
+// render_mode = "full-preview";
+// render_mode = "simple-preview";
 // render_mode = "render-holder";
-// render_mode = "render-base";
+render_mode = "render-base";
 
 num_rows = 7;
 
@@ -123,16 +125,16 @@ module VinylRollHolderBase( roll_radius, max_width, y_offset )
         _VinylRollHolderBase( roll_radius, max_width );
 
     // left horizontal connector
-    translate([ 0, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
-      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
+    translate([ 0, holder_ring_depth + holder_base_clearance + holder_base_side_width, -holder_base_floor_z ])
+      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness + holder_base_floor_z ]);
 
     // center horizontal connector
-    translate([ (base_x - holder_base_side_width ) / 2, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
-      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
+    translate([ ( base_x - holder_base_side_width ) / 2, holder_ring_depth + holder_base_clearance + holder_base_side_width, -holder_base_floor_z ])
+      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness + holder_base_floor_z ]);
 
     // right horizontal connector
-    translate([ base_x - holder_base_side_width, holder_ring_depth + holder_base_clearance + holder_base_side_width, 0 ])
-      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness ]);
+    translate([ base_x - holder_base_side_width, holder_ring_depth + holder_base_clearance + holder_base_side_width, -holder_base_floor_z ])
+      cube([ holder_base_side_width, y_offset - holder_base_side_width * 2 - holder_base_clearance * 2 - holder_ring_depth, holder_ring_thickness + holder_base_floor_z ]);
 
     // left vertical support
     translate([ 0, -holder_base_side_width - holder_base_clearance, holder_ring_thickness ])
@@ -152,6 +154,10 @@ module _VinylRollHolderBase( roll_radius, max_width, insert_on_front )
     max_rolls_odd = floor( ( max_width - CalculateXOffset( roll_radius, 1, 0 ) ) / outer_hexagon_side_length / 3 );
 
     base_x = max_rolls_even * CalculateFaceSideLength( roll_radius ) * 2 + max_rolls_odd * CalculateFaceSideLength( roll_radius );
+
+    // floor
+    translate([ 0, -holder_ring_depth - holder_base_clearance, -holder_base_floor_z ])
+        cube([ base_x, holder_base_side_width * 2 + holder_ring_depth + holder_base_clearance * 2, holder_base_floor_z ]);
 
     // flat edge - front
     translate([ 0, -holder_ring_depth - holder_base_clearance, 0 ])
