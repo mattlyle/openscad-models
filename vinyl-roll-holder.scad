@@ -30,6 +30,8 @@ holder_base_floor_z = 1.0;
 
 preview_thickness = 0.01;
 
+build_volume_size = 255;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -50,17 +52,17 @@ if( render_mode == "full-preview" || render_mode == "simple-preview")
 
     translate([ 0, holder_ring_depth, 0 ])
         rotate([ 90, 0, 0 ])
-            VinylRollHolder( small_roll_radius, cube_shelf_size, num_rows );
+            VinylRollHolder( small_roll_radius, build_volume_size, num_rows );
 }
 
 if( render_mode == "render-holder" )
 {
-    VinylRollHolder( small_roll_radius, cube_shelf_size, num_rows );
+    VinylRollHolder( small_roll_radius, build_volume_size, num_rows );
 }
 
 if( render_mode == "full-preview" || render_mode == "simple-preview" || render_mode == "render-base" )
 {
-    VinylRollHolderBase( small_roll_radius, cube_shelf_size, holder_base_spacing_y );
+    VinylRollHolderBase( small_roll_radius, build_volume_size, holder_base_spacing_y );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +81,7 @@ function CalculateCombinedRadius( roll_radius ) = roll_radius + roll_clearance +
 // calculates the x-offset for the row starting on row_num
 function CalculateXOffset( roll_radius, is_even_row, i ) = CalculateFaceSideLength( roll_radius ) + 3 * CalculateFaceSideLength( roll_radius ) * i + ( is_even_row
     ? 0
-    : CalculateFaceSideLength( small_roll_radius ) + CalculateFaceSideLength( small_roll_radius ) * cos( 60 ) );
+    : CalculateFaceSideLength( roll_radius ) + CalculateFaceSideLength( roll_radius ) * cos( 60 ) );
 
 // calculates the y-offset for the row at row_num
 function CalculateYOffset( roll_radius, row_num ) = CalculateCombinedRadius( roll_radius ) + row_num * CalculateCombinedRadius( roll_radius );
@@ -167,7 +169,7 @@ module _VinylRollHolderBase( roll_radius, max_width, insert_on_front )
     translate([ 0, holder_ring_depth + holder_base_clearance , 0 ])
         cube([ base_x, holder_base_side_width, holder_ring_thickness ]);
 
-    end_cap_x = CalculateFaceSideLength( small_roll_radius ) * cos( 60 );
+    end_cap_x = CalculateFaceSideLength( roll_radius ) * cos( 60 );
     end_cap_y = CalculateCombinedRadius( roll_radius );
     
     // before first hexagon
@@ -205,10 +207,6 @@ module _VinylRollHolderBase( roll_radius, max_width, insert_on_front )
                 }
             }
         }
-
-        // smaller through supports
-        // translate([ CalculateXOffset( roll_radius, true, i ) + R / 2 + holder_base_clearance + (R * 2 - holder_base_clearance * 2 - holder_ring_thickness)/2, -holder_base_clearance - holder_base_side_width, holder_ring_thickness ])
-        //     cube([ holder_base_vertical_support_z, holder_base_side_width * 2 + holder_ring_depth + holder_base_clearance * 2, holder_base_vertical_support_z ]);
     }
 }
 
@@ -279,7 +277,7 @@ module _VinylRollHolderHexagon( roll_radius )
     if( render_mode == "full-preview" )
     {
         % translate([ 0, 0, -roll_length + holder_base_side_width + holder_ring_depth ])
-            cylinder( h = roll_length, r = small_roll_radius, $fn = 48 );
+            cylinder( h = roll_length, r = roll_radius, $fn = 48 );
     }
 
     render()
@@ -338,13 +336,13 @@ module PrinterBuildVolumePreview()
 }
 */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
+
 module PrinterBuildPlatePreview()
 {
     # translate([ 0, 0, -preview_thickness ])
         cube([ build_volume_size, build_volume_size, preview_thickness ]);
 }
-*/
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module VinylRollPreview( r )
