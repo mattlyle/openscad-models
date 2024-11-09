@@ -10,6 +10,11 @@ include <modules/text-label.scad>
 magnet_radius = 6.0 / 2;
 magnet_height = 2.0;
 
+jig2_baseplate_wall_width = 2.85;
+jig2_corner_size = 12.0;
+jig2_size_outer = 36.3;
+jig2_size_inner = 18;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -20,14 +25,16 @@ jig_height = 25;
 jig_peg_height = 1.0;
 
 jig2_height = 3;
+jig2_clearance = 0.1;
 
 // only choose one
-// render_mode = "preview";
+render_mode = "preview";
 // render_mode = "tool-top";
 // render_mode = "tool-bottom";
 // render_mode = "jig-bottom";
 // render_mode = "jig-top-base";
-render_mode = "jig-top-bin";
+// render_mode = "jig-top-bin";
+// render_mode = "jig2";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -167,17 +174,7 @@ module GridfinityMagnetJig( label_text )
 module GridfinityMagnetJig2()
 {
     magnet_corner_offset = gf_cupbase_upper_taper_height + gf_cupbase_lower_taper_height + gf_cupbase_magnet_position;
-    // bin_size = gf_pitch - gf_tolerance;
     bin_size = gf_pitch;
-
-    // # translate([ 0, 0, gf_zpitch + jig_peg_height ])
-    //     gridfinity_cup( width = 1, depth = 1, height = 1, position = "zero", filled_in = true, lip_style = "none" );
-
-    // if( render_mode == "preview" )
-    // {
-    //     # translate([ bin_size, bin_size, 0 ])
-    //         import( "assets/baseplate-1-1.stl" );
-    // }
 
     bottom_height = 2.8;
 
@@ -194,32 +191,24 @@ module GridfinityMagnetJig2()
         }
     }
 
-    baseplate_wall_width = 2.85;
-    corner_size = 12.0;
-    size_outer = 36.3;
-    size_inner = 18;
-    
-    jig2_clearance = 0.2;
-
-    // translate([0,0,1])
-    // union()
-    // {
+    union()
+    {
         // horizontal - bottom
-        translate([ 0, corner_size, 0 ])
-            cube([ bin_size, size_inner, bottom_height ]);
+        translate([ 0, jig2_corner_size, 0 ])
+            cube([ bin_size, jig2_size_inner, bottom_height ]);
 
         // vertical - bottom
-        translate([ corner_size, 0, 0 ])
-            cube([ size_inner, bin_size, bottom_height ]);
+        translate([ jig2_corner_size, 0, 0 ])
+            cube([ jig2_size_inner, bin_size, bottom_height ]);
 
         // horizontal - top guide
-        translate([ baseplate_wall_width + jig2_clearance, corner_size + jig2_clearance, bottom_height ])
-            cube([ bin_size - baseplate_wall_width * 2 - jig2_clearance * 2, size_inner - jig2_clearance * 2, jig2_height ]);
+        translate([ jig2_baseplate_wall_width + jig2_clearance, jig2_corner_size + jig2_clearance, bottom_height ])
+            cube([ bin_size - jig2_baseplate_wall_width * 2 - jig2_clearance * 2, jig2_size_inner - jig2_clearance * 2, jig2_height ]);
 
         // vertical - top guide
-        translate([ corner_size + jig2_clearance, baseplate_wall_width + jig2_clearance, bottom_height ])
-            cube([ size_inner - jig2_clearance * 2, bin_size - baseplate_wall_width * 2 - jig2_clearance * 2, jig2_height ]);
-    // }
+        translate([ jig2_corner_size + jig2_clearance, jig2_baseplate_wall_width + jig2_clearance, bottom_height ])
+            cube([ jig2_size_inner - jig2_clearance * 2, bin_size - jig2_baseplate_wall_width * 2 - jig2_clearance * 2, jig2_height ]);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
