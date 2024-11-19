@@ -216,9 +216,8 @@ module TapHandle()
         }
 
         // add the extra gap for the screan offset
-        color([ 0.5, 0, 0 ])
             translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height + screen_bezel_size * 2 + e_ink_display_screen_usable_height, tap_handle_depth - screen_bezel_depth ])
-                cube([ e_ink_display_circuit_board_width, e_ink_display_screen_bezel_top, screen_bezel_depth ]); // TODO: This is technically wrong and overlaps
+            cube([ e_ink_display_circuit_board_width, e_ink_display_screen_bezel_top - screen_bezel_size, screen_bezel_depth ]);
     }
 }
 
