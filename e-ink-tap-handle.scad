@@ -12,7 +12,7 @@ tap_handle_radius = 5.0;
 tap_handle_fn = 60;
 
 back_plate_clearance = 0.75; // clearance on all sides for the backplate
-back_plate_wall_snug_fit = 0.65; // eat this back into the clearance for the backplate
+back_plate_wall_snug_fit = 0.68; // eat this back into the clearance for the backplate
 back_plate_wall_width = 1.4;
 
 threaded_fitting_radius = 14.4 / 2;
