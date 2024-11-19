@@ -1,7 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
+module RoundedCubeAlt( x, y, z, center = false, r = 1.0, fn = 24 )
+{
+    RoundedCube( size = [ x, y, z ], center, r, fn );
+}
+
 // model for a rounded cube
-module RoundedCube( size = [ 1, 1, 1 ], center = false, r = 0.5, fn = 10 )
+module RoundedCube( size = [ 1, 1, 1 ], center = false, r = 1.0, fn = 24 )
 {
     main_translate = ( center == true )
         ? [ 0, 0, 0 ]
