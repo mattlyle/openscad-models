@@ -54,17 +54,27 @@ if( render_mode == "preview" )
 {
     TapHandle();
 
+    // backplate demo
+    color([ 0.4, 0, 0 ])
+        translate([( tap_handle_width - back_plate_width ) / 2 - back_plate_wall_snug_fit, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2 - back_plate_wall_snug_fit, -5 ])
+            BackPlate( true );
+
+    // draw a display right below the 
+    translate([ ( tap_handle_width - back_plate_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset + 1 ]) // just offset it up a little
+        EInkDisplay( true );
+
+    // backplate behind the tap handle
     translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
         BackPlate( true );
 
+    // display over the backplate
     translate([ back_plate_wall_snug_fit, back_plate_wall_snug_fit, 0.5 ]) // just offset it up a little
-        translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
+        translate([
+            tap_handle_width + model_spacing,
+            display_offset_height - e_ink_display_screen_offset_height,
+            tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
             EInkDisplay( true );
 
-    // backplate demo
-    color([ 0.4, 0, 0 ])
-        translate([ ( tap_handle_width - back_plate_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2, -5 ])
-            BackPlate( true );
 
     // threaded insert test rig
     translate([ 150, 0, 0 ])
