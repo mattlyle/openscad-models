@@ -172,51 +172,49 @@ module TapHandle()
         // slope the bezel sides
         translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height, tap_handle_depth - screen_depth_offset + screen_bezel_depth ])
         {
-            bezel_points = [
-                // top
-                [ 0, e_ink_display_screen_usable_height + screen_bezel_size * 2, screen_bezel_depth ], // A = 0
-                [ e_ink_display_screen_width, e_ink_display_screen_usable_height + screen_bezel_size * 2, screen_bezel_depth ], // B = 1
-                [ e_ink_display_screen_width, 0, screen_bezel_depth ], // C = 2
-                [ 0, 0, screen_bezel_depth ], // D = 3
+            polyhedron(
+                points = [
+                    // top
+                    [ 0, e_ink_display_screen_usable_height + screen_bezel_size * 2, screen_bezel_depth ], // A = 0
+                    [ e_ink_display_screen_width, e_ink_display_screen_usable_height + screen_bezel_size * 2, screen_bezel_depth ], // B = 1
+                    [ e_ink_display_screen_width, 0, screen_bezel_depth ], // C = 2
+                    [ 0, 0, screen_bezel_depth ], // D = 3
 
-                // inside
-                [ screen_bezel_size, e_ink_display_screen_usable_height + screen_bezel_size, 0 ], // E = 4
-                [ e_ink_display_screen_width - screen_bezel_size, e_ink_display_screen_usable_height + screen_bezel_size, 0 ], // F = 5
-                [ e_ink_display_screen_width - screen_bezel_size, screen_bezel_size, 0 ], // G = 6
-                [ screen_bezel_size, screen_bezel_size, 0 ], // H = 7
+                    // inside
+                    [ screen_bezel_size, e_ink_display_screen_usable_height + screen_bezel_size, 0 ], // E = 4
+                    [ e_ink_display_screen_width - screen_bezel_size, e_ink_display_screen_usable_height + screen_bezel_size, 0 ], // F = 5
+                    [ e_ink_display_screen_width - screen_bezel_size, screen_bezel_size, 0 ], // G = 6
+                    [ screen_bezel_size, screen_bezel_size, 0 ], // H = 7
 
-                // bottom
-                [ 0, e_ink_display_screen_usable_height + screen_bezel_size * 2, 0 ], // I = 8
-                [ e_ink_display_screen_width, e_ink_display_screen_usable_height + screen_bezel_size * 2, 0 ], // J = 9
-                [ e_ink_display_screen_width, 0, 0 ], // K = 10
-                [ 0, 0, 0 ] // L = 11
-                ];
+                    // bottom
+                    [ 0, e_ink_display_screen_usable_height + screen_bezel_size * 2, 0 ], // I = 8
+                    [ e_ink_display_screen_width, e_ink_display_screen_usable_height + screen_bezel_size * 2, 0 ], // J = 9
+                    [ e_ink_display_screen_width, 0, 0 ], // K = 10
+                    [ 0, 0, 0 ] // L = 11
+                    ],
+                faces = [
+                    // top
+                    [ 0, 1, 5, 4 ],
+                    [ 1, 2, 6, 5 ],
+                    [ 2, 3, 7, 6 ],
+                    [ 0, 4, 7, 3 ],
 
-            bezel_faces = [
-                // top
-                [ 0, 1, 5, 4 ],
-                [ 1, 2, 6, 5 ],
-                [ 2, 3, 7, 6 ],
-                [ 0, 4, 7, 3 ],
+                    // outside
+                    [ 0, 3, 11, 8 ],
+                    [ 0, 8, 9, 1 ],
+                    [ 2, 1, 9, 10 ],
+                    [ 3, 2, 10, 11 ],
 
-                // outside
-                [ 0, 3, 11, 8 ],
-                [ 0, 8, 9, 1 ],
-                [ 2, 1, 9, 10 ],
-                [ 3, 2, 10, 11 ],
-
-                // bottom
-                [ 11, 10, 6, 7 ],
-                [ 6, 10, 9, 5 ],
-                [ 4, 5, 9, 8 ],
-                [ 11, 7, 4, 8 ],
-            ];
-
-            polyhedron( points = bezel_points, faces = bezel_faces );
+                    // bottom
+                    [ 11, 10, 6, 7 ],
+                    [ 6, 10, 9, 5 ],
+                    [ 4, 5, 9, 8 ],
+                    [ 11, 7, 4, 8 ],
+                ] );
         }
 
         // add the extra gap for the screan offset
-            translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height + screen_bezel_size * 2 + e_ink_display_screen_usable_height, tap_handle_depth - screen_bezel_depth ])
+        translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height + screen_bezel_size * 2 + e_ink_display_screen_usable_height, tap_handle_depth - screen_bezel_depth ])
             cube([ e_ink_display_circuit_board_width, e_ink_display_screen_bezel_top - screen_bezel_size, screen_bezel_depth ]);
     }
 }
