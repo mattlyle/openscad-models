@@ -10,6 +10,7 @@ SHAFT_LENGTH = 2;
 HEAD_HEIGHT = 3;
 
 M3x8 = [ 2.9, 5.5, 8, 3.0 ];
+M3x12 = [ 2.9, 5.5, 12, 3.0 ];
 M3x16 = [ 2.9, 5.5, 16, 3.0 ];
 
 // [ inner diameter, outer diameter, length ]
@@ -23,6 +24,11 @@ M3x6_INSERT = [ 2.4, 4.2, 6.0 ];
 module ScrewShaft( screw_def, include_clearance = true )
 {
     cylinder( h = screw_def[ SHAFT_LENGTH ], r = screw_def[ SHAFT_DIAMETER ] / 2 + ( include_clearance ? SCREW_CLEARANCE : 0 ), $fn = 24 );
+}
+
+module ScrewHead( screw_def, include_clearance = true )
+{
+    cylinder( h = screw_def[ HEAD_HEIGHT ], r = screw_def[ HEAD_DIAMETER ] / 2 + ( include_clearance ? SCREW_CLEARANCE : 0 ), $fn = 24 );
 }
 
 module HeatedInsert( screw_def )

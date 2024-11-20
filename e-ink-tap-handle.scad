@@ -1,19 +1,11 @@
 include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
 // include <modules/connectors.scad>
+include <modules/bezel.scad>
+include <modules/screw-connectors.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
-
-tap_handle_width = 56; // previous size was 50, but need more for stregth
-tap_handle_height = 210; // previous height was 190
-tap_handle_depth = 20;
-tap_handle_radius = 5.0;
-tap_handle_fn = 60;
-
-back_plate_clearance = 0.75; // clearance on all sides for the backplate
-back_plate_wall_snug_fit = 0.68; // eat this back into the clearance for the backplate
-back_plate_wall_width = 1.4;
 
 threaded_fitting_radius = 14.4 / 2;
 threaded_fitting_height = 18;
@@ -22,22 +14,37 @@ threaded_fitting_height = 18;
 // settings
 
 render_mode = "preview";
-// render_mode = "handle-only";
+// render_mode = "tap-handle-only";
+// render_mode = "tap-handle-v2-only";
 // render_mode = "backplate-only";
 // render_mode = "threaded-insert-test-only";
 // render_mode = "front-cutout-test-only";
+
+tap_handle_width = 56; // previous size was 50, but need more for stregth
+tap_handle_height = 210; // previous height was 190
+tap_handle_depth = 20;
+tap_handle_radius = 5.0;
+tap_handle_fn = 60;
 
 // drawing options
 
 // the offset from the front of the tap handle to recess the screen
 screen_depth_offset = 2.0;
 
-snap_connector_width = 8.0;
-snap_connector_height = 1.8;
-snap_connector_angle = 45;
-snap_connector_clearance = 0.1;
+// snap_connector_width = 8.0;
+// snap_connector_height = 1.8;
+// snap_connector_angle = 45;
+// snap_connector_clearance = 0.1;
+
+back_plate_clearance = 0.75; // clearance on all sides for the backplate
+back_plate_wall_snug_fit = 0.68; // eat this back into the clearance for the backplate
+back_plate_wall_width = 1.4;
 
 model_spacing = 10.0; // spacing between the tap handle and back plate in the render
+
+v2_face_depth = 1.6;
+v2_backplate_overhang_length = 8.0;
+v2_backplate_overhang_depth = 4.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -52,18 +59,41 @@ back_plate_height = e_ink_display_circuit_board_height;
 
 if( render_mode == "preview" )
 {
-    TapHandle();
+    // =============== tap handle v1 ===============
+
+    TapHandleV1();
 
     // backplate demo
     color([ 0.4, 0, 0 ])
         translate([( tap_handle_width - back_plate_width ) / 2 - back_plate_wall_snug_fit, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2 - back_plate_wall_snug_fit, -5 ])
             BackPlate( true );
 
-    // draw a display right below the 
+    // draw a display right below the opening
     translate([ ( tap_handle_width - back_plate_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset + 1 ]) // just offset it up a little
         EInkDisplay( true );
 
-    // backplate behind the tap handle
+    // =============== tap handle v2 ===============
+
+    translate([ -tap_handle_width - 5, 0, 0 ])
+    {
+        TapHandleV2();
+
+        // backplate demo
+        // color([ 0.4, 0, 0 ])
+        //     translate([( tap_handle_width - back_plate_width ) / 2 - back_plate_wall_snug_fit, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2 - back_plate_wall_snug_fit, -6 ])
+        //         BackPlate( true );
+
+        // draw a display right below the opening
+        translate([
+            ( tap_handle_width - back_plate_width ) / 2,
+            display_offset_height,
+            tap_handle_depth - v2_face_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset ])
+            EInkDisplay( true );
+    }
+
+    // =============== backplate ===============
+
+    // backplate
     translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
         BackPlate( true );
 
@@ -75,8 +105,8 @@ if( render_mode == "preview" )
             tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
             EInkDisplay( true );
 
-
-    // threaded insert test rig
+    // =============== threaded insert test rig ===============
+    
     translate([ 150, 0, 0 ])
     {
         render()
@@ -92,11 +122,18 @@ if( render_mode == "preview" )
     }
 }
 
-if( render_mode == "handle-only" )
+if( render_mode == "tap-handle-only" )
 {
     translate([ tap_handle_width, 0, tap_handle_depth ])
         rotate([ 0, 180, 0 ])
-            TapHandle();
+            TapHandleV1();
+}
+
+if( render_mode == "tap-handle-v2-only" )
+{
+    translate([ tap_handle_width, 0, tap_handle_depth ])
+        rotate([ 0, 180, 0 ])
+            TapHandleV2();
 }
 
 if( render_mode == "backplate-only" )
@@ -130,7 +167,7 @@ if( render_mode == "front-cutout-test-only" )
             {
                 translate([ tap_handle_width, 0, tap_handle_depth ])
                     rotate([ 0, 180, 0 ])
-                        TapHandle();
+                        TapHandleV1();
 
                 // cut off below the face
                 cube([ tap_handle_width, display_offset_height - e_ink_display_screen_offset_height - extra_space, tap_handle_depth ]);
@@ -149,7 +186,7 @@ if( render_mode == "front-cutout-test-only" )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TapHandle()
+module TapHandleV1()
 {
     render()
     {
@@ -231,12 +268,134 @@ module TapHandle()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module TapHandleV2()
+{
+    bezel_size = v2_face_depth;
+    bezel_depth = v2_face_depth;
+    bezel_full_width = e_ink_display_screen_usable_width + bezel_size * 2;
+    bezel_full_height = e_ink_display_screen_usable_height + bezel_size * 2;
+
+    render()
+    {
+        difference()
+        {
+            // main body
+            RoundedCube(
+                size = [ tap_handle_width, tap_handle_height, tap_handle_depth ],
+                r = tap_handle_radius,
+                center = false,
+                fn = tap_handle_fn );
+
+            // cut out the circuit board
+            translate([
+                ( tap_handle_width - e_ink_display_circuit_board_width - back_plate_clearance * 2 ) / 2,
+                display_offset_height - back_plate_clearance,
+                0
+                ])
+                cube([ e_ink_display_circuit_board_width + back_plate_clearance * 2, e_ink_display_circuit_board_height + back_plate_clearance * 2, tap_handle_depth - v2_face_depth ]);
+
+            // cut out the bezel area
+            translate([
+                ( tap_handle_width - bezel_full_width ) / 2,
+                display_offset_height + e_ink_display_screen_offset_height + e_ink_display_screen_bezel_bottom - bezel_size,
+                tap_handle_depth - v2_face_depth
+                ])
+                cube([ bezel_full_width, bezel_full_height, bezel_depth ]);
+
+            // cut out the backplate overhangs
+            translate([
+                ( tap_handle_width - back_plate_width - back_plate_clearance * 2 ) / 2,
+                display_offset_height - v2_backplate_overhang_length - back_plate_wall_snug_fit - back_plate_clearance,
+                0 ])
+                cube([
+                    back_plate_width + back_plate_clearance * 2,
+                    v2_backplate_overhang_length + back_plate_wall_snug_fit + back_plate_clearance,
+                    v2_backplate_overhang_depth + back_plate_wall_width ]);
+            translate([
+                ( tap_handle_width - back_plate_width - back_plate_clearance * 2 ) / 2,
+                display_offset_height + back_plate_height + back_plate_wall_snug_fit,
+                0 ])
+                cube([
+                    back_plate_width + back_plate_clearance * 2,
+                    v2_backplate_overhang_length + back_plate_wall_snug_fit,
+                    v2_backplate_overhang_depth + back_plate_wall_width ]);
+
+            // cut out the two screw threaded insert
+            translate([
+                tap_handle_width / 2,
+                display_offset_height - v2_backplate_overhang_length / 2 - back_plate_wall_snug_fit - back_plate_clearance,
+                back_plate_wall_width + v2_backplate_overhang_depth ])
+                HeatedInsert( M3x6_INSERT );
+            translate([
+                tap_handle_width / 2,
+                display_offset_height + back_plate_height + back_plate_wall_snug_fit + v2_backplate_overhang_length / 2,
+                back_plate_wall_width + v2_backplate_overhang_depth ])
+                HeatedInsert( M3x6_INSERT );
+
+            // cut out the tap threaded insert
+            translate([ tap_handle_width / 2, 0, tap_handle_depth / 2 ])
+                rotate([ 270, 0, 0 ])
+                    cylinder( h = threaded_fitting_height, r = threaded_fitting_radius, $fn = 48 );
+        }
+    }
+
+    // add the bezel back
+    translate([
+        ( tap_handle_width - bezel_full_width ) / 2,
+        display_offset_height + e_ink_display_screen_offset_height + e_ink_display_screen_bezel_bottom - bezel_size,
+        tap_handle_depth - v2_face_depth
+        ])
+        Bezel( e_ink_display_screen_usable_width, e_ink_display_screen_usable_height, bezel_size, bezel_depth );
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module BackPlate( show_clearance_areas )
 {
+    // NOTE the 0,0,0 point is the very original location, so snug_fit was added then the overhangs were added
+
     translate([ back_plate_wall_snug_fit, back_plate_wall_snug_fit, 0 ])
     {
         // back plate
-        cube([ back_plate_width, back_plate_height, back_plate_wall_width ]);
+        render()
+        {
+            difference()
+            {
+                union()
+                {
+                    // main back plate
+                    translate([ -back_plate_wall_snug_fit, -v2_backplate_overhang_length - back_plate_wall_snug_fit, 0 ])
+                        cube([
+                            back_plate_width + back_plate_wall_snug_fit * 2,
+                            back_plate_height + v2_backplate_overhang_length * 2 + back_plate_wall_snug_fit * 2,
+                            back_plate_wall_width
+                            ]);
+
+                    // bottom overhang extra depth
+                    translate([ -back_plate_wall_snug_fit, -v2_backplate_overhang_length - back_plate_wall_snug_fit, back_plate_wall_width ])
+                        cube([ back_plate_width + back_plate_wall_snug_fit * 2, v2_backplate_overhang_length + back_plate_wall_snug_fit, v2_backplate_overhang_depth - back_plate_wall_width ]);
+
+                    // top overhang extra depth
+                    translate([ -back_plate_wall_snug_fit, back_plate_height, back_plate_wall_width ])
+                        cube([ back_plate_width + back_plate_wall_snug_fit * 2, v2_backplate_overhang_length + back_plate_wall_snug_fit, v2_backplate_overhang_depth - back_plate_wall_width ]);
+                }
+
+                // cut out the bottom screw
+                translate([ ( back_plate_width + back_plate_wall_snug_fit * 2 ) / 2 - back_plate_wall_snug_fit, -v2_backplate_overhang_length / 2 - back_plate_wall_snug_fit, 0 ])
+                {
+                    ScrewShaft( M3x12 );
+                    ScrewHead( M3x12 );
+                }
+
+                // cut out the top screw
+                translate([ ( back_plate_width + back_plate_wall_snug_fit * 2 ) / 2 - back_plate_wall_snug_fit, back_plate_height + v2_backplate_overhang_length + back_plate_wall_snug_fit - v2_backplate_overhang_length / 2, 0 ])
+                {
+                    ScrewShaft( M3x12 );
+                    ScrewHead( M3x12 );
+                }
+            }
+        }
 
         corner_peg_width = e_ink_display_circuit_board_screw_hole_corner_offset * 2;
         corner_peg_height = tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_screen_depth - screen_depth_offset - back_plate_wall_width;
@@ -265,28 +424,18 @@ module BackPlate( show_clearance_areas )
         translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])
             cube([ e_ink_display_circuit_board_width, e_ink_display_circuit_board_horizonal_support_height,corner_peg_height ]);
 
-        // wall extra (undo the clearance for the back plate)
-        translate([ -back_plate_wall_snug_fit, -back_plate_wall_snug_fit, 0 ])
-            cube([ back_plate_width + back_plate_wall_snug_fit * 2, back_plate_wall_snug_fit, back_plate_wall_width ]);
-        translate([ back_plate_width, -back_plate_wall_snug_fit, 0 ])
-            cube([ back_plate_wall_snug_fit, back_plate_height + back_plate_wall_snug_fit * 2, back_plate_wall_width ]);
-        translate([ -back_plate_wall_snug_fit, back_plate_height, 0 ])
-            cube([ back_plate_width + back_plate_wall_snug_fit * 2, back_plate_wall_snug_fit, back_plate_wall_width ]);
-        translate([ -back_plate_wall_snug_fit, -back_plate_wall_snug_fit, 0 ])
-            cube([ back_plate_wall_snug_fit, back_plate_height + back_plate_wall_snug_fit * 2, back_plate_wall_width ]);
-
         // clearance
-        if( show_clearance_areas )
-        {
-            # translate([ 0, -back_plate_clearance, 0 ])
-                cube([ back_plate_width, back_plate_clearance, back_plate_wall_width ]);
-            # translate([ back_plate_width, 0, 0 ])
-                cube([ back_plate_clearance, back_plate_height, back_plate_wall_width ]);
-            # translate([ 0, back_plate_height, 0 ])
-                cube([ back_plate_width, back_plate_clearance, back_plate_wall_width ]);
-            # translate([ -back_plate_clearance, 0, 0 ])
-                cube([ back_plate_clearance, back_plate_height, back_plate_wall_width ]);
-        }
+        // if( show_clearance_areas )
+        // {
+        //     # translate([ 0, -back_plate_clearance, 0 ])
+        //         cube([ back_plate_width, back_plate_clearance, back_plate_wall_width ]);
+        //     # translate([ back_plate_width, 0, 0 ])
+        //         cube([ back_plate_clearance, back_plate_height, back_plate_wall_width ]);
+        //     # translate([ 0, back_plate_height, 0 ])
+        //         cube([ back_plate_width, back_plate_clearance, back_plate_wall_width ]);
+        //     # translate([ -back_plate_clearance, 0, 0 ])
+        //         cube([ back_plate_clearance, back_plate_height, back_plate_wall_width ]);
+        // }
     }
 }
 
