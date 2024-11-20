@@ -79,9 +79,13 @@ if( render_mode == "preview" )
         TapHandleV2();
 
         // backplate demo
-        // color([ 0.4, 0, 0 ])
-        //     translate([( tap_handle_width - back_plate_width ) / 2 - back_plate_wall_snug_fit, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2 - back_plate_wall_snug_fit, -6 ])
-        //         BackPlate( true );
+        color([ 0.4, 0, 0 ])
+            translate([
+                ( tap_handle_width - back_plate_width ) / 2 - back_plate_wall_snug_fit,
+                display_offset_height - back_plate_clearance - back_plate_wall_snug_fit,
+                -1
+                ])
+                BackPlate( true );
 
         // draw a display right below the opening
         translate([
@@ -313,11 +317,11 @@ module TapHandleV2()
                     v2_backplate_overhang_depth + back_plate_wall_width ]);
             translate([
                 ( tap_handle_width - back_plate_width - back_plate_clearance * 2 ) / 2,
-                display_offset_height + back_plate_height + back_plate_wall_snug_fit,
+                display_offset_height + back_plate_height,
                 0 ])
                 cube([
                     back_plate_width + back_plate_clearance * 2,
-                    v2_backplate_overhang_length + back_plate_wall_snug_fit,
+                    v2_backplate_overhang_length,
                     v2_backplate_overhang_depth + back_plate_wall_width ]);
 
             // cut out the two screw threaded insert
