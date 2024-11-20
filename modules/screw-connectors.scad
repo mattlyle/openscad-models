@@ -31,9 +31,9 @@ module ScrewHead( screw_def, include_clearance = true )
     cylinder( h = screw_def[ HEAD_HEIGHT ], r = screw_def[ HEAD_DIAMETER ] / 2 + ( include_clearance ? SCREW_CLEARANCE : 0 ), $fn = 24 );
 }
 
-module HeatedInsert( screw_def )
+module HeatedInsert( screw_def, extra_depth = 0.0 )
 {
-    cylinder( h = screw_def[ INSERT_LENGTH ], r = screw_def[ INSERT_OUTER_DIAMETER ] / 2, $fn = 24 );
+    cylinder( h = screw_def[ INSERT_LENGTH ] + extra_depth, r = screw_def[ INSERT_OUTER_DIAMETER ] / 2, $fn = 24 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

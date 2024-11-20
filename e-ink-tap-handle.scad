@@ -325,12 +325,12 @@ module TapHandleV2()
                 tap_handle_width / 2,
                 display_offset_height - v2_backplate_overhang_length / 2 - back_plate_wall_snug_fit - back_plate_clearance,
                 back_plate_wall_width + v2_backplate_overhang_depth ])
-                HeatedInsert( M3x6_INSERT );
+                HeatedInsert( M3x6_INSERT, 2.0 );
             translate([
                 tap_handle_width / 2,
                 display_offset_height + back_plate_height + back_plate_wall_snug_fit + v2_backplate_overhang_length / 2,
                 back_plate_wall_width + v2_backplate_overhang_depth ])
-                HeatedInsert( M3x6_INSERT );
+                HeatedInsert( M3x6_INSERT, 2.0 );
 
             // cut out the tap threaded insert
             translate([ tap_handle_width / 2, 0, tap_handle_depth / 2 ])
@@ -346,7 +346,6 @@ module TapHandleV2()
         tap_handle_depth - v2_face_depth
         ])
         Bezel( e_ink_display_screen_usable_width, e_ink_display_screen_usable_height, bezel_size, bezel_depth );
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -384,15 +383,15 @@ module BackPlate( show_clearance_areas )
                 // cut out the bottom screw
                 translate([ ( back_plate_width + back_plate_wall_snug_fit * 2 ) / 2 - back_plate_wall_snug_fit, -v2_backplate_overhang_length / 2 - back_plate_wall_snug_fit, 0 ])
                 {
-                    ScrewShaft( M3x12 );
-                    ScrewHead( M3x12 );
+                    ScrewShaft( M3x8 );
+                    ScrewHead( M3x8 );
                 }
 
                 // cut out the top screw
                 translate([ ( back_plate_width + back_plate_wall_snug_fit * 2 ) / 2 - back_plate_wall_snug_fit, back_plate_height + v2_backplate_overhang_length + back_plate_wall_snug_fit - v2_backplate_overhang_length / 2, 0 ])
                 {
-                    ScrewShaft( M3x12 );
-                    ScrewHead( M3x12 );
+                    ScrewShaft( M3x8 );
+                    ScrewHead( M3x8 );
                 }
             }
         }
