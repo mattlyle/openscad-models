@@ -310,15 +310,17 @@ module TapHandleV2()
             translate([
                 ( tap_handle_width - back_plate_width - back_plate_clearance * 2 ) / 2,
                 display_offset_height - v2_backplate_overhang_length - back_plate_wall_snug_fit - back_plate_clearance,
-                0 ])
+                0
+                ])
                 cube([
                     back_plate_width + back_plate_clearance * 2,
                     v2_backplate_overhang_length + back_plate_wall_snug_fit + back_plate_clearance,
                     v2_backplate_overhang_depth + back_plate_wall_width ]);
-            translate([
+            # translate([
                 ( tap_handle_width - back_plate_width - back_plate_clearance * 2 ) / 2,
                 display_offset_height + back_plate_height,
-                0 ])
+                0
+                ])
                 cube([
                     back_plate_width + back_plate_clearance * 2,
                     v2_backplate_overhang_length,
