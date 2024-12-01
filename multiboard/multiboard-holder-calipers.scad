@@ -1,9 +1,9 @@
-// include <../3rd-party/multiboard_parametric_extended/multiboard_parametric_extended.scad>
+// include <../../3rd-party/multiboard_parametric_extended/multiboard_parametric_extended.scad>
 
-include <modules/multiboard.scad>
-include <modules/rounded-cube.scad>
-// include <modules/text-label.scad>
-include <modules/svg.scad>
+include <../modules/multiboard.scad>
+include <../modules/rounded-cube.scad>
+// include <../modules/text-label.scad>
+include <../modules/svg.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -203,7 +203,7 @@ module CaliperBoxHolder(
         translate([ svg_offset_vector[ 0 ], svg_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             scale( svg_scale_size_vector )
                 rotate([ 0, 0, svg_offset_rotation_z ])
-                    SVG( "../assets/calipers-svgrepo-com.svg" );
+                    SVG( "../../assets/calipers-svgrepo-com.svg" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
