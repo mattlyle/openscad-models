@@ -1,5 +1,5 @@
-use <../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-include <../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
+include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements

@@ -1,8 +1,8 @@
-use <../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-include <../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
+include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
-include <modules/rounded-cube.scad>
-include <modules/text-label.scad>
+include <../modules/rounded-cube.scad>
+include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -28,13 +28,13 @@ jig2_height = 3;
 jig2_clearance = 0.1;
 
 // only choose one
-render_mode = "preview";
+// render_mode = "preview";
 // render_mode = "tool-top";
 // render_mode = "tool-bottom";
 // render_mode = "jig-bottom";
 // render_mode = "jig-top-base";
 // render_mode = "jig-top-bin";
-// render_mode = "jig2";
+render_mode = "jig2";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -133,7 +133,7 @@ module GridfinityMagnetJig( label_text )
     {
         # translate([ bin_size, 0, jig_height + gf_zpitch ])
             rotate([ 180, 0, 0 ])
-                import( "assets/baseplate-1-1.stl" );
+                import( "../assets/baseplate-1-1.stl" );
     }
 
     // base
@@ -183,7 +183,7 @@ module GridfinityMagnetJig2()
         difference()
         {
             translate([ gf_pitch, gf_pitch, 0 ])
-                import( "assets/baseplate-1-1.stl" );
+                import( "../assets/baseplate-1-1.stl" );
             
             // remove the top
             translate([ -1, -1, bottom_height ])

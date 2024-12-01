@@ -1,4 +1,4 @@
-use <../3rd-party/MCAD/regular_shapes.scad>
+use <../../3rd-party/MCAD/regular_shapes.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // settings

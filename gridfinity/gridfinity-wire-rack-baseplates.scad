@@ -1,5 +1,5 @@
-use <../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_baseplate.scad>
-include <../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_baseplate.scad>
+include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
 wire_diameter = 2.6; // measured from 2.5 to 2.75
 wire_separation = 28.0 - wire_diameter; // outside to outside was 27 - 28.5

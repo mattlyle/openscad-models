@@ -1,10 +1,10 @@
-use <../3rd-party/MCAD/regular_shapes.scad>
+use <../../3rd-party/MCAD/regular_shapes.scad>
 
-include <modules/multiboard.scad>
-include <modules/triangular-prism.scad>
-include <modules/rounded-cube.scad>
-include <modules/flattened-pyramid.scad>
-include <modules/text-label.scad>
+include <../modules/multiboard.scad>
+include <../modules/triangular-prism.scad>
+include <../modules/rounded-cube.scad>
+include <../modules/flattened-pyramid.scad>
+include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
