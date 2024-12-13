@@ -28,6 +28,21 @@ wall_width = 2.0;
 
 roll_holder_size = 20.0;
 
+num_rows = 8;
+num_cols_even = 2; // i.e. the number of colums in the bottommost (i.e. 0) row
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// functions
+
+function CalculateXOffset( row, col ) =
+    row % 2 == 0
+        ? x_offset + hex_R * ( 3 * col ) + wall_width * ( 2 * col )
+        : x_offset + hex_R * ( 3 * col + 1 ) + hex_R / 2 + wall_width * ( 2 * col + 1 );
+
+function CalculateZOffset( row, col ) =
+    row % 2 == 0
+        ? hex_r * row + wall_width / 2 * row
+        : hex_r * row + wall_width / 2 * row;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -41,18 +56,9 @@ hex_r = selected_roll_radius_with_clearance;
 hex_R = hex_r * 2 / sqrt( 3 );
 // hex_a = hex_R;
 
-// this is the padding to make the rolls fit into the center of the cube
-x_offset = 0; // TODO finish!
-
-function CalculateXOffset( row, col ) =
-    row % 2 == 0
-        ? hex_R * ( 3 * col ) + wall_width * ( 2 * col )
-        : hex_R * ( 3 * col + 1 ) + hex_R / 2 + wall_width * ( 2 * col + 1 );
-
-function CalculateZOffset( row, col ) =
-    row % 2 == 0
-        ? hex_r * row + wall_width / 2 * row
-        : hex_r * row + wall_width / 2 * row;
+// calculate the total width of the hexagons so we can center it in the cube
+total_hex_x = hex_R * ( 3 * num_cols_even + 2 ) + wall_width * ( 2 * num_cols_even + 2 );
+x_offset = ( cube_x - total_hex_x ) / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -61,6 +67,20 @@ translate([ hex_R + wall_width, 0, hex_r + wall_width ])
 {
     RollPreview( selected_roll_radius );
 
+    for( row = [ 0 : 9 ] )
+    {
+        for( col = [ 0 : 3 ] )
+        {
+            if( row <= num_rows && ( ( row % 2 == 0 && col <= num_cols_even ) || ( row % 2 == 1 && col <= num_cols_even - 1 ) ) )
+            {
+                translate([ CalculateXOffset( row, col ), 0, CalculateZOffset( row, col ) ])
+                    _RollHexHolderHexagon();
+            }            
+        }
+    }
+
+
+/*
     // row 0
 
     translate([ CalculateXOffset( 0, 0 ), 0, CalculateZOffset( 0, 0 ) ])
@@ -155,6 +175,7 @@ translate([ hex_R + wall_width, 0, hex_r + wall_width ])
         _RollHexHolderHexagon();
     translate([ CalculateXOffset( 8, 3 ), 0, CalculateZOffset( 8, 3 ) ])
         _RollHexHolderHexagon();
+*/
 }
 
 // BuildPlatePreview();
