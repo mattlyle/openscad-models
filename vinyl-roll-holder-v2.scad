@@ -65,11 +65,6 @@ wall_width_z = wall_width_x * sqrt( 3 ) / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-// _RollHexHolderHexagon();
-
-// # translate([ 0, 0, 0 ]) cube([ hex_R + wall_width_x, 10, hex_r ]);
-// # translate([ 0, 15, 0 ]) cube([ hex_R, 10, hex_r + wall_width_z ]);
-
 translate([ hex_R + wall_width_x, 0, hex_r + wall_width_z ])
 {
     translate([ x_offset, 0, 0 ])
