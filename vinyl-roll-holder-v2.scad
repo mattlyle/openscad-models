@@ -139,6 +139,18 @@ module _HolderFace()
     // right side
     translate([ cube_x - wall_width_x, 0, 0 ])
         cube([ wall_width_x, roll_holder_y, total_hex_z ]);
+
+    // side supports
+    for( row = [ 1 : 2 : num_rows ] )
+    {
+        // left support
+        translate([ 0, 0, CalculateZOffset( row, 0 ) ])
+            cube([ x_offset + wall_width_x, roll_holder_y, wall_width_z ]);
+
+        // right support
+        translate([ cube_x - x_offset - wall_width_x, 0, CalculateZOffset( row, 0 ) ])
+            cube([ x_offset + wall_width_x, roll_holder_y, wall_width_z ]);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
