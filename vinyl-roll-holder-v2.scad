@@ -53,7 +53,7 @@ function CalculateXOffset( row, col ) =
         ? x_offset + hex_R * ( 3 * col ) + wall_width_x * ( 2 * col )
         : x_offset + hex_R * ( 3 * col + 1 ) + hex_R / 2 + wall_width_x * ( 2 * col + 1 );
 
-function CalculateZOffset( row, col ) =
+function CalculateZOffset( row ) =
     row % 2 == 0
         ? hex_r * row + wall_width_z / 2 * row
         : hex_r * row + wall_width_z / 2 * row;
@@ -85,6 +85,8 @@ x_offset = ( cube_x - total_hex_x ) / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
+BuildPlatePreview();
+
 if( render_mode == "debug-preview" )
 {
     translate([ x_offset + hex_R + wall_width_x, cube_y - roll_length, hex_r + wall_width_z ])
@@ -105,8 +107,6 @@ if( render_mode == "debug-preview" )
 
     translate([ 0, back_face_offset_y + face_brim_y, 0 ])
         _HolderFace();
-
-    // BuildPlatePreview();
 
     CubePreview();
 
@@ -146,7 +146,7 @@ module _HolderFace()
             {
                 if( row <= num_rows - 1 && ( ( row % 2 == 0 && col <= num_cols_even - 1 ) || ( row % 2 == 1 && col <= num_cols_even - 2 ) ) )
                 {
-                    translate([ CalculateXOffset( row, col ), 0, CalculateZOffset( row, col ) ])
+                    translate([ CalculateXOffset( row, col ), 0, CalculateZOffset( row ) ])
                         _RollHexHolderHexagon();
                 }            
             }
@@ -164,11 +164,11 @@ module _HolderFace()
     for( row = [ 1 : 2 : num_rows ] )
     {
         // left support
-        translate([ 0, 0, CalculateZOffset( row, 0 ) ])
+        translate([ 0, 0, CalculateZOffset( row ) ])
             cube([ x_offset + wall_width_x, roll_holder_y, wall_width_z ]);
 
         // right support
-        translate([ cube_x - x_offset - wall_width_x, 0, CalculateZOffset( row, 0 ) ])
+        translate([ cube_x - x_offset - wall_width_x, 0, CalculateZOffset( row ) ])
             cube([ x_offset + wall_width_x, roll_holder_y, wall_width_z ]);
     }
 }
@@ -196,7 +196,7 @@ module _HolderBase()
             {
                 for( col = [ 0 : num_cols_even - 1 ] )
                 {
-                    translate([ CalculateXOffset( 0, col ), face_brim_y, CalculateZOffset( 0, col ) ])
+                    translate([ CalculateXOffset( 0, col ), face_brim_y, CalculateZOffset( 0 ) ])
                         rotate([ -90, 0, 0 ])
                             hexagon_prism( radius = hex_R + wall_width_x, height = roll_holder_y );
                 }
