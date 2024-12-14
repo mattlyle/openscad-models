@@ -82,13 +82,13 @@ x_offset = ( cube_x - total_hex_x ) / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-translate([ x_offset + hex_R + wall_width_x, 0, hex_r + wall_width_z ])
+translate([ x_offset + hex_R + wall_width_x, cube_y - roll_length, hex_r + wall_width_z ])
     RollPreview();
 
 // front
 
-// translate([ 0, 0, 0 ])
-//     _HolderBase();
+translate([ 0, 0, 0 ])
+    _HolderBase();
 
 translate([ 0, face_brim_y, 0 ])
     _HolderFace();
@@ -164,6 +164,25 @@ module _HolderBase()
     // back brim
     translate([ 0, face_brim_y + roll_holder_y, 0 ])
         cube([ cube_x, face_brim_y, wall_width_z ]);
+
+    render()
+    {
+        difference()
+        {
+            translate([ wall_width_x, face_brim_y, 0 ])
+                cube([ cube_x - wall_width_x * 2, roll_holder_y, hex_R - wall_width_z * 2 ]);
+
+            translate([ hex_R + wall_width_x, 0, hex_r + wall_width_z ])
+            {
+                for( col = [ 0 : num_cols_even - 1 ] )
+                {
+                    translate([ CalculateXOffset( 0, col ), face_brim_y, CalculateZOffset( 0, col ) ])
+                        rotate([ -90, 0, 0 ])
+                            hexagon_prism( radius = hex_R + wall_width_x, height = roll_holder_y );
+                }
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,10 +196,10 @@ module _RollHexHolderHexagon()
             difference()
             {
                 // outer
-                hexagon_prism( radius = hex_R + wall_width_x, height = roll_holder_size );
+                hexagon_prism( radius = hex_R + wall_width_x, height = roll_holder_y );
 
                 // inner
-                hexagon_prism( radius = hex_R, height = roll_holder_size );
+                hexagon_prism( radius = hex_R, height = roll_holder_y );
             }
         }
     }
