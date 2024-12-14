@@ -1,4 +1,5 @@
-use <../3rd-party/MCAD/regular_shapes.scad>
+include <../3rd-party/BOSL2/std.scad>
+// use <../3rd-party/MCAD/regular_shapes.scad>
 
 use <modules/utils.scad>
 
@@ -198,7 +199,7 @@ module _HolderBase()
                 {
                     translate([ CalculateXOffset( 0, col ), face_brim_y, CalculateZOffset( 0 ) ])
                         rotate([ -90, 0, 0 ])
-                            hexagon_prism( radius = hex_R + wall_width_x, height = roll_holder_y );
+                            regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_x, anchor = BOTTOM );
                 }
             }
         }
@@ -216,10 +217,10 @@ module _RollHexHolderHexagon()
             difference()
             {
                 // outer
-                hexagon_prism( radius = hex_R + wall_width_x, height = roll_holder_y );
+                regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_x, anchor = BOTTOM );
 
                 // inner
-                hexagon_prism( radius = hex_R, height = roll_holder_y );
+                regular_prism( n = 6, height = roll_holder_y, r = hex_R, anchor = BOTTOM );
             }
         }
     }
