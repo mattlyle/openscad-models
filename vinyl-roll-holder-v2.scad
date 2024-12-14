@@ -105,6 +105,15 @@ translate([ 0, back_face_offset_y + face_brim_y, 0 ])
 
 CubePreview();
 
+// preview how a face will will print
+translate([ 350, 0, roll_holder_y ])
+    rotate([ -90, 0, 0 ])
+        _HolderFace();
+
+// preview how a base will print
+translate([ 700, 0, 0 ])
+    _HolderBase();
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module _HolderFace()
