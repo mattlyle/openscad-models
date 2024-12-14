@@ -19,6 +19,8 @@ cube_z = 295;
 
 // only choose one
 render_mode = "debug-preview";
+// render_mode = "render-face-for-printing";
+// render_mode = "render-base-for-printing";
 
 selected_roll_radius = small_roll_radius;
 
@@ -40,6 +42,7 @@ roll_holder_y = 20.0;
 // the y-width of the brim at the bottom of the holder face
 face_brim_y = 15.0;
 
+// the y-offset to the back face
 back_face_offset_y = 200;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,37 +85,54 @@ x_offset = ( cube_x - total_hex_x ) / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-translate([ x_offset + hex_R + wall_width_x, cube_y - roll_length, hex_r + wall_width_z ])
-    RollPreview();
+if( render_mode == "debug-preview" )
+{
+    translate([ x_offset + hex_R + wall_width_x, cube_y - roll_length, hex_r + wall_width_z ])
+        RollPreview();
 
-// front
+    // front
 
-translate([ 0, 0, 0 ])
-    _HolderBase();
+    translate([ 0, 0, 0 ])
+        _HolderBase();
 
-translate([ 0, face_brim_y, 0 ])
-    _HolderFace();
-
-// back
-
-translate([ 0, back_face_offset_y, 0 ])
-    _HolderBase();
-
-translate([ 0, back_face_offset_y + face_brim_y, 0 ])
-    _HolderFace();
-
-// BuildPlatePreview();
-
-CubePreview();
-
-// preview how a face will will print
-translate([ 350, 0, roll_holder_y ])
-    rotate([ -90, 0, 0 ])
+    translate([ 0, face_brim_y, 0 ])
         _HolderFace();
 
-// preview how a base will print
-translate([ 700, 0, 0 ])
+    // back
+
+    translate([ 0, back_face_offset_y, 0 ])
+        _HolderBase();
+
+    translate([ 0, back_face_offset_y + face_brim_y, 0 ])
+        _HolderFace();
+
+    // BuildPlatePreview();
+
+    CubePreview();
+
+    // preview how a face will will print
+    translate([ 350, 0, roll_holder_y ])
+        rotate([ -90, 0, 0 ])
+            _HolderFace();
+
+    // preview how a base will print
+    translate([ 700, 0, 0 ])
+        _HolderBase();
+}
+else if( render_mode == "render-face-for-printing" )
+{
+    translate([ 0, 0, roll_holder_y ])
+        rotate([ -90, 0, 0 ])
+            _HolderFace();
+}
+else if( render_mode == "render-base-for-printing" )
+{
     _HolderBase();
+}
+else
+{
+    echo( "Unknown render mode: ", render_mode );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
