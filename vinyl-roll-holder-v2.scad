@@ -20,8 +20,14 @@ cube_z = 295;
 
 // only choose one
 render_mode = "debug-preview";
-// render_mode = "render-face-for-printing";
-// render_mode = "render-base-for-printing";
+
+// render_mode = "render-face-0-for-printing";
+// render_mode = "render-face-1-for-printing";
+// render_mode = "render-face-2-for-printing";
+// render_mode = "render-face-3-for-printing";
+
+// render_mode = "render-base-0-for-printing";
+// render_mode = "render-base-1-for-printing";
 
 selected_roll_radius = small_roll_radius;
 
@@ -88,6 +94,11 @@ function CalculateHexagonZOffset( row ) =
         ? hex_size_outer_z * ( 1 + row ) / 2
         : hex_size_outer_z * ( 1 + row ) / 2;
 
+function GetHexGroup( row, col ) =
+    row < 5
+        ? ( ( ( row % 2 == 0 && col < 2 ) || ( row % 2 == 1 && col == 0 ) ) ? 0 : 1 )
+        : ( ( ( row % 2 == 0 && col < 2 ) || ( row % 2 == 1 && col == 0 ) ) ? 2 : 3 );
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -102,7 +113,7 @@ if( render_mode == "debug-preview" )
         _HolderBase();
 
     translate([ 0, face_brim_y, 0 ])
-        _HolderFace();
+        _HolderFace( colorize = true );
 
     // back base
 
@@ -110,19 +121,60 @@ if( render_mode == "debug-preview" )
         _HolderBase();
 
     translate([ 0, back_face_offset_y + face_brim_y, 0 ])
-        _HolderFace();
+        _HolderFace( colorize = true );
 
     CubePreview();
 
-    // preview how a face will will print
     translate([ 350, 0, 0 ])
     {
-        BuildPlatePreview();
+        // preview how a faces will will print
 
-        translate([ 0, 0, roll_holder_y ])
-            rotate([ -90, 0, 0 ])
-                _HolderFace();
+        // full face for reference
+        translate([ 0, 0, 0 ])
+        {
+            BuildPlatePreview();
+            translate([ 0, 0, roll_holder_y ])
+                rotate([ -90, 0, 0 ])
+                    _HolderFace();
+        }
+
+        // id=0
+        translate([ 0, 350, 0 ])
+        {
+            BuildPlatePreview();
+            translate([ 0, 0, roll_holder_y ])
+                rotate([ -90, 0, 0 ])
+                    _HolderFace( only_hex_group = 0 );
+        }
+
+        // id=1
+        translate([ 0, 700, 0 ])
+        {
+            BuildPlatePreview();
+            translate([ 0, 0, roll_holder_y ])
+                rotate([ -90, 0, 0 ])
+                    _HolderFace( only_hex_group = 1 );
+        }
+
+        // id=2
+        translate([ 0, 1050, 0 ])
+        {
+            BuildPlatePreview();
+            translate([ 0, 0, roll_holder_y ])
+                rotate([ -90, 0, 0 ])
+                    _HolderFace( only_hex_group = 2 );
+        }
+
+        // id=3
+        translate([ 0, 1400, 0 ])
+        {
+            BuildPlatePreview();
+            translate([ 0, 0, roll_holder_y ])
+                rotate([ -90, 0, 0 ])
+                    _HolderFace( only_hex_group = 3 );
+        }
     }
+    
 
     // preview how a base will print
     translate([ 700, 0, 0 ])
@@ -149,7 +201,7 @@ else
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _HolderFace()
+module _HolderFace( only_hex_group = -1, colorize = false )
 {
     for( row = [ 0 : num_rows - 1 ] )
     {
@@ -157,14 +209,25 @@ module _HolderFace()
         {
             if( row <= num_rows - 1 && ( ( row % 2 == 0 && col <= num_cols_even - 1 ) || ( row % 2 == 1 && col <= num_cols_even - 2 ) ) )
             {
-                _PlaceHexagon( row, col );
+                if( only_hex_group == -1 || only_hex_group == GetHexGroup( row, col ) )
+                {
+                    if( colorize )
+                    {
+                        SelectColorInPreview( row, col )
+                            _PlaceHexagon( row, col );
+                    }
+                    else
+                    {
+                        _PlaceHexagon( row, col );
+                    }
+                }
             }            
         }
     }
 
     // left side
     translate([ 0, 0, 0 ])
-    cube([ wall_width_single_x, roll_holder_y, total_hex_z ]);
+        cube([ wall_width_single_x, roll_holder_y, total_hex_z ]);
 
     // right side
     translate([ cube_x - wall_width_single_x, 0, 0 ])
@@ -248,6 +311,38 @@ module RollPreview()
 {
     % rotate([ -90, 0, 0 ])
         cylinder( h = roll_length, r = selected_roll_radius, $fn = 48 );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SelectColorInPreview( row, col )
+{
+    group_id = GetHexGroup( row, col );
+
+    if( group_id == 0 )
+    {
+        color([ 0.4, 0, 0 ])
+            children();
+    }
+    else if( group_id == 1 )
+    {
+        color([ 0, 0.4, 0 ])
+            children();
+    }
+    else if( group_id == 2 )
+    {
+        color([ 0, 0, 0.4 ])
+            children();
+    }
+    else if( group_id == 3 )
+    {
+        color([ 0.4, 0, 0.4 ])
+            children();
+    }
+    else
+    {
+        assert( false, "Unknown group id: " + group_id );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
