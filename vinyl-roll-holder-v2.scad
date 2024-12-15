@@ -35,7 +35,7 @@ num_cols_even = 3;
 roll_clearance = 5.0;
 
 // the wall width in the x-direction (z-direction is slightly different due to geometry)
-wall_width_x = 2.0;
+wall_width_single_x = 1.2;
 
 // the y-width of the hexagons
 roll_holder_y = 20.0;
@@ -47,19 +47,6 @@ face_brim_y = 15.0;
 back_face_offset_y = 200;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// functions
-
-function CalculateXOffset( row, col ) =
-    row % 2 == 0
-        ? x_offset + hex_R * ( 3 * col ) + wall_width_x * ( 2 * col )
-        : x_offset + hex_R * ( 3 * col + 1 ) + hex_R / 2 + wall_width_x * ( 2 * col + 1 );
-
-function CalculateZOffset( row ) =
-    row % 2 == 0
-        ? hex_r * row + wall_width_z / 2 * row
-        : hex_r * row + wall_width_z / 2 * row;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 // formulas: https://www.gigacalculator.com/calculators/hexagon-calculator.php
@@ -67,33 +54,49 @@ function CalculateZOffset( row ) =
 selected_roll_radius_with_clearance = selected_roll_radius + roll_clearance;
 
 // this is a different size because as the hexagon goes around
-wall_width_z = wall_width_x * sqrt( 3 ) / 2;
+wall_width_single_z = wall_width_single_x * sqrt( 3 ) / 2;
 
 // selected_roll_radius
 hex_r = selected_roll_radius_with_clearance;
 hex_R = hex_r * 2 / sqrt( 3 );
 // hex_a = hex_R;
 
+hex_size_outer_x = hex_R * 2 + wall_width_single_x * 2;
+hex_size_outer_y = roll_holder_y;
+hex_size_outer_z = hex_r * 2 + wall_width_single_z * 2;
+
 // calculate the total width of the hexagons
-total_hex_x = hex_R * ( 3 * ( num_cols_even - 1 ) + 2 ) + wall_width_x * ( 2 * ( num_cols_even - 1 ) + 2 );
+// total_hex_x = hex_R * ( 3 * ( num_cols_even - 1 ) + 2 ) + wall_width_single_x * ( 2 * ( num_cols_even - 1 ) + 2 );
+total_hex_x = hex_size_outer_x * num_cols_even + ( num_cols_even - 1 ) * hex_size_outer_x / 2;
 
 // calulate the total height of the hexagons
-total_hex_z = ceil( num_rows / 2 ) * hex_r * 2 + ceil( num_rows / 2 + 1 ) * wall_width_z;
+total_hex_z = ceil( num_rows / 2 ) * hex_r * 2 + ceil( num_rows / 2 + 1 ) * wall_width_single_z;
 
 // center the hexagons in the face
-x_offset = ( cube_x - total_hex_x ) / 2;
+center_in_cube_offset_x = ( cube_x - total_hex_x ) / 2;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// functions
+
+function CalculateHexagonXOffset( row, col ) =
+    row % 2 == 0
+        ? center_in_cube_offset_x + hex_size_outer_x * ( 1 + col * 3 ) / 2
+        : center_in_cube_offset_x + hex_size_outer_x * ( 5 + col * 6 ) / 4;
+
+function CalculateHexagonZOffset( row ) =
+    row % 2 == 0
+        ? hex_size_outer_z * ( 1 + row ) / 2
+        : hex_size_outer_z * ( 1 + row ) / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-BuildPlatePreview();
-
 if( render_mode == "debug-preview" )
 {
-    translate([ x_offset + hex_R + wall_width_x, cube_y - roll_length, hex_r + wall_width_z ])
+    translate([ CalculateHexagonXOffset( 0, 0 ), cube_y - roll_length, CalculateHexagonZOffset( 0 ) ])
         RollPreview();
 
-    // front
+    // front face
 
     translate([ 0, 0, 0 ])
         _HolderBase();
@@ -101,7 +104,7 @@ if( render_mode == "debug-preview" )
     translate([ 0, face_brim_y, 0 ])
         _HolderFace();
 
-    // back
+    // back base
 
     translate([ 0, back_face_offset_y, 0 ])
         _HolderBase();
@@ -112,13 +115,22 @@ if( render_mode == "debug-preview" )
     CubePreview();
 
     // preview how a face will will print
-    translate([ 350, 0, roll_holder_y ])
-        rotate([ -90, 0, 0 ])
-            _HolderFace();
+    translate([ 350, 0, 0 ])
+    {
+        BuildPlatePreview();
+
+        translate([ 0, 0, roll_holder_y ])
+            rotate([ -90, 0, 0 ])
+                _HolderFace();
+    }
 
     // preview how a base will print
     translate([ 700, 0, 0 ])
+    {
+        BuildPlatePreview();
+
         _HolderBase();
+    }
 }
 else if( render_mode == "render-face-for-printing" )
 {
@@ -139,38 +151,35 @@ else
 
 module _HolderFace()
 {
-    translate([ hex_R + wall_width_x, 0, hex_r + wall_width_z ])
+    for( row = [ 0 : num_rows - 1 ] )
     {
-        for( row = [ 0 : num_rows - 1 ] )
+        for( col = [ 0 : num_cols_even - 1 ] )
         {
-            for( col = [ 0 : num_cols_even - 1 ] )
+            if( row <= num_rows - 1 && ( ( row % 2 == 0 && col <= num_cols_even - 1 ) || ( row % 2 == 1 && col <= num_cols_even - 2 ) ) )
             {
-                if( row <= num_rows - 1 && ( ( row % 2 == 0 && col <= num_cols_even - 1 ) || ( row % 2 == 1 && col <= num_cols_even - 2 ) ) )
-                {
-                    translate([ CalculateXOffset( row, col ), 0, CalculateZOffset( row ) ])
-                        _RollHexHolderHexagon();
-                }            
-            }
+                _PlaceHexagon( row, col );
+            }            
         }
     }
 
     // left side
-    cube([ wall_width_x, roll_holder_y, total_hex_z ]);
+    translate([ 0, 0, 0 ])
+    cube([ wall_width_single_x, roll_holder_y, total_hex_z ]);
 
     // right side
-    translate([ cube_x - wall_width_x, 0, 0 ])
-        cube([ wall_width_x, roll_holder_y, total_hex_z ]);
+    translate([ cube_x - wall_width_single_x, 0, 0 ])
+        cube([ wall_width_single_x, roll_holder_y, total_hex_z ]);
 
     // side supports
-    for( row = [ 1 : 2 : num_rows ] )
+    for( row = [ 0 : 2 : num_rows ] )
     {
         // left support
-        translate([ 0, 0, CalculateZOffset( row ) ])
-            cube([ x_offset + wall_width_x, roll_holder_y, wall_width_z ]);
+        translate([ 0, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
+            cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
         // right support
-        translate([ cube_x - x_offset - wall_width_x, 0, CalculateZOffset( row ) ])
-            cube([ x_offset + wall_width_x, roll_holder_y, wall_width_z ]);
+        translate([ cube_x - center_in_cube_offset_x - wall_width_single_x, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
+            cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
     }
 }
 
@@ -180,27 +189,25 @@ module _HolderBase()
 {
     // front brim
     translate([ 0, 0, 0 ])
-        cube([ cube_x, face_brim_y, wall_width_z ]);
+        cube([ cube_x, face_brim_y, wall_width_single_z ]);
 
     // back brim
     translate([ 0, face_brim_y + roll_holder_y, 0 ])
-        cube([ cube_x, face_brim_y, wall_width_z ]);
+        cube([ cube_x, face_brim_y, wall_width_single_z ]);
 
     render()
     {
         difference()
         {
-            translate([ wall_width_x, face_brim_y, 0 ])
-                cube([ cube_x - wall_width_x * 2, roll_holder_y, hex_R - wall_width_z * 2 ]);
+            // first draw a block we will cut out of
+            translate([ wall_width_single_x, face_brim_y, 0 ])
+                cube([ cube_x - wall_width_single_x * 2, roll_holder_y, hex_size_outer_z / 2 ]);
 
-            translate([ hex_R + wall_width_x, 0, hex_r + wall_width_z ])
+            // now cut out all the hexagons
+            for( col = [ 0 : num_cols_even - 1 ] )
             {
-                for( col = [ 0 : num_cols_even - 1 ] )
-                {
-                    translate([ CalculateXOffset( 0, col ), face_brim_y, CalculateZOffset( 0 ) ])
-                        rotate([ -90, 0, 0 ])
-                            regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_x, anchor = BOTTOM );
-                }
+                translate([ 0, face_brim_y, 0 ])
+                    _PlaceHexagon( 0, col, true );
             }
         }
     }
@@ -208,7 +215,15 @@ module _HolderBase()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _RollHexHolderHexagon()
+module _PlaceHexagon( row, col, draw_filled_hexagon = false )
+{
+    translate([ CalculateHexagonXOffset( row, col ), 0, CalculateHexagonZOffset( row )])
+        _RollHexHolderHexagon( draw_filled_hexagon );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _RollHexHolderHexagon( draw_filled_hexagon = false )
 {
     rotate([ -90, 0, 0 ])
     {
@@ -217,10 +232,11 @@ module _RollHexHolderHexagon()
             difference()
             {
                 // outer
-                regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_x, anchor = BOTTOM );
+                regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_single_x, anchor = BOTTOM );
 
                 // inner
-                regular_prism( n = 6, height = roll_holder_y, r = hex_R, anchor = BOTTOM );
+                if( !draw_filled_hexagon )
+                    regular_prism( n = 6, height = roll_holder_y, r = hex_R, anchor = BOTTOM );
             }
         }
     }
@@ -260,7 +276,7 @@ module CubePreview()
     % translate([ 0, cube_y, 0 ])
         cube([ cube_x, preview_size, cube_z ]);
 
-    // (skip front)
+    // (leave the front open)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
