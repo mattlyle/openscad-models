@@ -2,6 +2,7 @@ include <../3rd-party/BOSL2/std.scad>
 // use <../3rd-party/MCAD/regular_shapes.scad>
 
 include <modules/utils.scad>
+include <modules/screw-connectors.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -115,21 +116,23 @@ if( render_mode == "debug-preview" )
         RollPreview();
 
     // front face
-
-    translate([ 0, 0, 0 ])
-        _HolderBase();
-
     translate([ 0, face_brim_y, 0 ])
-        _HolderFace( colorize = true );
+        HolderFace( colorize = true );
 
-    // back base
-
-    translate([ 0, back_face_offset_y, 0 ])
-        _HolderBase();
-
+    // back face
     translate([ 0, back_face_offset_y + face_brim_y, 0 ])
-        _HolderFace( colorize = true );
+        HolderFace( colorize = true );
 
+    // base
+    translate([ 0, 0, 0 ])
+        HolderBase();
+
+    // top
+    // translate([ 0, 0, 0 ])
+    //     rotate([ 0, 180, 0 ])
+    //         HolderBase();
+
+    // show a preview of the cube walls
     CubePreview();
 
     translate([ 350, 0, 0 ])
@@ -142,7 +145,7 @@ if( render_mode == "debug-preview" )
             BuildPlatePreview();
             translate([ 0, 0, roll_holder_y ])
                 rotate([ -90, 0, 0 ])
-                    _HolderFace();
+                    HolderFace();
         }
 
         // id=0
@@ -151,7 +154,7 @@ if( render_mode == "debug-preview" )
             BuildPlatePreview();
             translate([ 0, 0, roll_holder_y ])
                 rotate([ -90, 0, 0 ])
-                    _HolderFace( only_hex_group = 0 );
+                    HolderFace( only_hex_group = 0 );
         }
 
         // id=1
@@ -160,7 +163,7 @@ if( render_mode == "debug-preview" )
             BuildPlatePreview();
             translate([ 0, 0, roll_holder_y ])
                 rotate([ -90, 0, 0 ])
-                    _HolderFace( only_hex_group = 1 );
+                    HolderFace( only_hex_group = 1 );
         }
 
         // id=2
@@ -169,7 +172,7 @@ if( render_mode == "debug-preview" )
             BuildPlatePreview();
             translate([ 0, 0, roll_holder_y ])
                 rotate([ -90, 0, 0 ])
-                    _HolderFace( only_hex_group = 2 );
+                    HolderFace( only_hex_group = 2 );
         }
 
         // id=3
@@ -178,7 +181,7 @@ if( render_mode == "debug-preview" )
             BuildPlatePreview();
             translate([ 0, 0, roll_holder_y ])
                 rotate([ -90, 0, 0 ])
-                    _HolderFace( only_hex_group = 3 );
+                    HolderFace( only_hex_group = 3 );
         }
     }
     
@@ -188,36 +191,40 @@ if( render_mode == "debug-preview" )
     {
         BuildPlatePreview();
 
-        _HolderBase();
+        HolderBase();
     }
 }
 else if( render_mode == "render-face-0-for-printing" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
-            _HolderFace( only_hex_group = 0 );
+            HolderFace( only_hex_group = 0 );
 }
 else if( render_mode == "render-face-1-for-printing" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
-            _HolderFace( only_hex_group = 1 );
+            HolderFace( only_hex_group = 1 );
 }
 else if( render_mode == "render-face-2-for-printing" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
-            _HolderFace( only_hex_group = 2 );
+            HolderFace( only_hex_group = 2 );
 }
 else if( render_mode == "render-face-3-for-printing" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
-            _HolderFace( only_hex_group = 3 );
+            HolderFace( only_hex_group = 3 );
 }
-else if( render_mode == "render-base-for-printing" )
+else if( render_mode == "render-base-0-for-printing" )
 {
-    _HolderBase();
+    HolderBase();
+}
+else if( render_mode == "render-base-1-for-printing" )
+{
+    HolderBase();
 }
 else
 {
@@ -226,7 +233,7 @@ else
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _HolderFace( only_hex_group = -1, colorize = false )
+module HolderFace( only_hex_group = -1, colorize = false )
 {
     hex_group_offset_x =
         only_hex_group == 1 || only_hex_group == 3
@@ -366,14 +373,17 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
                     cube([ hex_size_outer_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
             }
 
-            // TODO remove the screw hole
+            // remove the screw hole
+            translate([ CalculateHexagonXOffset( row, col ), hex_size_outer_y, hex_size_outer_z / 4 ])
+                rotate([ 90, 0, 0 ])
+                    ScrewShaft( M3x8 );
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _HolderBase()
+module HolderBase()
 {
     // front brim
     translate([ 0, 0, 0 ])
@@ -394,11 +404,23 @@ module _HolderBase()
             // now cut out all the hexagons
             for( col = [ 0 : num_cols_even - 1 ] )
             {
+                // cut out the hexagon the face will be in
                 translate([ 0, face_brim_y, 0 ])
                     _PlaceHexagon( 0, col, true );
-                
-                translate([ 0, face_brim_y + hex_size_outer_y - wall_width_screw_face_wall, 0 ])
-                    _PlaceHexagon( -1, col, true );
+
+                // also cut out the fronts where the connector will be
+                if( col < num_cols_even - 1 )
+                {
+                    translate([ 0, face_brim_y + hex_size_outer_y - wall_width_screw_face_wall, 0 ])
+                        _PlaceHexagon( -1, col, true );
+                    // TODO this should stop ABOVE the bottom brim
+
+                    // cut out the screw hole
+                    echo(col);
+                    translate([ CalculateHexagonXOffset( -1, col ), face_brim_y + hex_size_outer_y, hex_size_outer_z / 4 ])
+                        rotate([ 90, 0, 0 ])
+                            HeatedInsert( M3x6_INSERT );
+                }
             }
         }
     }
