@@ -1,7 +1,7 @@
 include <../3rd-party/BOSL2/std.scad>
 // use <../3rd-party/MCAD/regular_shapes.scad>
 
-use <modules/utils.scad>
+include <modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -52,6 +52,12 @@ face_brim_y = 15.0;
 // the y-offset to the back face
 back_face_offset_y = 200;
 
+// Hex Groups:
+// 2 3
+// 0 1
+rows_in_lower_hex_groups = 5;
+cols_in_left_hex_groups = 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -72,7 +78,6 @@ hex_size_outer_y = roll_holder_y;
 hex_size_outer_z = hex_r * 2 + wall_width_single_z * 2;
 
 // calculate the total width of the hexagons
-// total_hex_x = hex_R * ( 3 * ( num_cols_even - 1 ) + 2 ) + wall_width_single_x * ( 2 * ( num_cols_even - 1 ) + 2 );
 total_hex_x = hex_size_outer_x * num_cols_even + ( num_cols_even - 1 ) * hex_size_outer_x / 2;
 
 // calulate the total height of the hexagons
@@ -95,9 +100,9 @@ function CalculateHexagonZOffset( row ) =
         : hex_size_outer_z * ( 1 + row ) / 2;
 
 function GetHexGroup( row, col ) =
-    row < 5
-        ? ( ( ( row % 2 == 0 && col < 2 ) || ( row % 2 == 1 && col == 0 ) ) ? 0 : 1 )
-        : ( ( ( row % 2 == 0 && col < 2 ) || ( row % 2 == 1 && col == 0 ) ) ? 2 : 3 );
+    row < rows_in_lower_hex_groups
+        ? ( ( ( row % 2 == 0 && col < cols_in_left_hex_groups ) || ( row % 2 == 1 && col < cols_in_left_hex_groups - 1 ) ) ? 0 : 1 )
+        : ( ( ( row % 2 == 0 && col < cols_in_left_hex_groups ) || ( row % 2 == 1 && col < cols_in_left_hex_groups - 1 ) ) ? 2 : 3 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -203,46 +208,86 @@ else
 
 module _HolderFace( only_hex_group = -1, colorize = false )
 {
-    for( row = [ 0 : num_rows - 1 ] )
+    hex_group_offset_x =
+        only_hex_group == 1 || only_hex_group == 3
+            ? -cube_x + BUILD_PLATE_X
+            : 0;
+    hex_group_offset_z =
+        only_hex_group == 2 || only_hex_group == 3
+            ? -cube_z + BUILD_PLATE_Z
+            : 0;
+
+    translate([ hex_group_offset_x, 0, hex_group_offset_z ])
     {
-        for( col = [ 0 : num_cols_even - 1 ] )
+        for( row = [ 0 : num_rows - 1 ] )
         {
-            if( row <= num_rows - 1 && ( ( row % 2 == 0 && col <= num_cols_even - 1 ) || ( row % 2 == 1 && col <= num_cols_even - 2 ) ) )
+            for( col = [ 0 : num_cols_even - 1 ] )
             {
-                if( only_hex_group == -1 || only_hex_group == GetHexGroup( row, col ) )
+                if( row <= num_rows - 1 && ( ( row % 2 == 0 && col <= num_cols_even - 1 ) || ( row % 2 == 1 && col <= num_cols_even - 2 ) ) )
                 {
-                    if( colorize )
+                    if( only_hex_group == -1 || only_hex_group == GetHexGroup( row, col ) )
                     {
-                        SelectColorInPreview( row, col )
+                        if( colorize )
+                        {
+                            SelectColorInPreview( row, col )
+                                _PlaceHexagon( row, col );
+                        }
+                        else
+                        {
                             _PlaceHexagon( row, col );
+                        }
                     }
-                    else
-                    {
-                        _PlaceHexagon( row, col );
-                    }
-                }
-            }            
+                }            
+            }
         }
-    }
 
-    // left side
-    translate([ 0, 0, 0 ])
-        cube([ wall_width_single_x, roll_holder_y, total_hex_z ]);
+        // left side wall - lower half
+        if( only_hex_group == 0 || only_hex_group == -1 )
+        {
+            translate([ 0, 0, 0 ])
+                cube([ wall_width_single_x, roll_holder_y, CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 ) ]);
+        }
 
-    // right side
-    translate([ cube_x - wall_width_single_x, 0, 0 ])
-        cube([ wall_width_single_x, roll_holder_y, total_hex_z ]);
+        // left side wall - upper half
+        if( only_hex_group == 2 || only_hex_group == -1 )
+        {
+            upper_start = CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 );
+            translate([ 0, 0, upper_start ])
+                cube([ wall_width_single_x, roll_holder_y, total_hex_z - upper_start ]);
+        }
 
-    // side supports
-    for( row = [ 0 : 2 : num_rows ] )
-    {
-        // left support
-        translate([ 0, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
-            cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+        // right side wall - lower half
+        if( only_hex_group == 1 || only_hex_group == -1 )
+        {
+            translate([ cube_x - wall_width_single_x, 0, 0 ])
+                cube([ wall_width_single_x, roll_holder_y, CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 ) ]);
+        }
 
-        // right support
-        translate([ cube_x - center_in_cube_offset_x - wall_width_single_x, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
-            cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+        // right side wall - upper half
+        if( only_hex_group == 3 || only_hex_group == -1 )
+        {
+            upper_start = CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 );
+            translate([ cube_x - wall_width_single_x, 0, upper_start ])
+                cube([ wall_width_single_x, roll_holder_y, total_hex_z - upper_start ]);
+        }
+
+        // side supports
+        for( row = [ 0 : 2 : num_rows ] )
+        {
+            // left support
+            if( only_hex_group == -1 || only_hex_group == GetHexGroup( row, 0 ) )
+            {
+                translate([ 0, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
+                    cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+            }
+
+            // right support
+            if( only_hex_group == -1 || only_hex_group == GetHexGroup( row, num_cols_even - 1 ) )
+            {
+                translate([ cube_x - center_in_cube_offset_x - wall_width_single_x, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
+                    cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+            }
+        }
     }
 }
 
