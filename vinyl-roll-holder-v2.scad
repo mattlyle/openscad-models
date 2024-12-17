@@ -43,6 +43,8 @@ roll_clearance = 5.0;
 // the wall width in the x-direction (z-direction is slightly different due to geometry)
 wall_width_single_x = 1.2;
 
+wall_width_screw_face_wall = 2.0;
+
 // the y-width of the hexagons
 roll_holder_y = 20.0;
 
@@ -288,6 +290,66 @@ module _HolderFace( only_hex_group = -1, colorize = false )
                     cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
             }
         }
+
+        // hex faces on bottom
+        for( col = [ 0 : cols_in_left_hex_groups - 1 ])
+        {
+            // lower left
+            if( only_hex_group == -1 || ( only_hex_group == 0 && col < cols_in_left_hex_groups - 1 ) )
+            {
+                _HolderBaseFaceConnection( -1, col, true );
+            }
+
+            // lower right
+            if( only_hex_group == -1 || ( only_hex_group == 1 && col >= cols_in_left_hex_groups - 1 ) )
+            {
+                _HolderBaseFaceConnection( -1, col, true );
+            }
+
+            // upper left
+            if( only_hex_group == -1 || ( only_hex_group == 2 && col < cols_in_left_hex_groups - 1 ) )
+            {
+                _HolderBaseFaceConnection( num_rows, col, false );
+            }
+
+            // upper right
+            if( only_hex_group == -1 || ( only_hex_group == 3 && col >= cols_in_left_hex_groups - 1 ) )
+            {
+                _HolderBaseFaceConnection( num_rows, col, false );
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _HolderBaseFaceConnection( row, col, draw_as_top )
+{
+    render()
+    {
+        difference()
+        {
+            _PlaceHexagon( row, col, true );
+
+            // cut off the back
+            translate([ 0, -wall_width_screw_face_wall, 0 ])
+                _PlaceHexagon( row, col, true );
+
+            if( draw_as_top )
+            {
+                // cut off the bottom
+                translate([ CalculateHexagonXOffset( row, col ) - hex_size_outer_x / 2, 0, CalculateHexagonZOffset( row - 1 ) ])
+                    cube([ hex_size_outer_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+            }
+            else
+            {
+                // cut off the top
+                translate([ CalculateHexagonXOffset( row, col ) - hex_size_outer_x / 2, 0, CalculateHexagonZOffset( row ) ])
+                    cube([ hex_size_outer_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+            }
+
+            // TODO remove the screw hole
+        }
     }
 }
 
@@ -316,10 +378,13 @@ module _HolderBase()
             {
                 translate([ 0, face_brim_y, 0 ])
                     _PlaceHexagon( 0, col, true );
+                
+                translate([ 0, face_brim_y + hex_size_outer_y - wall_width_screw_face_wall, 0 ])
+                    _PlaceHexagon( -1, col, true );
             }
         }
     }
-}
+ }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
