@@ -191,11 +191,29 @@ if( render_mode == "debug-preview" )
         _HolderBase();
     }
 }
-else if( render_mode == "render-face-for-printing" )
+else if( render_mode == "render-face-0-for-printing" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
-            _HolderFace();
+            _HolderFace( only_hex_group = 0 );
+}
+else if( render_mode == "render-face-1-for-printing" )
+{
+    translate([ 0, 0, roll_holder_y ])
+        rotate([ -90, 0, 0 ])
+            _HolderFace( only_hex_group = 1 );
+}
+else if( render_mode == "render-face-2-for-printing" )
+{
+    translate([ 0, 0, roll_holder_y ])
+        rotate([ -90, 0, 0 ])
+            _HolderFace( only_hex_group = 2 );
+}
+else if( render_mode == "render-face-3-for-printing" )
+{
+    translate([ 0, 0, roll_holder_y ])
+        rotate([ -90, 0, 0 ])
+            _HolderFace( only_hex_group = 3 );
 }
 else if( render_mode == "render-base-for-printing" )
 {
