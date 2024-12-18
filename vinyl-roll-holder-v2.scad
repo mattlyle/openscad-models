@@ -1,5 +1,5 @@
-include <../3rd-party/BOSL2/std.scad>
-// use <../3rd-party/MCAD/regular_shapes.scad>
+// include <../3rd-party/BOSL2/std.scad>
+use <../3rd-party/MCAD/regular_shapes.scad>
 
 include <modules/utils.scad>
 include <modules/screw-connectors.scad>
@@ -454,11 +454,13 @@ module _RollHexHolderHexagon( draw_filled_hexagon = false )
             difference()
             {
                 // outer
-                regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_single_x, anchor = BOTTOM );
+                hexagon_prism( radius = hex_R + wall_width_single_x, height = roll_holder_y );
+                // regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_single_x, anchor = BOTTOM );
 
                 // inner
                 if( !draw_filled_hexagon )
-                    regular_prism( n = 6, height = roll_holder_y, r = hex_R, anchor = BOTTOM );
+                    // regular_prism( n = 6, height = roll_holder_y, r = hex_R, anchor = BOTTOM );
+                    hexagon_prism( radius = hex_R, height = roll_holder_y );
             }
         }
     }
