@@ -38,6 +38,8 @@ num_rows = 9;
 // number of columns on even rows (i.e. the number of colums in the bottommost (i.e. 0) row)
 num_cols_even = 3;
 
+num_base_struts = 3;
+
 // extra clearance from the measured roll to the hexagon wall
 roll_clearance = 5.0;
 
@@ -54,6 +56,9 @@ face_brim_y = 15.0;
 
 // the y-offset to the back face
 back_face_offset_y = 200;
+
+base_strut_x = 10;
+base_strut_z = 5;
 
 // Hex Groups:
 // 2 3
@@ -128,9 +133,9 @@ if( render_mode == "debug-preview" )
         HolderBase();
 
     // top
-    // translate([ 0, 0, 0 ])
-    //     rotate([ 0, 180, 0 ])
-    //         HolderBase();
+    translate([ cube_x, 0, total_hex_z ])
+        rotate([ 0, 180, 0 ])
+            HolderBase();
 
     // show a preview of the cube walls
     CubePreview();
@@ -184,7 +189,6 @@ if( render_mode == "debug-preview" )
                     HolderFace( only_hex_group = 3 );
         }
     }
-    
 
     // preview how a base will print
     translate([ 700, 0, 0 ])
@@ -394,6 +398,22 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
 
 module HolderBase()
 {
+    _HolderBase();
+
+    translate([ 0, back_face_offset_y, 0 ])
+        _HolderBase();
+
+    for( i = [ 0 : num_base_struts - 1] )
+    {
+        translate([ ( cube_x - base_strut_x ) / ( num_base_struts - 1 ) * i, face_brim_y * 2 + hex_size_outer_y, 0 ])
+            _HolderBaseStrut();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _HolderBase()
+{
     // front brim
     translate([ 0, 0, 0 ])
         cube([ cube_x, face_brim_y, wall_width_single_z ]);
@@ -425,7 +445,6 @@ module HolderBase()
                     // TODO this should stop ABOVE the bottom brim
 
                     // cut out the screw hole
-                    echo(col);
                     translate([ CalculateHexagonXOffset( -1, col ), face_brim_y + hex_size_outer_y, hex_size_outer_z / 4 ])
                         rotate([ 90, 0, 0 ])
                             HeatedInsert( M3x6_INSERT );
@@ -433,7 +452,19 @@ module HolderBase()
             }
         }
     }
- }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _HolderBaseStrut()
+{
+    // flat bottom
+    cube([ base_strut_x, back_face_offset_y - face_brim_y * 2 - hex_size_outer_y, wall_width_single_z ]);
+
+    // vertical strut
+    translate([ base_strut_x / 2 - wall_width_single_x / 2, -face_brim_y, wall_width_single_z ])
+        cube([ wall_width_single_x, back_face_offset_y - hex_size_outer_y, base_strut_z ]);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
