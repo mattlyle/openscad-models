@@ -38,7 +38,8 @@ num_rows = 9;
 // number of columns on even rows (i.e. the number of colums in the bottommost (i.e. 0) row)
 num_cols_even = 3;
 
-num_base_struts = 3;
+// num struts should be cols+1 so the struts are hidden behind the filled support hexs
+num_base_struts = num_cols_even + 1;
 
 // extra clearance from the measured roll to the hexagon wall
 roll_clearance = 5.0;
@@ -193,9 +194,26 @@ if( render_mode == "debug-preview" )
     // preview how a base will print
     translate([ 700, 0, 0 ])
     {
-        BuildPlatePreview();
+        // full holder for reference
+        translate([ 0, 0, 0 ])
+        {
+            BuildPlatePreview();
+            HolderBase();
+        }
 
-        HolderBase();
+        // id=0
+        translate([ 0, 350, 0 ])
+        {
+            BuildPlatePreview();
+            HolderBase( id = 0 );
+        }
+
+        // id=1
+        translate([ 0, 700, 0 ])
+        {
+            BuildPlatePreview();
+            HolderBase( id = 1 );
+        }
     }
 }
 else if( render_mode == "render-face-0-for-printing" )
@@ -396,7 +414,7 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module HolderBase()
+module HolderBase( id = -1 )
 {
     _HolderBase();
 
