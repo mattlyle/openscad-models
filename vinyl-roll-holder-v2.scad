@@ -278,9 +278,14 @@ module HolderFace( only_hex_group = -1, colorize = false )
         // left side wall - upper half
         if( only_hex_group == 2 || only_hex_group == -1 )
         {
-            upper_start = CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 );
+            upper_start = CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 ) + wall_width_single_x / 2;
+            
             translate([ 0, 0, upper_start ])
                 cube([ wall_width_single_x, roll_holder_y, total_hex_z - upper_start ]);
+
+            // foot
+            translate([ 0, 0, upper_start ])
+                cube([ center_in_cube_offset_x, hex_size_outer_y, wall_width_single_z ]);
         }
 
         // right side wall - lower half
@@ -293,9 +298,13 @@ module HolderFace( only_hex_group = -1, colorize = false )
         // right side wall - upper half
         if( only_hex_group == 3 || only_hex_group == -1 )
         {
-            upper_start = CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 );
+            upper_start = CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 ) + wall_width_single_x / 2;
             translate([ cube_x - wall_width_single_x, 0, upper_start ])
                 cube([ wall_width_single_x, roll_holder_y, total_hex_z - upper_start ]);
+
+            // foot
+            translate([ cube_x - wall_width_single_x - center_in_cube_offset_x, 0, upper_start ])
+                cube([ center_in_cube_offset_x, hex_size_outer_y, wall_width_single_z ]);
         }
 
         // side supports
