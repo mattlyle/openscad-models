@@ -84,7 +84,7 @@ hex_size_outer_z = hex_r * 2 + wall_width_single_z * 2;
 total_hex_x = hex_size_outer_x * num_cols_even + ( num_cols_even - 1 ) * hex_size_outer_x / 2;
 
 // calulate the total height of the hexagons
-total_hex_z = ceil( num_rows / 2 ) * hex_r * 2 + ceil( num_rows / 2 + 1 ) * wall_width_single_z;
+total_hex_z = hex_size_outer_z * ceil( num_rows / 2 );
 
 // center the hexagons in the face
 center_in_cube_offset_x = ( cube_x - total_hex_x ) / 2;
