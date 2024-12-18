@@ -116,6 +116,12 @@ function GetHexGroup( row, col ) =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
+// TODO outer edges where it meets the wall should be double thick since two hex's don't add together
+// TODO small lip overlaps where the hexs meet
+// TODO base has too much cut out... should be solid where the hexes have the screw holes
+// TODO base needs to be split into 2
+// TODO could add a screw into the foot where it meets the other side connector?
+
 if( render_mode == "debug-preview" )
 {
     translate([ CalculateHexagonXOffset( 0, 0 ), cube_y - roll_length, CalculateHexagonZOffset( 0 ) ])
