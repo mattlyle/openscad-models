@@ -118,7 +118,6 @@ function GetHexGroup( row, col ) =
 
 // TODO outer edges where it meets the wall should be double thick since two hex's don't add together
 // TODO small lip overlaps where the hexs meet
-// TODO base has too much cut out... should be solid where the hexes have the screw holes
 // TODO base needs to be split into 2
 // TODO could add a screw into the foot where it meets the other side connector?
 
@@ -464,9 +463,9 @@ module _HolderBase()
                 // also cut out the fronts where the connector will be
                 if( col < num_cols_even - 1 )
                 {
-                    translate([ 0, face_brim_y + hex_size_outer_y - wall_width_screw_face_wall, 0 ])
-                        _PlaceHexagon( -1, col, true );
-                    // TODO this should stop ABOVE the bottom brim
+                    translate([ CalculateHexagonXOffset( -1, col ) - hex_size_outer_x / 2, face_brim_y + hex_size_outer_y - wall_width_screw_face_wall, wall_width_single_z ])
+                        cube([ hex_size_outer_x, wall_width_screw_face_wall, hex_size_outer_z]);
+
 
                     // cut out the screw hole
                     translate([ CalculateHexagonXOffset( -1, col ), face_brim_y + hex_size_outer_y, hex_size_outer_z / 4 ])
