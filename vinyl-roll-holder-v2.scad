@@ -53,7 +53,7 @@ wall_width_screw_face_wall = 2.0;
 roll_holder_y = 20.0;
 
 // the y-width of the brim at the bottom of the holder face
-face_brim_y = 15.0;
+base_brim_y = 15.0;
 
 // the y-offset to the back face
 back_face_offset_y = 200;
@@ -95,6 +95,11 @@ total_hex_z = hex_size_outer_z * ceil( num_rows / 2 );
 // center the hexagons in the face
 center_in_cube_offset_x = ( cube_x - total_hex_x ) / 2;
 
+base_cut_brim_offset_x = CalculateHexagonXOffset( -1, cols_in_left_hex_groups - 1 )
+    - base_strut_x ;
+base_cut_hex_offset_x = CalculateHexagonXOffset( -1, cols_in_left_hex_groups - 1 )
+    - hex_size_outer_x / 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
 
@@ -127,11 +132,11 @@ if( render_mode == "debug-preview" )
         RollPreview();
 
     // front face
-    translate([ 0, face_brim_y, 0 ])
+    translate([ 0, base_brim_y, 0 ])
         HolderFace( colorize = true );
 
     // back face
-    translate([ 0, back_face_offset_y + face_brim_y, 0 ])
+    translate([ 0, back_face_offset_y + base_brim_y, 0 ])
         HolderFace( colorize = true );
 
     // base
@@ -247,11 +252,11 @@ else if( render_mode == "render-face-3-for-printing" )
 }
 else if( render_mode == "render-base-0-for-printing" )
 {
-    HolderBase();
+    HolderBase( 0 );
 }
 else if( render_mode == "render-base-1-for-printing" )
 {
-    HolderBase();
+    HolderBase( 1 );
 }
 else
 {
@@ -291,7 +296,7 @@ module HolderFace( only_hex_group = -1, colorize = false )
                             _PlaceHexagon( row, col );
                         }
                     }
-                }            
+                }
             }
         }
 
@@ -306,7 +311,7 @@ module HolderFace( only_hex_group = -1, colorize = false )
         if( only_hex_group == 2 || only_hex_group == -1 )
         {
             upper_start = CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 ) + wall_width_single_x / 2;
-            
+
             translate([ 0, 0, upper_start ])
                 cube([ wall_width_single_x, roll_holder_y, total_hex_z - upper_start ]);
 
@@ -421,15 +426,77 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
 
 module HolderBase( id = -1 )
 {
-    _HolderBase();
 
-    translate([ 0, back_face_offset_y, 0 ])
-        _HolderBase();
-
-    for( i = [ 0 : num_base_struts - 1] )
+    if( id == -1 )
     {
-        translate([ ( cube_x - base_strut_x ) / ( num_base_struts - 1 ) * i, face_brim_y * 2 + hex_size_outer_y, 0 ])
-            _HolderBaseStrut();
+        _HolderBase();
+    }
+    else if( id == 0 )
+    {
+        render()
+        {
+            difference()
+            {
+                _HolderBase();
+
+                // front brim
+                translate([ base_cut_brim_offset_x, 0, 0 ])
+                    cube([ cube_x - base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
+
+                // center
+                translate([ base_cut_brim_offset_x, base_brim_y + hex_size_outer_y, 0 ])
+                    cube([ cube_x - base_cut_brim_offset_x, back_face_offset_y - hex_size_outer_y, hex_size_outer_z / 2 ]);
+
+                // front brim
+                translate([ base_cut_brim_offset_x, base_brim_y + back_face_offset_y + hex_size_outer_y, 0 ])
+                    cube([ cube_x - base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
+
+                // front base hex
+                translate([ base_cut_hex_offset_x, base_brim_y, 0 ])
+                    cube([ cube_x - base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+
+                // back base hex
+                translate([ base_cut_hex_offset_x, base_brim_y + back_face_offset_y, 0 ])
+                    cube([ cube_x - base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+            }
+        }
+    }
+    else if( id == 1 )
+    {
+        // translate([ -cube_x + BUILD_PLATE_X, 0, 0])
+        {
+            render()
+            {
+                difference()
+                {
+                    _HolderBase();
+
+                    // front brim
+                    translate([ 0, 0, 0 ])
+                        cube([ base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
+
+                    // center
+                    translate([ 0, base_brim_y + hex_size_outer_y, 0 ])
+                        cube([ base_cut_brim_offset_x, back_face_offset_y - hex_size_outer_y, hex_size_outer_z / 2 ]);
+
+                    // front brim
+                    translate([ 0, base_brim_y + back_face_offset_y + hex_size_outer_y, 0 ])
+                        cube([ base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
+
+                    // front base hex
+                    translate([ 0, base_brim_y, 0 ])
+                        cube([ base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+
+                    // back base hex
+                    translate([ 0, base_brim_y + back_face_offset_y, 0 ])
+                        cube([ base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+                }
+            }
+        }
+    }
+    else
+    {
+        assert( false, "Unknown base id: " + id );
     }
 }
 
@@ -437,38 +504,57 @@ module HolderBase( id = -1 )
 
 module _HolderBase()
 {
+    _HolderBaseSingle();
+
+    translate([ 0, back_face_offset_y, 0 ])
+        _HolderBaseSingle();
+
+    for( i = [ 0 : num_base_struts - 1] )
+    {
+        translate([ ( cube_x - base_strut_x ) / ( num_base_struts - 1 ) * i, base_brim_y * 2 + hex_size_outer_y, 0 ])
+            _HolderBaseStrut();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _HolderBaseSingle()
+{
     // front brim
     translate([ 0, 0, 0 ])
-        cube([ cube_x, face_brim_y, wall_width_single_z ]);
+        cube([ cube_x, base_brim_y, wall_width_single_z ]);
 
     // back brim
-    translate([ 0, face_brim_y + roll_holder_y, 0 ])
-        cube([ cube_x, face_brim_y, wall_width_single_z ]);
+    translate([ 0, base_brim_y + roll_holder_y, 0 ])
+        cube([ cube_x, base_brim_y, wall_width_single_z ]);
+
+    // front connector
+    translate([ base_cut_brim_offset_x, base_brim_y + hex_size_outer_y, wall_width_single_z ])
+        _HolderBaseLeftRightConnection();
 
     render()
     {
         difference()
         {
             // first draw a block we will cut out of
-            translate([ wall_width_single_x, face_brim_y, 0 ])
+            translate([ wall_width_single_x, base_brim_y, 0 ])
                 cube([ cube_x - wall_width_single_x * 2, roll_holder_y, hex_size_outer_z / 2 ]);
 
             // now cut out all the hexagons
             for( col = [ 0 : num_cols_even - 1 ] )
             {
                 // cut out the hexagon the face will be in
-                translate([ 0, face_brim_y, 0 ])
+                translate([ 0, base_brim_y, 0 ])
                     _PlaceHexagon( 0, col, true );
 
                 // also cut out the fronts where the connector will be
                 if( col < num_cols_even - 1 )
                 {
-                    translate([ CalculateHexagonXOffset( -1, col ) - hex_size_outer_x / 2, face_brim_y + hex_size_outer_y - wall_width_screw_face_wall, wall_width_single_z ])
+                    translate([ CalculateHexagonXOffset( -1, col ) - hex_size_outer_x / 2, base_brim_y + hex_size_outer_y - wall_width_screw_face_wall, wall_width_single_z ])
                         cube([ hex_size_outer_x, wall_width_screw_face_wall, hex_size_outer_z]);
 
-
                     // cut out the screw hole
-                    translate([ CalculateHexagonXOffset( -1, col ), face_brim_y + hex_size_outer_y, hex_size_outer_z / 4 ])
+                    translate([ CalculateHexagonXOffset( -1, col ), base_brim_y + hex_size_outer_y, hex_size_outer_z / 4 ])
                         rotate([ 90, 0, 0 ])
                             HeatedInsert( M3x6_INSERT );
                 }
@@ -482,11 +568,52 @@ module _HolderBase()
 module _HolderBaseStrut()
 {
     // flat bottom
-    cube([ base_strut_x, back_face_offset_y - face_brim_y * 2 - hex_size_outer_y, wall_width_single_z ]);
+    cube([ base_strut_x, back_face_offset_y - base_brim_y * 2 - hex_size_outer_y, wall_width_single_z ]);
 
     // vertical strut
-    translate([ base_strut_x / 2 - wall_width_single_x / 2, -face_brim_y, wall_width_single_z ])
+    translate([ base_strut_x / 2 - wall_width_single_x / 2, -base_brim_y, wall_width_single_z ])
         cube([ wall_width_single_x, back_face_offset_y - hex_size_outer_y, base_strut_z ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _HolderBaseLeftRightConnection()
+{
+    connection_front_x = wall_width_screw_face_wall;
+    connection_back_x = M3x6_INSERT[ INSERT_LENGTH ] * 2;
+
+    connection_z = M3x6_INSERT[ INSERT_OUTER_DIAMETER ] * 2;
+
+    // front (screw side)
+    render()
+    {
+        difference()
+        {
+            // front wall
+            translate([ -connection_front_x, 0, 0 ])
+                cube([ connection_front_x, base_brim_y, connection_z ]);
+
+            // remove the screw shaft
+            translate([ -connection_front_x, base_brim_y / 2, connection_z / 2 ])
+                rotate([ 0, 90, 0 ])
+                    ScrewShaft( M3x8 );
+        }
+    }
+
+    // back (insert side)
+    render()
+    {
+        difference()
+        {
+            // back block
+            cube([ connection_back_x, base_brim_y, connection_z]);
+
+            // remove the insert
+            translate([ 0, base_brim_y / 2, connection_z / 2])
+                rotate([ 0, 90, 0 ])
+                    HeatedInsert( M3x6_INSERT );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
