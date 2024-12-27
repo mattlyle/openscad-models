@@ -20,17 +20,20 @@ green_pry_tool_y = 5.5;
 // tiny black screwdriver
 // tiny_black_screwdriver_shaft_diameter = 2.1;
 
+// NARZ Tweezers
 tweezers_3_xy = 8.6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // only choose one
-// render_mode = "preview";
+render_mode = "preview";
 // render_mode = "bin-1-only";
 // render_mode = "text-1-only";
 // render_mode = "bin-2-only";
-render_mode = "text-2-only";
+// render_mode = "text-2-only";
+
+// TODO: The NARZ text should be bold
 
 cells_x = 1;
 cells_y = 1;
