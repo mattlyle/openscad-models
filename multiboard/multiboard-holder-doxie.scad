@@ -36,7 +36,7 @@ offset_x = multiboard_cell_size - MultiboardConnectorBackAltXOffset( size_x );
 if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
-        color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
+        color( workroom_multiboard_color )
             MultiboardMockUpTile( 12, 4 );
 
     translate([ offset_x, 0, 0  ])
