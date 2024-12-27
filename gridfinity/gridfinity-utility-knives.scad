@@ -1,7 +1,4 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-// include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
-
-include <../modules/rounded-cube.scad>
+include <../modules/gridfinity-base.scad>
 include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,9 +27,11 @@ render_mode = "preview";
 // render_mode = "bin-only";
 // render_mode = "text-only";
 
-cup_x = 3; // in grid cells
-cup_y = 4; // in grid cells
-cup_z = 1;
+cells_x = 3;
+cells_y = 4;
+
+// the height to be added on top of the base
+top_z = 42.0;
 
 clearance = 1.5;
 
@@ -47,13 +46,11 @@ retractable_knife_spec = [ retractable_knife_x, retractable_knife_y, retractable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated values
 
-base_x = cup_x * 42.0;
-base_y = cup_y * 42.0;
-base_z = 7.0;
+base_x = CalculateGridfinitySize( cells_x );
+base_y = CalculateGridfinitySize( cells_y );
 
-holder_x = base_x - holder_clearance * 2;
-holder_y = base_y - holder_clearance * 2;
-holder_z = cup_z * 42.0;
+// the combined z
+holder_z = GRIDFINITY_BASE_Z + top_z;
 
 spacing_x = ( base_x - x_acto_knife_x - folding_knife_x - retractable_knife_x * 2 - clearance * 8 ) / 4;
 
@@ -67,29 +64,11 @@ x_offset_4 = UpdateCutoutXOffset( x_offset_3, retractable_knife_spec );
 
 if( render_mode == "preview" || render_mode == "bin-only" )
 {
-    // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        position = "zero",
-        filled_in = true,
-        lip_style = "none"
-        );
-
     render()
     {
         difference()
         {
-            translate([ holder_clearance, holder_clearance, 0 ])
-                RoundedCube(
-                    size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_radius,
-                    fn = 36
-                    );
-
-            // cut off the area the gridfinity base covers
-            cube([ base_x, base_y, base_z ]);
+            GridfinityBase( cells_x, cells_y, top_z, round_top = true, center = false );
 
             // cut out the utility knife areas
 
@@ -120,26 +99,23 @@ if( render_mode == "preview" || render_mode == "text-only" )
     //     cube([ text_area_x, text_area_y, 0.5 ]);
 
     translate([ text_area_offset_x, 17, holder_z ])
-        CenteredTextLabel( "Utility", 6, "Georgia:style=Bold", text_area_x, -1 );
+        CenteredTextLabel( "Utility", centered_in_area_x = text_area_x, centered_in_area_y = -1, font_size = 6, font = "Georgia:style=Bold"  );
     translate([ text_area_offset_x, 8, holder_z ])
-        CenteredTextLabel( "Knives", 6, "Georgia:style=Bold", text_area_x, -1 );
+        CenteredTextLabel( "Knives", font_size = 6, font = "Georgia:style=Bold", centered_in_area_x = text_area_x, centered_in_area_y = -1 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function UpdateCutoutXOffset( current_x_offset, spec ) = current_x_offset + spec[ 0 ] + spacing_x;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module UtilityKnifeCutout( current_x_offset, spec )
 {
     // echo( "z: ", spec[ 2 ] );
     // echo( "max: ", holder_z - base_z );
 
-    depth = min( holder_z - base_z, spec[ 2 ] + clearance );
-
-    // echo( "depth: ", depth );
-    // echo( "==================================================" );
-
-// TODO: must add clearance!
+    depth = min( top_z - GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE, spec[ 2 ] + clearance );
 
     translate([ current_x_offset - clearance, ( base_y - spec[ 1 ] ) / 2 - clearance, holder_z - depth ])
         cube([ spec[ 0 ] + clearance * 2, spec[ 1 ] + clearance * 2, depth ]);
