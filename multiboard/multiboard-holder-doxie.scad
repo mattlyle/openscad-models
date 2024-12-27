@@ -1,5 +1,6 @@
 include <../modules/multiboard.scad>
 include <../modules/rounded-cube.scad>
+include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -58,8 +59,7 @@ if( render_mode == "print-holder" )
 
 module DoxieMultiboardHolder()
 {
-    // back
-    union()
+    render()
     {
         // back
         MultiboardConnectorBackAlt( size_x, size_y );
@@ -76,10 +76,24 @@ module DoxieMultiboardHolder()
                     fn = 36
                     );
 
-                // cut out the middle
+            // cut out the middle
             translate([ wall_width, wall_width, multiboard_connector_back_z ])
                     cube([ doxie_x + clearance * 2, doxie_y, doxie_z + clearance * 2]);
         }
+
+        // add the text
+        // #translate([ 0, 0, multiboard_connector_back_z + size_z ])
+        //     cube([ size_x, size_y, 0.1 ]);
+        color([ 0.1, 0.1, 0.1 ])
+            translate([ -1.5, 0, 0 ]) // for some reason the textmetrics are broken?
+                translate([ 0, 0, multiboard_connector_back_z + size_z ])
+                    CenteredTextLabel(
+                        "Doxie",
+                        centered_in_area_x = size_x,
+                        centered_in_area_y = size_y,
+                        font_size = 13,
+                        font = "DejaVu Sans:style=Bold"
+                        );
     }
 }
 
