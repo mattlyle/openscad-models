@@ -51,7 +51,9 @@ if( render_mode == "preview" )
 
 if( render_mode == "print-holder" )
 {
-    DoxieMultiboardHolder();
+    translate([ 0, size_z + multiboard_connector_back_z, 0 ])
+        rotate([ 90, 0, 0 ])
+            DoxieMultiboardHolder();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
