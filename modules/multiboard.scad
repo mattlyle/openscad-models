@@ -10,6 +10,7 @@ multiboard_wall_width = 2.0;
 multiboard_screw_hole_radius = 3.0;
 multiboard_cell_corner_width = 14.0;
 multiboard_cell_height = 6.5;
+multiboard_corner_rounding_r = 1.0;
 
 multiboard_connector_back_connector_clearance = 0.05;
 multiboard_connector_back_z = 6.5;
