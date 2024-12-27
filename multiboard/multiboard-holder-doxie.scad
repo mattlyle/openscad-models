@@ -48,6 +48,11 @@ if( render_mode == "preview" )
     }
 }
 
+if( render_mode == "print-holder" )
+{
+    DoxieMultiboardHolder();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // doxie module
 
