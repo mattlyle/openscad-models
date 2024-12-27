@@ -1,8 +1,6 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-// include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
-
-include <../modules/rounded-cube.scad>
+include <../modules/gridfinity-base.scad>
 include <../modules/text-label.scad>
+include <../modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -13,14 +11,14 @@ tweezers_1_y = 6.8;
 
 // curved tweezers
 tweezers_2_x = 5.1;
-tweezers_2_y = 10.4;
+tweezers_2_y = 18.5;
 
 // green pry tool
 green_pry_tool_x = 10.0;
 green_pry_tool_y = 5.5;
 
 // tiny black screwdriver
-tiny_black_screwdriver_shaft_diameter = 2.1;
+// tiny_black_screwdriver_shaft_diameter = 2.1;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -28,71 +26,98 @@ tiny_black_screwdriver_shaft_diameter = 2.1;
 // only choose one
 render_mode = "preview";
 // render_mode = "bin-only";
+// render_mode = "text-only";
 
-cup_x = 1; // in grid cells
-cup_y = 1; // in grid cells
-cup_z = 1;
+cells_x = 1;
+cells_y = 1;
+
+// the height to be added on top of the base
+top_z = 42.0;
 
 clearance = 1.0;
 
 holder_clearance = 0.15;
 
-corner_rounding_radius = 3.7;
+// offset away from the curve on the top of the bin
+text_area_offset_y = 3;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated values
 
-base_x = cup_x * 42.0;
-base_y = cup_y * 42.0;
-base_z = 7.0;
+base_x = CalculateGridfinitySize( cells_x );
+base_y = CalculateGridfinitySize( cells_y );
 
-holder_x = base_x - holder_clearance * 2;
-holder_y = base_y - holder_clearance * 2;
-holder_z = cup_z * 42.0;
+// the combined z
+holder_z = GRIDFINITY_BASE_Z + top_z;
+
+// the z to start the cutouts
+offset_z = GRIDFINITY_BASE_Z + GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE;
+
+item_sizes = [ tweezers_1_x, tweezers_2_x, green_pry_tool_x ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+TweezersBin();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module TweezersBin()
 {
-    // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        position = "zero",
-        filled_in = true,
-        lip_style = "none"
-        );
+    offsets_x = [
+        calculateEquallySpacedOffset( item_sizes, base_x, clearance, 0 ),
+        calculateEquallySpacedOffset( item_sizes, base_x, clearance, 1 ),
+        calculateEquallySpacedOffset( item_sizes, base_x, clearance, 2 )
+    ];
 
-    render()
+    offsets_y = [
+        calculateOffsetToCenter( base_y, tweezers_1_y + clearance * 2 ),
+        calculateOffsetToCenter( base_y, tweezers_2_y + clearance * 2 ),
+        calculateOffsetToCenter( base_y, green_pry_tool_y + clearance * 2 )
+    ];
+
+
+    text_area_y = min( offsets_y ) - text_area_offset_y;
+
+    // #translate([ 0, text_area_offset_y, holder_z ])
+    //     cube([ base_x, text_area_y, 0.1 ]);
+
+    // #translate([ base_x, base_y - text_area_offset_y, holder_z ])
+    //     rotate([ 0, 0, 180 ])
+    //         cube([ base_x, text_area_y, 0.1 ]);
+
+    if( render_mode == "preview" || render_mode == "bin-only" )
     {
-        difference()
+        render()
         {
-            translate([ holder_clearance, holder_clearance, 0 ])
-                RoundedCube(
-                    size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_radius,
-                    fn = 36
-                    );
+            difference()
+            {
+                GridfinityBase( cells_x, cells_y, top_z, round_top = true, center = false );
 
-            // cut off the area the gridfinity base covers
-            // cube([ base_x, base_y, base_z ]);
+                // left = straight tweezers
+                translate([ offsets_x[ 0 ], offsets_y[ 0 ], offset_z ])
+                    cube([ tweezers_1_x + clearance * 2, tweezers_1_y + clearance * 2, holder_z - offset_z ]);
 
-            // front-left = straight tweezers
-            translate([ base_x / 4 - tweezers_1_x / 2 - clearance, base_y / 4 - tweezers_1_y / 2 - clearance, base_z ])
-                cube([ tweezers_1_x + clearance * 2, tweezers_1_y + clearance * 2, holder_z - base_z ]);
+                // center = curved tweezers
+                translate([ offsets_x[ 1 ], offsets_y[ 1 ], offset_z ])
+                    cube([ tweezers_2_x + clearance * 2, tweezers_2_y + clearance * 2, holder_z - offset_z ]);
 
-            // front-right = curved tweezers
-            translate([ base_x / 4 * 3 - tweezers_2_x / 2 - clearance, base_y / 4 - tweezers_2_y / 2 - clearance, base_z ])
-                cube([ tweezers_2_x + clearance * 2, tweezers_2_y + clearance * 2, holder_z - base_z ]);
- 
-            // back-left = green pry tool
-            translate([ base_x / 4 - green_pry_tool_x / 2 - clearance, base_y / 4 * 3 - green_pry_tool_y / 2 - clearance, base_z ])
-                cube([ green_pry_tool_x + clearance * 2, green_pry_tool_y + clearance * 2, holder_z - base_z ]);
+                // right = green pry tool
+                translate([ offsets_x[ 2 ], offsets_y[ 2 ], offset_z ])
+                    cube([ green_pry_tool_x + clearance * 2, green_pry_tool_y + clearance * 2, holder_z - offset_z ]);
+            }
+        }
+    }
 
-            // back-right = tiny screwdriver
-            translate([ base_x / 4 * 3, base_y / 4 * 3, base_z ])
-                cylinder( h = holder_z - base_z, r = tiny_black_screwdriver_shaft_diameter / 2 + clearance, $fn = 24 );
+    if( render_mode == "preview" || render_mode == "text-only" )
+    {
+        color([ 0.9, 0.9, 0 ])
+        {
+            translate([ 0, text_area_offset_y, holder_z ])
+                CenteredTextLabel( "Tweezers", centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = 5 );
+
+            translate([ base_x, base_y - text_area_offset_y, holder_z ])
+                rotate([ 0, 0, 180 ])
+                    CenteredTextLabel( "Tweezers", centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = 5 );
         }
     }
 }
