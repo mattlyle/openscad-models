@@ -20,9 +20,9 @@ cells_x = 1;
 cells_y = 5;
 
 // the height to be added on top of the base
-// top_z = 42.0;
+top_z = 42.0;
 // top_z = 0;
-top_z = 65; // based on calculated angle_height
+// top_z = 65; // based on calculated angle_height
 
 wall_width = 3;
 clearance_y = 2.0;
@@ -41,8 +41,9 @@ holder_z = GRIDFINITY_BASE_Z + top_z;
 // the z to start the cutouts
 offset_z = GRIDFINITY_BASE_Z + GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE;
 
-scissors_angle = - acos( ( base_y - wall_width * 2 - clearance_y * 2 ) / scissors_y );
-echo("scissors_angle",scissors_angle);
+// scissors_angle = -acos( ( base_y - wall_width * 2 - clearance_y * 2 ) / scissors_y );
+scissors_angle = -11.3;
+echo( "scissors_angle", scissors_angle );
 
 angle_height = scissors_y * sin( -scissors_angle );
 echo( "angle_height", angle_height );
