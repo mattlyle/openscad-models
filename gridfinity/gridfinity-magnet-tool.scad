@@ -28,13 +28,14 @@ jig2_height = 3;
 jig2_clearance = 0.1;
 
 // only choose one
-// render_mode = "preview";
+render_mode = "preview";
 // render_mode = "tool-top";
 // render_mode = "tool-bottom";
 // render_mode = "jig-bottom";
 // render_mode = "jig-top-base";
 // render_mode = "jig-top-bin";
-render_mode = "jig2";
+// render_mode = "jig2";
+// render_mode = "jig3";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -73,6 +74,9 @@ if( render_mode == "preview" )
 
     translate([ 120, 0, 0 ])
         GridfinityMagnetJig2();
+
+    translate([ 170, 0, 0 ])
+        GridfinityMagnetJig3();
 }
 
 if( render_mode == "tool-top" )
@@ -100,6 +104,11 @@ if( render_mode == "jig-bottom" || render_mode == "jig-top-bin" )
 if( render_mode == "jig2" )
 {
     GridfinityMagnetJig2();
+}
+
+if( render_mode == "jig3" )
+{
+    GridfinityMagnetJig3();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,11 +160,11 @@ module GridfinityMagnetJig( label_text )
         // lower-right peg
         translate([ bin_size - magnet_corner_offset, magnet_corner_offset, jig_height ])
             cylinder( h = jig_peg_height, r = magnet_radius, $fn = 24 );
-        
+
         // upper-left peg
         translate([ magnet_corner_offset, bin_size - magnet_corner_offset, jig_height ])
             cylinder( h = jig_peg_height, r = magnet_radius, $fn = 24 );
-        
+
         // upper-right peg
         translate([ bin_size - magnet_corner_offset, bin_size - magnet_corner_offset, jig_height ])
             cylinder( h = jig_peg_height, r = magnet_radius, $fn = 24 );
@@ -165,7 +174,7 @@ module GridfinityMagnetJig( label_text )
 
         // text
         translate([ 0, magnet_corner_offset + magnet_radius, jig_height ])
-            CenteredTextLabel( label_text, 8, "Georgia:style=Bold", bin_size, bin_size - ( magnet_corner_offset + magnet_radius ) * 2 );
+            CenteredTextLabel( label_text, font_size = 8, font = "Georgia:style=Bold", bin_size, bin_size - ( magnet_corner_offset + magnet_radius ) * 2 );
     }
 }
 
@@ -184,7 +193,7 @@ module GridfinityMagnetJig2()
         {
             translate([ gf_pitch, gf_pitch, 0 ])
                 import( "../assets/baseplate-1-1.stl" );
-            
+
             // remove the top
             translate([ -1, -1, bottom_height ])
                 cube([ gf_pitch + 2, gf_pitch + 2, 10 ]);
@@ -209,6 +218,27 @@ module GridfinityMagnetJig2()
         translate([ jig2_corner_size + jig2_clearance, jig2_baseplate_wall_width + jig2_clearance, bottom_height ])
             cube([ jig2_size_inner - jig2_clearance * 2, bin_size - jig2_baseplate_wall_width * 2 - jig2_clearance * 2, jig2_height ]);
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module GridfinityMagnetJig3()
+{
+    bottom_height = 2.8;
+
+    render()
+    {
+        difference()
+        {
+            translate([ gf_pitch, gf_pitch, 0 ])
+                import( "../assets/baseplate-1-1.stl" );
+
+            // remove the top
+            translate([ -1, -1, bottom_height ])
+                cube([ gf_pitch + 2, gf_pitch + 2, 10 ]);
+        }
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

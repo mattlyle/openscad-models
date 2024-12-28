@@ -1,5 +1,5 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-base.scad>
+include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -19,9 +19,11 @@ silver_malco_12ft_clip_z_offset = 9.5;
 
 show_previews = false;
 
-cup_x = 1; // in grid cells
-cup_y = 2; // in grid cells
-cup_z = 1;
+cells_x = 1;
+cells_y = 2;
+
+// the height to be added on top of the base
+top_z = 1;
 
 lip_height = 35.0;
 lip_thickness = 1.5;
@@ -36,9 +38,11 @@ text_offset_y = 0.5;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated values
 
-base_x = cup_x * 42.0;
-base_y = cup_y * 42.0;
-base_z = 7.0;
+base_x = CalculateGridfinitySize( cells_x );
+base_y = CalculateGridfinitySize( cells_y );
+
+// the combined z
+holder_z = GRIDFINITY_BASE_Z + top_z;
 
 silver_malco_12ft_holder_x = silver_malco_12ft_x + clearance * 2 + lip_thickness * 2;
 silver_malco_12ft_holder_y = silver_malco_12ft_y + clearance * 2 + lip_thickness * 2;
@@ -48,22 +52,15 @@ silver_malco_12ft_holder_offset_x = ( base_x - silver_malco_12ft_holder_x ) / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // base
-gridfinity_cup(
-    width = cup_x,
-    depth = cup_y,
-    height = cup_z,
-    position = "zero",
-    filled_in = true,
-    lip_style = "none"
-    );
+GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
 
 // text
-translate([ text_offset_x, text_offset_y, base_z ])
+translate([ text_offset_x, text_offset_y, holder_z ])
     linear_extrude( 0.5 )
         text( "Silver Malco", size = 5.1 );
 
 // silver malco 12ft
-translate([ silver_malco_12ft_holder_offset_x, holder_offset_y, base_z ])
+translate([ silver_malco_12ft_holder_offset_x, holder_offset_y, holder_z ])
 {
     union()
     {

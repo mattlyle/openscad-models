@@ -60,7 +60,7 @@ module MultiboardMockUpTile( grid_cells_x, num_y )
                         translate([ multiboard_cell_size * x, multiboard_cell_size * y, multiboard_cell_height / 2 ])
                             rotate([ 0, 0, 45 ])
                                 cube([ multiboard_cell_octagon_edge, multiboard_cell_octagon_edge, multiboard_cell_height ], center = true );
-                            
+
                         translate([ multiboard_cell_size * x, multiboard_cell_size * y, 0 ])
                             cylinder( h = multiboard_cell_height, r = multiboard_screw_hole_radius, $fn = 16 );
                     }
@@ -99,28 +99,37 @@ module MultiboardConnectorBackAlt( size_x, size_y )
     echo( "multiboard back - grid cells X:", grid_cells_x );
     echo( "multiboard back - grid cells Y:", grid_cells_y );
 
-    union()
+    corner_rounding_r = 1.0;
+
+    render()
     {
-        render()
+        difference()
         {
-            difference()
-            {
-                RoundedCube( size = [ size_x, size_y, multiboard_connector_back_z ], r = 1.0, fn = 36 );
+            // RoundedCube( size = [ size_x, size_y, multiboard_connector_back_z + corner_rounding_r ], r = corner_rounding_r, fn = 36 );
+            RoundedCubeAlt2(
+                size_x,
+                size_y,
+                multiboard_connector_back_z,
+                r = corner_rounding_r,
+                round_top = false,
+                fn = 36 );
 
-                for( i = [ 0 : grid_cells_x - 1 ] )
-                {
-                    translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
-                        _MultiboardConnectorBack_ConnectorCutoutToBottom( size_y );
-                }
-            }
+            translate([ 0, 0, multiboard_connector_back_z ])
+                cube([ size_x, size_y, corner_rounding_r ]);
 
-            // add the pins back
             for( i = [ 0 : grid_cells_x - 1 ] )
             {
-                // translate([ 0 , 30, 0 ])
-                translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_pin_size ])
-                    _MultiboardConnectorBack_ConnectorPin( size_y );
+                translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
+                    _MultiboardConnectorBack_ConnectorCutoutToBottom( size_y );
             }
+        }
+
+        // add the pins back
+        for( i = [ 0 : grid_cells_x - 1 ] )
+        {
+            // translate([ 0 , 30, 0 ])
+            translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_pin_size ])
+                _MultiboardConnectorBack_ConnectorPin( size_y );
         }
     }
 }
@@ -134,44 +143,44 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 
     offset_x = MultiboardConnectorBackAltXOffset( size_x );
 
+    corner_rounding_r = 1.0;
+
     echo( "multiboard back - grid cells X:", grid_cells_x );
     echo( "multiboard back - grid cells Y:", grid_cells_y );
 
-    union()
+    render()
     {
-        render()
+        difference()
         {
-            difference()
+            RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = corner_rounding_r, fn = 36 );
+
+            // remove the cutouts
+            for( setup = connector_y_setup )
             {
-                RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = 1.0, fn = 36 );
+                assert( len( setup ) == 1 || len( setup ) == 2, "Only connector_y_setups of length 1 or 2 supported" );
 
-                for( setup = connector_y_setup )
+                if( len( setup ) == 2 )
                 {
-                    assert( len( setup ) == 1 || len( setup ) == 2, "Only connector_y_setups of length 1 or 2 supported" );
-
-                    if( len( setup ) == 2 )
+                    for( i = [ 0 : grid_cells_x - 1 ] )
                     {
-                        for( i = [ 0 : grid_cells_x - 1 ] )
-                        {
-                            // make sure the edge of the cutout isn't above the top
-                            assert( setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2 + multiboard_wall_width / 2 + multiboard_connector_back_connector_outer_radius < size_y );
+                        // make sure the edge of the cutout isn't above the top
+                        assert( setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2 + multiboard_wall_width / 2 + multiboard_connector_back_connector_outer_radius < size_y );
 
-                            translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
-                                _MultiboardConnectorBack_ConnectorCutout(
-                                    setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2 + multiboard_wall_width / 2,
-                                    setup[ 1 ] * multiboard_cell_size + multiboard_wall_width / 2,
-                                    true );
-                        }
+                        translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
+                            _MultiboardConnectorBack_ConnectorCutout(
+                                setup[ 0 ] * multiboard_cell_size - multiboard_cell_size / 2 + multiboard_wall_width / 2,
+                                setup[ 1 ] * multiboard_cell_size + multiboard_wall_width / 2,
+                                true );
                     }
-                    else
+                }
+                else
+                {
+                    for( i = [ 0 : grid_cells_x - 1 ] )
                     {
-                        for( i = [ 0 : grid_cells_x - 1 ] )
-                        {
-                            translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
-                                _MultiboardConnectorBack_ConnectorCutoutToBottom(
-                                    setup[ 0 ] * multiboard_cell_size + multiboard_wall_width / 2
-                                    );
-                        }
+                        translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, 0 ])
+                            _MultiboardConnectorBack_ConnectorCutoutToBottom(
+                                setup[ 0 ] * multiboard_cell_size + multiboard_wall_width / 2
+                                );
                     }
                 }
             }
