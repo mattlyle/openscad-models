@@ -6,7 +6,6 @@ include <modules/screw-connectors.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO outer edges where it meets the wall should be double thick since two hex's don't add together
 // TODO small lip overlaps where the hexs meet
 // TODO could add a screw into the foot where it meets the other side connector?
 
@@ -306,6 +305,23 @@ module HolderFace( only_hex_group = -1, colorize = false )
         {
             translate([ 0, 0, 0 ])
                 cube([ wall_width_single_x, roll_holder_y, CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 ) ]);
+
+            // add the partial hexagons that connect to the wall
+            for( row = [ 1 : 2 : rows_in_lower_hex_groups - 1 ] )
+            {
+                render()
+                {
+                    difference()
+                    {
+                        _PlaceHexagon( row, -1 );
+
+                        translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                    }
+                }
+            }
+
+            // TODO add the screw connection
         }
 
         // left side wall - upper half
@@ -316,9 +332,22 @@ module HolderFace( only_hex_group = -1, colorize = false )
             translate([ 0, 0, upper_start ])
                 cube([ wall_width_single_x, roll_holder_y, total_hex_z - upper_start ]);
 
-            // foot
-            translate([ 0, 0, upper_start ])
-                cube([ center_in_cube_offset_x, hex_size_outer_y, wall_width_single_z ]);
+            // add the partial hexagons that connect to the wall
+            for( row = [ rows_in_lower_hex_groups : 2 : num_rows - 1 ] )
+            {
+                render()
+                {
+                    difference()
+                    {
+                        _PlaceHexagon( row, -1 );
+
+                        translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                    }
+                }
+            }
+
+            // TODO add the screw connection
         }
 
         // right side wall - lower half
@@ -326,6 +355,21 @@ module HolderFace( only_hex_group = -1, colorize = false )
         {
             translate([ cube_x - wall_width_single_x, 0, 0 ])
                 cube([ wall_width_single_x, roll_holder_y, CalculateHexagonZOffset( rows_in_lower_hex_groups - 1 ) ]);
+
+            // add the partial hexagons that connect to the wall
+            for( row = [ 1 : 2 : rows_in_lower_hex_groups - 1 ] )
+            {
+                render()
+                {
+                    difference()
+                    {
+                        _PlaceHexagon( row, num_cols_even - 1 );
+
+                        translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                    }
+                }
+            }
         }
 
         // right side wall - upper half
@@ -335,27 +379,22 @@ module HolderFace( only_hex_group = -1, colorize = false )
             translate([ cube_x - wall_width_single_x, 0, upper_start ])
                 cube([ wall_width_single_x, roll_holder_y, total_hex_z - upper_start ]);
 
-            // foot
-            translate([ cube_x - wall_width_single_x - center_in_cube_offset_x, 0, upper_start ])
-                cube([ center_in_cube_offset_x, hex_size_outer_y, wall_width_single_z ]);
-        }
-
-        // side supports
-        for( row = [ 0 : 2 : num_rows ] )
-        {
-            // left support
-            if( only_hex_group == -1 || only_hex_group == GetHexGroup( row, 0 ) )
+            // add the partial hexagons that connect to the wall
+            for( row = [ rows_in_lower_hex_groups : 2 : num_rows - 1 ] )
             {
-                translate([ 0, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
-                    cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+                render()
+                {
+                    difference()
+                    {
+                        _PlaceHexagon( row, num_cols_even - 1 );
+
+                        translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                    }
+                }
             }
 
-            // right support
-            if( only_hex_group == -1 || only_hex_group == GetHexGroup( row, num_cols_even - 1 ) )
-            {
-                translate([ cube_x - center_in_cube_offset_x - wall_width_single_x, 0, CalculateHexagonZOffset( row ) - wall_width_single_z / 2 ])
-                    cube([ center_in_cube_offset_x + wall_width_single_x, roll_holder_y, wall_width_single_z ]);
-            }
+            // TODO add the screw connection
         }
 
         // hex faces on bottom
@@ -431,7 +470,6 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
 
 module HolderBase( id = -1 )
 {
-
     if( id == -1 )
     {
         _HolderBase();
