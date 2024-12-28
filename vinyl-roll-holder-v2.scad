@@ -127,11 +127,6 @@ function GetHexGroup( row, col ) =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-// TODO outer edges where it meets the wall should be double thick since two hex's don't add together
-// TODO small lip overlaps where the hexs meet
-// TODO base needs to be split into 2
-// TODO could add a screw into the foot where it meets the other side connector?
-
 if( render_mode == "debug-preview" )
 {
     translate([ CalculateHexagonXOffset( 0, 0 ), cube_y - roll_length, CalculateHexagonZOffset( 0 ) ])
@@ -412,18 +407,22 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
                 // cut off the bottom
                 translate([ CalculateHexagonXOffset( row, col ) - hex_size_outer_x / 2, 0, CalculateHexagonZOffset( row - 1 ) ])
                     cube([ hex_size_outer_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+
+                // remove the screw hole
+                translate([ CalculateHexagonXOffset( row, col ), hex_size_outer_y, hex_size_outer_z / 4 ])
+                    rotate([ 90, 0, 0 ])
+                        ScrewShaft( M3x8 );
             }
             else
             {
                 // cut off the top
                 translate([ CalculateHexagonXOffset( row, col ) - hex_size_outer_x / 2, 0, CalculateHexagonZOffset( row ) ])
                     cube([ hex_size_outer_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
-            }
 
-            // remove the screw hole
-            translate([ CalculateHexagonXOffset( row, col ), hex_size_outer_y, hex_size_outer_z / 4 ])
-                rotate([ 90, 0, 0 ])
-                    ScrewShaft( M3x8 );
+                translate([ CalculateHexagonXOffset( row, col ), hex_size_outer_y, CalculateHexagonZOffset( row ) - hex_size_outer_z / 4 ])
+                    rotate([ 90, 0, 0 ])
+                        ScrewShaft( M3x8 );
+            }
         }
     }
 }
