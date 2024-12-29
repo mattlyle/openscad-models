@@ -20,9 +20,9 @@ cells_x = 1;
 cells_y = 5;
 
 // the height to be added on top of the base
-top_z = 42.0;
+// top_z = 42.0;
 // top_z = 0;
-// top_z = 65; // based on calculated angle_height
+top_z = 65; // based on calculated angle_height
 
 wall_width = 3;
 clearance_y = 2.0;
