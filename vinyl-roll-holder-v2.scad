@@ -300,6 +300,9 @@ module HolderFace( only_hex_group = -1, colorize = false )
             }
         }
 
+        // when trimming the hex's, we need to expand the cube so there isn't a small gap
+        hex_trim_overlap = 0.1;
+
         // left side wall - lower half
         if( only_hex_group == 0 || only_hex_group == -1 )
         {
@@ -315,8 +318,8 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, -1 );
 
-                        translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                        translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
                     }
                 }
             }
@@ -341,8 +344,8 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, -1 );
 
-                        translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                        translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
                     }
                 }
             }
@@ -365,8 +368,8 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, num_cols_even - 1 );
 
-                        translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                        translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
                     }
                 }
             }
@@ -388,8 +391,8 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, num_cols_even - 1 );
 
-                        translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z ]);
+                        translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
+                            cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
                     }
                 }
             }
