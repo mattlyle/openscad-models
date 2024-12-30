@@ -7,7 +7,6 @@ include <modules/screw-connectors.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TODO small lip overlaps where the hexs meet
-// TODO could add a screw into the foot where it meets the other side connector?
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -71,6 +70,10 @@ base_strut_z = 5;
 // 0 1
 rows_in_lower_hex_groups = 5;
 cols_in_left_hex_groups = 2;
+
+// screw and heated insert definitions
+screw_def = M3x8;
+heated_insert_def = M3x6_INSERT;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -201,6 +204,19 @@ if( render_mode == "debug-preview" )
         }
     }
 
+    // left side screw conection
+    translate([ 0, 700, roll_holder_y ])
+    {
+        translate([ 0, 0, 0 ])
+            rotate([ -90, 0, 0 ])
+                HolderFace( only_hex_group = 0 );
+
+        translate([ 0, 40, 0 ]) // TODO not sure where this approx 40 comes from... should be calculated with CalculateHexagonZOffset
+            rotate([ -90, 0, 0 ])
+                HolderFace( only_hex_group = 2 );
+    }
+
+
     // preview how a base will print
     translate([ 700, 0, 0 ])
     {
@@ -318,13 +334,24 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, -1 );
 
+                        // trim off the side
                         translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
                             cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
+
+                        // remove the screw shaft
+                        if( row == rows_in_lower_hex_groups - 2 )
+                        {
+                            translate([ CalculateSideWallHeadedInsertXOffset( true ), roll_holder_y / 2, CalculateHexagonZOffset( row + 1 ) - wall_width_single_z ])
+                                ScrewShaft( screw_def );
+                        }
+                    }
+
+                    if( row == rows_in_lower_hex_groups - 2 )
+                    {
+                        _HolderSideWallConnection( false, true );
                     }
                 }
             }
-
-            // TODO add the screw connection
         }
 
         // left side wall - upper half
@@ -344,13 +371,24 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, -1 );
 
+                        // trim off the side
                         translate([ -hex_size_outer_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
                             cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
+
+                        // cut out the heated insert
+                        if( row == rows_in_lower_hex_groups )
+                        {
+                            translate([ CalculateSideWallHeadedInsertXOffset( true ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
+                                HeatedInsert( heated_insert_def );
+                        }
+                    }
+
+                    if( row == rows_in_lower_hex_groups )
+                    {
+                        _HolderSideWallConnection( true, true );
                     }
                 }
             }
-
-            // TODO add the screw connection
         }
 
         // right side wall - lower half
@@ -368,8 +406,21 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, num_cols_even - 1 );
 
+                        // trim off the side
                         translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
                             cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
+
+                        // remove the screw shaft
+                        if( row == rows_in_lower_hex_groups - 2 )
+                        {
+                            translate([ CalculateSideWallHeadedInsertXOffset( false ), roll_holder_y / 2, CalculateHexagonZOffset( row + 1 ) - wall_width_single_z ])
+                                ScrewShaft( screw_def );
+                        }
+                    }
+
+                    if( row == rows_in_lower_hex_groups - 2 )
+                    {
+                        _HolderSideWallConnection( false, false );
                     }
                 }
             }
@@ -391,8 +442,21 @@ module HolderFace( only_hex_group = -1, colorize = false )
                     {
                         _PlaceHexagon( row, num_cols_even - 1 );
 
+                        // trim off the side
                         translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) - hex_trim_overlap ])
                             cube([ hex_size_outer_x, roll_holder_y, hex_size_outer_z + hex_trim_overlap * 2 ]);
+
+                        // cut out the heated insert
+                        if( row == rows_in_lower_hex_groups )
+                        {
+                            translate([ CalculateSideWallHeadedInsertXOffset( false ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
+                                HeatedInsert( heated_insert_def );
+                        }
+                    }
+
+                    if( row == rows_in_lower_hex_groups )
+                    {
+                        _HolderSideWallConnection( true, false );
                     }
                 }
             }
@@ -453,7 +517,7 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
                 // remove the screw hole
                 translate([ CalculateHexagonXOffset( row, col ), hex_size_outer_y, hex_size_outer_z / 4 ])
                     rotate([ 90, 0, 0 ])
-                        ScrewShaft( M3x8 );
+                        ScrewShaft( screw_def );
             }
             else
             {
@@ -463,7 +527,7 @@ module _HolderBaseFaceConnection( row, col, draw_as_top )
 
                 translate([ CalculateHexagonXOffset( row, col ), hex_size_outer_y, CalculateHexagonZOffset( row ) - hex_size_outer_z / 4 ])
                     rotate([ 90, 0, 0 ])
-                        ScrewShaft( M3x8 );
+                        ScrewShaft( screw_def );
             }
         }
     }
@@ -602,7 +666,7 @@ module _HolderBaseSingle()
                     // cut out the screw hole
                     translate([ CalculateHexagonXOffset( -1, col ), base_brim_y + hex_size_outer_y, hex_size_outer_z / 4 ])
                         rotate([ 90, 0, 0 ])
-                            HeatedInsert( M3x6_INSERT );
+                            HeatedInsert( heated_insert_def );
                 }
             }
         }
@@ -626,9 +690,9 @@ module _HolderBaseStrut()
 module _HolderBaseLeftRightConnection()
 {
     connection_front_x = wall_width_screw_face_wall;
-    connection_back_x = M3x6_INSERT[ INSERT_LENGTH ] * 2;
+    connection_back_x = heated_insert_def[ INSERT_LENGTH ] * 2;
 
-    connection_z = M3x6_INSERT[ INSERT_OUTER_DIAMETER ] * 2;
+    connection_z = heated_insert_def[ INSERT_OUTER_DIAMETER ] * 2;
 
     // front (screw side)
     render()
@@ -642,7 +706,7 @@ module _HolderBaseLeftRightConnection()
             // remove the screw shaft
             translate([ -connection_front_x, base_brim_y / 2, connection_z / 2 ])
                 rotate([ 0, 90, 0 ])
-                    ScrewShaft( M3x8 );
+                    ScrewShaft( screw_def );
         }
     }
 
@@ -657,7 +721,135 @@ module _HolderBaseLeftRightConnection()
             // remove the insert
             translate([ 0, base_brim_y / 2, connection_z / 2])
                 rotate([ 0, 90, 0 ])
-                    HeatedInsert( M3x6_INSERT );
+                    HeatedInsert( heated_insert_def );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function CalculateSideWallHeadedInsertXOffset( is_left ) =
+    is_left
+        ? wall_width_single_x * 1.5 + M3_WASHER[ WASHER_OUTER_DIAMETER ] / 2
+        : cube_x - CalculateSideWallHeadedInsertXOffset( true );
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _HolderSideWallConnection( is_top, is_left )
+{
+    connection_z = wall_width_single_z * 2 + heated_insert_def[ INSERT_LENGTH ];
+
+    row = rows_in_lower_hex_groups;
+
+    connection_left_offset_x = CalculateHexagonXOffset( row, -1 ) - hex_R - wall_width_single_x;
+    connection_right_offset_x = CalculateHexagonXOffset( row, cols_in_left_hex_groups ) - hex_R - wall_width_single_x;
+
+    if( is_top )
+    {
+        if( is_left )
+        {
+            render()
+            {
+                difference()
+                {
+                    // start with the hexagon in this spot
+                    translate([ CalculateHexagonXOffset( row, -1 ), 0, CalculateHexagonZOffset( row ) ])
+                        _RollHexHolderHexagon( true );
+
+                    // cut off top
+                    translate([ connection_left_offset_x, 0, CalculateHexagonZOffset( row - 1 ) + connection_z ])
+                        cube([ hex_R * 2 + wall_width_single_x * 2, roll_holder_y, hex_R * 2 ]);
+
+                    // cut off left
+                    translate([ connection_left_offset_x, 0, CalculateHexagonZOffset( row - 1 ) ])
+                        cube([ -connection_left_offset_x, roll_holder_y, hex_R ]);
+
+                    // cut out the heated insert
+                    translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
+                        HeatedInsert( heated_insert_def );
+                }
+            }
+
+            // translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) - M3_WASHER[ WASHER_HEIGHT ] + screw_def[ SCREW_SHAFT_LENGTH ] * 0.9 ])
+            //     rotate([ 180, 0, 0 ])
+            //         PreviewScrew( screw_def, M3_WASHER );
+        }
+        else
+        {
+            render()
+            {
+                difference()
+                {
+                    // // start with the hexagon in this spot
+                    translate([ CalculateHexagonXOffset( row, cols_in_left_hex_groups ), 0, CalculateHexagonZOffset( row ) ])
+                        _RollHexHolderHexagon( true );
+
+                    // cut off top
+                    translate([ connection_right_offset_x, 0, CalculateHexagonZOffset( row - 1 ) + connection_z ])
+                        cube([ hex_R * 2 + wall_width_single_x * 2, roll_holder_y, hex_R * 2 ]);
+
+                    // cut off right
+                    translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) ])
+                        cube([ -connection_left_offset_x, roll_holder_y, hex_R ]);
+
+                    // cut out the heated insert
+                    translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
+                        HeatedInsert( heated_insert_def );
+                }
+            }
+        }
+    }
+    else
+    {
+        if( is_left )
+        {
+            render()
+            {
+                difference()
+                {
+                    // TODO should put a face in front to cover the screw, but would need to slope in order to not have an overhang?
+
+                    // on the bottom, just create a flat wall
+                    translate([ wall_width_single_x, 0, CalculateHexagonZOffset( row - 1 ) - wall_width_single_z * 2 ])
+                        cube([ -CalculateHexagonXOffset( row, -1 ), roll_holder_y, wall_width_single_z ]);
+
+                    // cut out the heated insert
+                    translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) - screw_def[ SCREW_SHAFT_LENGTH ] + wall_width_single_z * 2 ])
+                        ScrewShaft( screw_def );
+                }
+            }
+
+            if( render_mode == "preview" )
+            {
+                translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) - wall_width_single_z - M3_WASHER[ WASHER_HEIGHT ] + screw_def[ SCREW_SHAFT_LENGTH ] * 0.9 ])
+                    rotate([ 180, 0, 0 ])
+                        PreviewScrew( screw_def, M3_WASHER );
+            }
+        }
+        else
+        {
+            render()
+            {
+                difference()
+                {
+                    // TODO should put a face in front to cover the screw, but would need to slope in order to not have an overhang?
+
+                    // on the bottom, just create a flat wall
+                    translate([ cube_x + CalculateHexagonXOffset( row, -1 ) - wall_width_single_x, 0, CalculateHexagonZOffset( row - 1 ) - wall_width_single_z * 2 ])
+                        cube([ -CalculateHexagonXOffset( row, -1 ), roll_holder_y, wall_width_single_z ]);
+
+                    // cut out the heated insert
+                    translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) - screw_def[ SCREW_SHAFT_LENGTH ] + wall_width_single_z * 2 ])
+                        ScrewShaft( screw_def );
+                }
+            }
+
+            if( render_mode == "preview" )
+            {
+                translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) - wall_width_single_z - M3_WASHER[ WASHER_HEIGHT ] + screw_def[ SCREW_SHAFT_LENGTH ] * 0.9 ])
+                    rotate([ 180, 0, 0 ])
+                        PreviewScrew( screw_def, M3_WASHER );
+            }
         }
     }
 }
