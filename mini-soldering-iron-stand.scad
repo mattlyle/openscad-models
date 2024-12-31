@@ -45,6 +45,9 @@ support_stand_rear_z = 10.0;
 
 mini_soldering_iron_angle = 10.0;
 
+base_edge_width = 3.0;
+base_edge_z = 6.5;
+
 cradle_wall_width = 2.0;
 cradle_clearance = 0.4;
 
@@ -96,7 +99,7 @@ echo( "support_stand_front_offset", support_stand_front_offset );
 
 support_stand_front_z = support_stand_rear_z + support_stand_front_offset;
 
-pegs_offset_x = front_tower_x + 20;
+pegs_offset_x = front_tower_x + 22; // TODO: should be calculated to find the center
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -137,7 +140,16 @@ module MiniSolderingIronStand()
             }
         }
 
-        // #translate([ front_tower_x, base_y/2, base_z ]) cube([ 1, 1, 1 ]);
+        // base edges
+        translate([ 0, 0, 0])
+            RoundedCubeAlt2( base_x, base_edge_width, base_edge_z, r = 1.0 );
+        translate([ base_x - base_edge_width, 0, 0])
+            RoundedCubeAlt2( base_edge_width, base_y, base_edge_z, r = 1.0 );
+        translate([ 0, base_y - base_edge_width, 0])
+            RoundedCubeAlt2( base_x, base_edge_width, base_edge_z, r = 1.0 );
+        translate([ 0, 0, 0])
+            RoundedCubeAlt2( base_edge_width, base_y, base_edge_z, r = 1.0 );
+
 
         // front tower
         translate([ front_tower_x, 0, 0 ])
