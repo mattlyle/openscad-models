@@ -1,5 +1,6 @@
 include <modules/rounded-cube.scad>
 include <modules/trapezoidal-prism.scad>
+include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -29,12 +30,13 @@ mini_soldering_iron_cord_r = 5.3 / 2;
 // settings
 
 // only choose one
-// render_mode = "preview";
-render_mode = "print-base";
+render_mode = "preview";
+// render_mode = "print-base";
+// render_mode = "print-text";
 
 base_x = 240.0;
 base_y = 90.0;
-base_z = 2.0;
+base_z = 3.5;
 
 support_stand_x = 10;
 support_stand_top_y = 10;
@@ -52,6 +54,26 @@ front_cutout_edge_size = 8.0;
 
 front_tower_x = 96; // TODO: calculate
 rear_tower_x = base_x - 20; // TODO: calculate
+
+normal_tip_peg_z = 12;
+heated_insert_peg_z = 6;
+peg_r = 3.8 / 2;
+
+num_soldering_tips = 7;
+peg_spacing_x = 12;
+
+heated_insert_labels = [
+    "M2",
+    "M2.5",
+    "M3",
+    "M4",
+    "M5",
+    "M6",
+    "M8",
+];
+
+pegs_offset_y = 15;
+peg_text_offset_y = 6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated values
@@ -74,6 +96,8 @@ echo( "support_stand_front_offset", support_stand_front_offset );
 
 support_stand_front_z = support_stand_rear_z + support_stand_front_offset;
 
+pegs_offset_x = front_tower_x + 20;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -91,37 +115,48 @@ else if( render_mode == "print-base" )
 {
     MiniSolderingIronStand();
 }
+else if( render_mode == "print-text" )
+{
+    MiniSolderingIronStand();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MiniSolderingIronStand()
 {
-    render()
+    if( render_mode == "preview" || render_mode == "print-base" )
     {
-        difference()
+        render()
         {
-            RoundedCubeAlt2( base_x, base_y, base_z, r = 1.0, round_top = false );
+            difference()
+            {
+                RoundedCubeAlt2( base_x, base_y, base_z, r = 1.0, round_top = false );
 
-            translate([ front_cutout_edge_size, front_cutout_edge_size, 0 ])
-                cube([ front_tower_x - front_cutout_edge_size * 2, base_y - front_cutout_edge_size * 2, base_z ]);
+                translate([ front_cutout_edge_size, front_cutout_edge_size, 0 ])
+                    cube([ front_tower_x - front_cutout_edge_size * 2, base_y - front_cutout_edge_size * 2, base_z ]);
+            }
         }
+
+        // #translate([ front_tower_x, base_y/2, base_z ]) cube([ 1, 1, 1 ]);
+
+        // front tower
+        translate([ front_tower_x, 0, 0 ])
+            _MiniSolderingIronStandTower( support_stand_front_z );
+        translate([ front_tower_x, 0, 0 ])
+            translate([ 0, base_y / 2, support_stand_front_z + base_z + cradle_tower_overlap ])
+                _MiniSolderingIronStandFrontCradle();
+
+        // rear tower
+        translate([ rear_tower_x, 0, 0 ])
+            _MiniSolderingIronStandTower( support_stand_rear_z );
+        translate([ rear_tower_x, 0, 0 ])
+            translate([ 0, base_y / 2, support_stand_rear_z + base_z + cradle_tower_overlap ])
+                _MiniSolderingIronStandRearCradle();
+
+        _MiniSolderingIronStandTipPegs();
     }
 
-    // #translate([ front_tower_x, base_y/2, base_z ]) cube([ 1, 1, 1 ]);
-
-    // front tower
-    translate([ front_tower_x, 0, 0 ])
-        _MiniSolderingIronStandTower( support_stand_front_z );
-    translate([ front_tower_x, 0, 0 ])
-        translate([ 0, base_y / 2, support_stand_front_z + base_z + cradle_tower_overlap ])
-            _MiniSolderingIronStandFrontCradle();
-
-    // rear tower
-    translate([ rear_tower_x, 0, 0 ])
-        _MiniSolderingIronStandTower( support_stand_rear_z );
-    translate([ rear_tower_x, 0, 0 ])
-        translate([ 0, base_y / 2, support_stand_rear_z + base_z + cradle_tower_overlap ])
-            _MiniSolderingIronStandRearCradle();
+    _MiniSolderingIronStandHeadedInsertPegs();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,6 +236,48 @@ module _MiniSolderingIronStandTower( z )
     translate([ support_stand_x / 2, base_y / 2, z + base_z ])
         rotate([ 0, 0, 90 ])
             TrapezoidalPrism( support_stand_top_y, support_stand_base_y, support_stand_x, z );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _MiniSolderingIronStandHeadedInsertPegs()
+{
+    text_area_x = peg_spacing_x + peg_r * 2;
+
+    for( i = [ 0 : len( heated_insert_labels ) - 1 ] )
+    {
+        peg_x = pegs_offset_x + i * ( peg_r * 2 + peg_spacing_x );
+
+        if( render_mode == "preview" || render_mode == "print-base" )
+        {
+            translate([ peg_x, pegs_offset_y, base_z ])
+                cylinder( h = heated_insert_peg_z, r = peg_r );
+
+            // %translate([ peg_x, pegs_offset_y, base_z ])
+            //     cylinder( h = 1, r = 9.5/2 );
+        }
+
+        text_area_offset_x = peg_x - peg_spacing_x / 2 - peg_r;
+
+        if( render_mode == "preview" || render_mode == "print-text" )
+        {
+            translate([ text_area_offset_x, peg_text_offset_y, base_z ])
+                CenteredTextLabel( heated_insert_labels[ i ], text_area_x, -1, font_size = 4 );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _MiniSolderingIronStandTipPegs()
+{
+    for( i = [ 0 : num_soldering_tips - 1 ] )
+    {
+        peg_x = pegs_offset_x + i * ( peg_r * 2 + peg_spacing_x );
+
+        translate([ peg_x, base_y - pegs_offset_y, base_z ])
+            cylinder( h = normal_tip_peg_z, r = peg_r );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
