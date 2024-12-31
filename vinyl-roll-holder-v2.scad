@@ -573,34 +573,31 @@ module HolderBase( id = -1 )
     }
     else if( id == 1 )
     {
-        // translate([ -cube_x + BUILD_PLATE_X, 0, 0])
+        render()
         {
-            render()
+            difference()
             {
-                difference()
-                {
-                    _HolderBase();
+                _HolderBase();
 
-                    // front brim
-                    translate([ 0, 0, 0 ])
-                        cube([ base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
+                // front brim
+                translate([ 0, 0, 0 ])
+                    cube([ base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
 
-                    // center
-                    translate([ 0, base_brim_y + hex_size_outer_y, 0 ])
-                        cube([ base_cut_brim_offset_x, back_face_offset_y - hex_size_outer_y, hex_size_outer_z / 2 ]);
+                // center
+                translate([ 0, base_brim_y + hex_size_outer_y, 0 ])
+                    cube([ base_cut_brim_offset_x, back_face_offset_y - hex_size_outer_y, hex_size_outer_z / 2 ]);
 
-                    // front brim
-                    translate([ 0, base_brim_y + back_face_offset_y + hex_size_outer_y, 0 ])
-                        cube([ base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
+                // front brim
+                translate([ 0, base_brim_y + back_face_offset_y + hex_size_outer_y, 0 ])
+                    cube([ base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
 
-                    // front base hex
-                    translate([ 0, base_brim_y, 0 ])
-                        cube([ base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
+                // front base hex
+                translate([ 0, base_brim_y, 0 ])
+                    cube([ base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
 
-                    // back base hex
-                    translate([ 0, base_brim_y + back_face_offset_y, 0 ])
-                        cube([ base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
-                }
+                // back base hex
+                translate([ 0, base_brim_y + back_face_offset_y, 0 ])
+                    cube([ base_cut_hex_offset_x, hex_size_outer_y, hex_size_outer_z / 2 ]);
             }
         }
     }
