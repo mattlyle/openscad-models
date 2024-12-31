@@ -658,10 +658,10 @@ module _HolderBaseSingle()
                 if( col < num_cols_even - 1 )
                 {
                     translate([ CalculateHexagonXOffset( -1, col ) - hex_size_outer_x / 2, base_brim_y + hex_size_outer_y - wall_width_screw_face_wall, wall_width_single_z ])
-                        cube([ hex_size_outer_x, wall_width_screw_face_wall, hex_size_outer_z]);
+                        cube([ hex_size_outer_x, wall_width_screw_face_wall, hex_size_outer_z ]);
 
                     // cut out the screw hole
-                    translate([ CalculateHexagonXOffset( -1, col ), base_brim_y + hex_size_outer_y, hex_size_outer_z / 4 ])
+                    translate([ CalculateHexagonXOffset( -1, col ), base_brim_y + hex_size_outer_y - wall_width_screw_face_wall, hex_size_outer_z / 4 ])
                         rotate([ 90, 0, 0 ])
                             HeatedInsert( heated_insert_def );
                 }
