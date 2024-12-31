@@ -225,21 +225,27 @@ if( render_mode == "debug-preview" )
         translate([ 0, 0, wall_width_single_z ])
         {
             BuildPlatePreview();
-            HolderBase();
+
+            translate([ 0, 0, wall_width_single_z])
+                HolderBase();
         }
 
         // id=0
-        translate([ 0, 350, wall_width_single_z ])
+        translate([ 0, 350, 0 ])
         {
             BuildPlatePreview();
-            HolderBase( id = 0 );
+
+            translate([ 0, 0, wall_width_single_z])
+                HolderBase( id = 0 );
         }
 
         // id=1
-        translate([ 0, 700, wall_width_single_z ])
+        translate([ 0, 700, 0 ])
         {
             BuildPlatePreview();
-            HolderBase( id = 1 );
+
+            translate([ 0, 0, wall_width_single_z])
+                HolderBase( id = 1 );
         }
     }
 }
