@@ -274,7 +274,7 @@ module _MiniSolderingIronStandHeadedInsertPegs()
         if( render_mode == "preview" || render_mode == "print-text" )
         {
             translate([ text_area_offset_x, peg_text_offset_y, base_z ])
-                CenteredTextLabel( heated_insert_labels[ i ], text_area_x, -1, font_size = 4 );
+                CenteredTextLabel( heated_insert_labels[ i ], text_area_x, -1, font_size = 4, font = "Liberation Sans:style=Bold" );
         }
     }
 }
