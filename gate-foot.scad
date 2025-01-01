@@ -1,4 +1,5 @@
 include <modules/trapezoidal-prism.scad>
+include <modules/rounded-cylinder.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -23,6 +24,8 @@ foot_cleat_offset_z = 15.5;
 
 foot_rounding_r = 21.0;
 
+foot_edge_rounding_r = 1.0;
+
 foot_body_color = [ 135 / 255.0, 62 / 255.0, 35 / 255.0 ];
 foot_cleat_color = [ 240 / 255.0, 175 / 255.0, 107 / 255.0 ];
 foot_pad_color = [ 0.2, 0.2, 0.2 ];
@@ -31,12 +34,14 @@ foot_pad_color = [ 0.2, 0.2, 0.2 ];
 // settings
 
 // only choose one
-// render_mode = "preview";
-render_mode = "print-left";
+render_mode = "preview";
+// render_mode = "print-left";
 // render_mode = "print-right";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
+
+$fn = $preview ? 16 : 64;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -75,20 +80,30 @@ module GateFoot( is_left_foot, use_foot_pads = true )
     // main body
     color( foot_body_color )
     {
-        // TODO: round the edges!
 
-        // rounded corner
-        translate([ foot_rounding_r, 0, offset_z + ( foot_z - foot_rounding_r ) ])
-            rotate([ -90, 0, 0 ])
-                cylinder( h = foot_y, r = foot_rounding_r, $fn = 200 );
+        hull()
+        {
+            // rounded corner
+            translate([ foot_rounding_r, 0, offset_z + ( foot_z - foot_rounding_r ) ])
+                rotate([ -90, 0, 0 ])
+                    RoundedCylinder( h = foot_y, r = foot_rounding_r, rounding_r = foot_edge_rounding_r,fn = 200 );
 
-        // main section
-        translate([ foot_rounding_r, 0, offset_z ])
-            cube([ foot_x - foot_rounding_r, foot_y, foot_z ]);
+            // bottom points
+            translate([ foot_edge_rounding_r, foot_edge_rounding_r, foot_edge_rounding_r ])
+                sphere( r = foot_edge_rounding_r );
+            translate([ foot_x - foot_edge_rounding_r, foot_edge_rounding_r, foot_edge_rounding_r ])
+                sphere( r = foot_edge_rounding_r );
+            translate([ foot_x - foot_edge_rounding_r, foot_y - foot_edge_rounding_r, foot_edge_rounding_r ])
+                sphere( r = foot_edge_rounding_r );
+            translate([ foot_edge_rounding_r, foot_y - foot_edge_rounding_r, foot_edge_rounding_r ])
+                sphere( r = foot_edge_rounding_r );
 
-        // under corner
-        translate([ 0, 0, offset_z ])
-            cube([ foot_rounding_r, foot_y, foot_z - foot_rounding_r ]);
+            // top corner
+            translate([ foot_x - foot_edge_rounding_r, foot_edge_rounding_r, foot_z - foot_edge_rounding_r ])
+                sphere( r = foot_edge_rounding_r );
+            translate([ foot_x - foot_edge_rounding_r, foot_y - foot_edge_rounding_r, foot_z - foot_edge_rounding_r ])
+                sphere( r = foot_edge_rounding_r );
+        }
     }
 
     // cleat
@@ -99,12 +114,20 @@ module GateFoot( is_left_foot, use_foot_pads = true )
             translate([ foot_x - foot_cleat_x, foot_y, offset_z + foot_cleat_offset_z ])
                 rotate([ 0, -90, -90 ])
                     TrapezoidalPrism( foot_cleat_outer_z, foot_cleat_inner_z, foot_cleat_x, foot_cleat_y, center = false );
+
+            // also add a merge spot to fill in the rounded edge
+            translate([ foot_x - foot_edge_rounding_r, foot_y - foot_edge_rounding_r, foot_cleat_offset_z ])
+                cube([ foot_edge_rounding_r, foot_edge_rounding_r, foot_cleat_inner_z ]);
         }
         else
         {
             translate([ foot_x - foot_cleat_x, 0, offset_z + foot_cleat_inner_z + foot_cleat_offset_z ])
                 rotate([ 0, 90, -90 ])
                     TrapezoidalPrism( foot_cleat_outer_z, foot_cleat_inner_z, foot_cleat_x, foot_cleat_y, center = false );
+
+            // also add a merge spot to fill in the rounded edge
+            translate([ foot_x - foot_edge_rounding_r, 0, foot_cleat_offset_z ])
+                cube([ foot_edge_rounding_r, foot_edge_rounding_r, foot_cleat_inner_z ]);
         }
     }
 
