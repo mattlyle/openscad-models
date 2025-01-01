@@ -566,11 +566,19 @@ module HolderBase( id = -1 )
                 translate([ base_cut_brim_offset_x, back_face_offset_y, -wall_width_single_z ])
                     cube([ cube_x - base_cut_brim_offset_x, base_brim_y * 2 + roll_holder_y, wall_width_single_z ]);
 
+                // front bottom for connection hex
+                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, base_brim_y, -wall_width_single_z ])
+                    cube([ hex_R, roll_holder_y, wall_width_single_z ]);
+
+                // back bottom for connection hex
+                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, base_brim_y + back_face_offset_y, -wall_width_single_z ])
+                    cube([ hex_R, roll_holder_y, wall_width_single_z ]);
+
                 // front brim
                 translate([ base_cut_brim_offset_x, 0, 0 ])
                     cube([ cube_x - base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
 
-                // center
+                // center slats
                 translate([ base_cut_brim_offset_x, base_brim_y + hex_size_outer_y, -wall_width_single_z ])
                     cube([ cube_x - base_cut_brim_offset_x, back_face_offset_y - hex_size_outer_y, hex_size_outer_z / 2 ]);
 
@@ -590,25 +598,45 @@ module HolderBase( id = -1 )
     }
     else if( id == 1 )
     {
+        // # translate([
+        //     CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x,
+        //     base_brim_y-0.3,
+        //     -wall_width_single_z ]) cube([ 0.1,roll_holder_y,5]);
+
+        // #translate([ 0, base_brim_y, -wall_width_single_z ])
+        //     cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+
         render()
         {
             difference()
             {
                 _HolderBase();
 
-                // front bottom
+                // front bottom under brim
                 translate([ 0, 0, -wall_width_single_z ])
-                    cube([ base_cut_brim_offset_x, base_brim_y * 2 + roll_holder_y, wall_width_single_z ]);
+                    cube([ base_cut_brim_offset_x, base_brim_y, wall_width_single_z ]);
+
+                // front bottom under center
+                translate([ 0, base_brim_y, -wall_width_single_z ])
+                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
                 // back bottom
-                translate([ 0, back_face_offset_y, -wall_width_single_z ])
-                    cube([ base_cut_brim_offset_x, base_brim_y * 2 + roll_holder_y, wall_width_single_z ]);
+                // translate([ 0, back_face_offset_y, -wall_width_single_z ])
+                //     cube([ base_cut_brim_offset_x, base_brim_y * 2 + roll_holder_y, wall_width_single_z ]);
+
+                // back bottom under brim
+                translate([ 0, base_brim_y + back_face_offset_y + roll_holder_y, -wall_width_single_z ])
+                    cube([ base_cut_brim_offset_x, base_brim_y, wall_width_single_z ]);
+
+                // back bottom under center
+                translate([ 0, base_brim_y + back_face_offset_y, -wall_width_single_z ])
+                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
                 // front brim
                 translate([ 0, 0, 0 ])
                     cube([ base_cut_brim_offset_x, base_brim_y, hex_size_outer_z / 2 ]);
 
-                // center
+                // center slats
                 translate([ 0, base_brim_y + hex_size_outer_y, -wall_width_single_z ])
                     cube([ base_cut_brim_offset_x, back_face_offset_y - hex_size_outer_y, hex_size_outer_z / 2 ]);
 
