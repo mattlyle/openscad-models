@@ -73,20 +73,31 @@ else if( render_mode == "print-right" )
 
 module GateFoot( is_left_foot, use_foot_pads = true )
 {
-    // % cube([ foot_x, foot_y, foot_z + foot_pad_z ]);
+    // % cube([ foot_x, foot_y, foot_z + ( use_foot_pads ? foot_pad_z : 0 ) ]);
 
     offset_z = use_foot_pads ? foot_pad_z : 0;
 
     // main body
-    color( foot_body_color )
-    {
-
+    // color( foot_body_color )
+    // {
         hull()
         {
             // rounded corner
-            translate([ foot_rounding_r, 0, offset_z + ( foot_z - foot_rounding_r ) ])
-                rotate([ -90, 0, 0 ])
-                    RoundedCylinder( h = foot_y, r = foot_rounding_r, rounding_r = foot_edge_rounding_r,fn = 200 );
+            render()
+            {
+                difference()
+                {
+                    translate([ foot_rounding_r, 0, offset_z + ( foot_z - foot_rounding_r ) ])
+                        rotate([ -90, 0, 0 ])
+                            RoundedCylinder( h = foot_y, r = foot_rounding_r, rounding_r = foot_edge_rounding_r );
+
+                    translate([ 0, 0, 0 ])
+                        cube([ foot_rounding_r, foot_y, foot_z - foot_rounding_r ]);
+
+                    translate([ foot_rounding_r, 0, 0 ])
+                        cube([ foot_rounding_r, foot_y, foot_z ]);
+                }
+            }
 
             // bottom points
             translate([ foot_edge_rounding_r, foot_edge_rounding_r, foot_edge_rounding_r ])
@@ -104,14 +115,14 @@ module GateFoot( is_left_foot, use_foot_pads = true )
             translate([ foot_x - foot_edge_rounding_r, foot_y - foot_edge_rounding_r, foot_z - foot_edge_rounding_r ])
                 sphere( r = foot_edge_rounding_r );
         }
-    }
+    // }
 
     // cleat
-    color( foot_cleat_color )
-    {
+    // color( foot_cleat_color )
+    // {
         if( is_left_foot )
         {
-            translate([ foot_x - foot_cleat_x, foot_y, offset_z + foot_cleat_offset_z ])
+            translate([ foot_x - foot_cleat_x, foot_y - 0.01, offset_z + foot_cleat_offset_z ])
                 rotate([ 0, -90, -90 ])
                     TrapezoidalPrism( foot_cleat_outer_z, foot_cleat_inner_z, foot_cleat_x, foot_cleat_y, center = false );
 
@@ -129,17 +140,17 @@ module GateFoot( is_left_foot, use_foot_pads = true )
             translate([ foot_x - foot_edge_rounding_r, 0, foot_cleat_offset_z ])
                 cube([ foot_edge_rounding_r, foot_edge_rounding_r, foot_cleat_inner_z ]);
         }
-    }
+    // }
 
     if( use_foot_pads )
     {
         // front foot
-        color( foot_pad_color )
+        // color( foot_pad_color )
             translate([ foot_pad_offset_x, 0, 0 ])
                 cube([ foot_pad_x, foot_y, foot_pad_z ]);
 
         // back foot
-        color( foot_pad_color )
+        // color( foot_pad_color )
             translate([ foot_x - foot_pad_x - foot_pad_offset_x, 0, 0 ])
                 cube([ foot_pad_x, foot_y, foot_pad_z ]);
     }
