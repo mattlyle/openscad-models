@@ -10,6 +10,7 @@ multiboard_wall_width = 2.0;
 multiboard_screw_hole_radius = 3.0;
 multiboard_cell_corner_width = 14.0;
 multiboard_cell_height = 6.5;
+multiboard_corner_rounding_r = 1.0;
 
 multiboard_connector_back_connector_clearance = 0.05;
 multiboard_connector_back_z = 6.5;
@@ -99,23 +100,21 @@ module MultiboardConnectorBackAlt( size_x, size_y )
     echo( "multiboard back - grid cells X:", grid_cells_x );
     echo( "multiboard back - grid cells Y:", grid_cells_y );
 
-    corner_rounding_r = 1.0;
-
     render()
     {
         difference()
         {
-            // RoundedCube( size = [ size_x, size_y, multiboard_connector_back_z + corner_rounding_r ], r = corner_rounding_r, fn = 36 );
+            // RoundedCube( size = [ size_x, size_y, multiboard_connector_back_z + multiboard_corner_rounding_r ], r = corner_rounding_r, fn = 36 );
             RoundedCubeAlt2(
                 size_x,
                 size_y,
                 multiboard_connector_back_z,
-                r = corner_rounding_r,
+                r = multiboard_corner_rounding_r,
                 round_top = false,
                 fn = 36 );
 
             translate([ 0, 0, multiboard_connector_back_z ])
-                cube([ size_x, size_y, corner_rounding_r ]);
+                cube([ size_x, size_y, multiboard_corner_rounding_r ]);
 
             for( i = [ 0 : grid_cells_x - 1 ] )
             {
@@ -143,8 +142,6 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 
     offset_x = MultiboardConnectorBackAltXOffset( size_x );
 
-    corner_rounding_r = 1.0;
-
     echo( "multiboard back - grid cells X:", grid_cells_x );
     echo( "multiboard back - grid cells Y:", grid_cells_y );
 
@@ -152,7 +149,7 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
     {
         difference()
         {
-            RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = corner_rounding_r, fn = 36 );
+            RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = multiboard_corner_rounding_r, fn = 36 );
 
             // remove the cutouts
             for( setup = connector_y_setup )
