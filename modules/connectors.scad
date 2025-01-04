@@ -1,4 +1,4 @@
-include <triangle-prism.scad>
+include <triangular-prism.scad>
 
 // module that creates connectors
 
@@ -14,7 +14,7 @@ module SnapConnectorOver( width, height_over, interior_angle = 45, clearance = 0
     // horizontal over part
     translate([ 0, height_over + clearance, height_over + overhang_height - clearance ])
         rotate([ 180, 0, 0  ])
-            TrianglePrism( width, height = height_over, depth = overhang_height );
+            TriangularPrism( width, height_over, overhang_height );
     // TODO: this '-clearance' actually puts it inside the connector part, but on purpose to keep it snug
 }
 
