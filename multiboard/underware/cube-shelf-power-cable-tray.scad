@@ -17,8 +17,11 @@ render_mode = "preview";
 wall_width = 1.6;
 
 cube_shelf_pinch_angle = 3.0;
+cube_shelf_back_clearance = 1.0;
 
 power_cable_entry_gap = 6.0;
+
+wall_preview_y = 120;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -33,11 +36,11 @@ tray_y = power_cable_channel_size + wall_width * 2;
 if( render_mode == "preview" )
 {
     // preview the cube shelf wall
-    % translate([ wall_width, 0, 0 ])
-        cube([ cube_shelf_vertical_support_x, 30, tray_z ]);
+    % translate([ wall_width + cube_shelf_back_clearance, -wall_preview_y + power_cable_channel_size + wall_width, 0 ])
+        cube([ cube_shelf_vertical_support_x, wall_preview_y, tray_z ]);
 
     // preview the cable
-    % translate([ wall_width * 2 + cube_shelf_vertical_support_x + power_cable_r, wall_width + power_cable_r, 0 ])
+    % translate([ wall_width * 2 + cube_shelf_vertical_support_x + cube_shelf_back_clearance + power_cable_r, wall_width + power_cable_r, 0 ])
         cylinder( h = tray_z, r = power_cable_r );
 
     CubeShelfPowerCableTray();
@@ -55,7 +58,7 @@ else
 
 module CubeShelfPowerCableTray()
 {
-    center_wall_x = wall_width + cube_shelf_vertical_support_x;
+    center_wall_x = wall_width + cube_shelf_vertical_support_x + cube_shelf_back_clearance;
     right_wall_x = center_wall_x + wall_width + power_cable_channel_size;
     gap_wall_x = center_wall_x + wall_width + power_cable_entry_gap;
 
