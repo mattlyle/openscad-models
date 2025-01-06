@@ -18,7 +18,7 @@ render_mode = "preview";
 
 wall_width = 1.8;
 
-cube_shelf_pinch_angle = 5.0;
+cube_shelf_pinch_angle = 6.0;
 cube_shelf_back_clearance = 1.0;
 
 power_cable_entry_gap = 4.0;
