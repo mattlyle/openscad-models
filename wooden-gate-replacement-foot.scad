@@ -25,7 +25,7 @@ foot_pad_offset_x = 1.5;
 
 foot_cleat_x = 126.0;
 foot_cleat_y = 29.1 - foot_y;
-foot_cleat_outer_z = 14.5;
+foot_cleat_outer_z = 14.7; // measured as 14.5 but doesn't fit well
 foot_cleat_inner_z = 11.9;
 foot_cleat_offset_z = 15.5;
 
@@ -62,6 +62,9 @@ gate_overlap_x = foot_cleat_x + 2;
 
 clearance_y = 1.0;
 post_clearance_x = 0.6;
+
+// where the foot swings and meets the crossbeam
+gate_crossbeam_extra_x = 2;
 
 guide_clearance = 0.6;
 
@@ -166,7 +169,6 @@ module GateFoot( is_left_foot, use_foot_pads = true )
 
                         translate([ foot_rounding_r, 0, 0 ])
                             cube([ foot_rounding_r, foot_y, foot_z ]);
-
                     }
 
                     // bottom points
@@ -187,15 +189,16 @@ module GateFoot( is_left_foot, use_foot_pads = true )
                 }
 
                 // cutout where the foot meets the cross beam
+                crossbeam_cutout_x = gate_y + gate_crossbeam_extra_x;
                 if( is_left_foot )
                 {
-                    translate([ 0, foot_y - foot_offset_cutout_y, 0 ])
-                        cube([ foot_offset_cutout_x, foot_offset_cutout_y, foot_z ]);
+                    translate([ foot_offset_cutout_x - crossbeam_cutout_x, foot_y - foot_offset_cutout_y, 0 ])
+                        cube([ crossbeam_cutout_x, foot_offset_cutout_y, foot_z ]);
                 }
                 else
                 {
-                    translate([ 0, 0, 0 ])
-                        cube([ foot_offset_cutout_x, foot_offset_cutout_y, foot_z ]);
+                    translate([ foot_offset_cutout_x - crossbeam_cutout_x, 0, 0 ])
+                        cube([ crossbeam_cutout_x, foot_offset_cutout_y, foot_z ]);
                 }
             }
         }
