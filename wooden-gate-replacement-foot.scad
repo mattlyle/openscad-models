@@ -1,5 +1,6 @@
 include <modules/trapezoidal-prism.scad>
 include <modules/rounded-cylinder.scad>
+include <modules/rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -55,11 +56,14 @@ clip_bottom_z = 4;
 clip_overlap_y = 2.0;
 clip_overlap_z = 16.0;
 clip_pinch_angle = 6.0;
+clip_rounding_r = 0.5;
 
 gate_overlap_x = foot_cleat_x + 2;
 
 clearance_y = 1.0;
-clearance_x = 1.2;
+post_clearance_x = 0.6;
+
+guide_clearance = 0.6;
 
 foot_offset_cutout_x = foot_x - foot_cleat_x;
 foot_offset_cutout_y = 2.0;
@@ -91,8 +95,8 @@ if( render_mode == "preview" )
     // clip on top - right
 
     // clip on top - left
-    translate([ 0, 200 + clip_overlap_y, gate_z + clip_bottom_z ])
-        rotate([ 180, 0, 0 ])
+    translate([ clip_x, 200 + clip_overlap_y - clip_y, gate_z + clip_bottom_z ])
+        rotate([ 180, 0, 180 ])
             GateFootClip( false );
 
     // clip to the side - left
@@ -247,8 +251,11 @@ module GateFoot( is_left_foot, use_foot_pads = true )
 
 module GateFootClip( for_left_foot )
 {
-    cutout_x = gate_post_r * 2 + clearance_x * 2;
-    cutout_y = clip_overlap_y + clearance_y * 1.5 + gate_y + gate_post_r * 2;
+    post_cutout_x = gate_post_r * 2 + post_clearance_x * 2;
+    post_cutout_y = clip_overlap_y + clearance_y * 1.5 + gate_y + gate_post_r * 2;
+
+    guide_cutout_x = clip_guide_x + guide_clearance * 2;
+    guide_cutout_y = foot_y + guide_clearance;
 
     render()
     {
@@ -257,26 +264,26 @@ module GateFootClip( for_left_foot )
             union()
             {
                 // top
-                cube([ clip_x, clip_y, clip_bottom_z ]);
+                RoundedCubeAlt2( clip_x, clip_y, clip_bottom_z, r = clip_rounding_r );
 
                 // cleat side
-                cube([ clip_x, clip_overlap_y, clip_overlap_z ]);
+                RoundedCubeAlt2( clip_x, clip_overlap_y, clip_overlap_z, r = clip_rounding_r );
 
                 // back side
                 translate([ 0, clip_y - clip_overlap_y, 0 ])
                     rotate([ clip_pinch_angle, 0, 0 ])
-                        cube([ clip_x, clip_overlap_y, clip_overlap_z ]);
+                        RoundedCubeAlt2( clip_x, clip_overlap_y, clip_overlap_z, r = clip_rounding_r );
             }
 
             // remove the post area
-            translate([ clip_post_offset_x, 0, 0 ])
-                cube([ cutout_x, cutout_y, clip_overlap_z ]);
+            translate([ clip_x - clip_post_offset_x - post_cutout_x, 0, 0 ])
+                cube([ post_cutout_x, post_cutout_y, clip_overlap_z ]);
 
-            // remove grooves
-            translate([ clip_guide_1_offset_x-clip_guide_x / 2, clip_overlap_y, clip_bottom_z - clip_guide_z ])
-                cube([ clip_guide_x, foot_y + clearance_y, clip_guide_z ]);
-            translate([ clip_guide_2_offset_x - clip_guide_x / 2, clip_overlap_y, clip_bottom_z - clip_guide_z ])
-                cube([ clip_guide_x, foot_y + clearance_y, clip_guide_z ]);
+            // remove guide cutout
+            translate([ clip_x - clip_guide_1_offset_x - guide_cutout_x / 2, clip_overlap_y, clip_bottom_z - clip_guide_z ])
+                cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
+            translate([ clip_x - clip_guide_2_offset_x - guide_cutout_x / 2, clip_overlap_y, clip_bottom_z - clip_guide_z ])
+                cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
         }
     }
 }
