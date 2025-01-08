@@ -81,7 +81,7 @@ foot_pad_color = [ 0.2, 0.2, 0.2 ];
 $fn = $preview ? 16 : 64;
 
 clip_pinch_distance_y = clip_overlap_z * sin( clip_pinch_angle );
-echo( "clip_pinch_distance_y", clip_pinch_distance_y );
+// echo( "clip_pinch_distance_y", clip_pinch_distance_y );
 
 clip_y = foot_y + gate_y + clip_overlap_y * 2 + clearance_y;
 
@@ -232,7 +232,7 @@ module GateFoot( is_left_foot, use_foot_pads = true )
         }
     }
 
-    // clip grooves
+    // clip guides
     translate([ foot_x - clip_guide_1_offset_x - clip_guide_x / 2, 0, foot_z - foot_edge_rounding_r ])
         cube([ clip_guide_x, foot_y, clip_guide_z + foot_edge_rounding_r ]);
     translate([ foot_x - clip_guide_2_offset_x - clip_guide_x / 2, 0, foot_z - foot_edge_rounding_r ])
