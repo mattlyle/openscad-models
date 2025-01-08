@@ -1,5 +1,23 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+BUILD_PLATE_X = 256.0;
+BUILD_PLATE_Y = 256.0;
+BUILD_PLATE_Z = 256.0;
+
+BUILD_PREVIEW_WIDTH = 0.01;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// show a preview of the build plate
+
+module BuildPlatePreview()
+{
+    % translate([ 0, 0, -BUILD_PREVIEW_WIDTH ])
+        cube([ BUILD_PLATE_X, BUILD_PLATE_Y, BUILD_PREVIEW_WIDTH ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// list, sum and spacing functions
+
 // sum up the values in the given list
 function sumList( list ) = _sumListHelper( list, 0 );
 function _sumListHelper( list, n ) = n >= len( list ) ? 0 : list[ n ] + _sumListHelper( list, n + 1 );
@@ -22,6 +40,7 @@ function calculateEquallySpacedOffset( list, total_size, clearance, i ) =
 function calculateOffsetToCenter( total_size, item_size ) = total_size / 2 - item_size / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// rotate so that we can draw an object from one point to the next
 
 module RotateFromPointAtoB( a, b )
 {
