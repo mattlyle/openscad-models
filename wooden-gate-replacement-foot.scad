@@ -298,14 +298,28 @@ module GateFootClip( for_left_foot )
             }
 
             // remove the post area
-            translate([ clip_x - clip_post_offset_x - post_cutout_x, 0, 0 ])
-                cube([ post_cutout_x, post_cutout_y, clip_overlap_z + clip_bottom_z ]);
+            if( for_left_foot )
+            {
+                translate([ clip_x - clip_post_offset_x - post_cutout_x, 0, 0 ])
+                    cube([ post_cutout_x, post_cutout_y, clip_overlap_z + clip_bottom_z ]);
 
-            // remove guide cutout
-            translate([ clip_x - clip_guide_1_offset_x - guide_cutout_x / 2, clip_y - clip_overlap_y - guide_cutout_y, clip_bottom_z - clip_guide_z ])
-                cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
-            translate([ clip_x - clip_guide_2_offset_x - guide_cutout_x / 2, clip_y - clip_overlap_y - guide_cutout_y, clip_bottom_z - clip_guide_z ])
-                cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
+                // remove guide cutout
+                translate([ clip_x - clip_guide_1_offset_x - guide_cutout_x / 2, clip_y - clip_overlap_y - guide_cutout_y, clip_bottom_z - clip_guide_z ])
+                    cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
+                translate([ clip_x - clip_guide_2_offset_x - guide_cutout_x / 2, clip_y - clip_overlap_y - guide_cutout_y, clip_bottom_z - clip_guide_z ])
+                    cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
+            }
+            else
+            {
+                translate([ clip_post_offset_x, 0, 0 ])
+                    cube([ post_cutout_x, post_cutout_y, clip_overlap_z + clip_bottom_z ]);
+
+                // remove guide cutout
+                translate([ clip_guide_1_offset_x - guide_cutout_x / 2, clip_y - clip_overlap_y - guide_cutout_y, clip_bottom_z - clip_guide_z ])
+                    cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
+                translate([ clip_guide_2_offset_x - guide_cutout_x / 2, clip_y - clip_overlap_y - guide_cutout_y, clip_bottom_z - clip_guide_z ])
+                    cube([ guide_cutout_x, guide_cutout_y, clip_guide_z ]);
+            }
         }
     }
 }
