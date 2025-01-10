@@ -16,6 +16,7 @@ deburring_blades_y = 4.8;
 // only choose one
 render_mode = "preview";
 // render_mode = "print-bin";
+// render_mode = "print-text";
 
 cells_x = 2;
 cells_y = 1;
@@ -59,6 +60,10 @@ else if( render_mode == "print-bin" )
 {
     DeburringToolBin();
 }
+else if( render_mode == "print-text" )
+{
+    DeburringToolBin();
+}
 else
 {
     assert( false, "Unknown render mode!" );
@@ -68,29 +73,41 @@ else
 
 module DeburringToolBin()
 {
-    text_area_offset_y = 0;
-    text_area_y = 0;
+    text_area_offset_y = deburring_tool_offset_y + deburring_tool_r + clearance;
+    text_area_y = deburring_blades_offset_y - text_area_offset_y - clearance;
 
-    render()
+    // # translate([ 0, text_area_offset_y, holder_z ])
+    //     cube([ base_x, text_area_y, 0.1 ]);
+
+    if( render_mode == "preview" || render_mode == "print-bin" )
     {
-        difference()
+        render()
         {
-            GridfinityBase(
-                cells_x,
-                cells_y,
-                top_z,
-                round_top = true,
-                center = false,
-                magnets = GRIDFINITY_BASE_MAGNETS_ALL );
+            difference()
+            {
+                GridfinityBase(
+                    cells_x,
+                    cells_y,
+                    top_z,
+                    round_top = true,
+                    center = false,
+                    magnets = GRIDFINITY_BASE_MAGNETS_ALL );
 
-            // cut out the blades section
-            translate([ deburring_blades_offset_x, deburring_blades_offset_y - clearance, offset_z ])
-                cube([ deburring_blades_x + clearance * 2, deburring_blades_y + clearance * 2, holder_z ]);
+                // cut out the tool
+                translate([ deburring_tool_offset_x, deburring_tool_offset_y, offset_z ])
+                    cylinder( h = holder_z, r = deburring_tool_r + clearance );
 
-            // cut out the tool
-            translate([ deburring_tool_offset_x, deburring_tool_offset_y, offset_z ])
-                cylinder( h = holder_z, r = deburring_tool_r + clearance );
+                // cut out the blades section
+                translate([ deburring_blades_offset_x, deburring_blades_offset_y - clearance, offset_z ])
+                    cube([ deburring_blades_x + clearance * 2, deburring_blades_y + clearance * 2, holder_z ]);
+            }
         }
+    }
+
+    if( render_mode == "preview" || render_mode == "print-text" )
+    {
+        translate([ 0, text_area_offset_y, holder_z ])
+            CenteredTextLabel( "Deburring Tool", base_x, text_area_y, font_size = 4, font = "Liberation Sans:style=Bold" );
     }
 }
 
