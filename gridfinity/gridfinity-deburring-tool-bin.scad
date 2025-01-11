@@ -107,7 +107,7 @@ module DeburringToolBin()
     if( render_mode == "preview" || render_mode == "print-text" )
     {
         translate([ 0, text_area_offset_y, holder_z ])
-            CenteredTextLabel( "Deburring Tool", base_x, text_area_y, font_size = 4, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( "DEBURRING TOOL", base_x, text_area_y, font_size = 4, font = "Liberation Sans:style=Bold" );
     }
 }
 
