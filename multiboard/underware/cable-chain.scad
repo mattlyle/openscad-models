@@ -53,27 +53,6 @@ else
     assert( false, "Unknown render mode!" );
 }
 
-
-
-// % translate([ link_offset_x, 15, link_z ])
-//     cube([ link_x, 0.1, 0.1 ]);
-// % translate([ link_offset_x + link_edge_x, 26, link_z ])
-//     cube([ link_x, 0.1, 0.1 ]);
-// % translate([ link_offset_x, link_offset_y, link_z / 2 ])
-//     cube([ link_x, link_y, 0.1 ]);
-// % translate([ link_offset_x, link_offset_y, link_z / 2 ])
-//     cube([ link_x, link_y, 0.1 ]);
-// % translate([ link_offset_x + link_edge_x, link_offset_y + link_cutout_offset_y, link_z / 2 ])
-//     cube([ link_edge_x, 0.01, 0.01 ]);
-// % translate([ link_offset_x, link_offset_y + link_hole_offset_y, link_z / 2 ])
-//     rotate([ 0, 90, 0 ])
-//         cylinder( r = link_hole_r, h = link_x );
-// % translate([ link_offset_x + link_edge_x, link_offset_y + link_hole_offset_y, link_z / 2 ])
-//     rotate([ 0, 90, 0 ])
-//         cylinder( r = link_cutout_r, h = /*link_x - link_edge_x * 2*/1 );
-
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module ChainLink()
