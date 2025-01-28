@@ -25,10 +25,11 @@ link_offset_y = 2.5;
 render_mode = "preview";
 // render_mode = "print-chain-link";
 
-// prong_x = 10.0;
 prong_y = 2.4;
 prong_z = 1.0;
 // prong_angle_y = -30;
+
+prong_angle_z = 20;
 
 prong_cutout_overlap = 1.8;
 
@@ -39,7 +40,7 @@ render_overlap = 0.01;
 
 $fn = $preview ? 32 : 64;
 
-prong_r = ( link_x - link_edge_x * 4 ) * 0.35;
+prong_r = ( link_x - link_edge_x * 4 ) * 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -65,14 +66,18 @@ module ChainLink()
     //     rotate([ 0, prong_angle_y, 0 ])
     //         cube([ prong_x, prong_y, prong_z ]);
 
+    angle_offset = prong_y * sin( prong_angle_z );
+    echo(angle_offset);
+
     difference()
     {
         translate([
-            link_offset_x + link_edge_x * 2 + prong_r,
+            link_offset_x + link_edge_x * 2 - angle_offset,
             link_offset_y + link_cutout_offset_y - prong_cutout_overlap,
             link_z - prong_r
             ])
-            ChainLinkProng();
+            rotate([ 0, 0, -prong_angle_z ])
+                ChainLinkProng();
 
         translate([ link_offset_x + link_edge_x, link_offset_y + link_hole_offset_y, link_z / 2 ])
             rotate([ 0, 90, 0 ])
@@ -87,11 +92,11 @@ module ChainLink()
     difference()
     {
         translate([
-            link_offset_x + link_x - prong_r - link_edge_x * 2,
+            link_offset_x + link_x - link_edge_x * 2 + angle_offset,
             link_offset_y + link_y - link_cutout_offset_y + prong_y,
             link_z - prong_r
             ])
-            rotate([ 0, 0, 180 ])
+            rotate([ 0, 0, 180 - prong_angle_z ])
                 ChainLinkProng();
 
         translate([ link_offset_x + link_edge_x, link_offset_y + link_y - link_hole_offset_y, link_z / 2 ])
@@ -105,6 +110,7 @@ module ChainLink()
 module ChainLinkProng()
 {
     // outer
+    translate([ prong_r, 0, 0 ])
     difference()
     {
         translate([ -prong_r, 0, -prong_z ])
