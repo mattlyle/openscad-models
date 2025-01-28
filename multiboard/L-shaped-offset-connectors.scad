@@ -1,15 +1,33 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// settings
+
+// render_mode = "print-part-A";
+render_mode = "print-part-B";
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 $fn = $preview ? 32 : 64;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-LShapedOffsetConnector();
+if( render_mode == "print-part-A" )
+{
+    LShapedOffsetConnectorPartA();
+}
+else if( render_mode == "print-part-B" )
+{
+    LShapedOffsetConnectorPartB();
+}
+else
+{
+    assert( false, "Unknown render mode!" );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module LShapedOffsetConnector()
+module LShapedOffsetConnectorPartA()
 {
     // import( file = "../assets/8 mm - Dual Offset Snap (DS Part A).stl" );
 
@@ -87,6 +105,26 @@ module LShapedOffsetConnector()
             rotate([ 0, 90, 0 ])
                 cylinder( h = 75, r = 4.75 );
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module LShapedOffsetConnectorPartB()
+{
+    render()
+    {
+        difference()
+        {
+            import( file = "../assets/Quad Snap Connector (DS Part B) - Standard.stl" );
+
+            translate( [ 26, 12.5, -1 ] )
+                cube([ 25, 25, 20 ]);
+        }
+    }
+
+    translate( [ 26, 12.5, 1.25 ] )
+        rotate([ 0, 0, 45 ])
+            cube( [ 11.3, 11.3, 2.5 ], center = true );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
