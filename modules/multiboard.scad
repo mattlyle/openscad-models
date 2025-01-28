@@ -149,7 +149,14 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
     {
         difference()
         {
-            RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = multiboard_corner_rounding_r, fn = 36 );
+            // RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = multiboard_corner_rounding_r, fn = 36 );
+            RoundedCubeAlt2(
+                size_x,
+                size_y,
+                multiboard_connector_back_z,
+                r = multiboard_corner_rounding_r,
+                round_top = false,
+                fn = 36 );
 
             // remove the cutouts
             for( setup = connector_y_setup )
