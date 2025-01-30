@@ -41,7 +41,7 @@ power_strip_front_top_y = 15;
 
 power_strip_front_bottom_y = 30;
 
-holder_connector_row_setups = [ [ 10, 7 ], [ 6, 4 ], [ 3 ] ];
+holder_connector_row_setups = [ [ 10, 7 ], [ 6, 3 ], [ 2 ] ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
