@@ -142,8 +142,8 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 
     offset_x = MultiboardConnectorBackAltXOffset( size_x );
 
-    echo( "multiboard back - grid cells X:", grid_cells_x );
-    echo( "multiboard back - grid cells Y:", grid_cells_y );
+    echo( str( "multiboard back - grid cells X = ", grid_cells_x ) );
+    echo( str( "multiboard back - grid cells Y = ", grid_cells_y ) );
 
     // verify the connector_y_setup
     echo();
@@ -158,7 +158,7 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
         {
             echo( str( "row ", i, " / length: ", setup[ 0 ] - setup[ 1 ] ) );
 
-            assert(setup[ 0 ] > setup[ 1 ], "First value must be >= second value" );
+            assert( setup[ 0 ] > setup[ 1 ], "First value must be >= second value" );
         }
         else
         {
