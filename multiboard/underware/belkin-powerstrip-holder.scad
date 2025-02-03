@@ -44,7 +44,7 @@ holder_connector_row_setups = [ [ 10, 9 ], [ 7, 6 ], [ 4, 3 ], [ 1 ] ];
 // calculations
 
 holder_x = wall_width * 2 + wall_clearance * 2 + power_strip_x;
-holder_y = 254;
+holder_y = 250;
 
 holder_z_offset = multiboard_connector_back_z;
 
