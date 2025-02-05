@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
+// render_mode = "preview";
 // render_mode = "print-part-A";
 render_mode = "print-part-B";
 
@@ -12,7 +13,36 @@ $fn = $preview ? 32 : 64;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "print-part-A" )
+if( render_mode == "preview" )
+{
+    LShapedOffsetConnectorPartA();
+
+    translate([ 50, 0, 0 ])
+        LShapedOffsetConnectorPartB();
+
+    translate([ 200, 0, 0 ])
+    {
+        rotate([ 0, -90, 0 ])
+            LShapedOffsetConnectorPartA();
+
+        // center
+        # translate([ -8, 0, 0 ])
+            cylinder( r1 = 2.25, r2 = 7, h = 23, $fn = 8 );
+
+        // top
+        # translate([ -8, 25, 0 ])
+            cylinder( r1 = 2.25, r2 = 7, h = 23, $fn = 8 );
+
+        // bottom
+        # translate([ -33, 0, 0 ])
+            cylinder( r1 = 2.25, r2 = 7, h = 23, $fn = 8 );
+
+        translate([ 2, 0, 23 ])
+            rotate([ 0, 180, 0 ])
+                LShapedOffsetConnectorPartB();
+    }
+}
+else if( render_mode == "print-part-A" )
 {
     LShapedOffsetConnectorPartA();
 }
@@ -111,20 +141,32 @@ module LShapedOffsetConnectorPartA()
 
 module LShapedOffsetConnectorPartB()
 {
-    render()
-    {
-        difference()
-        {
-            import( file = "../assets/Quad Snap Connector (DS Part B) - Standard.stl" );
+    // center
+    translate([ 0.4, 9.5, 0 ])
+        rotate([ 0, 0, -45 ])
+            import( file = "../assets/Double-Sided Snap (DS Part B) - Standard.stl" );
 
-            translate( [ 26, 12.5, -1 ] )
-                cube([ 25, 25, 20 ]);
-        }
-    }
+    // top
+    translate([ -3.5, 24.9, 0 ])
+        import( file = "../assets/Double-Sided Snap (DS Part B) - Standard.stl" );
 
-    translate( [ 26, 12.5, 1.25 ] )
+    // bottom
+    translate([ 34.9, 13.5, 0 ])
+        rotate([ 0, 0, -90 ])
+            import( file = "../assets/Double-Sided Snap (DS Part B) - Standard.stl" );
+
+    // fill in the center
+    translate( [ 22.5, 12.5, 1.3 ])
         rotate([ 0, 0, 45 ])
-            cube( [ 11.3, 11.3, 2.5 ], center = true );
+            cube( [ 13, 13, 2.6 ], center = true );
+
+    // merge the top and center
+    translate([ 5.0, 11.4, 0 ])
+            cube([ 10, 2, 2.6 ]);
+
+    // merge the bottom and center
+    translate([ 21.4, -5.1, 0 ])
+            cube([ 2, 10, 2.6 ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
