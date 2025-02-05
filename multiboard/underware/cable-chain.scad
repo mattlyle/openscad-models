@@ -4,6 +4,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+include <../../modules/trapezoidal-prism.scad>
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
@@ -24,6 +26,7 @@ link_offset_y = 2.5;
 
 render_mode = "preview";
 // render_mode = "print-chain-link";
+// render_mode = "print-chain-top-velcro-tie";
 
 prong_y = 2.4;
 prong_z = 1.0;
@@ -48,6 +51,17 @@ prong_r = ( link_x - link_edge_x * 4 ) * 0.5;
 if( render_mode == "preview" )
 {
     ChainLink();
+
+    translate([ 50, 0, 0 ])
+        ChainTopVelcroTie();
+}
+else if( render_mode == "print-chain-link" )
+{
+    ChainLink();
+}
+else if( render_mode == "print-chain-top-velcro-tie" )
+{
+    ChainTopVelcroTie();
 }
 else
 {
@@ -111,14 +125,35 @@ module ChainLinkProng()
 {
     // outer
     translate([ prong_r, 0, 0 ])
+    {
+        difference()
+        {
+            translate([ -prong_r, 0, -prong_z ])
+                cube([ prong_r, prong_y, prong_r + prong_z ]);
+
+            translate([ 0, -render_overlap, -prong_z ])
+                rotate([ -90, 0, 0 ])
+                    cylinder( r = prong_r, h = prong_y + render_overlap * 2 );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+module ChainTopVelcroTie()
+{
+    cable_tie_y = 18;
+
     difference()
     {
-        translate([ -prong_r, 0, -prong_z ])
-            cube([ prong_r, prong_y, prong_r + prong_z ]);
+        translate([ 235, -122, 0 ])
+            rotate([ 0, 0, 90 ])
+                import( "../../assets/cable-chain-end.stl" );
 
-        translate([ 0, -render_overlap, -prong_z ])
-            rotate([ -90, 0, 0 ])
-                cylinder( r = prong_r, h = prong_y + render_overlap * 2 );
+        translate([ -2, 41, 4 ])
+            rotate([ 0, 0, -90 ])
+                TrapezoidalPrism( cable_tie_y * 0.6, cable_tie_y, 30, 12, center = false );
     }
 }
 
