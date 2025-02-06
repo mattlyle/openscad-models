@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module FlattenedPyramid( bottom_x, bottom_y, top_x, top_y, z, center = false )
 {
@@ -12,7 +12,7 @@ module FlattenedPyramid( bottom_x, bottom_y, top_x, top_y, z, center = false )
                 [ top_x_offset + top_x, top_y_offset + top_y, z ], // 1: bottom back right
                 [ top_x_offset + top_x, top_y_offset, z ],         // 2: bottom front right
                 [ top_x_offset, top_y_offset, z ],                 // 3: bottom front left
-                
+
                 [ 0, bottom_y, 0 ],        // 4: top back left
                 [ bottom_x, bottom_y, 0 ], // 5: top back right
                 [ bottom_x, 0, 0 ],        // 6: top front right
@@ -28,4 +28,4 @@ module FlattenedPyramid( bottom_x, bottom_y, top_x, top_y, z, center = false )
             ]);
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
