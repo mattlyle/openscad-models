@@ -143,7 +143,7 @@ module ChainLinkProng()
 
 module ChainTopVelcroTie()
 {
-    cable_tie_y = 18;
+    cable_tie_y = 15;
 
     difference()
     {
