@@ -32,6 +32,8 @@ module ScrewShaft( screw_def, include_clearance = true )
     cylinder( h = screw_def[ SCREW_SHAFT_LENGTH ], r = screw_def[ SCREW_SHAFT_DIAMETER ] / 2 + ( include_clearance ? SCREW_CLEARANCE : 0 ), $fn = 32 );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module HeatedInsert( screw_def )
 {
     cylinder( h = screw_def[ INSERT_LENGTH ], r = screw_def[ INSERT_OUTER_DIAMETER ] / 2, $fn = 32 );

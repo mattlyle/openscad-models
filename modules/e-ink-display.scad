@@ -4,7 +4,8 @@ include <rounded-cube.scad>
 
 // data sheet: https://www.waveshare.com/2.7inch-nfc-powered-e-paper-module.htm
 
-// measured values
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// measurements
 
 e_ink_display_screen_height = 71.3;
 e_ink_display_screen_width = 46.0;
@@ -28,12 +29,15 @@ e_ink_display_circuit_board_screw_hole_radius = 1.35; // spec: 1.5
 e_ink_display_circuit_board_horizonal_support_offset = 50.5; // the offset from the bottom to the bottom of the support
 e_ink_display_circuit_board_horizonal_support_height = 3.5;
 
-// calculated values
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// calculated
 
 e_ink_display_screen_usable_height = e_ink_display_screen_height - e_ink_display_screen_bezel_top - e_ink_display_screen_bezel_bottom;
 e_ink_display_screen_usable_width = e_ink_display_screen_width - e_ink_display_screen_bezel_width * 2;
 
 e_ink_display_circuit_board_combined_depth = e_ink_display_circuit_board_depth + e_ink_display_circuit_board_backside_clearance_depth;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module EInkDisplay( hide_clearance_areas = true )
 {
@@ -72,17 +76,19 @@ module EInkDisplay( hide_clearance_areas = true )
         # translate([ e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
             cube([ e_ink_display_circuit_board_width - e_ink_display_circuit_board_screw_hole_corner_offset * 2, e_ink_display_circuit_board_height - e_ink_display_circuit_board_screw_hole_corner_offset * 2, e_ink_display_circuit_board_backside_clearance_depth ]);
     }
-    
+
     // screen
     translate([ e_ink_display_screen_offset_width, e_ink_display_screen_offset_height, e_ink_display_circuit_board_backside_clearance_depth + e_ink_display_circuit_board_depth ])
     {
         // hardware (including bezel)
         color([ 0.7, 0.7, 0.7 ])
             cube([ e_ink_display_screen_width, e_ink_display_screen_height, e_ink_display_screen_depth ]);
-        
+
         // useful display (ignore bezel)
         color([ 0.4, 0.4, 0.4 ])
             translate([ e_ink_display_screen_bezel_width, e_ink_display_screen_bezel_bottom, e_ink_display_screen_depth ])
                 cube([ e_ink_display_screen_usable_width, e_ink_display_screen_usable_height, 0.01 ]);
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
