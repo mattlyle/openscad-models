@@ -2,7 +2,7 @@ include <trapezoidal-prism.scad>
 include <triangular-prism.scad>
 include <rounded-cube.scad>
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
 multiboard_cell_size = 25.0;
@@ -21,9 +21,9 @@ multiboard_connector_back_connector_vertical_height = 1.5;
 multiboard_connector_back_pin_size = 1.0;
 multiboard_connector_back_connector_top_offset = 1.5;
 
-workroom_multiboard_color = [ 112.0/255.0, 128.0/255.0, 144.0/255.0 ];
+workroom_multiboard_color = [ 112.0 / 255.0, 128.0 / 255.0, 144.0 / 255.0 ];
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated
 
 multiboard_cell_octagon_edge = multiboard_cell_size / ( 1 + sqrt( 2 ) );
@@ -33,7 +33,7 @@ multiboard_screw_hole_holder_cross = sqrt( multiboard_cell_octagon_edge * multib
 
 multiboard_connector_back_connector_wedge_size = multiboard_connector_back_connector_outer_radius - multiboard_connector_back_connector_inner_radius;
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MultiboardMockUpTile( grid_cells_x, num_y )
 {
@@ -71,7 +71,7 @@ module MultiboardMockUpTile( grid_cells_x, num_y )
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MultiboardConnectorBack( grid_cells_x, grid_cells_y )
 {
@@ -83,12 +83,12 @@ module MultiboardConnectorBack( grid_cells_x, grid_cells_y )
     MultiboardConnectorBackAlt( back_x, back_y );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Calculate the x-offset that will be used for a multiboard back with size 'size_x'
 function MultiboardConnectorBackAltXOffset( size_x ) = ( size_x - floor( size_x / multiboard_cell_size ) * multiboard_cell_size ) / 2;
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MultiboardConnectorBackAlt( size_x, size_y )
 {
@@ -133,7 +133,7 @@ module MultiboardConnectorBackAlt( size_x, size_y )
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 {
@@ -142,20 +142,47 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 
     offset_x = MultiboardConnectorBackAltXOffset( size_x );
 
-    echo( "multiboard back - grid cells X:", grid_cells_x );
-    echo( "multiboard back - grid cells Y:", grid_cells_y );
+    echo( str( "multiboard back - grid cells X = ", grid_cells_x ) );
+    echo( str( "multiboard back - grid cells Y = ", grid_cells_y ) );
+
+    // verify the connector_y_setup
+    echo();
+    echo( "These lengths should all be the same:" );
+    for( i = [ 0 : len( connector_y_setup ) - 1 ] )
+    {
+        setup = connector_y_setup[ i ];
+
+            assert( len( setup ) == 1 || len( setup ) == 2, "Only connector_y_setups of length 1 or 2 supported" );
+
+        if( len( setup ) == 2 )
+        {
+            echo( str( "row ", i, " / length: ", setup[ 0 ] - setup[ 1 ] ) );
+
+            assert( setup[ 0 ] > setup[ 1 ], "First value must be >= second value" );
+        }
+        else
+        {
+            echo( str( "row ", i, " / length: ", setup[ 0 ], " (allowed to be less)" ) );
+        }
+    }
+    echo();
 
     render()
     {
         difference()
         {
-            RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = multiboard_corner_rounding_r, fn = 36 );
+            // RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = multiboard_corner_rounding_r, fn = 36 );
+            RoundedCubeAlt2(
+                size_x,
+                size_y,
+                multiboard_connector_back_z,
+                r = multiboard_corner_rounding_r,
+                round_top = false,
+                fn = 36 );
 
             // remove the cutouts
             for( setup = connector_y_setup )
             {
-                assert( len( setup ) == 1 || len( setup ) == 2, "Only connector_y_setups of length 1 or 2 supported" );
-
                 if( len( setup ) == 2 )
                 {
                     for( i = [ 0 : grid_cells_x - 1 ] )
@@ -187,7 +214,7 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
     // TODO: add the pins for all the cutouts
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module _MultiboardConnectorBack_ConnectorPin( length_y )
 {
@@ -196,7 +223,7 @@ module _MultiboardConnectorBack_ConnectorPin( length_y )
         cylinder( h = multiboard_connector_back_pin_size, r1 = 0, r2 = multiboard_connector_back_pin_size, $fn = 4 );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module _MultiboardConnectorBack_ConnectorCutoutToBottom( length_y )
 {
@@ -205,7 +232,7 @@ module _MultiboardConnectorBack_ConnectorCutoutToBottom( length_y )
     _MultiboardConnectorBack_ConnectorCutout( cone_y, 0, false );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module _MultiboardConnectorBack_ConnectorCutout( cone_y, end_y, add_cutout )
 {
@@ -282,4 +309,4 @@ module _MultiboardConnectorBack_ConnectorCutout( cone_y, end_y, add_cutout )
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
