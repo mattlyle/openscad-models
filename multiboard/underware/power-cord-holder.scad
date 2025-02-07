@@ -13,16 +13,21 @@ render_mode = "preview";
 holder_x = 150;
 holder_y = 150;
 
-holder_connector_row_setups = [ [ 6, 5 ], [ 4, 3 ], [ 2 ] ];
+holder_connector_row_setups = [ [ 6, 3 ], [ 2 ] ];
 
-cylinder_inner_r = 8.0;
-cylinder_outer_r = 12.0;
+cylinder_inner_r = 6.0;
+cylinder_outer_r = 14.0;
 
 cylinder_z = 25;
 cylinder_lip_z = 3;
 
-edge_wall_width = 3;
-edge_wall_z = 10;
+edge_wall_width = 2.2;
+edge_wall_z = 5;
+
+TOP_LEFT = 0;
+TOP_RIGHT = 1;
+BOTTOM_LEFT = 2;
+BOTTOM_RIGHT = 3;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -61,13 +66,13 @@ module PowerCordHolder()
     MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups );
 
     translate([ peg_left_x, peg_top_y, holder_z_offset ])
-        PowerCordHolderPeg();
+        PowerCordHolderPeg( TOP_LEFT );
     translate([ peg_right_x, peg_top_y, holder_z_offset ])
-        PowerCordHolderPeg();
+        PowerCordHolderPeg( TOP_RIGHT );
     translate([ peg_left_x, peg_bottom_y, holder_z_offset ])
-        PowerCordHolderPeg();
+        PowerCordHolderPeg( BOTTOM_LEFT );
     translate([ peg_right_x, peg_bottom_y, holder_z_offset ])
-        PowerCordHolderPeg();
+        PowerCordHolderPeg( BOTTOM_RIGHT);
 
     translate([ 0, 0, holder_z_offset ])
         RoundedCubeAlt2( holder_x, edge_wall_width, edge_wall_z, round_bottom = false, round_top = true );
@@ -81,11 +86,18 @@ module PowerCordHolder()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module PowerCordHolderPeg()
+module PowerCordHolderPeg( location )
 {
     cylinder( h = cylinder_z, r = cylinder_inner_r );
 
-    translate([ 0, 0, cylinder_z ])
+    offset_x = location == TOP_LEFT || location == BOTTOM_LEFT
+        ? ( -cylinder_outer_r + cylinder_inner_r ) * 0.5
+        : ( cylinder_outer_r - cylinder_inner_r ) * 0.5;
+    offset_y = location == BOTTOM_LEFT || location == BOTTOM_RIGHT
+        ? ( -cylinder_outer_r + cylinder_inner_r ) * 0.5
+        : ( cylinder_outer_r - cylinder_inner_r ) * 0.5;
+
+    translate([ offset_x, offset_y, cylinder_z ])
         cylinder( h = cylinder_lip_z, r = cylinder_outer_r );
 }
 
