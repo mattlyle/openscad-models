@@ -10,19 +10,24 @@ include <../../modules/rounded-cube.scad>
 render_mode = "preview";
 // render_mode = "print";
 
+// holder_x = 150;
+// holder_y = 150;
+// holder_connector_row_setups = [ [ 6, 3 ], [ 2 ] ];
+
 holder_x = 150;
-holder_y = 150;
+holder_y = 240;
+holder_connector_row_setups = [ [ 9, 7 ], [ 6, 4 ], [ 3, 1 ] ];
 
-holder_connector_row_setups = [ [ 6, 3 ], [ 2 ] ];
-
-cylinder_inner_r = 6.0;
-cylinder_outer_r = 14.0;
+cylinder_inner_r = 8.0;
+cylinder_outer_r = 16.0;
 
 cylinder_z = 25;
-cylinder_lip_z = 3;
+cylinder_lip_z = 4;
 
 edge_wall_width = 2.2;
 edge_wall_z = 5;
+
+peg_edge_offset = 40;
 
 TOP_LEFT = 0;
 TOP_RIGHT = 1;
@@ -36,11 +41,11 @@ $fn = $preview ? 32 : 64;
 
 holder_z_offset = multiboard_connector_back_z;
 
-peg_left_x = holder_x / 4;
-peg_right_x = holder_x / 4 * 3;
+peg_left_x = peg_edge_offset;
+peg_right_x = holder_x - peg_edge_offset;
 
-peg_top_y = holder_y / 4 * 3;
-peg_bottom_y = holder_y / 4;
+peg_top_y = holder_y - peg_edge_offset;
+peg_bottom_y = peg_edge_offset;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
