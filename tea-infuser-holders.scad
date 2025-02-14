@@ -40,12 +40,15 @@ holder_base_x = 200;
 holder_base_y = 100;
 holder_base_lip_z = 5;
 
-cup_padding = 3;
+cup_padding = 1.5;
 
-short_infuser_lift = 8.0;
+infuser_lift = 8.0;
 
 num_cutouts = 12;
 cutout_percent = 0.6;
+
+num_cutout_levels_small = 2;
+num_cutout_levels_tall = 4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -63,10 +66,10 @@ if( render_mode == "preview" )
 {
     TeaInfuserHolder();
 
-    translate([ holder_offset_small_x, holder_offset_y, wall_width * 2 + short_infuser_lift])
+    translate([ holder_offset_small_x, holder_offset_y, wall_width * 2 + short_infuser_lift ])
         ShortInfuserPreview();
 
-    translate( [ holder_offset_tall_x, holder_offset_y, wall_width ] )
+    translate([ holder_offset_tall_x, holder_offset_y, wall_width ])
         TallInfuserPreview( );
 }
 else if( render_mode == "print-holder" )
@@ -100,7 +103,10 @@ module TeaInfuserHolder()
     }
 
     translate([ holder_offset_small_x, holder_offset_y, wall_width ])
-        HolderCup( tall_infuser_r, tall_infuser_r, short_infuser_z + short_infuser_lift );
+        HolderCup( tall_infuser_r, tall_infuser_r, short_infuser_z + infuser_lift, num_cutout_levels_small );
+
+    translate([ holder_offset_tall_x, holder_offset_y, wall_width ])
+        HolderCup( tall_infuser_r, tall_infuser_r, tall_infuser_z + infuser_lift, num_cutout_levels_tall );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,7 +119,7 @@ module ShortInfuserPreview( )
         {
             cylinder( r1 = short_infuser_bottom_r, r2 = short_infuser_top_r, h = short_infuser_z - short_infuser_top_lip_z);
 
-            translate( [ 0, 0, short_infuser_z - short_infuser_top_lip_z ] )
+            translate([ 0, 0, short_infuser_z - short_infuser_top_lip_z ])
                 cylinder( r = short_infuser_top_lip_r, h = short_infuser_top_lip_z );
 
             handle_offset_x = -short_infuser_handle_offset_x - short_infuser_top_lip_r;
@@ -169,7 +175,7 @@ module TallInfuserPreview( )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module HolderCup( bottom_r, top_r, h )
+module HolderCup( bottom_r, top_r, h, num_cutout_levels )
 {
     outer_bottom_r = bottom_r + wall_width + cup_padding;
     outer_top_r = top_r + wall_width + cup_padding;
@@ -180,37 +186,47 @@ module HolderCup( bottom_r, top_r, h )
     // cutout_r = 5;
     cutout_r = ( PI * outer_bottom_r * cutout_percent ) / num_cutouts;
 
+    cutout_section_z = h / num_cutout_levels;
 
     difference()
     {
+        // outer cylinder
         cylinder( r1 = outer_bottom_r, r2 = outer_top_r, h = h );
 
-        translate([ 0, 0, wall_width])
+        // cut out the inside
+        translate([ 0, 0, wall_width ])
             cylinder( r1 = inner_bottom_r, r2 = inner_top_r, h = h );
 
-        for( i = [ 0 : num_cutouts - 1 ] )
+        // level = 1;
+        for( level = [ 0 : num_cutout_levels - 1 ] )
         {
-            // bottom arch
-            translate([ 0, 0, wall_width + cutout_r ])
-            {
-                rotate( [ 90, 0, i * 360 / num_cutouts ] )
-                {
-                    cylinder( h = outer_bottom_r * 2, r = cutout_r, center = true );
-                }
-            }
+            cutout_section_offset_z = cutout_section_z * level;
 
-            // top arch
-            translate([ 0, 0, h - wall_width - cutout_r ])
-            {
-                rotate( [ 90, 0, i * 360 / num_cutouts ] )
-                {
-                    cylinder( h = outer_bottom_r * 2, r = cutout_r, center = true );
-                }
-            }
 
-            translate([ 0, 0, h/2 ])
-                rotate( [ 0, 0, i * 360 / num_cutouts ] )
-                    cube([ outer_bottom_r * 2, cutout_r * 2, h - cutout_r * 2 - wall_width * 2 ], center = true );
+            for( i = [ 0 : num_cutouts - 1 ] )
+            {
+                // bottom arch
+                translate([ 0, 0, cutout_section_offset_z + wall_width + cutout_r ])
+                {
+                    rotate([ 90, 0, i * 360 / num_cutouts ])
+                    {
+                        cylinder( h = outer_bottom_r * 2, r = cutout_r, center = true );
+                    }
+                }
+
+                // top arch
+                translate([ 0, 0, cutout_section_offset_z + cutout_section_z - wall_width - cutout_r ])
+                {
+                    rotate([ 90, 0, i * 360 / num_cutouts ])
+                    {
+                        cylinder( h = outer_bottom_r * 2, r = cutout_r, center = true );
+                    }
+                }
+
+                translate([ 0, 0, cutout_section_offset_z + cutout_section_z / 2 ])
+                    rotate([ 0, 0, i * 360 / num_cutouts ])
+                        cube([ outer_bottom_r * 2, cutout_r * 2, cutout_section_z - cutout_r * 2 - wall_width * 2 ], center = true );
+            }
         }
     }
 }
