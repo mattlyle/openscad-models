@@ -31,8 +31,8 @@ tall_infuser_handle_angle = 5;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print-holder";
+render_mode = "preview";
+// render_mode = "print-holder";
 
 wall_width = 2.0;
 
@@ -59,6 +59,18 @@ holder_offset_small_x = holder_base_x * 0.30;
 holder_offset_tall_x = holder_base_x * 0.70;
 holder_offset_y = holder_base_y / 2;
 
+tall_infuser_slope_section_offset_z = tall_infuser_z
+    - tall_infuser_lip_z
+    - tall_infuser_top_section_z
+    - tall_infuser_sloped_section_z;
+
+tall_infuser_top_section_offset_z = tall_infuser_z
+    - tall_infuser_lip_z
+    - tall_infuser_top_section_z;
+
+tall_infuser_lip_offset_z = tall_infuser_z
+    - tall_infuser_lip_z;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -66,11 +78,11 @@ if( render_mode == "preview" )
 {
     TeaInfuserHolder();
 
-    translate([ holder_offset_small_x, holder_offset_y, wall_width * 2 + short_infuser_lift ])
+    translate([ holder_offset_small_x, holder_offset_y, wall_width * 2 + infuser_lift ])
         ShortInfuserPreview();
 
-    translate([ holder_offset_tall_x, holder_offset_y, wall_width ])
-        TallInfuserPreview( );
+    translate([ holder_offset_tall_x, holder_offset_y, wall_width * 2 + infuser_lift ])
+        TallInfuserPreview();
 }
 else if( render_mode == "print-holder" )
 {
@@ -106,7 +118,7 @@ module TeaInfuserHolder()
         HolderCup( tall_infuser_r, tall_infuser_r, short_infuser_z + infuser_lift, num_cutout_levels_small );
 
     translate([ holder_offset_tall_x, holder_offset_y, wall_width ])
-        HolderCup( tall_infuser_r, tall_infuser_r, tall_infuser_z + infuser_lift, num_cutout_levels_tall );
+        HolderCup( tall_infuser_r, tall_infuser_r, tall_infuser_slope_section_offset_z + infuser_lift, num_cutout_levels_tall );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,35 +147,23 @@ module ShortInfuserPreview( )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TallInfuserPreview( )
+module TallInfuserPreview()
 {
-    slope_section_offset_z = tall_infuser_z
-        - tall_infuser_lip_z
-        - tall_infuser_top_section_z
-        - tall_infuser_sloped_section_z;
-
-    top_section_offset_z = tall_infuser_z
-        - tall_infuser_lip_z
-        - tall_infuser_top_section_z;
-
-    lip_offset_z = tall_infuser_z
-        - tall_infuser_lip_z;
-
     % union()
     {
         // main body
-        cylinder( r = tall_infuser_r, h = slope_section_offset_z );
+        cylinder( r = tall_infuser_r, h = tall_infuser_slope_section_offset_z );
 
         // sloped section
-        translate([ 0, 0, slope_section_offset_z ])
+        translate([ 0, 0, tall_infuser_slope_section_offset_z ])
             cylinder( r1 = tall_infuser_r, r2 = tall_infuser_top_section_r, h = tall_infuser_sloped_section_z );
 
         // top section
-        translate([ 0, 0, top_section_offset_z])
+        translate([ 0, 0, tall_infuser_top_section_offset_z])
             cylinder( r = tall_infuser_top_section_r, h = tall_infuser_top_section_z );
 
         // lip
-        translate([ 0, 0, lip_offset_z ])
+        translate([ 0, 0, tall_infuser_lip_offset_z ])
             cylinder( r = tall_infuser_lip_r, h = tall_infuser_lip_z );
 
         // handle
