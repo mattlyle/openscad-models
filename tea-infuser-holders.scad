@@ -94,26 +94,28 @@ module TallInfuserPreview( )
     lip_offset_z = tall_infuser_z
         - tall_infuser_lip_z;
 
-    // main body
-    % cylinder( r = tall_infuser_r, h = slope_section_offset_z );
+    % union()
+    {
+        // main body
+        cylinder( r = tall_infuser_r, h = slope_section_offset_z );
 
-    // sloped section
-    % translate([ 0, 0, slope_section_offset_z ])
-        cylinder( r1 = tall_infuser_r, r2 = tall_infuser_top_section_r, h = tall_infuser_sloped_section_z );
+        // sloped section
+        translate([ 0, 0, slope_section_offset_z ])
+            cylinder( r1 = tall_infuser_r, r2 = tall_infuser_top_section_r, h = tall_infuser_sloped_section_z );
 
-    // top section
-    % translate([ 0, 0, top_section_offset_z])
-        cylinder( r = tall_infuser_top_section_r, h = tall_infuser_top_section_z );
+        // top section
+        translate([ 0, 0, top_section_offset_z])
+            cylinder( r = tall_infuser_top_section_r, h = tall_infuser_top_section_z );
 
-    // lip
-    % translate([ 0, 0, lip_offset_z])
-        cylinder( r = tall_infuser_lip_r, h = tall_infuser_lip_z );
+        // lip
+        translate([ 0, 0, lip_offset_z ])
+            cylinder( r = tall_infuser_lip_r, h = tall_infuser_lip_z );
 
-    // handle
-    % translate([ -tall_infuser_lip_r - tall_infuser_handle_x / 2, -tall_infuser_handle_y / 2, tall_infuser_z ])
-        rotate([ 0, -tall_infuser_handle_angle, 0 ])
-            cube([ tall_infuser_handle_x, tall_infuser_handle_y, tall_infuser_handle_z ]);
-
+        // handle
+        translate([ -tall_infuser_lip_r - tall_infuser_handle_x / 2, -tall_infuser_handle_y / 2, tall_infuser_z - tall_infuser_lip_z ])
+            rotate([ 0, -tall_infuser_handle_angle, 0 ])
+                cube([ tall_infuser_handle_x, tall_infuser_handle_y, tall_infuser_handle_z ]);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
