@@ -48,8 +48,9 @@ holder_base_lip_z = 5;
 
 cup_padding = 1.8;
 
-short_infuser_lift = 8.0;
-tall_infuser_lift = 4.0;
+infuser_lift_short = 8.0;
+infuser_lift_tall = 6.0;
+infuser_lift_spoon = 4.0;
 
 // cup config:
 //  0   num cutout levels
@@ -91,13 +92,13 @@ if( render_mode == "preview" )
 {
     TeaInfuserHolder();
 
-    translate([ holder_offset_short_x, holder_offset_y, wall_width + short_infuser_top_lip_z + short_infuser_lift ])
+    translate([ holder_offset_short_x, holder_offset_y, wall_width + short_infuser_top_lip_z + infuser_lift_short ])
         ShortInfuserPreview();
 
-    translate([ holder_offset_tall_x, holder_offset_y, wall_width + tall_infuser_lift ])
+    translate([ holder_offset_tall_x, holder_offset_y, wall_width + infuser_lift_tall ])
         TallInfuserPreview();
 
-    translate([ holder_offset_spoon_x, holder_offset_y, wall_width ])
+    translate([ holder_offset_spoon_x, holder_offset_y, wall_width + infuser_lift_spoon ])
         SpoonPreview();
 }
 else if( render_mode == "print-holder" )
@@ -129,7 +130,7 @@ module TeaInfuserHolder()
         HolderCup(
             short_infuser_bottom_r,
             short_infuser_top_r,
-            short_infuser_z + short_infuser_lift,
+            short_infuser_z + infuser_lift_short,
             cup_config_short[ 0 ],
             cup_config_short[ 1 ],
             cup_config_short[ 2 ]
@@ -140,7 +141,7 @@ module TeaInfuserHolder()
         HolderCup(
             tall_infuser_r,
             tall_infuser_r,
-            tall_infuser_slope_section_offset_z + tall_infuser_lift,
+            tall_infuser_slope_section_offset_z + infuser_lift_tall,
             cup_config_tall[ 0 ],
             cup_config_tall[ 1 ],
             cup_config_tall[ 2 ]
@@ -149,14 +150,15 @@ module TeaInfuserHolder()
     // spoon holder
     spoon_handle_cup_r = max( spoon_handle_y, spoon_handle_z ) / 2;
     translate([ holder_offset_spoon_x, holder_offset_y, wall_width ])
-        HolderCup(
-            spoon_handle_cup_r,
-            spoon_handle_cup_r,
-            spoon_handle_x,
-            cup_config_spoon[ 0 ],
-            cup_config_spoon[ 1 ],
-            cup_config_spoon[ 2 ]
-            );
+        scale([ 1.0, 0.8, 1.0 ])
+            HolderCup(
+                spoon_handle_cup_r,
+                spoon_handle_cup_r,
+                spoon_handle_x + infuser_lift_spoon,
+                cup_config_spoon[ 0 ],
+                cup_config_spoon[ 1 ],
+                cup_config_spoon[ 2 ]
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
