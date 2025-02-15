@@ -91,10 +91,10 @@ if( render_mode == "preview" )
 {
     TeaInfuserHolder();
 
-    translate([ holder_offset_short_x, holder_offset_y, wall_width * 2 + short_infuser_lift ])
+    translate([ holder_offset_short_x, holder_offset_y, wall_width + short_infuser_top_lip_z + short_infuser_lift ])
         ShortInfuserPreview();
 
-    translate([ holder_offset_tall_x, holder_offset_y, wall_width * 2 + tall_infuser_lift ])
+    translate([ holder_offset_tall_x, holder_offset_y, wall_width + tall_infuser_lift ])
         TallInfuserPreview();
 
     translate([ holder_offset_spoon_x, holder_offset_y, wall_width ])
