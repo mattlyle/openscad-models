@@ -62,6 +62,8 @@ cup_config_short = [ 2, 12, 0.6, true ];
 cup_config_tall = [ 4, 12, 0.6, true ];
 cup_config_spoon = [ 3, 6, 0.5, false ];
 
+cup_cone_z = 6.0;
+
 spoon_holder_scale_y = 0.8;
 
 difference_calc_size = 0.01;
@@ -287,7 +289,7 @@ module HolderCup( bottom_r, top_r, h, num_cutout_levels, num_cutouts, cutout_per
     if( cup_bottom_cone )
     {
         translate([ 0, 0, wall_width ])
-            cylinder( r1 = inner_bottom_r, r2 = 0, h = wall_width * 2 );
+            cylinder( r1 = inner_bottom_r, r2 = 0, h = cup_cone_z );
     }
 
     difference()
