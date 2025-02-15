@@ -49,9 +49,9 @@ holder_base_lip_z = 5;
 
 cup_padding = 1.8;
 
-infuser_lift_short = 8.0;
-infuser_lift_tall = 6.0;
-infuser_lift_spoon = 4.0;
+infuser_lift_short = 10.0;
+infuser_lift_tall = 12.0;
+infuser_lift_spoon = 8.0;
 
 // cup config:
 //  0   num cutout levels
