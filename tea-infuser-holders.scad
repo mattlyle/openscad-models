@@ -64,7 +64,7 @@ cup_config_spoon = [ 3, 6, 0.5, false ];
 
 cup_cone_z = 6.0;
 
-spoon_holder_scale_y = 0.8;
+spoon_holder_scale_y = 0.85;
 
 difference_calc_size = 0.01;
 
