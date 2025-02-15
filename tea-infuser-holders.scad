@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 include <modules/elliptical-prism.scad>
+include <modules/rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -117,14 +118,40 @@ else
 
 module TeaInfuserHolder()
 {
-    translate([ holder_base_x / 2, holder_base_y / 2, 0 ])
+    // base
+    // translate([ holder_base_x / 2, holder_base_y / 2, 0 ])
     {
+        // difference()
+        // {
+        //     EllipticalPrism( holder_base_x, holder_base_y, wall_width + holder_base_lip_z );
+
+        //     translate([ 0, 0, wall_width ])
+        //         EllipticalPrism( holder_base_x - wall_width, holder_base_y - wall_width, holder_base_lip_z + difference_calc_size );
+        // }
+
         difference()
         {
-            EllipticalPrism( holder_base_x, holder_base_y, wall_width + holder_base_lip_z );
+            RoundedCubeAlt2(
+                x = holder_base_x,
+                y = holder_base_y,
+                z = wall_width + holder_base_lip_z,
+                r = wall_width,
+                round_top = true,
+                round_bottom = true,
+                center = true
+                );
 
-            translate([ 0, 0, wall_width ])
-                EllipticalPrism( holder_base_x - wall_width, holder_base_y - wall_width, holder_base_lip_z + difference_calc_size );
+            translate([ wall_width, wall_width, wall_width ])
+                RoundedCubeAlt2(
+                    x = holder_base_x - wall_width * 2,
+                    y = holder_base_y - wall_width * 2,
+                    z = holder_base_lip_z,
+                    r = 1.0,
+                    round_top = false,
+                    round_bottom = true,
+                    center = true
+                    );
+
         }
     }
 
