@@ -56,9 +56,12 @@ infuser_lift_spoon = 4.0;
 //  0   num cutout levels
 //  1   num cutouts
 //  2   cutout percent
-cup_config_short = [ 2, 12, 0.6 ];
-cup_config_tall = [ 4, 12, 0.6 ];
-cup_config_spoon = [ 3, 6, 0.5 ];
+//  3   cup bottom cone
+cup_config_short = [ 2, 12, 0.6, true ];
+cup_config_tall = [ 4, 12, 0.6, true ];
+cup_config_spoon = [ 3, 6, 0.5, false ];
+
+spoon_holder_scale_y = 0.8;
 
 difference_calc_size = 0.01;
 
@@ -128,36 +131,39 @@ module TeaInfuserHolder()
     // short infuser cup
     translate([ holder_offset_short_x, holder_offset_y, wall_width ])
         HolderCup(
-            short_infuser_bottom_r,
-            short_infuser_top_r,
-            short_infuser_z + infuser_lift_short,
-            cup_config_short[ 0 ],
-            cup_config_short[ 1 ],
-            cup_config_short[ 2 ]
+            bottom_r = short_infuser_bottom_r,
+            top_r = short_infuser_top_r,
+            h = short_infuser_z + infuser_lift_short,
+            num_cutout_levels = cup_config_short[ 0 ],
+            num_cutouts = cup_config_short[ 1 ],
+            cutout_percent = cup_config_short[ 2 ],
+            cup_bottom_cone = cup_config_short[ 3 ]
             );
 
     // tall infuser cup
     translate([ holder_offset_tall_x, holder_offset_y, wall_width ])
         HolderCup(
-            tall_infuser_r,
-            tall_infuser_r,
-            tall_infuser_slope_section_offset_z + infuser_lift_tall,
-            cup_config_tall[ 0 ],
-            cup_config_tall[ 1 ],
-            cup_config_tall[ 2 ]
+            bottom_r = tall_infuser_r,
+            top_r = tall_infuser_r,
+            h = tall_infuser_slope_section_offset_z + infuser_lift_tall,
+            num_cutout_levels = cup_config_tall[ 0 ],
+            num_cutouts = cup_config_tall[ 1 ],
+            cutout_percent = cup_config_tall[ 2 ],
+            cup_bottom_cone = cup_config_tall[ 3 ]
             );
 
     // spoon holder
     spoon_handle_cup_r = max( spoon_handle_y, spoon_handle_z ) / 2;
     translate([ holder_offset_spoon_x, holder_offset_y, wall_width ])
-        scale([ 1.0, 0.8, 1.0 ])
+        scale([ 1.0, spoon_holder_scale_y, 1.0 ])
             HolderCup(
-                spoon_handle_cup_r,
-                spoon_handle_cup_r,
-                spoon_handle_x + infuser_lift_spoon,
-                cup_config_spoon[ 0 ],
-                cup_config_spoon[ 1 ],
-                cup_config_spoon[ 2 ]
+                bottom_r = spoon_handle_cup_r,
+                top_r = spoon_handle_cup_r,
+                h = spoon_handle_x + infuser_lift_spoon,
+                num_cutout_levels = cup_config_spoon[ 0 ],
+                num_cutouts = cup_config_spoon[ 1 ],
+                cutout_percent = cup_config_spoon[ 2 ],
+                cup_bottom_cone = cup_config_spoon[ 3 ]
                 );
 }
 
@@ -238,7 +244,7 @@ module SpoonPreview()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module HolderCup( bottom_r, top_r, h, num_cutout_levels, num_cutouts, cutout_percent )
+module HolderCup( bottom_r, top_r, h, num_cutout_levels, num_cutouts, cutout_percent, cup_bottom_cone = false )
 {
     outer_bottom_r = bottom_r + wall_width + cup_padding;
     outer_top_r = top_r + wall_width + cup_padding;
@@ -249,6 +255,13 @@ module HolderCup( bottom_r, top_r, h, num_cutout_levels, num_cutouts, cutout_per
     cutout_r = ( 2 * PI * outer_bottom_r ) * cutout_percent / num_cutouts / 2;
 
     cutout_section_z = h / num_cutout_levels;
+
+    // bottom cone
+    if( cup_bottom_cone )
+    {
+        translate([ 0, 0, wall_width ])
+            cylinder( r1 = inner_bottom_r, r2 = 0, h = wall_width * 2 );
+    }
 
     difference()
     {
