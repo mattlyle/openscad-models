@@ -42,8 +42,8 @@ render_mode = "preview";
 
 wall_width = 2.0;
 
-holder_base_x = 250;
-holder_base_y = 125;
+holder_base_x = 180;
+holder_base_y = 90;
 holder_base_lip_z = 5;
 
 cup_padding = 1.8;
@@ -59,11 +59,11 @@ infuser_lift_spoon = 8.0;
 //  3   cup bottom cone
 cup_config_short = [ 2, 12, 0.6, true ];
 cup_config_tall = [ 4, 12, 0.6, true ];
-cup_config_spoon = [ 3, 6, 0.5, false ];
+cup_config_spoon = [ 3, 6, 0.4, false ];
 
 cup_cone_z = 6.0;
 
-spoon_holder_scale_y = 0.85;
+spoon_holder_scale_y = 0.80;
 
 difference_calc_size = 0.01;
 
