@@ -48,7 +48,7 @@ holder_base_lip_z = 5;
 
 cup_padding = 1.8;
 
-infuser_lift_short = 10.0;
+infuser_lift_short = 9.0;
 infuser_lift_tall = 14.0;
 infuser_lift_spoon = 8.0;
 
