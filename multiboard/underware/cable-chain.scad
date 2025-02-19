@@ -44,6 +44,7 @@ render_overlap = 0.01;
 $fn = $preview ? 32 : 64;
 
 prong_r = ( link_x - link_edge_x * 4 ) * 0.5;
+angle_offset = prong_y * sin( prong_angle_z );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -53,11 +54,18 @@ if( render_mode == "preview" )
     ChainLink();
 
     translate([ 50, 0, 0 ])
+        DoubleChainLink();
+
+    translate([ 120, 0, 0 ])
         ChainTopVelcroTie();
 }
 else if( render_mode == "print-chain-link" )
 {
     ChainLink();
+}
+else if( render_mode == "print-chain-double-link" )
+{
+    DoubleChainLink();
 }
 else if( render_mode == "print-chain-top-velcro-tie" )
 {
@@ -75,14 +83,17 @@ module ChainLink()
     translate([ -100, -160, 0 ])
         import( "../../assets/cable-chain-link-original.stl" );
 
-    // left prong
-    // #translate([ 3, 16.8, 14 ])
-    //     rotate([ 0, prong_angle_y, 0 ])
-    //         cube([ prong_x, prong_y, prong_z ]);
 
-    angle_offset = prong_y * sin( prong_angle_z );
-    echo(angle_offset);
+    // echo(angle_offset);
 
+    ChainLinkProngLeft();
+    ChainLinkProngRight();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ChainLinkProngLeft()
+{
     difference()
     {
         translate([
@@ -97,12 +108,12 @@ module ChainLink()
             rotate([ 0, 90, 0 ])
                 cylinder( r = link_cutout_r, h = link_x - link_edge_x * 2 );
     }
+}
 
-    // right prong
-    // # translate([ 23.5, 24, 14 ])
-    //     rotate([ 0, prong_angle_y, 180 ])
-    //         cube([ prong_x, prong_y, prong_z ]);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module ChainLinkProngRight()
+{
     difference()
     {
         translate([
@@ -116,6 +127,94 @@ module ChainLink()
         translate([ link_offset_x + link_edge_x, link_offset_y + link_y - link_hole_offset_y, link_z / 2 ])
             rotate([ 0, 90, 0 ])
                 cylinder( r = link_cutout_r, h = link_x - link_edge_x * 2 );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module DoubleChainLink()
+{
+    center_x = 26;
+    center_guide_x = 1.4;
+    center_guide_z = 16;
+
+    // left side
+    difference()
+    {
+        translate([ -100, -160, 0 ])
+            import( "../../assets/cable-chain-link-original.stl" );
+
+        translate([ 5, 0, -1 ])
+            cube([ 25, 40, 20 ]);
+    }
+
+    // right side
+    translate([ center_x - 16, 0, 0 ])
+    {
+        difference()
+        {
+            translate([ -100, -160, 0 ])
+                import( "../../assets/cable-chain-link-original.stl" );
+
+            translate([ -1, 0, -1 ])
+                cube([ 22, 40, 20 ]);
+        }
+    }
+
+    // note: this is hacky... I should probably use scale() but it's a cutout in the center of the STL, so that's very complicated
+
+    // bottom bar - left
+    difference()
+    {
+        translate([ -100, -160, 0 ])
+            import( "../../assets/cable-chain-link-original.stl" );
+
+        translate([ -1, 0, -1 ])
+            cube([ 6, 40, 20 ]);
+        translate([ 22, 0, -1 ])
+            cube([ 6, 40, 20 ]);
+    }
+
+    // bottom bar - right
+    translate([ center_x - 17, 0, 0 ])
+    {
+        difference()
+        {
+            translate([ -100, -160, 0 ])
+                import( "../../assets/cable-chain-link-original.stl" );
+
+            translate([ -1, 0, -1 ])
+                cube([ 6, 40, 20 ]);
+            translate([ 22, 0, -1 ])
+                cube([ 6, 40, 20 ]);
+        }
+    }
+
+    // center guide
+    left_edge = 4.15;
+    right_edge = 32.4;
+    center_guide_offset_x = left_edge + ( right_edge - left_edge - center_guide_x ) / 2;
+    translate([ center_guide_offset_x, 17.2, 0 ])
+        cube([ center_guide_x, 10.3, center_guide_z ]);
+
+    // % translate([ left_edge, 18, 0 ])
+    //     cube([ center_guide_offset_x - left_edge, 20, center_guide_z ]);
+    // % translate([ center_guide_offset_x + center_guide_x, 18, 0])
+    //     cube([ right_edge - center_guide_offset_x - center_guide_x, 20, center_guide_z ]);
+    // echo( str( "left: ", center_guide_offset_x - left_edge ) );
+    // echo( str( "right: ", right_edge - center_guide_offset_x - center_guide_x ) );
+
+    // left side prongs
+    ChainLinkProngLeft();
+    translate([ center_guide_offset_x - 22, 3.45, 0 ])
+        ChainLinkProngRight();
+
+    // right side prongs
+    translate([ center_guide_offset_x - 3, 0.6, 0 ])
+    {
+        ChainLinkProngLeft();
+        translate([ center_guide_offset_x - 22, 3.45, 0 ])
+            ChainLinkProngRight();
     }
 }
 
