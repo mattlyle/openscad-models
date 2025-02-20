@@ -292,9 +292,12 @@ module DoubleChainLinkStart()
 
 module DoubleChainLinkEnd()
 {
-    assert( double_link_center_x >= double_end_holes_x, "center needs to be wider than the holes section" );
+    double_end_center_x = double_link_center_x + 2;
 
-    side_overlap = ( double_link_center_x - double_end_holes_x ) / 2;
+    assert( double_end_center_x >= double_end_holes_x, "center needs to be wider than the holes section" );
+
+    // side_overlap = ( double_end_center_x - double_end_holes_x ) / 2;
+    side_overlap = 5.5;
 
     // left side
     intersection()
@@ -308,7 +311,7 @@ module DoubleChainLinkEnd()
     }
 
     // right side
-    translate([ double_link_center_x - 18, 0, 0 ])
+    translate([ double_end_center_x - 18, 0, 0 ])
     {
         intersection()
         {
@@ -322,8 +325,7 @@ module DoubleChainLinkEnd()
     }
 
     // center with holes
-    double_end_holes_offset_x = double_end_left_edge_x;
-    translate([ double_end_holes_offset_x, 0, 0 ])
+    translate([ side_overlap, 0, 0 ])
     {
         intersection()
         {
