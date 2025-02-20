@@ -21,11 +21,25 @@ link_hole_r = 3;
 link_offset_x = 0.782;
 link_offset_y = 2.5;
 
+double_link_center_guide_x = 1.4;
+double_link_center_guide_z = 16;
+
+double_link_left_edge_ = 4.15;
+double_link_right_edge_ = 32.4;
+
+double_end_left_edge_x = 3.9;
+double_end_right_edge_x = 22.1;
+double_end_x = 25.55;
+double_end_holes_x = 7.2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 render_mode = "preview";
 // render_mode = "print-chain-link";
+// render_mode = "print-chain-double-link";
+// render_mode = "print-chain-double-link-start";
+// render_mode = "print-chain-double-link-end";
 // render_mode = "print-chain-top-velcro-tie";
 
 prong_y = 2.4;
@@ -38,10 +52,16 @@ prong_cutout_overlap = 1.8;
 
 render_overlap = 0.01;
 
+cable_tie_y = 15;
+
+double_link_center_x = 26;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 $fn = $preview ? 32 : 64;
+
+double_link_center_guide_offset_x = double_link_left_edge_ + ( double_link_right_edge_ - double_link_left_edge_ - double_link_center_guide_x ) / 2;
 
 prong_r = ( link_x - link_edge_x * 4 ) * 0.5;
 angle_offset = prong_y * sin( prong_angle_z );
@@ -49,31 +69,48 @@ angle_offset = prong_y * sin( prong_angle_z );
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "preview" )
+render()
 {
-    ChainLink();
+    if( render_mode == "preview" )
+    {
+        ChainLink();
 
-    translate([ 50, 0, 0 ])
+        translate([ 50, 0, 0 ])
+            DoubleChainLink();
+
+        translate([ 100, 0, 0 ])
+            DoubleChainLinkStart();
+
+        translate([ 150, 0, 0 ])
+            DoubleChainLinkEnd();
+
+        translate([ 200, 0, 0 ])
+            ChainTopVelcroTie();
+    }
+    else if( render_mode == "print-chain-link" )
+    {
+        ChainLink();
+    }
+    else if( render_mode == "print-chain-double-link" )
+    {
         DoubleChainLink();
-
-    translate([ 120, 0, 0 ])
+    }
+    else if( render_mode == "print-chain-double-link-start" )
+    {
+        DoubleChainLinkStart();
+    }
+    else if( render_mode == "print-chain-double-link-end" )
+    {
+        DoubleChainLinkEnd();
+    }
+    else if( render_mode == "print-chain-top-velcro-tie" )
+    {
         ChainTopVelcroTie();
-}
-else if( render_mode == "print-chain-link" )
-{
-    ChainLink();
-}
-else if( render_mode == "print-chain-double-link" )
-{
-    DoubleChainLink();
-}
-else if( render_mode == "print-chain-top-velcro-tie" )
-{
-    ChainTopVelcroTie();
-}
-else
-{
-    assert( false, "Unknown render mode!" );
+    }
+    else
+    {
+        assert( false, "Unknown render mode!" );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,9 +119,6 @@ module ChainLink()
 {
     translate([ -100, -160, 0 ])
         import( "../../assets/cable-chain-link-original.stl" );
-
-
-    // echo(angle_offset);
 
     ChainLinkProngLeft();
     ChainLinkProngRight();
@@ -134,10 +168,6 @@ module ChainLinkProngRight()
 
 module DoubleChainLink()
 {
-    center_x = 26;
-    center_guide_x = 1.4;
-    center_guide_z = 16;
-
     // left side
     difference()
     {
@@ -149,7 +179,7 @@ module DoubleChainLink()
     }
 
     // right side
-    translate([ center_x - 16, 0, 0 ])
+    translate([ double_link_center_x - 16, 0, 0 ])
     {
         difference()
         {
@@ -176,7 +206,7 @@ module DoubleChainLink()
     }
 
     // bottom bar - right
-    translate([ center_x - 17, 0, 0 ])
+    translate([ double_link_center_x - 17, 0, 0 ])
     {
         difference()
         {
@@ -191,29 +221,26 @@ module DoubleChainLink()
     }
 
     // center guide
-    left_edge = 4.15;
-    right_edge = 32.4;
-    center_guide_offset_x = left_edge + ( right_edge - left_edge - center_guide_x ) / 2;
-    translate([ center_guide_offset_x, 17.2, 0 ])
-        cube([ center_guide_x, 10.3, center_guide_z ]);
+    translate([ double_link_center_guide_offset_x, 17.2, 0 ])
+        cube([ double_link_center_guide_x, 10.3, double_link_center_guide_z ]);
 
-    // % translate([ left_edge, 18, 0 ])
-    //     cube([ center_guide_offset_x - left_edge, 20, center_guide_z ]);
-    // % translate([ center_guide_offset_x + center_guide_x, 18, 0])
-    //     cube([ right_edge - center_guide_offset_x - center_guide_x, 20, center_guide_z ]);
-    // echo( str( "left: ", center_guide_offset_x - left_edge ) );
-    // echo( str( "right: ", right_edge - center_guide_offset_x - center_guide_x ) );
+    // % translate([ double_link_left_edge_, 18, 0 ])
+    //     cube([ double_link_center_guide_offset_x - double_link_left_edge_, 20, double_link_center_guide_z ]);
+    // % translate([ double_link_center_guide_offset_x + double_link_center_guide_x, 18, 0])
+    //     cube([ double_link_right_edge_ - double_link_center_guide_offset_x - double_link_center_guide_x, 20, double_link_center_guide_z ]);
+    // echo( str( "left: ", double_link_center_guide_offset_x - double_link_left_edge_ ) );
+    // echo( str( "right: ", double_link_right_edge_ - double_link_center_guide_offset_x - double_link_center_guide_x ) );
 
     // left side prongs
     ChainLinkProngLeft();
-    translate([ center_guide_offset_x - 22, 3.45, 0 ])
+    translate([ double_link_center_guide_offset_x - 22, 3.45, 0 ])
         ChainLinkProngRight();
 
     // right side prongs
-    translate([ center_guide_offset_x - 3, 0.6, 0 ])
+    translate([ double_link_center_guide_offset_x - 3, 0.6, 0 ])
     {
         ChainLinkProngLeft();
-        translate([ center_guide_offset_x - 22, 3.45, 0 ])
+        translate([ double_link_center_guide_offset_x - 22, 3.45, 0 ])
             ChainLinkProngRight();
     }
 }
@@ -242,7 +269,6 @@ module ChainLinkProng()
 
 module ChainTopVelcroTie()
 {
-    cable_tie_y = 15;
 
     difference()
     {
@@ -253,6 +279,61 @@ module ChainTopVelcroTie()
         translate([ -2, 41, 4 ])
             rotate([ 0, 0, -90 ])
                 TrapezoidalPrism( cable_tie_y * 0.6, cable_tie_y, 30, 12, center = false );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module DoubleChainLinkStart()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module DoubleChainLinkEnd()
+{
+    assert( double_link_center_x >= double_end_holes_x, "center needs to be wider than the holes section" );
+
+    side_overlap = ( double_link_center_x - double_end_holes_x ) / 2;
+
+    // left side
+    intersection()
+    {
+        translate([ 235, -122, 0 ])
+            rotate([ 0, 0, 90 ])
+                import( "../../assets/cable-chain-end.stl" );
+
+        translate([ 0, 0, 0 ])
+            cube([ double_end_left_edge_x + side_overlap, 50, 20 ]);
+    }
+
+    // right side
+    translate([ double_link_center_x - 18, 0, 0 ])
+    {
+        intersection()
+        {
+            translate([ 235, -122, 0 ])
+                rotate([ 0, 0, 90 ])
+                    import( "../../assets/cable-chain-end.stl" );
+
+            translate([ double_end_right_edge_x - side_overlap, 0, 0 ])
+                cube([ double_end_x - double_end_right_edge_x + side_overlap, 50, 20 ]);
+        }
+    }
+
+    // center with holes
+    double_end_holes_offset_x = double_end_left_edge_x;
+    translate([ double_end_holes_offset_x, 0, 0 ])
+    {
+        intersection()
+        {
+            translate([ 235, -122, 0 ])
+                rotate([ 0, 0, 90 ])
+                    import( "../../assets/cable-chain-end.stl" );
+
+            translate([ double_end_left_edge_x, 0, 0 ])
+                cube([ double_end_right_edge_x - double_end_left_edge_x, 50, 20 ]);
+        }
     }
 }
 
