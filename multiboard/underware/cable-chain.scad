@@ -56,6 +56,9 @@ cable_tie_y = 15;
 
 double_link_center_x = 26;
 
+link_prong_r = 9.1;
+double_link_prong_r = 7;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -63,7 +66,6 @@ $fn = $preview ? 32 : 64;
 
 double_link_center_guide_offset_x = double_link_left_edge_ + ( double_link_right_edge_ - double_link_left_edge_ - double_link_center_guide_x ) / 2;
 
-prong_r = ( link_x - link_edge_x * 4 ) * 0.5;
 angle_offset = prong_y * sin( prong_angle_z );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,13 +127,13 @@ module ChainLink()
     translate([ -100, -160, 0 ])
         import( "../../assets/cable-chain-link-original.stl" );
 
-    ChainLinkProngLeft();
-    ChainLinkProngRight();
+    ChainLinkProngLeft( link_prong_r );
+    ChainLinkProngRight( link_prong_r );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ChainLinkProngLeft()
+module ChainLinkProngLeft( prong_r )
 {
     difference()
     {
@@ -141,7 +143,7 @@ module ChainLinkProngLeft()
             link_z - prong_r
             ])
             rotate([ 0, 0, -prong_angle_z ])
-                ChainLinkProng();
+                ChainLinkProng( prong_r);
 
         translate([ link_offset_x + link_edge_x, link_offset_y + link_hole_offset_y, link_z / 2 ])
             rotate([ 0, 90, 0 ])
@@ -151,7 +153,7 @@ module ChainLinkProngLeft()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ChainLinkProngRight()
+module ChainLinkProngRight( prong_r )
 {
     difference()
     {
@@ -161,7 +163,7 @@ module ChainLinkProngRight()
             link_z - prong_r
             ])
             rotate([ 0, 0, 180 - prong_angle_z ])
-                ChainLinkProng();
+                ChainLinkProng( prong_r );
 
         translate([ link_offset_x + link_edge_x, link_offset_y + link_y - link_hole_offset_y, link_z / 2 ])
             rotate([ 0, 90, 0 ])
@@ -237,22 +239,22 @@ module DoubleChainLink()
     // echo( str( "right: ", double_link_right_edge_ - double_link_center_guide_offset_x - double_link_center_guide_x ) );
 
     // left side prongs
-    ChainLinkProngLeft();
+    ChainLinkProngLeft( double_link_prong_r );
     translate([ double_link_center_guide_offset_x - 22, 3.45, 0 ])
-        ChainLinkProngRight();
+        ChainLinkProngRight( double_link_prong_r );
 
     // right side prongs
     translate([ double_link_center_guide_offset_x - 3, 0.6, 0 ])
     {
-        ChainLinkProngLeft();
+        ChainLinkProngLeft( double_link_prong_r );
         translate([ double_link_center_guide_offset_x - 22, 3.45, 0 ])
-            ChainLinkProngRight();
+            ChainLinkProngRight( double_link_prong_r );
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ChainLinkProng()
+module ChainLinkProng( prong_r )
 {
     // outer
     translate([ prong_r, 0, 0 ])
