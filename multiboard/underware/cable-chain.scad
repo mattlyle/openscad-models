@@ -81,6 +81,11 @@ render()
         translate([ 100, 0, 0 ])
             DoubleChainLinkStart();
 
+        // double link in front of start
+        %translate([ 136.4, 62, 7 ])
+            rotate([ 0, 0, 180 ])
+                DoubleChainLink();
+
         translate([ 150, 0, 0 ])
             DoubleChainLinkEnd();
 
@@ -286,6 +291,116 @@ module ChainTopVelcroTie()
 
 module DoubleChainLinkStart()
 {
+    snap_z = 6.2;
+    side_x = 8.05;
+
+    right_side_offset_x = 17.95;
+
+    bottom_snap_offset_x = ( double_link_center_x - 15.9 ) / 2;
+
+    // bottom snap
+    translate([ bottom_snap_offset_x, 0, 0 ])
+    {
+        intersection()
+        {
+            translate([ 235, -72, 0 ])
+                rotate([ 0, 0, 90 ])
+                    import( "../../assets/cable-chain-start.stl" );
+
+            translate([ 0, 0, 0 ])
+                cube([ 30, 30, snap_z ]);
+        }
+    }
+
+    // left side
+    intersection()
+    {
+        translate([ 235, -72, 0 ])
+            rotate([ 0, 0, 90 ])
+                import( "../../assets/cable-chain-start.stl" );
+
+        translate([ 0, 0, snap_z ])
+             cube([ side_x, 50, 20 ]);
+    }
+
+    // right side
+    translate([ double_link_center_x - 15.9, 0, 0 ])
+    {
+        intersection()
+        {
+            translate([ 235, -72, 0 ])
+                rotate([ 0, 0, 90 ])
+                    import( "../../assets/cable-chain-start.stl" );
+
+            translate([ right_side_offset_x, 0, snap_z ])
+                cube([ side_x, 50, 20 ]);
+        }
+    }
+
+    // fill in center
+    // translate([ side_x, 0, snap_z ])
+    //     cube([ 20, 23.55, 5.2 ]);
+
+    x_left = side_x;
+    x_right = side_x + 20;
+
+    y_a = 0; // near
+    y_b = 23.55;
+    y_c = 24;
+    y_d = 24.8; // far
+
+    z_a = snap_z + 5.2; // top
+    z_b = snap_z + 3.05;
+    z_c = snap_z + 2.2;
+    z_d = snap_z; // bottom
+
+    points = [
+        [ x_left, y_a, z_a ],
+        [ x_left, y_b, z_a ],
+        [ x_left, y_d, z_b ],
+        [ x_left, y_d, z_c ],
+        [ x_left, y_c, z_c ],
+        [ x_left, y_c, z_d ],
+        [ x_left, y_a, z_d ],
+
+        [ x_right, y_a, z_a ],
+        [ x_right, y_b, z_a ],
+        [ x_right, y_d, z_b ],
+        [ x_right, y_d, z_c ],
+        [ x_right, y_c, z_c ],
+        [ x_right, y_c, z_d ],
+        [ x_right, y_a, z_d ],
+        ];
+
+    // % translate(points[0]) sphere(0.1);
+    // % translate(points[1]) sphere(0.1);
+    // % translate(points[2]) sphere(0.1);
+    // % translate(points[3]) sphere(0.1);
+    // % translate(points[4]) sphere(0.1);
+    // % translate(points[5]) sphere(0.1);
+    // % translate(points[6]) sphere(0.1);
+
+    // % translate(points[7]) sphere(0.1);
+    // % translate(points[8]) sphere(0.1);
+    // % translate(points[9]) sphere(0.1);
+    // % translate(points[10]) sphere(0.1);
+    // % translate(points[11]) sphere(0.1);
+    // % translate(points[12]) sphere(0.1);
+    // % translate(points[13]) sphere(0.1);
+
+    faces = [
+        [ 0, 1, 8, 7 ],
+        [ 1, 2, 9, 8 ],
+        [ 2, 3, 10, 9 ],
+        [ 3, 4, 11, 10 ],
+        [ 4, 5, 12, 11 ],
+        [ 5, 6, 13, 12 ],
+        [ 6, 0, 7, 13 ],
+        [ 7, 8, 9, 10, 11, 12, 13 ],
+        [ 0, 6, 5, 4, 3, 2, 1 ],
+        ];
+
+    polyhedron( points = points, faces = faces );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
