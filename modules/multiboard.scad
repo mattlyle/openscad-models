@@ -23,6 +23,8 @@ multiboard_connector_back_connector_top_offset = 1.5;
 
 workroom_multiboard_color = [ 112.0 / 255.0, 128.0 / 255.0, 144.0 / 255.0 ];
 
+difference_overlap = 0.01;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated
 
@@ -97,14 +99,13 @@ module MultiboardConnectorBackAlt( size_x, size_y )
 
     offset_x = MultiboardConnectorBackAltXOffset( size_x );
 
-    echo( "multiboard back - grid cells X:", grid_cells_x );
-    echo( "multiboard back - grid cells Y:", grid_cells_y );
+    echo( str( "multiboard back - grid cells X = ", grid_cells_x ) );
+    echo( str( "multiboard back - grid cells Y = ", grid_cells_y ) );
 
     render()
     {
         difference()
         {
-            // RoundedCube( size = [ size_x, size_y, multiboard_connector_back_z + multiboard_corner_rounding_r ], r = corner_rounding_r, fn = 36 );
             RoundedCubeAlt2(
                 size_x,
                 size_y,
@@ -126,7 +127,6 @@ module MultiboardConnectorBackAlt( size_x, size_y )
         // add the pins back
         for( i = [ 0 : grid_cells_x - 1 ] )
         {
-            // translate([ 0 , 30, 0 ])
             translate([ offset_x + multiboard_cell_size / 2 + i * multiboard_cell_size, 0, multiboard_connector_back_connector_height - multiboard_connector_back_pin_size ])
                 _MultiboardConnectorBack_ConnectorPin( size_y );
         }
@@ -171,7 +171,6 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
     {
         difference()
         {
-            // RoundedCubeAlt( size_x, size_y, multiboard_connector_back_z, r = multiboard_corner_rounding_r, fn = 36 );
             RoundedCubeAlt2(
                 size_x,
                 size_y,
