@@ -97,14 +97,14 @@ module EverythingPresenceLiteHolderArm()
 
         // top
         translate([ arm_x / 2, cutout_y - cutout_r, 0 ])
-            cylinder( r = arm_x / 2, h = arm_z );
+            cylinder( r = arm_x / 2, h = arm_z + holder_arm_clearance );
     }
 
     // top catch
-    translate([ arm_x / 2, cutout_y - cutout_r + holder_arm_catch_y, mount_z ])
+    translate([ arm_x / 2, cutout_y - cutout_r + holder_arm_catch_y, mount_z + holder_arm_clearance ])
         cylinder( r = arm_x / 2, h = holder_arm_width_z );
 
-    translate([ 0, cutout_y - cutout_r, mount_z ])
+    translate([ 0, cutout_y - cutout_r, mount_z + holder_arm_clearance ])
         cube([ arm_x, holder_arm_catch_y, holder_arm_width_z ]);
 }
 
