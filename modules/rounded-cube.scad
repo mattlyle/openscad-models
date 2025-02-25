@@ -107,3 +107,20 @@ module RoundedCubeAlt2( x, y, z, r = 1.0, round_top = true, round_bottom = true,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module RoundedCubeAlt3( x, y, z, r_top = 1.0, r_bottom = 1.0, r_x = 5.0 )
+{
+    hull()
+    {
+        translate([ r_x, r_x, 0 ])
+            cylinder( h = z, r = r_x );
+        translate([ x - r_x, r_x, 0 ])
+            cylinder( h = z, r = r_x );
+        translate([ r_x, y - r_x, 0 ])
+            cylinder( h = z, r = r_x );
+        translate([ x - r_x, y - r_x, 0 ])
+            cylinder( h = z, r = r_x );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
