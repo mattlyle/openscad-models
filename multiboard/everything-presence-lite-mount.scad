@@ -1,5 +1,6 @@
 include <../modules/multiboard.scad>
 include <../modules/rounded-cube.scad>
+include <../modules/rounded-cylinder.scad>
 include <../modules/trapezoidal-prism.scad>
 include <../modules/text-label.scad>
 
@@ -130,8 +131,15 @@ module EverythingPresenceLiteHolderArm()
     hull()
     {
         // bottom
-        translate([ arm_x / 2, cutout_r, 0 ])
-            cylinder( r = arm_x / 2, h = arm_bottom_z );
+        intersection()
+        {
+            translate([ 0, cutout_r + arm_bottom_z, 0 ])
+                rotate([ 0, 90, 0 ])
+                    RoundedCylinder( h = arm_x, r = arm_bottom_z, rounding_r = 0.2 );
+
+            translate([ 0, cutout_r, 0 ])
+                cube([ arm_x, arm_bottom_z, arm_bottom_z ]);
+        }
 
         // top
         translate([ arm_x / 2, cutout_y - cutout_r, 0 ])
@@ -142,8 +150,15 @@ module EverythingPresenceLiteHolderArm()
     hull()
     {
         // bottom
-        translate([ arm_x / 2, cutout_r + holder_arm_catch_y, arm_bottom_z ])
-            cylinder( r = arm_x / 2, h = arm_top_z );
+        intersection()
+        {
+            translate([ 0, cutout_r + arm_bottom_z * 3/2 + holder_arm_catch_y, arm_bottom_z ])
+                rotate([ 0, 90, 0 ])
+                    RoundedCylinder( h = arm_x, r = arm_bottom_z, rounding_r = 0.2 );
+
+            translate([ 0, cutout_r + holder_arm_catch_y + arm_bottom_z/2, arm_bottom_z ])
+                cube([ arm_x, arm_bottom_z, arm_bottom_z ]);
+        }
 
         // top
         translate([ arm_x / 2, cutout_y - cutout_r + holder_arm_catch_y, arm_bottom_z ])
