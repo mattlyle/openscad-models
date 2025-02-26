@@ -1,5 +1,6 @@
 include <../modules/multiboard.scad>
 include <../modules/rounded-cube.scad>
+include <../modules/trapezoidal-prism.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -14,6 +15,8 @@ cutout_y = 34.6;
 cutout_offset_x = 8.0;
 cutout_offset_y = 8.8;
 
+cord_r = 3.6 / 2;
+
 difference_overlap = 0.01;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,12 +25,16 @@ difference_overlap = 0.01;
 render_mode = "preview";
 // render_mode = "print";
 
-holder_extra_x = 5;
+holder_extra_x = 6;
 holder_extra_y = 5;
 
 holder_arm_width_z = 3.0;
 holder_arm_clearance = 0.3;
 holder_arm_catch_y = 2.0;
+
+cord_hook_wall_width = 1.6;
+cord_hook_y = 6;
+cord_hook_clearance = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -41,14 +48,28 @@ holder_y = mount_y + holder_extra_y * 2;
 
 cutout_r = cutout_x / 2;
 
+cord_hook_offset_y = ( holder_y - cord_hook_y ) / 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
 if( render_mode == "preview" )
 {
+    // mount preview
     translate([ holder_extra_x, holder_extra_y, holder_z_offset ])
         EverythingPresenceLitePreview();
 
+    // cord preview left
+    % translate([ cord_hook_wall_width + cord_r, -holder_y / 2, holder_z_offset + cord_r ])
+        rotate([ -90, 0, 0 ])
+            cylinder( r = cord_r, h = holder_y * 2 );
+
+    // cord preview right
+    % translate([ holder_x - cord_hook_wall_width - cord_r, -holder_y / 2, holder_z_offset + cord_r ])
+        rotate([ -90, 0, 0 ])
+            cylinder( r = cord_r, h = holder_y * 2 );
+
+    // holder
     EverythingPresenceLiteHolder();
 }
 else if( render_mode == "print" )
@@ -79,6 +100,15 @@ module EverythingPresenceLiteHolder()
     // right arm
     translate([ holder_extra_x + mount_x - cutout_offset_x - cutout_x + holder_arm_clearance, holder_extra_y + cutout_offset_y, holder_z_offset ])
         EverythingPresenceLiteHolderArm();
+
+    // cord hook left
+    translate([ 0, cord_hook_offset_y, holder_z_offset ])
+        EverythingPresenceLiteHolderCordHook();
+
+    // cord hook right
+    translate([ holder_x, cord_hook_offset_y + cord_hook_y, holder_z_offset ])
+        rotate([ 0, 0, 180 ])
+            EverythingPresenceLiteHolderCordHook();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +136,28 @@ module EverythingPresenceLiteHolderArm()
 
     translate([ 0, cutout_y - cutout_r, mount_z + holder_arm_clearance ])
         cube([ arm_x, holder_arm_catch_y, holder_arm_width_z ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module EverythingPresenceLiteHolderCordHook()
+{
+    hook_top_y = cord_hook_y / 2;
+    hook_bottom_y = cord_hook_y;
+    hook_z = cord_r * 2 + cord_hook_wall_width + cord_hook_clearance;
+
+    translate([ cord_hook_wall_width, 0, 0 ])
+        rotate([ 0, 0, 90 ])
+            TrapezoidalPrism(
+                hook_top_y,
+                hook_bottom_y,
+                cord_hook_wall_width,
+                hook_z,
+                center = false );
+
+
+    translate([ cord_hook_wall_width, ( hook_bottom_y - hook_top_y ) / 2, hook_z - cord_hook_wall_width])
+        cube([ cord_r, hook_top_y, cord_hook_wall_width  ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
