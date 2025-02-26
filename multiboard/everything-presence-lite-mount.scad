@@ -5,12 +5,12 @@ include <../modules/rounded-cube.scad>
 // measurements
 
 
-mount_x = 50.3;
-mount_y = 52.2;
-mount_z = 3.6;
+mount_x = 50.4;
+mount_y = 52.0;
+mount_z = 3.5;
 
 cutout_x = 4.0;
-cutout_y = 32.0;
+cutout_y = 34.6;
 cutout_offset_x = 8.0;
 cutout_offset_y = 8.8;
 
@@ -26,7 +26,7 @@ holder_extra_x = 5;
 holder_extra_y = 5;
 
 holder_arm_width_z = 3.0;
-holder_arm_clearance = 0.5;
+holder_arm_clearance = 0.3;
 holder_arm_catch_y = 2.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
