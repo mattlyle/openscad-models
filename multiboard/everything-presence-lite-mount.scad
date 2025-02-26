@@ -1,6 +1,7 @@
 include <../modules/multiboard.scad>
 include <../modules/rounded-cube.scad>
 include <../modules/trapezoidal-prism.scad>
+include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -109,6 +110,11 @@ module EverythingPresenceLiteHolder()
     translate([ holder_x, cord_hook_offset_y + cord_hook_y, holder_z_offset ])
         rotate([ 0, 0, 180 ])
             EverythingPresenceLiteHolderCordHook();
+
+    // text label
+    text_area_offset_y = holder_y - holder_extra_y + 1.2;
+    translate([ 0, text_area_offset_y, holder_z_offset ])
+        CenteredTextLabel( "Everything Presence Lite", holder_x, -1, font_size = 3.5, font = "Liberation Sans:style=Bold" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
