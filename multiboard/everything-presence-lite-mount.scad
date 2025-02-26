@@ -29,7 +29,7 @@ render_mode = "preview";
 holder_extra_x = 6;
 holder_extra_y = 5;
 
-holder_arm_width_z = 3.0;
+holder_arm_z = 3.0;
 holder_arm_clearance = 0.3;
 holder_arm_catch_y = 2.0;
 
@@ -123,25 +123,32 @@ module EverythingPresenceLiteHolderArm()
 {
     arm_x = cutout_x - holder_arm_clearance * 2;
     arm_y = cutout_y - cutout_r * 2;
-    arm_z = mount_z + holder_arm_width_z;
+    arm_top_z = holder_arm_z;
+    arm_bottom_z = mount_z + holder_arm_clearance;
 
+    // bottom section of the arm
     hull()
     {
         // bottom
         translate([ arm_x / 2, cutout_r, 0 ])
-            cylinder( r = arm_x / 2, h = arm_z );
+            cylinder( r = arm_x / 2, h = arm_bottom_z );
 
         // top
         translate([ arm_x / 2, cutout_y - cutout_r, 0 ])
-            cylinder( r = arm_x / 2, h = arm_z + holder_arm_clearance );
+            cylinder( r = arm_x / 2, h = arm_bottom_z );
     }
 
-    // top catch
-    translate([ arm_x / 2, cutout_y - cutout_r + holder_arm_catch_y, mount_z + holder_arm_clearance ])
-        cylinder( r = arm_x / 2, h = holder_arm_width_z );
+    // top section of the arm with the catch
+    hull()
+    {
+        // bottom
+        translate([ arm_x / 2, cutout_r + holder_arm_catch_y, arm_bottom_z ])
+            cylinder( r = arm_x / 2, h = arm_top_z );
 
-    translate([ 0, cutout_y - cutout_r, mount_z + holder_arm_clearance ])
-        cube([ arm_x, holder_arm_catch_y, holder_arm_width_z ]);
+        // top
+        translate([ arm_x / 2, cutout_y - cutout_r + holder_arm_catch_y, arm_bottom_z ])
+            cylinder( r = arm_x / 2, h = arm_top_z );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
