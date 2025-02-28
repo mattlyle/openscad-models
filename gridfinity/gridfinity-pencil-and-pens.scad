@@ -1,4 +1,5 @@
 include <../modules/gridfinity-base.scad>
+include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -31,8 +32,8 @@ pointed_tip_length = 6.0;
 pen_pencil_sharpie_clearance = 0.4;
 
 cutout_rows = [
-    [ pencil_radius, pencil_radius, pencil_radius, pencil_radius, small_screwdriver_radius, small_screwdriver_radius, small_screwdriver_radius ],
-    [ sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius ],
+    [ pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius ],
+    [ sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius ],
 ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,10 +45,14 @@ base_y = CalculateGridfinitySize( cells_y );
 // the combined z
 holder_z = GRIDFINITY_BASE_Z + top_z;
 
+// in theory this should be calculated based on the radiuses of the items in the row, but way more effort than it's worth?!
 offset_y = [
-    base_y * 0.3,
-    base_y * 0.7
+    base_y * 0.21,
+    base_y * 0.75
 ];
+
+text_area_y = 9;
+text_area_offset_y = 15;
 
 // the z to start the cutouts
 offset_z = GRIDFINITY_BASE_Z + GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE;
@@ -55,20 +60,24 @@ offset_z = GRIDFINITY_BASE_Z + GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "preview" || render_mode == "bin-only" )
-{
-    PenPencilSharpieHolder();
-}
+PenPencilSharpieHolder();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module PenPencilSharpieHolder()
 {
-    render()
+    if( render_mode == "preview" || render_mode == "bin-only" )
     {
         difference()
         {
-            GridfinityBase( cells_x, cells_y, top_z, round_top = true, center = false );
+            GridfinityBase(
+                cells_x,
+                cells_y,
+                top_z,
+                round_top = true,
+                center = false,
+                magnets = GRIDFINITY_BASE_MAGNETS_ALL
+                );
 
             for( i = [ 0 : len( cutout_rows ) - 1 ] )
             {
@@ -87,6 +96,15 @@ module PenPencilSharpieHolder()
                 }
             }
         }
+    }
+
+    if( render_mode == "preview" || render_mode == "text-only" )
+    {
+        // #translate([ 0, text_area_offset_y, holder_z ])
+        //     cube([ base_x, text_area_y, 0.1 ]);
+
+        translate([ 0, text_area_offset_y, holder_z ])
+            CenteredTextLabel( "Pens and Pencils?!", base_x, text_area_y, 7, "Georgia:style=Bold" );
     }
 }
 
