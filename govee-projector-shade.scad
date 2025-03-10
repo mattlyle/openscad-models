@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+include <modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -24,7 +25,7 @@ base_width = 10.0;
 cutout_scale = [ 1.8, 1.5, 2.2 ];
 
 flare_max_angle = 60;
-flare_extra_r = 80.0;
+flare_extra_r = 75.0;
 num_flare_levels = 24;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,6 +114,8 @@ module GoveeProjectorShade()
 
                 level_extra_r_bottom = CalculateFlareExtraR( i, num_flare_levels, flare_extra_r, flare_max_angle );
                 level_extra_r_top = CalculateFlareExtraR( i + 1, num_flare_levels, flare_extra_r, flare_max_angle );
+
+                assert( ( outer_r + level_extra_r_top ) * 2 < BUILD_PLATE_X, "TOO WIDE!" );
 
                 translate([ 0, 0, govee_projector_shade_z - flare_z ])
                 {
