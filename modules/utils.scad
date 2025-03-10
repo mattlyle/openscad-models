@@ -39,6 +39,8 @@ function calculateEquallySpacedOffset( list, total_size, clearance, i ) =
 
 function calculateOffsetToCenter( total_size, item_size ) = total_size / 2 - item_size / 2;
 
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // rotate so that we can draw an object from one point to the next
 
@@ -46,9 +48,9 @@ module RotateFromPointAtoB( a, b )
 {
     // from: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
 
-    x = b[ 0 ]- a[ 0 ];
-    y = b[ 1 ]- a[ 1 ];
-    z = b[ 2 ]- a[ 2 ];
+    x = b[ 0 ] - a[ 0 ];
+    y = b[ 1 ] - a[ 1 ];
+    z = b[ 2 ] - a[ 2 ];
 
     length = norm([ x, y, z ]);
     b = acos( z / length );
