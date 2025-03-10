@@ -75,7 +75,8 @@ module GoveeProjectorShade()
 
     scale_y = govee_projector_shade_y / govee_projector_shade_x;
 
-    flare_z = flare_extra_r * cos( flare_max_angle);
+    flare_z = flare_extra_r * sin( flare_max_angle );
+    echo( flare_z);
 
     difference()
     {
