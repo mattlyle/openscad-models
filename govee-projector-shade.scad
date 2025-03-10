@@ -24,8 +24,8 @@ base_width = 10.0;
 cutout_scale = [ 1.8, 1.5, 2.2 ];
 
 flare_max_angle = 60;
-flare_extra_r = 50.0;
-num_flare_levels = 12;
+flare_extra_r = 80.0;
+num_flare_levels = 24;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
