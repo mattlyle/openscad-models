@@ -42,12 +42,11 @@ extra_text_descent = 0.3;
 // magnet_clearance = 0.2;
 
 sections = [
-    [ "CARO", 20, 0, false, false ],
-    [ "LINA", 0, 20, false, false ],
+    [ "Caro", 20, 1, false, false ],
+    [ "lina", 1, 20, false, false ],
 
-    [ "HURR", 20, 0, false, false ],
-    [ "ICAN", 0, 0, false, false ],
-    [ "ES", 0, 20, false, false ]
+    [ "Hurri", 20, 0, false, false ],
+    [ "canes", 4, 0, false, false ]
 ];
 
 vertical_preview_section_spacing = 1;
