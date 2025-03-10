@@ -76,7 +76,6 @@ module GoveeProjectorShade()
     scale_y = govee_projector_shade_y / govee_projector_shade_x;
 
     flare_z = flare_extra_r * sin( flare_max_angle );
-    echo( flare_z);
 
     difference()
     {
@@ -94,7 +93,6 @@ module GoveeProjectorShade()
                     r = outer_r + base_width,
                     h = wall_width );
 
-
             // flare
             for( i = [ 0 : num_flare_levels - 1 ])
             {
@@ -105,7 +103,6 @@ module GoveeProjectorShade()
                 level_extra_r_bottom = CalculateFlareExtraR( i, num_flare_levels, flare_extra_r, flare_max_angle );
                 level_extra_r_top = CalculateFlareExtraR( i + 1, num_flare_levels, flare_extra_r, flare_max_angle );
 
-                // color([ 0,0,i / num_flare_levels ])
                 translate([ 0, 0, govee_projector_shade_z - flare_z ])
                 {
                     difference()
