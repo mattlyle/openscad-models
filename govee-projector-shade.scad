@@ -57,6 +57,17 @@ if( render_mode == "preview" )
         ]);
 
     % translate([
+        0,
+        0,
+        govee_projector_shade_z
+        ])
+        cube([
+            govee_projector_shade_x + wall_width * 2 + base_width * 2 + clearance * 2,
+            govee_projector_shade_y + wall_width * 2 + base_width * 2 + clearance * 2,
+            0.1
+            ]);
+
+    % translate([
         govee_projector_shade_x / 2 + wall_width + base_width,
         govee_projector_shade_y + wall_width + base_width,
         govee_projector_shade_z
