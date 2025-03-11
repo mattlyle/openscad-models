@@ -7,7 +7,7 @@ include <modules/utils.scad>
 
 govee_projector_shade_x = 170;
 govee_projector_shade_y = 180;
-govee_projector_shade_z = 220;
+govee_projector_shade_z = 190;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -22,11 +22,11 @@ difference_offset = 0.01;
 
 base_width = 10.0;
 
-cutout_scale = [ 1.8, 1.5, 2.2 ];
+cutout_scale = [ 2.4, 1.5, 2.0 ];
 
 flare_max_angle = 60;
 flare_extra_r = 75.0;
-num_flare_levels = 24;
+num_flare_levels = 60;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
