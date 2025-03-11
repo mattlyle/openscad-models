@@ -36,27 +36,38 @@ extra_text_descent = 0.3;
 // for_under_sign = true;
 
 // for text to the side of the sign
-font_size = 110;
+font_size = 100;
 for_under_sign = false;
 
 
 sections = [
+    // 60 pt
     // [ "Caro", 20, 1, false, false ],
     // [ "lina", 1, 20, false, false ],
-
     // [ "Hurri", 20, 0, false, false ],
     // [ "canes", 4, 0, false, false ]
 
+    // 100 pt
     [ "Ca", 20, 1, false, true ],
-    [ "ro", 0, 0, true, true ],
-    [ "li", 5, 0, true, true ],
-    [ "na", 4, 20, true, false ],
+    [ "rol", 0, 0, true, true ],
+    [ "ina", 0, 20, true, true ],
 
-    [ "Hu", 20, -2, false, true ],
-    [ "rr", 0, 2, true, true ],
-    [ "ic", 0, 6, true, true ],
-    [ "an", 6, -4, true, true ],
-    [ "es", 0, 20, true, false ]
+    [ "Hu", 20, 0, true, true ],
+    [ "rr", 0, 0, true, true ],
+    [ "ic", 0, 0, true, true ],
+    [ "an", 0, 0, true, true ],
+    [ "es", 0, 0, true, true ],
+
+    // 110 pt
+    // [ "Ca", 20, 1, false, true ],
+    // [ "ro", 0, 0, true, true ],
+    // [ "li", 5, 0, true, true ],
+    // [ "na", 4, 20, true, false ],
+    // [ "Hu", 20, -2, false, true ],
+    // [ "rr", 0, 2, true, true ],
+    // [ "ic", 0, 6, true, true ],
+    // [ "an", 6, -4, true, true ],
+    // [ "es", 0, 20, true, false ]
 ];
 
 vertical_preview_section_spacing = 1;
@@ -69,6 +80,13 @@ $fn = $preview ? 16 : 64;
 cord_cutout_r = cord_diameter / 2 * 1.5;
 
 section_sizes_x = [ for( section = sections ) CalculateSectionX( section ) ];
+
+total_x = sumList( section_sizes_x );
+echo();
+echo( "Total X:" );
+echo( str( total_x, " mm" ));
+echo( str( total_x * 0.03937008, " in" ) );
+echo();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
