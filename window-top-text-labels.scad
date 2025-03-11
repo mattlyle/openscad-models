@@ -15,38 +15,48 @@ sign_z_offset = 75.0;
 
 cord_diameter = 3.6;
 
-// magnet_diameter = 6.0;
-// magnet_height = 2.0;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // TODO: vertical entry for cord somewhere
-// TODO: needs to hide less of the LED strip under
 
 // render_mode = "preview";
 render_mode = "print";
 
 base_y = 6.0;
-base_z = 7.0;
+base_z = 10.0;
 
 window_text_label_y = 3.0;
 
 font = "PermanentMarker";
-font_size = 60;
-
-difference_offset = 0.1;
-
 extra_text_descent = 0.3;
 
-// magnet_clearance = 0.2;
+// for text under the sign
+// font_size = 60;
+// for_under_sign = true;
+
+// for text to the side of the sign
+font_size = 110;
+for_under_sign = false;
+
 
 sections = [
-    [ "Caro", 20, 1, false, false ],
-    [ "lina", 1, 20, false, false ],
+    // [ "Caro", 20, 1, false, false ],
+    // [ "lina", 1, 20, false, false ],
 
-    [ "Hurri", 20, 0, false, false ],
-    [ "canes", 4, 0, false, false ]
+    // [ "Hurri", 20, 0, false, false ],
+    // [ "canes", 4, 0, false, false ]
+
+    [ "Ca", 20, 1, false, true ],
+    [ "ro", 0, 0, true, true ],
+    [ "li", 5, 0, true, true ],
+    [ "na", 4, 20, true, false ],
+
+    [ "Hu", 20, -2, false, true ],
+    [ "rr", 0, 2, true, true ],
+    [ "ic", 0, 6, true, true ],
+    [ "an", 6, -4, true, true ],
+    [ "es", 0, 20, true, false ]
 ];
 
 vertical_preview_section_spacing = 1;
@@ -56,7 +66,7 @@ vertical_preview_section_spacing = 1;
 
 $fn = $preview ? 16 : 64;
 
-cord_cutout_r = cord_diameter * 1.5;
+cord_cutout_r = cord_diameter / 2 * 1.5;
 
 section_sizes_x = [ for( section = sections ) CalculateSectionX( section ) ];
 
@@ -69,8 +79,15 @@ if( render_mode == "preview" )
     % translate([ -100, 0, -0.11 ])
         cube([ 1000, window_y, 0.1 ]);
 
+    // preview the sign bottom
+    if( for_under_sign )
+    {
+        % translate([ -100, 0, sign_z_offset ])
+            cube([ 1000, window_y, 0.1 ]);
+    }
+
     // preview the cord
-    % translate([ -100, window_y - cord_diameter / 2, cord_diameter / 2 ])
+    % translate([ -100, window_y - cord_diameter / 2, base_z / 2 ])
         rotate([ 0, 90, 0 ])
             scale([ 1, 0.8, 1 ])
                 cylinder( r = cord_diameter / 2, h = 1000 );
@@ -143,14 +160,11 @@ module WindowTextLabel( section_config )
 
     assert( base_x < BUILD_PLATE_X, "TOO LONG!" );
 
-    assert(
-        base_z
+    total_z = base_z
         - extra_text_descent
-        + textmetrics( text = section_config[ 0 ], size = font_size, font = font ).size[ 1 ]
-        < sign_z_offset,
-        "TOO TALL!" );
+        + textmetrics( text = section_config[ 0 ], size = font_size, font = font ).size[ 1 ];
 
-    // magnet_offset = ( base_z - magnet_diameter - magnet_clearance * 2 ) / 2;
+    assert( total_z < sign_z_offset || !for_under_sign, "Warning!  Will not find under sign!!!" );
 
     // base
     difference()
@@ -158,7 +172,11 @@ module WindowTextLabel( section_config )
         union()
         {
             // main block
-            cube([ base_x, base_y, base_z ]);
+            translate([ 0, base_y, base_z / 2 ])
+                rotate([ 0, 90, 0 ])
+                    scale([ 1, 0.9, 1 ])
+                        cylinder( r = base_z / 2, h = base_x );
+
 
             // text
             translate([ extra_base_left, base_y, base_z - extra_text_descent ])
@@ -167,33 +185,15 @@ module WindowTextLabel( section_config )
                         text( text_string, size = font_size, font = font );
         }
 
+        // remove the back
+        translate([ -DIFFERENCE_OFFSET, base_y, -DIFFERENCE_OFFSET ])
+            cube([ base_x + DIFFERENCE_OFFSET * 2, base_y, base_z + DIFFERENCE_OFFSET * 2 ]);
+
         // remove the cord path
-        translate([ -difference_offset, base_y, 0 ])
+        translate([ -DIFFERENCE_OFFSET, base_y, base_z / 2 ])
             rotate([ 0, 90, 0 ])
-                scale([ 0.8, 1, 1 ])
-                    cylinder( r = cord_cutout_r, h = base_x + difference_offset * 2 );
-
-        // if( magnet_left )
-        // {
-        //     translate([
-        //         -difference_offset,
-        //         magnet_diameter / 2 + magnet_offset,
-        //         magnet_diameter / 2 + magnet_offset
-        //         ])
-        //         rotate([ 0, 90, 0 ])
-        //             cylinder( r = magnet_diameter / 2 + magnet_clearance, h = magnet_height + difference_offset);
-        // }
-
-        // if( magnet_right )
-        // {
-        //     translate([
-        //         base_x - magnet_height,
-        //         magnet_diameter / 2 + magnet_offset,
-        //         magnet_diameter / 2 + magnet_offset
-        //         ])
-        //         rotate([ 0, 90, 0 ])
-        //             cylinder( r = magnet_diameter / 2 + magnet_clearance, h = magnet_height + difference_offset );
-        // }
+                // scale([ 0.8, 1, 1 ])
+                    cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
     }
 }
 
