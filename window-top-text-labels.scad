@@ -20,8 +20,17 @@ cord_diameter = 3.6;
 
 // TODO: vertical entry for cord somewhere
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print-0";
+// render_mode = "print-1";
+// render_mode = "print-2";
+// render_mode = "print-3";
+// render_mode = "print-4";
+// render_mode = "print-5";
+// render_mode = "print-6";
+// render_mode = "print-7";
+// render_mode = "print-8";
+// render_mode = "print-9";
 
 base_y = 6.0;
 base_z = 10.0;
@@ -38,7 +47,6 @@ extra_text_descent = 0.3;
 // for text to the side of the sign
 font_size = 100;
 for_under_sign = false;
-
 
 sections = [
     // 60 pt
@@ -134,14 +142,45 @@ if( render_mode == "preview" )
                 WindowTextLabel( section );
     }
 }
-else if( render_mode == "print" )
+else if( render_mode == "print-0" )
 {
-    render()
-    {
-        translate([ 0, 0, base_y ])
-            rotate([ -90, 0, 0 ])
-                WindowTextLabel( sections[ 0 ] );
-    }
+    PrepPrint( 0 );
+}
+else if( render_mode == "print-1" )
+{
+    PrepPrint( 1 );
+}
+else if( render_mode == "print-2" )
+{
+    PrepPrint( 2 );
+}
+else if( render_mode == "print-3" )
+{
+    PrepPrint( 3 );
+}
+else if( render_mode == "print-4" )
+{
+    PrepPrint( 4 );
+}
+else if( render_mode == "print-5" )
+{
+    PrepPrint( 5 );
+}
+else if( render_mode == "print-6" )
+{
+    PrepPrint( 6 );
+}
+else if( render_mode == "print-7" )
+{
+    PrepPrint( 7 );
+}
+else if( render_mode == "print-8" )
+{
+    PrepPrint( 8 );
+}
+else if( render_mode == "print-9" )
+{
+    PrepPrint( 9 );
 }
 else
 {
@@ -210,6 +249,18 @@ module WindowTextLabel( section_config )
         translate([ -DIFFERENCE_OFFSET, base_y, base_z / 2 ])
             rotate([ 0, 90, 0 ])
                 cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PrepPrint( i )
+{
+    render()
+    {
+        translate([ 0, 0, base_y ])
+            rotate([ -90, 0, 0 ])
+                WindowTextLabel( sections[ i ] );
     }
 }
 
