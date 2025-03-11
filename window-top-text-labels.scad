@@ -32,8 +32,12 @@ render_mode = "preview";
 // render_mode = "print-8";
 // render_mode = "print-9";
 
-base_y = 8.0;
-base_z = 16.0;
+base_y = 4.6;
+base_z = 10.0;
+
+window_base_offset_z = 4.0;
+window_base_offset_y = 1.0;
+window_base_offset_overlap_z = 1.0;
 
 window_text_label_y = 3.0;
 
@@ -118,7 +122,7 @@ if( render_mode == "preview" )
     }
 
     // preview the cord
-    % translate([ -100, window_y - cord_r, base_z / 2 ])
+    % translate([ -100, window_y - cord_r, window_base_offset_z + base_z / 2 ])
         rotate([ 0, 90, 0 ])
             scale([ 1, 0.8, 1 ])
                 cylinder( r = cord_r, h = 1000 );
@@ -222,7 +226,8 @@ module WindowTextLabel( section_config )
 
     assert( base_x < BUILD_PLATE_X, "TOO LONG!" );
 
-    total_z = base_z
+    total_z = window_base_offset_z
+        + base_z
         - extra_text_descent
         + textmetrics( text = section_config[ 0 ], size = font_size, font = font ).size[ 1 ];
 
@@ -230,30 +235,34 @@ module WindowTextLabel( section_config )
 
     scale_y = base_y / base_z * 2;
 
+    // offset
+    translate([ 0, base_y - window_base_offset_y, 0 ])
+        cube([ base_x, window_base_offset_y, window_base_offset_z  + window_base_offset_overlap_z ]);
+
     // base
     difference()
     {
         union()
         {
             // base cylinder
-            translate([ 0, base_y, base_z / 2 ])
+            translate([ 0, base_y, window_base_offset_z + base_z / 2 ])
                 rotate([ 0, 90, 0 ])
                     scale([ 1, scale_y, 1 ])
                         cylinder( r = base_z / 2, h = base_x );
 
             // text
-            translate([ extra_base_left, base_y, base_z - extra_text_descent ])
+            translate([ extra_base_left, base_y, window_base_offset_z + base_z - extra_text_descent ])
                 rotate([ 90, 0, 0 ])
                     linear_extrude( window_text_label_y )
                         text( text_string, size = font_size, font = font );
         }
 
         // remove the back
-        translate([ -DIFFERENCE_OFFSET, base_y, -DIFFERENCE_OFFSET ])
+        translate([ -DIFFERENCE_OFFSET, base_y, window_base_offset_z - DIFFERENCE_OFFSET ])
             cube([ base_x + DIFFERENCE_OFFSET * 2, base_y, base_z + DIFFERENCE_OFFSET * 2 ]);
 
         // remove the cord path
-        translate([ -DIFFERENCE_OFFSET, base_y, base_z / 2 ])
+        translate([ -DIFFERENCE_OFFSET, base_y, window_base_offset_z + base_z / 2 ])
             rotate([ 0, 90, 0 ])
                 cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
 
