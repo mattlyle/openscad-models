@@ -13,7 +13,7 @@ window_y = 15;
 
 sign_z_offset = 75.0;
 
-cord_diameter = 3.6;
+cord_r = 3.6 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -32,8 +32,8 @@ render_mode = "preview";
 // render_mode = "print-8";
 // render_mode = "print-9";
 
-base_y = 6.0;
-base_z = 10.0;
+base_y = 8.0;
+base_z = 16.0;
 
 window_text_label_y = 3.0;
 
@@ -47,6 +47,8 @@ extra_text_descent = 0.3;
 // for text to the side of the sign
 font_size = 100;
 for_under_sign = false;
+
+vertical_preview_section_spacing = 1;
 
 sections = [
     // 60 pt
@@ -78,14 +80,17 @@ sections = [
     // [ "es", 0, 20, true, false ]
 ];
 
-vertical_preview_section_spacing = 1;
+connector_x = 4.0;
+connector_y = 3.0;
+connector_z = 1.2;
+connector_clearance = 0.3;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 $fn = $preview ? 16 : 64;
 
-cord_cutout_r = cord_diameter / 2 * 1.5;
+cord_cutout_r = cord_r * 2;
 
 section_sizes_x = [ for( section = sections ) CalculateSectionX( section ) ];
 
@@ -113,10 +118,10 @@ if( render_mode == "preview" )
     }
 
     // preview the cord
-    % translate([ -100, window_y - cord_diameter / 2, base_z / 2 ])
+    % translate([ -100, window_y - cord_r, base_z / 2 ])
         rotate([ 0, 90, 0 ])
             scale([ 1, 0.8, 1 ])
-                cylinder( r = cord_diameter / 2, h = 1000 );
+                cylinder( r = cord_r, h = 1000 );
 
     // preview vertical version
     for( i = [ 0 : len( sections ) - 1 ] )
@@ -199,8 +204,8 @@ module WindowTextLabel( section_config )
     text_string = section_config[ 0 ];
     extra_base_left = section_config[ 1 ];
     extra_base_right = section_config[ 2 ];
-    magnet_left = section_config[ 3 ];
-    magnet_right = section_config[ 4 ];
+    connector_left = section_config[ 3 ];
+    connector_right = section_config[ 4 ];
 
     // text_string_metrics = textmetrics(
     //     text = text_string,
@@ -223,15 +228,17 @@ module WindowTextLabel( section_config )
 
     assert( total_z < sign_z_offset || !for_under_sign, "Warning!  Will not find under sign!!!" );
 
+    scale_y = base_y / base_z * 2;
+
     // base
     difference()
     {
         union()
         {
-            // main block
+            // base cylinder
             translate([ 0, base_y, base_z / 2 ])
                 rotate([ 0, 90, 0 ])
-                    scale([ 1, 0.9, 1 ])
+                    scale([ 1, scale_y, 1 ])
                         cylinder( r = base_z / 2, h = base_x );
 
             // text
@@ -249,6 +256,18 @@ module WindowTextLabel( section_config )
         translate([ -DIFFERENCE_OFFSET, base_y, base_z / 2 ])
             rotate([ 0, 90, 0 ])
                 cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
+
+        if( connector_left )
+        {
+            translate([ -DIFFERENCE_OFFSET, base_y - connector_y + DIFFERENCE_OFFSET, 0 ])
+                Connector( true );
+        }
+    }
+
+    if( connector_right )
+    {
+        translate([ base_x, base_y - connector_y, 0 ])
+            Connector( false );
     }
 }
 
@@ -262,6 +281,31 @@ module PrepPrint( i )
             rotate([ -90, 0, 0 ])
                 WindowTextLabel( sections[ i ] );
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Connector( add_clearance )
+{
+    connector_offset_z = base_z / 8;
+
+    clearance = add_clearance ? connector_clearance : 0;
+
+    // bottom
+    translate([ 0, -clearance, connector_offset_z - clearance ])
+        cube([
+            connector_x + clearance,
+            connector_y + clearance,
+            connector_z + clearance * 2
+            ]);
+
+    // top
+    translate([ 0, -clearance, base_z - connector_offset_z - connector_z - clearance ])
+        cube([
+            connector_x + clearance,
+            connector_y + clearance,
+            connector_z + clearance * 2
+            ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
