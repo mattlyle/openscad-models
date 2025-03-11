@@ -195,7 +195,6 @@ module WindowTextLabel( section_config )
                     scale([ 1, 0.9, 1 ])
                         cylinder( r = base_z / 2, h = base_x );
 
-
             // text
             translate([ extra_base_left, base_y, base_z - extra_text_descent ])
                 rotate([ 90, 0, 0 ])
@@ -210,8 +209,7 @@ module WindowTextLabel( section_config )
         // remove the cord path
         translate([ -DIFFERENCE_OFFSET, base_y, base_z / 2 ])
             rotate([ 0, 90, 0 ])
-                // scale([ 0.8, 1, 1 ])
-                    cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
+                cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
     }
 }
 
