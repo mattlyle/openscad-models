@@ -39,7 +39,7 @@ render_mode = "print-bottom-tray";
 
 bottom_tray_x = 250;
 bottom_tray_y = 5.0;
-bottom_tray_z = 8.0;
+bottom_tray_z = 6.0;
 bottom_tray_offset_z = 9.0;
 bottom_tray_junction_z = 2.2;
 
@@ -70,8 +70,8 @@ sections = [
 
     // 100 pt
     [ "Ca", 20, 1, false, true ],
-    // [ "rol", 0, 0, true, true ],
-    // [ "ina", 0, 20, true, true ],
+    [ "rol", 0, 0, true, true ],
+    [ "ina", 0, 20, true, true ],
 
     // [ "Hu", 20, 0, true, true ],Bottom
     // [ "rr", 0, 0, true, true ],
@@ -276,9 +276,9 @@ module WindowTextLabelTop( section_config )
 
 //CalculatePinchConnectorTrayTopZOffset( bottom_tray_z )
 
-            // TODO: where is this 0.2 coming from?
+            // TODO: where is this 1.8 coming from?
 
-            translate([ 0, -4, bottom_tray_offset_z + bottom_tray_junction_z + 0.2 + CalculatePinchConnectorTrayTopY(bottom_tray_y) ])
+            translate([ 0, -4, bottom_tray_offset_z + bottom_tray_junction_z - 1.8 + CalculatePinchConnectorTrayTopY( bottom_tray_y ) ])
                 rotate([ -90, 0, 0 ])
                     PinchConnectorTrayTop( base_x, bottom_tray_z );
 
@@ -289,6 +289,11 @@ module WindowTextLabelTop( section_config )
                     linear_extrude( window_text_label_y )
                         text( text_string, size = font_size, font = font );
 
+            // sloped section
+            translate([ 0, -bottom_tray_y + 2.0, bottom_tray_offset_z + 0.2])
+                rotate([ -55, 0, 0 ])
+                    cube([ base_x, bottom_tray_y + 3, 1.2 ]);
+            // TODO: constants?!
 
             // TODO: need the sloped section below the text
     //     }
