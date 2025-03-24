@@ -2,6 +2,7 @@
 
 include <modules/text-label.scad>
 include <modules/trapezoidal-prism.scad>
+include <modules/pinch-connector-tray.scad>
 include <modules/utils.scad>
 
 use <assets/PermanentMarker-Regular.ttf>
@@ -19,23 +20,29 @@ cord_r = 3.6 / 2;
 // settings
 
 // TODO: vertical entry for cord somewhere
+// TODO: sloped bottom?
+// TODO: sloped connector edges
+// TODO: command tabs
 
-render_mode = "preview";
-// render_mode = "print-0";
-// render_mode = "print-1";
-// render_mode = "print-2";
-// render_mode = "print-3";
-// render_mode = "print-4";
-// render_mode = "print-5";
-// render_mode = "print-6";
-// render_mode = "print-7";
-// render_mode = "print-8";
-// render_mode = "print-9";
+// render_mode = "preview";
+render_mode = "print-bottom-tray";
+// render_mode = "print-top-tray-0";
+// render_mode = "print-top-tray-1";
+// render_mode = "print-top-tray-2";
+// render_mode = "print-top-tray-3";
+// render_mode = "print-top-tray-4";
+// render_mode = "print-top-tray-5";
+// render_mode = "print-top-tray-6";
+// render_mode = "print-top-tray-7";
+// render_mode = "print-top-tray-8";
+// render_mode = "print-top-tray-9";
 
-base_y = 4.6;
-base_z = 10.0;
+bottom_tray_x = 250;
+bottom_tray_y = 5.0;
+bottom_tray_z = 8.0;
+bottom_tray_offset_z = 9.0;
+bottom_tray_junction_z = 2.2;
 
-window_base_offset_z = 4.0;
 window_base_offset_y = 1.0;
 window_base_offset_overlap_z = 1.0;
 
@@ -63,14 +70,14 @@ sections = [
 
     // 100 pt
     [ "Ca", 20, 1, false, true ],
-    [ "rol", 0, 0, true, true ],
-    [ "ina", 0, 20, true, true ],
+    // [ "rol", 0, 0, true, true ],
+    // [ "ina", 0, 20, true, true ],
 
-    [ "Hu", 20, 0, true, true ],
-    [ "rr", 0, 0, true, true ],
-    [ "ic", 0, 0, true, true ],
-    [ "an", 0, 0, true, true ],
-    [ "es", 0, 0, true, true ],
+    // [ "Hu", 20, 0, true, true ],Bottom
+    // [ "rr", 0, 0, true, true ],
+    // [ "ic", 0, 0, true, true ],
+    // [ "an", 0, 0, true, true ],
+    // [ "es", 0, 0, true, true ],
 
     // 110 pt
     // [ "Ca", 20, 1, false, true ],
@@ -83,11 +90,6 @@ sections = [
     // [ "an", 6, -4, true, true ],
     // [ "es", 0, 20, true, false ]
 ];
-
-connector_x = 4.0;
-connector_y = 3.0;
-connector_z = 1.2;
-connector_clearance = 0.3;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -108,11 +110,21 @@ echo();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
+// translate([ 0, 0, bottom_tray_y ])
+// rotate([ -90, 0, 0 ])
+// WindowTextLabelBottom( 150 );
+
+// translate([ 0, 25, 0 ])
+// PinchConnectorTrayTop( 70, bottom_tray_z );
+
 if( render_mode == "preview" )
 {
     // preview the window edge
     % translate([ -100, 0, -0.11 ])
         cube([ 1000, window_y, 0.1 ]);
+
+    // preview the LED strip
+    // TODO: finish!
 
     // preview the sign bottom
     if( for_under_sign )
@@ -122,7 +134,7 @@ if( render_mode == "preview" )
     }
 
     // preview the cord
-    % translate([ -100, window_y - cord_r, window_base_offset_z + base_z / 2 ])
+    % translate([ -100, window_y - cord_r - 2, bottom_tray_offset_z + bottom_tray_z / 2 + 3 ])
         rotate([ 0, 90, 0 ])
             scale([ 1, 0.8, 1 ])
                 cylinder( r = cord_r, h = 1000 );
@@ -130,10 +142,15 @@ if( render_mode == "preview" )
     // preview vertical version
     for( i = [ 0 : len( sections ) - 1 ] )
     {
+        section = sections[ i ];
+
         x_offset = sumTo( section_sizes_x, i ) + i * vertical_preview_section_spacing;
 
-        translate([ x_offset, window_y - base_y, 0 ])
-            WindowTextLabel( sections[ i ] );
+        translate([ x_offset, window_y - bottom_tray_y, 0 ])
+            WindowTextLabelTop( section );
+
+        translate([ x_offset, window_y - bottom_tray_y, 0 ])
+            WindowTextLabelBottom( CalculateSectionX( section ) );
     }
 
     // preview the build plates
@@ -146,50 +163,61 @@ if( render_mode == "preview" )
         # translate([ x_offset, 100, -0.11 ])
             cube([ BUILD_PLATE_X, BUILD_PLATE_Y, 0.1 ]);
 
-        translate([ x_offset, 100, base_y ])
+        translate([ x_offset, 100, bottom_tray_y ])
             rotate([ -90, 0, 0 ])
-                WindowTextLabel( section );
+                WindowTextLabelBottom( CalculateSectionX( section ) );
+
+        translate([ x_offset, 140, bottom_tray_y ])
+            rotate([ -90, 0, 0 ])
+                WindowTextLabelTop( section );
     }
 }
-else if( render_mode == "print-0" )
+else if( render_mode == "print-bottom-tray" )
 {
-    PrepPrint( 0 );
+    render()
+        translate([ 0, 0, bottom_tray_y ])
+            rotate([ -90, 0, 0 ])
+                WindowTextLabelBottom( bottom_tray_x );
 }
-else if( render_mode == "print-1" )
+else if( render_mode == "print-top-tray-0" )
 {
-    PrepPrint( 1 );
+    PrintPlate( 0 );
 }
-else if( render_mode == "print-2" )
+else if( render_mode == "print-top-tray-1" )
 {
-    PrepPrint( 2 );
+    PrintPlate( 1 );
 }
-else if( render_mode == "print-3" )
+else if( render_mode == "print-top-tray-2" )
 {
-    PrepPrint( 3 );
+    PrintPlate( 2 );
 }
-else if( render_mode == "print-4" )
+else if( render_mode == "print-top-tray-3" )
 {
-    PrepPrint( 4 );
+    PrintPlate( 3 );
 }
-else if( render_mode == "print-5" )
+else if( render_mode == "print-top-tray-4" )
 {
-    PrepPrint( 5 );
+    PrintPlate( 4 );
 }
-else if( render_mode == "print-6" )
+else if( render_mode == "print-top-tray-5" )
 {
-    PrepPrint( 6 );
+    PrintPlate( 5 );
 }
-else if( render_mode == "print-7" )
+else if( render_mode == "print-top-tray-6" )
 {
-    PrepPrint( 7 );
+    PrintPlate( 6 );
 }
-else if( render_mode == "print-8" )
+else if( render_mode == "print-top-tray-7" )
 {
-    PrepPrint( 8 );
+    PrintPlate( 7 );
 }
-else if( render_mode == "print-9" )
+else if( render_mode == "print-top-tray-8" )
 {
-    PrepPrint( 9 );
+    PrintPlate( 8 );
+}
+else if( render_mode == "print-top-tray-9" )
+{
+    PrintPlate( 9 );
 }
 else
 {
@@ -203,7 +231,7 @@ function CalculateSectionX( section_config ) =
         + section_config[ 1 ]
         + section_config[ 2 ];
 
-module WindowTextLabel( section_config )
+module WindowTextLabelTop( section_config )
 {
     text_string = section_config[ 0 ];
     extra_base_left = section_config[ 1 ];
@@ -226,95 +254,87 @@ module WindowTextLabel( section_config )
 
     assert( base_x < BUILD_PLATE_X, "TOO LONG!" );
 
-    total_z = window_base_offset_z
-        + base_z
+    total_z = bottom_tray_offset_z
+        + bottom_tray_z
         - extra_text_descent
         + textmetrics( text = section_config[ 0 ], size = font_size, font = font ).size[ 1 ];
 
     assert( total_z < sign_z_offset || !for_under_sign, "Warning!  Will not find under sign!!!" );
 
-    scale_y = base_y / base_z * 2;
-
-    // offset
-    translate([ 0, base_y - window_base_offset_y, 0 ])
-        cube([ base_x, window_base_offset_y, window_base_offset_z  + window_base_offset_overlap_z ]);
+    // scale_y = bottom_tray_y / bottom_tray_z * 2;
 
     // base
-    difference()
-    {
-        union()
-        {
+    // difference()
+    // {
+    //     union()
+    //     {
             // base cylinder
-            translate([ 0, base_y, window_base_offset_z + base_z / 2 ])
-                rotate([ 0, 90, 0 ])
-                    scale([ 1, scale_y, 1 ])
-                        cylinder( r = base_z / 2, h = base_x );
+            // translate([ 0, bottom_tray_y, bottom_tray_offset_z + bottom_tray_z / 2 ])
+            //     rotate([ 0, 90, 0 ])
+            //         scale([ 1, scale_y, 1 ])
+            //             cylinder( r = bottom_tray_z / 2, h = base_x );
 
+//CalculatePinchConnectorTrayTopZOffset( bottom_tray_z )
+
+            // TODO: where is this 0.2 coming from?
+
+            translate([ 0, -4, bottom_tray_offset_z + bottom_tray_junction_z + 0.2 + CalculatePinchConnectorTrayTopY(bottom_tray_y) ])
+                rotate([ -90, 0, 0 ])
+                    PinchConnectorTrayTop( base_x, bottom_tray_z );
+
+            // TODO: extra 5?
             // text
-            translate([ extra_base_left, base_y, window_base_offset_z + base_z - extra_text_descent ])
+            translate([ extra_base_left, bottom_tray_y - 6, bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5 ])
                 rotate([ 90, 0, 0 ])
                     linear_extrude( window_text_label_y )
                         text( text_string, size = font_size, font = font );
-        }
 
-        // remove the back
-        translate([ -DIFFERENCE_OFFSET, base_y, window_base_offset_z - DIFFERENCE_OFFSET ])
-            cube([ base_x + DIFFERENCE_OFFSET * 2, base_y, base_z + DIFFERENCE_OFFSET * 2 ]);
 
-        // remove the cord path
-        translate([ -DIFFERENCE_OFFSET, base_y, window_base_offset_z + base_z / 2 ])
-            rotate([ 0, 90, 0 ])
-                cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
+            // TODO: need the sloped section below the text
+    //     }
 
-        if( connector_left )
-        {
-            translate([ -DIFFERENCE_OFFSET, base_y - connector_y + DIFFERENCE_OFFSET, 0 ])
-                Connector( true );
-        }
-    }
+    //     // remove the back
+    //     translate([ -DIFFERENCE_OFFSET, bottom_tray_y, bottom_tray_offset_z - DIFFERENCE_OFFSET ])
+    //         cube([ base_x + DIFFERENCE_OFFSET * 2, bottom_tray_y, bottom_tray_z + DIFFERENCE_OFFSET * 2 ]);
 
-    if( connector_right )
-    {
-        translate([ base_x, base_y - connector_y, 0 ])
-            Connector( false );
-    }
+    //     // remove the cord path
+    //     translate([ -DIFFERENCE_OFFSET, bottom_tray_y, bottom_tray_offset_z + bottom_tray_z / 2 ])
+    //         rotate([ 0, 90, 0 ])
+    //             cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
+    // }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module PrepPrint( i )
+module WindowTextLabelBottom( x )
+{
+    assert( x < BUILD_PLATE_X, "TOO LONG!" );
+
+    // offset
+    translate([ 0, bottom_tray_y - window_base_offset_y, 0 ])
+        cube([ x, window_base_offset_y, bottom_tray_offset_z  + window_base_offset_overlap_z + bottom_tray_junction_z ]);
+
+    // connector top
+    translate([
+        0,
+        bottom_tray_y,
+        bottom_tray_offset_z
+            + CalculatePinchConnectorTrayTopYOffset()
+            ])
+        rotate([ 90, 0, 0 ])
+            PinchConnectorTrayBottom( x, bottom_tray_z, bottom_tray_y );
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PrintPlate( i )
 {
     render()
-    {
-        translate([ 0, 0, base_y ])
-            rotate([ -90, 0, 0 ])
-                WindowTextLabel( sections[ i ] );
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module Connector( add_clearance )
-{
-    connector_offset_z = base_z / 8;
-
-    clearance = add_clearance ? connector_clearance : 0;
-
-    // bottom
-    translate([ 0, -clearance, connector_offset_z - clearance ])
-        cube([
-            connector_x + clearance,
-            connector_y + clearance,
-            connector_z + clearance * 2
-            ]);
-
-    // top
-    translate([ 0, -clearance, base_z - connector_offset_z - connector_z - clearance ])
-        cube([
-            connector_x + clearance,
-            connector_y + clearance,
-            connector_z + clearance * 2
-            ]);
+        translate([ 0, 0, bottom_tray_y ])
+            rotate([ 90, 0, 180 ])
+                WindowTextLabelTop( sections[ i ] );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

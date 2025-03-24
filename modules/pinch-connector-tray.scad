@@ -8,7 +8,38 @@ PINCH_CONNECTOR_OVERLAP_STOPPER_Y = 1.2;
 PINCH_CONNECTOR_OVERLAP_Z = 2.0;
 PINCH_CONNECTOR_LEDGE_Z = 1.6;
 
-PINCH_CONNECTOR_CLEARANCE = 0.2;
+PINCH_CONNECTOR_CLEARANCE = 0.1;
+// PINCH_CONNECTOR_CLEARANCE=0;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function CalculatePinchConnectorTrayBottomY( tray_y ) =
+    tray_y
+    + PINCH_CONNECTOR_WALL_THICKNESS * 2
+    + PINCH_CONNECTOR_OVERLAP_STOPPER_Y * 2;
+
+function CalculatePinchConnectorTrayBottomZ( z ) =
+    z
+    + PINCH_CONNECTOR_WALL_THICKNESS;
+
+function CalculatePinchConnectorTrayTopY( tray_y ) =
+    tray_y
+    + PINCH_CONNECTOR_WALL_THICKNESS * 4
+    + PINCH_CONNECTOR_OVERLAP_Y * 2
+    + PINCH_CONNECTOR_CLEARANCE * 2;
+
+function CalculatePinchConnectorTrayTopYOffset() =
+    PINCH_CONNECTOR_OVERLAP_Y
+    + PINCH_CONNECTOR_CLEARANCE;
+
+function CalculatePinchConnectorTrayTopZ() =
+    PINCH_CONNECTOR_WALL_THICKNESS
+    + PINCH_CONNECTOR_OVERLAP_Z
+    + PINCH_CONNECTOR_LEDGE_Z * 2
+    - PINCH_CONNECTOR_CLEARANCE / 2;
+
+function CalculatePinchConnectorTrayTopZOffset( tray_z ) =
+    tray_z + 4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -166,7 +197,7 @@ module _PinchConnectorTrayTopWall( x, tray_y )
     translate([
         0,
         PINCH_CONNECTOR_OVERLAP_STOPPER_Y - PINCH_CONNECTOR_OVERLAP_Y,
-        PINCH_CONNECTOR_WALL_THICKNESS + PINCH_CONNECTOR_OVERLAP_Z + PINCH_CONNECTOR_LEDGE_Z * 3/2
+        PINCH_CONNECTOR_WALL_THICKNESS + PINCH_CONNECTOR_OVERLAP_Z + PINCH_CONNECTOR_LEDGE_Z * 3 / 2
         ])
         scale([ 1, PINCH_CONNECTOR_OVERLAP_Y / PINCH_CONNECTOR_LEDGE_Z * 2, 1 ])
             rotate([ 0, 90, 0 ])
