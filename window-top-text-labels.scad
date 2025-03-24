@@ -282,20 +282,14 @@ module WindowTextLabelTop( section_config )
                 rotate([ -90, 0, 0 ])
                     PinchConnectorTrayTop( base_x, bottom_tray_z );
 
+// TODO: must cut out inside the tray or the join can get blocked?!
+
             // TODO: extra 5?
             // text
             translate([ extra_base_left, bottom_tray_y - 6, bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5 ])
                 rotate([ 90, 0, 0 ])
                     linear_extrude( window_text_label_y )
                         text( text_string, size = font_size, font = font );
-
-            // sloped section
-            translate([ 0, -bottom_tray_y + 2.0, bottom_tray_offset_z + 0.2])
-                rotate([ -55, 0, 0 ])
-                    cube([ base_x, bottom_tray_y + 3, 1.2 ]);
-            // TODO: constants?!
-
-            // TODO: need the sloped section below the text
     //     }
 
     //     // remove the back
@@ -329,6 +323,12 @@ module WindowTextLabelBottom( x )
             ])
         rotate([ 90, 0, 0 ])
             PinchConnectorTrayBottom( x, bottom_tray_z, bottom_tray_y );
+
+    // sloped section
+    translate([ 0, 5, 2 ])
+        rotate([ 135, 0, 0 ])
+            cube([ x, bottom_tray_y + 4.4, 1.2 ]);
+    // TODO: constants?!
 
 }
 
