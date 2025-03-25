@@ -32,9 +32,14 @@ cup_holder_z_percent = 90.0;
 num_cup_arms = 4;
 cup_holder_arch_top_r = 24;
 cup_holder_arch_bottom_r = 16;
+cup_hole_r = 4.0;
+num_additional_holes = 6;
+additional_hole_r = 14.0;
 
 connector_width = 2.0;
 connector_z = 6.0;
+
+center_cutout_r = 20.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -66,8 +71,60 @@ else
 module PlantingCupHolder()
 {
     // base
-    hull()
+    difference()
     {
+        union()
+        {
+            hull()
+            {
+                for( x = [ 0 : num_cups_x - 1 ] )
+                {
+                    for( y = [ 0 : num_cups_y - 1 ] )
+                    {
+                        translate([
+                            x * cell_r * 2 + cell_r,
+                            y * cell_r * 2 + cell_r,
+                            0
+                            ])
+                            cylinder( h = floor_z - DIFFERENCE_CLEARANCE, r = cell_r );
+                    }
+                }
+            }
+
+            // cups
+            for( x = [ 0 : num_cups_x - 1 ] )
+            {
+                for( y = [ 0 : num_cups_y - 1 ] )
+                {
+                    translate([
+                        x * cell_r * 2 + cell_r,
+                        y * cell_r * 2 + cell_r,
+                        0
+                        ])
+                    {
+                        _PlantingCupHolder();
+                    }
+                }
+            }
+        }
+
+        // remove the center cutout
+        for( x = [ 1 : num_cups_x - 1 ] )
+        {
+            for( y = [ 1 : num_cups_y - 1 ] )
+            {
+                translate([
+                    x * cell_r * 2,
+                    y * cell_r * 2,
+                    -DIFFERENCE_CLEARANCE
+                    ])
+                    cylinder( h = floor_z + DIFFERENCE_CLEARANCE * 2, r = center_cutout_r );
+
+            }
+        }
+
+
+        // remove the holes at the bottom
         for( x = [ 0 : num_cups_x - 1 ] )
         {
             for( y = [ 0 : num_cups_y - 1 ] )
@@ -75,29 +132,24 @@ module PlantingCupHolder()
                 translate([
                     x * cell_r * 2 + cell_r,
                     y * cell_r * 2 + cell_r,
-                    0
+                    -DIFFERENCE_CLEARANCE
                     ])
-                    cylinder( h = floor_z - DIFFERENCE_CLEARANCE, r = cell_r );
-            }
-        }
-    }
+                {
+                    // center hole
+                    cylinder( h = floor_z + DIFFERENCE_CLEARANCE * 2, r = cup_hole_r );
 
-    // cups
-    for( x = [ 0 : num_cups_x - 1 ] )
-    {
-        for( y = [ 0 : num_cups_y - 1 ] )
-        {
-            translate([
-                x * cell_r * 2 + cell_r,
-                y * cell_r * 2 + cell_r,
-                0
-                ])
-            {
-                _PlantingCupHolder();
+                    // additional holes
+                    for( i = [ 0 : num_additional_holes - 1 ] )
+                        rotate([ 0, 0, i * 360 / num_additional_holes ])
+                            translate([ additional_hole_r, 0, 0 ])
+                                cylinder( h = floor_z + DIFFERENCE_CLEARANCE * 2, r = cup_hole_r );
+                }
             }
         }
     }
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
