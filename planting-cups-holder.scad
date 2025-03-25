@@ -29,9 +29,10 @@ cup_spacing = 2.0;
 
 cup_holder_z_percent = 90.0;
 
-num_cup_arms = 4;
-cup_holder_arch_top_r = 24;
-cup_holder_arch_bottom_r = 16;
+num_cup_arms = 6;
+cup_holder_arch_top_r = 16;
+cup_holder_arch_bottom_r = 8;
+
 cup_hole_r = 4.0;
 num_additional_holes = 6;
 additional_hole_r = 14.0;
