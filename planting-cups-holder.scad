@@ -26,7 +26,8 @@ cup_clearance = 1.0;
 cup_holder_z_percent = 90.0;
 
 num_cup_arms = 4;
-cup_arm_width_degrees = 30;
+cup_holder_arch_top_r = 24;
+cup_holder_arch_bottom_r = 16;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -102,20 +103,29 @@ module _PlantingCupHolder()
         // cup arms
         for( i = [ 0 : num_cup_arms - 1 ] )
         {
-            angle_start = ( i * 360 / num_cup_arms ) + cup_arm_width_degrees / 2;
-            angle_end = ( ( i + 1 ) * 360 / num_cup_arms ) - cup_arm_width_degrees / 2;
-            echo(str( i, " ==> ", angle_start, " to ", angle_end ) );
+            angle = i * 360 / num_cup_arms;
 
-            assert( angle_start >= 0 && angle_start < 360, str( "Invalid angle_start: ", angle_start ) );
-            assert( angle_end >= 0 && angle_end < 360, str( "Invalid angle_end: ", angle_end ) );
+            rotate([ 0, 0, angle ])
+            {
+                hull()
+                {
+                    // top cylinder
+                    translate([ 0, 0, holder_z + wall_width - cup_holder_arch_top_r - wall_z ])
+                        rotate([ 0, 90, 0 ])
+                            cylinder(
+                                r = cup_holder_arch_top_r,
+                                h = cup_top_r + wall_width + cup_clearance
+                                );
 
-            translate([ 0, 0, wall_width ])
-                rotate([ 0, 0, angle_start ])
-                    PieSlicePrism(
-                        cup_top_r + wall_width + cup_clearance,
-                        holder_z - wall_z,
-                        angle_end - angle_start
-                        );
+                    // bottom arch
+                    translate([ 0, 0, wall_width + cup_holder_arch_bottom_r ])
+                        rotate([ 0, 90, 0 ])
+                            cylinder(
+                                r = cup_holder_arch_bottom_r,
+                                h = cup_top_r + wall_width + cup_clearance
+                                );
+                }
+            }
         }
     }
 }
