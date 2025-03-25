@@ -6,7 +6,7 @@ include <modules/pie-slice-prism.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-cup_top_r = 88 / 2;
+cup_top_r = 84 / 2;
 cup_bottom_r = 56 / 2;
 cup_z = 80;
 
@@ -22,7 +22,7 @@ num_cups_y = 2;
 wall_width = 2.0;
 wall_z = 10.0;
 
-floor_z = 6.0;
+floor_z = 4.8;
 
 cup_clearance = 1.0;
 cup_spacing = 2.0;
@@ -66,7 +66,22 @@ else
 module PlantingCupHolder()
 {
     // base
-    cube([ num_cups_x * cell_r * 2, num_cups_y * cell_r * 2, floor_z - DIFFERENCE_CLEARANCE]);
+    // cube([ num_cups_x * cell_r * 2, num_cups_y * cell_r * 2, floor_z - DIFFERENCE_CLEARANCE]);
+    hull()
+    {
+        for( x = [ 0 : num_cups_x - 1 ] )
+        {
+            for( y = [ 0 : num_cups_y - 1 ] )
+            {
+                translate([
+                    x * cell_r * 2 + cell_r,
+                    y * cell_r * 2 + cell_r,
+                    0
+                    ])
+                    cylinder( h = floor_z - DIFFERENCE_CLEARANCE, r = cell_r );
+            }
+        }
+    }
 
     // cups
     for( x = [ 0 : num_cups_x - 1 ] )
