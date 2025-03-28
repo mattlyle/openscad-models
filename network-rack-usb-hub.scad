@@ -35,7 +35,7 @@ usb_preview_thickness = 0.01;
 face_cutout_clearance_x = 6.0;
 face_cutout_clearance_z = 2.0;
 
-part_fit_clearance = 0.4;
+part_fit_clearance = 0.15;
 
 cage_wall_width = 2.0;
 cage_lip_overhang = 3.0;
