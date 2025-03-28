@@ -2,6 +2,7 @@
 
 include <modules/network-rack.scad>
 include <modules/utils.scad>
+include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -162,7 +163,21 @@ module AcerUsbHubNetworkRackFace()
     translate([ cage_left_x, cage_back_y, cage_bottom_z ])
         cube([ overhang_size, cage_wall_width, cage_z ]);
 
-    // TODO: LOGO / TEXT
+    // TODO: text should be inset
+
+    translate([ 0, -0.2, 0 ])
+    {
+        rotate([ 90, 0, 0 ])
+        {
+            MultilineTextLabel(
+                [ "Home", "Assistant", "USB" ],
+                face_cutout_offset_x,
+                centered_in_area_y = NetworkRackFaceZ(),
+                font_size = 10,
+                font = "Liberation Sans:style=bold"
+                );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
