@@ -15,15 +15,33 @@ odroid_n2plus_z = 28.0;
 render_mode = "preview";
 // render_mode = "print";
 
+left_ear = true;
+right_ear = true;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-% cube([ 430, 150, 44.8 ]);
+if( render_mode == "preview" )
+{
+    // % cube([ 430, 150, 44.8 ]);
 
-NetworkRackModule1U( 4, true, true );
+    NetworkRackFace1U( 4, left_ear, right_ear );
+
+    // BuildPlatePreview();
+}
+else if( render_mode == "print" )
+{
+    translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceOffsetZ(), 0 ])
+        rotate([ 90, 0, 0 ])
+            NetworkRackFace1U( 4, left_ear, right_ear );
+}
+else
+{
+    assert( false, str( "unknown render_mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
