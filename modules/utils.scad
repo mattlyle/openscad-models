@@ -20,6 +20,8 @@ module BuildPlatePreview()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // list, sum and spacing functions
 
+function reverse( list ) = [ for( i = [ len( list ) - 1 : -1 : 0 ] ) list[ i ] ];
+
 // sum up the values in the given list
 function sumList( list ) = _sumListHelper( list, 0 );
 function _sumListHelper( list, n ) = n >= len( list ) ? 0 : list[ n ] + _sumListHelper( list, n + 1 );
