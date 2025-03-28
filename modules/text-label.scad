@@ -45,7 +45,6 @@ module MultilineTextLabel(
     reversed_text_lines = reverse( text_lines );
 
     line_heights = _GetListOfLineHeights( reversed_text_lines, font_size = font_size, font = font );
-    echo( line_heights );
     line_height_total = sumList( line_heights );
 
     line_spacing = fixed_line_spacing > 0
@@ -59,11 +58,6 @@ module MultilineTextLabel(
         line = reversed_text_lines[ i ];
 
         line_metrics = textmetrics( text = line, size = font_size, font = font ).size;
-
-        echo();
-        echo( line );
-        echo( line_metrics );
-        echo( sumTo( line_heights, i ) );
 
         translate([ 0, sumTo( line_heights, i ) + line_spacing * ( i + 1 ), 0 ])
         CenteredTextLabel(
