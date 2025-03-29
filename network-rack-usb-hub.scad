@@ -24,8 +24,8 @@ cord_main_r = 4.1 / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print";
 
 width_u = 2;
 
@@ -41,6 +41,9 @@ part_fit_clearance = 0.15;
 
 cage_wall_width = 2.0;
 cage_lip_overhang = 3.0;
+
+// this cuts into the actual network mount around the hub
+face_depth = 1.2;
 
 flip_usb_hub = true;
 
@@ -64,7 +67,7 @@ face_cutout_z = usb_z + face_cutout_clearance_z * 2;
 face_cutout_offset_z = ( NetworkRackFaceZ() - face_cutout_z ) / 2;
 
 usb_hub_offset_x = face_cutout_offset_x + face_cutout_clearance_x - usb_slot_offset_x;
-usb_hub_offset_y = NetworkRackFaceY() + part_fit_clearance;
+usb_hub_offset_y = face_depth + part_fit_clearance;
 usb_hub_offset_z = face_cutout_offset_z;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,10 +133,24 @@ module AcerUsbHubNetworkRackFace()
     {
         NetworkRackFace1U( width_u, left_ear, right_ear );
 
-        // cut out the front
+        // cut out the front where the USBs show
         translate([ face_cutout_offset_x, -DIFFERENCE_CLEARANCE, face_cutout_offset_z ])
             cube([ face_cutout_x, NetworkRackFaceY() + DIFFERENCE_CLEARANCE * 2, face_cutout_z ]);
+
+        // cut out more of the front so it fits more snug
+        translate([
+            -part_fit_clearance,
+            0,
+            -part_fit_clearance
+            ])
+            PositionAcerUsbHub()
+                cube([
+                    acer_usb_hub_x + part_fit_clearance * 2,
+                    acer_usb_hub_y,
+                    acer_usb_hub_z + part_fit_clearance * 2
+                    ]);
     }
+
 
     cage_x = acer_usb_hub_x + cage_wall_width * 2 + part_fit_clearance * 2;
     cage_y = acer_usb_hub_y + cage_wall_width + part_fit_clearance * 2;
@@ -170,8 +187,8 @@ module AcerUsbHubNetworkRackFace()
         cube([ cage_x, cage_wall_width, overhang_size ]);
 
     // cage back/left
-    translate([ cage_left_x, cage_back_y, cage_bottom_z ])
-        cube([ overhang_size, cage_wall_width, cage_z ]);
+    // translate([ cage_left_x, cage_back_y, cage_bottom_z ])
+    //     cube([ overhang_size, cage_wall_width, cage_z ]);
 
     // TODO: text should be inset
 
@@ -202,7 +219,7 @@ module PositionAcerUsbHub()
             usb_hub_offset_z + acer_usb_hub_z
             ])
             rotate([ 0, 180, 0 ])
-                AcerUsbHubPreview();
+                children();
     }
     else
     {
