@@ -3,6 +3,7 @@
 include <modules/network-rack.scad>
 include <modules/utils.scad>
 include <modules/text-label.scad>
+include <modules/cord-clip.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -25,7 +26,8 @@ cord_main_r = 4.1 / 2;
 // settings
 
 render_mode = "preview";
-// render_mode = "print";
+// render_mode = "print-face";
+// render_mode = "print-text";
 
 width_u = 2;
 
@@ -40,12 +42,14 @@ face_cutout_clearance_z = 2.0;
 part_fit_clearance = 0.15;
 
 cage_wall_width = 2.0;
-cage_lip_overhang = 3.0;
 
 // this cuts into the actual network mount around the hub
 face_depth = 1.2;
 
 flip_usb_hub = true;
+
+cord_clip_offset_x = 2.0;
+cord_clip_offset_z = 2.0;
 
 cutout_offset_percent_x = 0.7;
 
@@ -70,13 +74,13 @@ usb_hub_offset_x = face_cutout_offset_x + face_cutout_clearance_x - usb_slot_off
 usb_hub_offset_y = face_depth + part_fit_clearance;
 usb_hub_offset_z = face_cutout_offset_z;
 
+back_offset_y = NetworkRackFaceY();
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
 if( render_mode == "preview" )
 {
-    // % cube([ 430, 150, 44.8 ]);
-
     translate([ NetworkRackFaceOffsetX( left_ear ), 0, 0 ])
     {
         PositionAcerUsbHub()
@@ -87,11 +91,17 @@ if( render_mode == "preview" )
 
     BuildPlatePreview();
 }
-else if( render_mode == "print" )
+else if( render_mode == "print-face" )
 {
-    translate([ NetworkRackFaceOffsetX( left_ear ), 0, 0 ])
+    translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
         rotate([ 90, 0, 0 ])
             AcerUsbHubNetworkRackFace();
+}
+else if( render_mode == "print-text" )
+{
+    translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+        rotate([ 90, 0, 0 ])
+            AcerUsbHubNetworkRackFaceText();
 }
 else
 {
@@ -135,27 +145,24 @@ module AcerUsbHubNetworkRackFace()
 
         // cut out the front where the USBs show
         translate([ face_cutout_offset_x, -DIFFERENCE_CLEARANCE, face_cutout_offset_z ])
-            cube([ face_cutout_x, NetworkRackFaceY() + DIFFERENCE_CLEARANCE * 2, face_cutout_z ]);
+            cube([ face_cutout_x, back_offset_y + DIFFERENCE_CLEARANCE * 2, face_cutout_z ]);
 
         // cut out more of the front so it fits more snug
-        translate([
-            -part_fit_clearance,
-            0,
-            -part_fit_clearance
-            ])
+        translate([ -part_fit_clearance, 0, -part_fit_clearance ])
             PositionAcerUsbHub()
                 cube([
                     acer_usb_hub_x + part_fit_clearance * 2,
                     acer_usb_hub_y,
                     acer_usb_hub_z + part_fit_clearance * 2
                     ]);
-    }
 
+        // cut out the text
+        NetoworkRackFaceLabel( face_cutout_offset_x, color = false );
+    }
 
     cage_x = acer_usb_hub_x + cage_wall_width * 2 + part_fit_clearance * 2;
     cage_y = acer_usb_hub_y + cage_wall_width + part_fit_clearance * 2;
     cage_z = acer_usb_hub_z + cage_wall_width + part_fit_clearance * 2;
-    overhang_size = cage_wall_width + cage_lip_overhang;
 
     cage_left_x = usb_hub_offset_x - cage_wall_width - part_fit_clearance;
     cage_right_x = cage_left_x + cage_x - cage_wall_width;
@@ -168,43 +175,52 @@ module AcerUsbHubNetworkRackFace()
 
     // cage bottom
     translate([ cage_left_x, cage_front_y, cage_bottom_z ])
-        cube([
-            cage_x,
-            cage_y,
-            cage_wall_width
-            ]);
+        cube([ cage_x, cage_y, cage_wall_width ]);
 
     // cage full side
     translate([ flip_usb_hub ? cage_right_x : cage_left_x, cage_front_y, cage_bottom_z ])
         cube([ cage_wall_width, cage_y, cage_z ]);
 
-    // cage half side
-    translate([ flip_usb_hub ? cage_left_x : cage_right_x, cage_front_y, cage_bottom_z ])
-        cube([ cage_wall_width, cage_right_cord_hole_y, cage_z ]);
+    // cage side with cord cutout
+    difference()
+    {
+        translate([ flip_usb_hub ? cage_left_x : cage_right_x, cage_front_y, cage_bottom_z ])
+            cube([ cage_wall_width, cage_y, cage_z ]);
+
+        translate([
+            ( flip_usb_hub ? cage_left_x : cage_right_x ) - DIFFERENCE_CLEARANCE,
+            cage_front_y + cage_y / 2 - face_depth,
+            cage_bottom_z + cage_z
+            ])
+            rotate([ 0, 90, 0 ])
+                cylinder( r = cage_z - cord_exit_r, h = cage_wall_width + DIFFERENCE_CLEARANCE * 2 );
+    }
 
     // cage back/bottom
     translate([ cage_left_x, cage_back_y, cage_bottom_z ])
-        cube([ cage_x, cage_wall_width, overhang_size ]);
+        cube([ cage_x, cage_wall_width, cage_z ]);
 
-    // cage back/left
-    // translate([ cage_left_x, cage_back_y, cage_bottom_z ])
-    //     cube([ overhang_size, cage_wall_width, cage_z ]);
-
-    // TODO: text should be inset
-
-    translate([ 0, -0.2, 0 ])
-    {
-        rotate([ 90, 0, 0 ])
-        {
-            MultilineTextLabel(
-                [ "Home", "Assistant", "USB" ],
-                face_cutout_offset_x,
-                centered_in_area_y = NetworkRackFaceZ(),
-                font_size = 10,
-                font = "Liberation Sans:style=bold"
+    // cord clip
+    translate([
+        cord_main_r + cage_wall_width + part_fit_clearance + cord_clip_offset_x,
+        back_offset_y,
+        cage_wall_width + cord_clip_offset_z
+        ])
+        rotate([ -90, 0, 0 ])
+            CordClip(
+                inner_r = cord_main_r + part_fit_clearance,
+                wall_thickness = cage_wall_width,
+                length = cage_wall_width,
+                show_preview = render_mode == "preview"
                 );
-        }
-    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module AcerUsbHubNetworkRackFaceText()
+{
+    translate([ 0, -DIFFERENCE_CLEARANCE, 0 ])
+        NetoworkRackFaceLabel( face_cutout_offset_x );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

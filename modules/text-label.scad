@@ -1,8 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TextLabel( text_string, depth = 0.5, font_size, font = "Liberation Sans" )
+module TextLabel(
+    text_string,
+    depth = 0.5,
+    font_size,
+    font = "Liberation Sans",
+    color = [ 0, 0, 0 ]
+    )
 {
-    color([ 0, 0, 0 ])
+    OptionalColor( color )
         linear_extrude( depth )
             text( text_string, size = font_size, font = font );
 }
@@ -15,7 +21,8 @@ module CenteredTextLabel(
     centered_in_area_y = -1,
     depth = 0.5,
     font_size = 8,
-    font = "Liberation Sans" )
+    font = "Liberation Sans",
+    color = [ 0, 0, 0 ] )
 {
     text_string_metrics_size = textmetrics( text = text_string, size = font_size, font = font ).size;
 
@@ -25,7 +32,7 @@ module CenteredTextLabel(
     // # cube([ centered_in_area_x, centered_in_area_y, 0.01 ]);
 
     translate([ x, y, 0 ])
-        TextLabel( text_string, depth = depth, font_size = font_size, font = font );
+        TextLabel( text_string = text_string, depth = depth, font_size = font_size, font = font );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +46,8 @@ module MultilineTextLabel(
     fixed_line_spacing = -1,
     depth = 0.5,
     font_size = 8,
-    font = "Liberation Sans"
+    font = "Liberation Sans",
+    color = [ 0, 0, 0 ]
     )
 {
     reversed_text_lines = reverse( text_lines );
@@ -60,14 +68,13 @@ module MultilineTextLabel(
         line_metrics = textmetrics( text = line, size = font_size, font = font ).size;
 
         translate([ 0, sumTo( line_heights, i ) + line_spacing * ( i + 1 ), 0 ])
-        CenteredTextLabel(
-            line,
-            centered_in_area_x,
-            centered_in_area_y = -1,
-            depth,
-            font_size,
-            font
-            );
+            CenteredTextLabel(
+                text_string = line,
+                centered_in_area_x = centered_in_area_x,
+                centered_in_area_y = -1,
+                depth = depth,
+                font_size = font_size,
+                font = font );
     }
 }
 

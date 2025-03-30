@@ -98,6 +98,7 @@ module NetworkRackFaceEar1U()
                         r = NETWORK_RACK_FACE_EAR_HOLE_R,
                         h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2,
                         $fn = 32 );
+
             translate([
                 -NETWORK_RACK_FACE_EAR_X + NETWORK_RACK_FACE_EAR_HOLE_X - NETWORK_RACK_FACE_EAR_HOLE_OFFSET_X + NETWORK_RACK_FACE_EAR_HOLE_R,
                 NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE,
@@ -107,6 +108,26 @@ module NetworkRackFaceEar1U()
                         r = NETWORK_RACK_FACE_EAR_HOLE_R,
                         h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2,
                         $fn = 32 );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module NetoworkRackFaceLabel( centered_in_area_x, text_depth = 0.4, color = [ 0, 0, 0 ] )
+{
+    translate([ 0, text_depth, 0 ])
+    {
+        rotate([ 90, 0, 0 ])
+        {
+            MultilineTextLabel(
+                [ "Home", "Assistant", "USB" ],
+                centered_in_area_x = centered_in_area_x,
+                centered_in_area_y = NetworkRackFaceZ(),
+                depth = text_depth,
+                font_size = 10,
+                font = "Liberation Sans:style=bold",
+                color = color );
         }
     }
 }
