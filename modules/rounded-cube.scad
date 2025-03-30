@@ -64,11 +64,6 @@ module RoundedCubeAlt2(
     assert( y > r * 2, "radius is too small for y" );
     assert( z > r * 2, "radius is too small for y" );
 
-    echo(str("round_left=",round_left));
-    echo(str("round_right=",round_right));
-
-    // x0 = r;
-    // x1 = x - r;
     x0 = round_left ? r : 0;
     x1 = round_right ? x - r : x;
 
