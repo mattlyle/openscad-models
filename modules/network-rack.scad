@@ -124,7 +124,7 @@ module NetoworkRackFaceLabel( text_lines, centered_in_area_x, text_depth = 0.4, 
                 text_lines = text_lines,
                 centered_in_area_x = centered_in_area_x,
                 centered_in_area_y = NetworkRackFaceZ(),
-                depth = text_depth,
+                depth = text_depth + DIFFERENCE_CLEARANCE,
                 font_size = 10,
                 font = "Liberation Sans:style=bold",
                 color = color );
