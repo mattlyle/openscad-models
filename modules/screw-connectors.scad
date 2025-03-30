@@ -29,29 +29,44 @@ M3_WASHER = [ 3.0, 7.0, 0.5 ];
 
 module ScrewShaft( screw_def, include_clearance = true )
 {
-    cylinder( h = screw_def[ SCREW_SHAFT_LENGTH ], r = screw_def[ SCREW_SHAFT_DIAMETER ] / 2 + ( include_clearance ? SCREW_CLEARANCE : 0 ), $fn = 32 );
+    cylinder(
+        h = screw_def[ SCREW_SHAFT_LENGTH ],
+        r = screw_def[ SCREW_SHAFT_DIAMETER ] / 2 + ( include_clearance ? SCREW_CLEARANCE : 0 ),
+        $fn = 32 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module HeatedInsert( screw_def )
+module HeatedInsert( insert_def )
 {
-    cylinder( h = screw_def[ INSERT_LENGTH ], r = screw_def[ INSERT_OUTER_DIAMETER ] / 2, $fn = 32 );
+    cylinder(
+        h = insert_def[ INSERT_LENGTH ],
+        r = insert_def[ INSERT_OUTER_DIAMETER ] / 2,
+        $fn = 32 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module PreviewScrew( screw_def, washer_def = [] )
 {
-    % cylinder( h = screw_def[ SCREW_SHAFT_LENGTH ], r = screw_def[ SCREW_SHAFT_DIAMETER ] / 2, $fn = 32 );
+    % cylinder(
+        h = screw_def[ SCREW_SHAFT_LENGTH ],
+        r = screw_def[ SCREW_SHAFT_DIAMETER ] / 2,
+        $fn = 32 );
 
     % translate([ 0, 0, screw_def[ SCREW_SHAFT_LENGTH ] ])
-        cylinder( h = screw_def[ SCREW_HEAD_HEIGHT ], r = screw_def[ SCREW_HEAD_DIAMETER ] / 2, $fn = 32 );
+        cylinder(
+            h = screw_def[ SCREW_HEAD_HEIGHT ],
+            r = screw_def[ SCREW_HEAD_DIAMETER ] / 2,
+            $fn = 32 );
 
     if( len( washer_def ) > 0 )
     {
         % translate([ 0, 0, screw_def[ SCREW_SHAFT_LENGTH ] - washer_def[ WASHER_HEIGHT ] ])
-            cylinder( h = washer_def[ WASHER_HEIGHT ], r = washer_def[ WASHER_OUTER_DIAMETER ] / 2, $fn = 32 );
+            cylinder(
+                h = washer_def[ WASHER_HEIGHT ],
+                r = washer_def[ WASHER_OUTER_DIAMETER ] / 2,
+                $fn = 32 );
     }
 }
 
@@ -63,9 +78,15 @@ module PreviewHeatedInsert( insert_def )
     {
         difference()
         {
-            cylinder( h = insert_def[ INSERT_LENGTH ], r = insert_def[ INSERT_OUTER_DIAMETER ] / 2, $fn = 32 );
+            cylinder(
+                h = insert_def[ INSERT_LENGTH ],
+                r = insert_def[ INSERT_OUTER_DIAMETER ] / 2,
+                $fn = 32 );
 
-            cylinder( h = insert_def[ INSERT_LENGTH ], r = insert_def[ INSERT_SCREW_DIAMETER ] / 2, $fn = 32 );
+            cylinder(
+                h = insert_def[ INSERT_LENGTH ],
+                r = insert_def[ INSERT_SCREW_DIAMETER ] / 2,
+                $fn = 32 );
         }
     }
 }

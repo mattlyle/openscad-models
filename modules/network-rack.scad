@@ -2,6 +2,7 @@
 
 include <rounded-cube.scad>
 include <utils.scad>
+include <screw-connectors.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,9 +18,13 @@ NETWORK_RACK_FACE_EAR_HOLE_R = 3.0;
 
 NETWORK_RACK_FACE_FACE_Y = 3.2;
 
+NETWORK_RACK_FACE_BRACKET_X = M3x6_INSERT[ INSERT_LENGTH ];
+NETWORK_RACK_FACE_BRACKET_Y = 16.0;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function NetworkRackFaceWidthU( width_u ) = NETWORK_RACK_FACE_INSIDE_X / 4 * width_u;
+function NetworkRackFaceWidthEar() = NETWORK_RACK_FACE_EAR_X;
 
 function NetworkRackFaceOffsetX( left_ear ) = left_ear ? NETWORK_RACK_FACE_EAR_X : 0;
 
@@ -29,7 +34,12 @@ function NetworkRackFaceZ() = NETWORK_RACK_FACE_1U_Z;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module NetworkRackFace1U( width_quarters, left_ear = false, right_ear = false )
+module NetworkRackFace1U(
+    width_quarters,
+    left_ear = false,
+    right_ear = false,
+    left_bracket = false,
+    right_bracket = false )
 {
     x = NETWORK_RACK_FACE_INSIDE_X / 4 * width_quarters;
 
@@ -48,6 +58,20 @@ module NetworkRackFace1U( width_quarters, left_ear = false, right_ear = false )
         translate([ x, 0, NETWORK_RACK_FACE_1U_Z ])
             rotate([ 0, 180, 0 ])
                 _NetworkRackFaceEar1U();
+    }
+
+    // left bracket
+    if( left_bracket )
+    {
+        translate([ 0, NETWORK_RACK_FACE_FACE_Y, 0 ])
+            _NetworkRackFaceBracket( true );
+    }
+
+    // right bracket
+    if( right_bracket )
+    {
+        translate([ x - NETWORK_RACK_FACE_BRACKET_X, NETWORK_RACK_FACE_FACE_Y, 0 ])
+            _NetworkRackFaceBracket( false );
     }
 }
 
@@ -117,6 +141,48 @@ module _NetworkRackFaceEar1U()
                         r = NETWORK_RACK_FACE_EAR_HOLE_R,
                         h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2,
                         $fn = 32 );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _NetworkRackFaceBracket( is_left_side )
+{
+    r = M3x6_INSERT[ is_left_side ? INSERT_OUTER_DIAMETER : INSERT_SCREW_DIAMETER ] / 2;
+
+    bracket_x = NETWORK_RACK_FACE_BRACKET_X - DIFFERENCE_CLEARANCE * 2;
+    bracket_y = NETWORK_RACK_FACE_BRACKET_Y;
+    bracket_z = NETWORK_RACK_FACE_1U_Z;
+
+    difference()
+    {
+        translate([ DIFFERENCE_CLEARANCE, 0, 0 ])
+            cube([ bracket_x, bracket_y, bracket_z ]);
+
+        if( is_left_side )
+        {
+            // top insert
+            translate([ 0, bracket_y / 2, bracket_z / 3 * 2 ])
+                rotate([ 0, 90, 0 ])
+                    HeatedInsert( M3x6_INSERT );
+
+            // bottom insert
+            translate([ 0, bracket_y / 2, bracket_z / 3 ])
+                rotate([ 0, 90, 0 ])
+                    HeatedInsert( M3x6_INSERT );
+        }
+        else
+        {
+            // top insert
+            translate([ 0, bracket_y / 2, bracket_z / 3 * 2 ])
+                rotate([ 0, 90, 0 ])
+                    ScrewShaft( M3x6_INSERT );
+
+            // bottom insert
+            translate([ 0, bracket_y / 2, bracket_z / 3 ])
+                rotate([ 0, 90, 0 ])
+                    ScrewShaft( M3x6_INSERT );
         }
     }
 }

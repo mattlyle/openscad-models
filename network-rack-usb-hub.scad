@@ -33,6 +33,8 @@ width_u = 2;
 
 left_ear = true;
 right_ear = false;
+left_bracket = false;
+right_bracket = true;
 
 usb_preview_thickness = 0.01;
 
@@ -54,6 +56,8 @@ cord_clip_offset_z = 2.0;
 cutout_offset_percent_x = 0.7;
 
 text_lines = [ "Home", "Assistant", "USB" ];
+
+preview_offset_x = 1.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -89,6 +93,15 @@ if( render_mode == "preview" )
             AcerUsbHubPreview();
 
         AcerUsbHubNetworkRackFace();
+
+        // show a preview of another face beside it
+        translate([ NetworkRackFaceWidthU( width_u ) + preview_offset_x, 0, 0 ])
+            NetworkRackFace1U(
+                4 - width_u,
+                false,
+                true,
+                true,
+                false );
     }
 
     BuildPlatePreview();
@@ -143,7 +156,7 @@ module AcerUsbHubNetworkRackFace()
     // face
     difference()
     {
-        NetworkRackFace1U( width_u, left_ear, right_ear );
+        NetworkRackFace1U( width_u, left_ear, right_ear, left_bracket, right_bracket );
 
         // cut out the front where the USBs show
         translate([ face_cutout_offset_x, -DIFFERENCE_CLEARANCE, face_cutout_offset_z ])
