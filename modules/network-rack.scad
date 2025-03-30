@@ -114,14 +114,14 @@ module NetworkRackFaceEar1U()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module NetoworkRackFaceLabel( centered_in_area_x, text_depth = 0.4, color = [ 0, 0, 0 ] )
+module NetoworkRackFaceLabel( text_lines, centered_in_area_x, text_depth = 0.4, color = [ 0, 0, 0 ] )
 {
     translate([ 0, text_depth, 0 ])
     {
         rotate([ 90, 0, 0 ])
         {
             MultilineTextLabel(
-                [ "Home", "Assistant", "USB" ],
+                text_lines = text_lines,
                 centered_in_area_x = centered_in_area_x,
                 centered_in_area_y = NetworkRackFaceZ(),
                 depth = text_depth,

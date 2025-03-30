@@ -53,6 +53,8 @@ cord_clip_offset_z = 2.0;
 
 cutout_offset_percent_x = 0.7;
 
+text_lines = [ "Home", "Assistant", "USB" ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -157,7 +159,7 @@ module AcerUsbHubNetworkRackFace()
                     ]);
 
         // cut out the text
-        NetoworkRackFaceLabel( face_cutout_offset_x, color = false );
+        NetoworkRackFaceLabel( text_lines, face_cutout_offset_x, color = false );
     }
 
     cage_x = acer_usb_hub_x + cage_wall_width * 2 + part_fit_clearance * 2;
@@ -211,16 +213,14 @@ module AcerUsbHubNetworkRackFace()
                 inner_r = cord_main_r + part_fit_clearance,
                 wall_thickness = cage_wall_width,
                 length = cage_wall_width,
-                show_preview = render_mode == "preview"
-                );
-}
+                show_preview = render_mode == "preview" ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module AcerUsbHubNetworkRackFaceText()
 {
     translate([ 0, -DIFFERENCE_CLEARANCE, 0 ])
-        NetoworkRackFaceLabel( face_cutout_offset_x );
+        NetoworkRackFaceLabel( text_lines, face_cutout_offset_x );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -32,7 +32,12 @@ module CenteredTextLabel(
     // # cube([ centered_in_area_x, centered_in_area_y, 0.01 ]);
 
     translate([ x, y, 0 ])
-        TextLabel( text_string = text_string, depth = depth, font_size = font_size, font = font );
+        TextLabel(
+            text_string = text_string,
+            depth = depth,
+            font_size = font_size,
+            font = font,
+            color = color );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +79,8 @@ module MultilineTextLabel(
                 centered_in_area_y = -1,
                 depth = depth,
                 font_size = font_size,
-                font = font );
+                font = font,
+                color = color );
     }
 }
 
