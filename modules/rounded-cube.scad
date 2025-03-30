@@ -48,14 +48,29 @@ module RoundedCube( size = [ 1, 1, 1 ], center = false, r = 1.0, fn = 24 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module RoundedCubeAlt2( x, y, z, r = 1.0, round_top = true, round_bottom = true, center = false, fn = 36 )
+module RoundedCubeAlt2(
+    x,
+    y,
+    z,
+    r = 1.0,
+    round_top = true,
+    round_bottom = true,
+    round_left = true,
+    round_right = true,
+    center = false,
+    fn = 36 )
 {
     assert( x > r * 2, "radius is too small for x" );
     assert( y > r * 2, "radius is too small for y" );
     assert( z > r * 2, "radius is too small for y" );
 
-    x0 = r;
-    x1 = x - r;
+    echo(str("round_left=",round_left));
+    echo(str("round_right=",round_right));
+
+    // x0 = r;
+    // x1 = x - r;
+    x0 = round_left ? r : 0;
+    x1 = round_right ? x - r : x;
 
     y0 = r;
     y1 = y - r;
@@ -101,6 +116,48 @@ module RoundedCubeAlt2( x, y, z, r = 1.0, round_top = true, round_bottom = true,
             {
                 translate([ 0, 0, -r ])
                     cube([ x, y, r ]);
+            }
+
+            // chop off the left if not rounded
+            if( !round_left )
+            {
+                translate([ -r, 0, 0 ])
+                    cube([ r, y, z ]);
+            }
+
+            // chop off the right if not rounded
+            if( !round_right )
+            {
+                translate([ x, 0, 0 ])
+                    cube([ r, y, z ]);
+            }
+
+            // chop off the top right if not rounded
+            if( !round_right && !round_top )
+            {
+                translate([ x, 0, z ])
+                    cube([ r, y, r ]);
+            }
+
+            // chop off the bottom right if not rounded
+            if( !round_right && !round_bottom )
+            {
+                translate([ x, 0, -r ])
+                    cube([ r, y, r ]);
+            }
+
+            // chop off the top left if not rounded
+            if( !round_left && !round_top )
+            {
+                translate([ -r, 0, z ])
+                    cube([ r, y, r ]);
+            }
+
+            // chop off the bottom left if not rounded
+            if( !round_left && !round_bottom )
+            {
+                translate([ -r, 0, -r ])
+                    cube([ r, y, r ]);
             }
         }
     }

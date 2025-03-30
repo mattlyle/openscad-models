@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+include <rounded-cube.scad>
 include <utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +39,7 @@ module NetworkRackFace1U( width_quarters, left_ear = false, right_ear = false )
     // left ear
     if( left_ear )
     {
-        NetworkRackFaceEar1U();
+        _NetworkRackFaceEar1U();
     }
 
     // right ear
@@ -46,22 +47,30 @@ module NetworkRackFace1U( width_quarters, left_ear = false, right_ear = false )
     {
         translate([ x, 0, NETWORK_RACK_FACE_1U_Z ])
             rotate([ 0, 180, 0 ])
-                NetworkRackFaceEar1U();
+                _NetworkRackFaceEar1U();
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module NetworkRackFaceEar1U()
+module _NetworkRackFaceEar1U()
 {
     ear_hole_top_z = NETWORK_RACK_FACE_1U_Z - NETWORK_RACK_FACE_EAR_HOLE_OFFSET_Z;
     ear_hole_bottom_z = NETWORK_RACK_FACE_EAR_HOLE_OFFSET_Z;
 
-    // TODO: round?
     difference()
     {
-        translate([ -NETWORK_RACK_FACE_EAR_X, 0, 0 ])
-            cube([ NETWORK_RACK_FACE_EAR_X, NETWORK_RACK_FACE_FACE_Y, NETWORK_RACK_FACE_1U_Z ]);
+        translate([ -NETWORK_RACK_FACE_EAR_X, NETWORK_RACK_FACE_FACE_Y, 0 ])
+            rotate([ 90, 0, 0 ])
+                RoundedCubeAlt2(
+                    x = NETWORK_RACK_FACE_EAR_X,
+                    y = NETWORK_RACK_FACE_1U_Z,
+                    z = NETWORK_RACK_FACE_FACE_Y,
+                    round_top = false,
+                    round_bottom = false,
+                    round_left = true,
+                    round_right = false,
+                    r = NETWORK_RACK_FACE_FACE_Y / 2 - DIFFERENCE_CLEARANCE );
 
         // top ear hole
         hull()
