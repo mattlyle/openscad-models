@@ -155,6 +155,12 @@ module _NetworkRackFaceBracket( is_left_side )
     bracket_y = NETWORK_RACK_FACE_BRACKET_Y;
     bracket_z = NETWORK_RACK_FACE_1U_Z;
 
+    insert_top_z = bracket_z * 0.85;
+    insert_bottom_z = bracket_z * 0.15;
+
+    // left side = insert side
+    // right side = screw side
+
     difference()
     {
         translate([ DIFFERENCE_CLEARANCE, 0, 0 ])
@@ -163,24 +169,24 @@ module _NetworkRackFaceBracket( is_left_side )
         if( is_left_side )
         {
             // top insert
-            translate([ 0, bracket_y / 2, bracket_z / 3 * 2 ])
+            translate([ 0, bracket_y / 2, insert_top_z ])
                 rotate([ 0, 90, 0 ])
                     ScrewShaft( M3x6_INSERT );
 
             // bottom insert
-            translate([ 0, bracket_y / 2, bracket_z / 3 ])
+            translate([ 0, bracket_y / 2, insert_bottom_z ])
                 rotate([ 0, 90, 0 ])
                     ScrewShaft( M3x6_INSERT );
         }
         else
         {
             // top insert
-            translate([ 0, bracket_y / 2, bracket_z / 3 * 2 ])
+            translate([ 0, bracket_y / 2, insert_top_z ])
                 rotate([ 0, 90, 0 ])
                     HeatedInsert( M3x6_INSERT );
 
             // bottom insert
-            translate([ 0, bracket_y / 2, bracket_z / 3 ])
+            translate([ 0, bracket_y / 2, insert_bottom_z ])
                 rotate([ 0, 90, 0 ])
                     HeatedInsert( M3x6_INSERT );
         }
