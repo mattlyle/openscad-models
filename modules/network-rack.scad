@@ -165,24 +165,24 @@ module _NetworkRackFaceBracket( is_left_side )
             // top insert
             translate([ 0, bracket_y / 2, bracket_z / 3 * 2 ])
                 rotate([ 0, 90, 0 ])
-                    HeatedInsert( M3x6_INSERT );
+                    ScrewShaft( M3x6_INSERT );
 
             // bottom insert
             translate([ 0, bracket_y / 2, bracket_z / 3 ])
                 rotate([ 0, 90, 0 ])
-                    HeatedInsert( M3x6_INSERT );
+                    ScrewShaft( M3x6_INSERT );
         }
         else
         {
             // top insert
             translate([ 0, bracket_y / 2, bracket_z / 3 * 2 ])
                 rotate([ 0, 90, 0 ])
-                    ScrewShaft( M3x6_INSERT );
+                    HeatedInsert( M3x6_INSERT );
 
             // bottom insert
             translate([ 0, bracket_y / 2, bracket_z / 3 ])
                 rotate([ 0, 90, 0 ])
-                    ScrewShaft( M3x6_INSERT );
+                    HeatedInsert( M3x6_INSERT );
         }
     }
 }
