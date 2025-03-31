@@ -51,7 +51,7 @@ face_depth = 1.2;
 flip_usb_hub = true;
 
 cord_clip_offset_x = 2.0;
-cord_clip_offset_z = 2.0;
+cord_clip_offset_z = cage_wall_width ;
 
 cutout_offset_percent_x = 0.7;
 
@@ -225,7 +225,7 @@ module AcerUsbHubNetworkRackFace()
             CordClip(
                 inner_r = cord_main_r + part_fit_clearance,
                 wall_thickness = cage_wall_width,
-                length = cage_wall_width,
+                length = cage_wall_width * 2,
                 show_preview = render_mode == "preview" ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
