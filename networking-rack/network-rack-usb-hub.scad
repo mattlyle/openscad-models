@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-include <modules/network-rack.scad>
-include <modules/utils.scad>
-include <modules/text-label.scad>
-include <modules/cord-clip.scad>
+include <../modules/network-rack.scad>
+include <../modules/utils.scad>
+include <../modules/text-label.scad>
+include <../modules/cord-clip.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -45,19 +45,18 @@ part_fit_clearance = 0.15;
 
 cage_wall_width = 2.0;
 
+preview_offset_x = 1.0;
+
 // this cuts into the actual network mount around the hub
 face_depth = 1.2;
+
+cutout_offset_percent_x = 0.7;
+text_lines = [ "Home", "Assistant", "USB Hub" ];
 
 flip_usb_hub = true;
 
 cord_clip_offset_x = 2.0;
 cord_clip_offset_z = cage_wall_width ;
-
-cutout_offset_percent_x = 0.7;
-
-text_lines = [ "Home", "Assistant", "USB" ];
-
-preview_offset_x = 1.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -226,7 +225,8 @@ module AcerUsbHubNetworkRackFace()
                 inner_r = cord_main_r + part_fit_clearance,
                 wall_thickness = cage_wall_width,
                 length = cage_wall_width * 2,
-                show_preview = render_mode == "preview" ); }
+                show_preview = render_mode == "preview" );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
