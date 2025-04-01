@@ -21,6 +21,8 @@ NETWORK_RACK_FACE_FACE_Y = 3.2;
 NETWORK_RACK_FACE_BRACKET_X = M3x6_INSERT[ INSERT_LENGTH ];
 NETWORK_RACK_FACE_BRACKET_Y = 16.0;
 
+NETWORK_RACK_FACE_CAGE_WALL_WIDTH = 2.0;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function NetworkRackFaceWidthU( width_u ) = NETWORK_RACK_FACE_INSIDE_X / 4 * width_u;
@@ -31,6 +33,114 @@ function NetworkRackFaceOffsetX( left_ear ) = left_ear ? NETWORK_RACK_FACE_EAR_X
 function NetworkRackFaceY() = NETWORK_RACK_FACE_FACE_Y;
 
 function NetworkRackFaceZ() = NETWORK_RACK_FACE_1U_Z;
+
+function NetoworkRackFaceCageX( object_x, part_fit_clearance ) =
+    object_x
+    + NETWORK_RACK_FACE_CAGE_WALL_WIDTH * 2
+    + part_fit_clearance * 2;
+function NetoworkRackFaceCageY( object_y, part_fit_clearance ) =
+    object_y
+    + NETWORK_RACK_FACE_CAGE_WALL_WIDTH
+    + part_fit_clearance * 2;
+function NetoworkRackFaceCageZ( object_z, part_fit_clearance ) =
+    object_z
+    + NETWORK_RACK_FACE_CAGE_WALL_WIDTH
+    + part_fit_clearance * 2;
+
+function NetoworkRackFaceCageLeftX( object_offset_x, part_fit_clearance ) =
+    object_offset_x
+    - NETWORK_RACK_FACE_CAGE_WALL_WIDTH
+    - part_fit_clearance;
+function NetoworkRackFaceCageRightX( object_x, object_offset_x, part_fit_clearance ) =
+    NetoworkRackFaceCageLeftX( object_offset_x, part_fit_clearance )
+    + NetoworkRackFaceCageX( object_x, part_fit_clearance )
+    - NETWORK_RACK_FACE_CAGE_WALL_WIDTH;
+
+function NetoworkRackFaceCageFrontY( object_offset_y, part_fit_clearance ) =
+    object_offset_y
+    - part_fit_clearance;
+function NetoworkRackFaceCageBackY(object_offset_y, object_y, part_fit_clearance ) =
+    object_offset_y
+    + object_y
+    + part_fit_clearance;
+
+function NetoworkRackFaceCageBottomZ( object_offset_z, part_fit_clearance ) =
+    object_offset_z
+    - NETWORK_RACK_FACE_CAGE_WALL_WIDTH
+    - part_fit_clearance;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module NetworkRackHolder(
+    width_quarters,
+    cutout_x,
+    cutout_z,
+    cutout_offset_x,
+    cutout_offset_z,
+    object_x,
+    object_y,
+    object_z,
+    object_offset_x,
+    object_offset_y,
+    object_offset_z,
+    part_fit_clearance = 0.1,
+    left_ear = false,
+    right_ear = false,
+    left_bracket = false,
+    right_bracket = false,
+    text_lines = []
+    )
+{
+    // face
+    difference()
+    {
+        NetworkRackFace1U( width_u, left_ear, right_ear, left_bracket, right_bracket );
+
+        // cut out the front where the object show
+        translate([ cutout_offset_x, -DIFFERENCE_CLEARANCE, cutout_offset_z ])
+            cube([ cutout_x, NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2, face_cutout_z ]);
+
+        // cut out more of the front so it fits more snug
+        translate([ -part_fit_clearance, 0, -part_fit_clearance ])
+            PositionAcerUsbHub()
+                cube([
+                    object_x + part_fit_clearance * 2,
+                    object_y,
+                    object_z + part_fit_clearance * 2
+                    ]);
+
+        // cut out the text
+        NetoworkRackFaceLabel( text_lines, face_cutout_offset_x, color = false );
+    }
+
+    cage_x = NetoworkRackFaceCageX( object_x, part_fit_clearance );
+    cage_y = NetoworkRackFaceCageY( object_y, part_fit_clearance );
+    cage_z = NetoworkRackFaceCageZ( object_z, part_fit_clearance );
+
+    cage_left_x = NetoworkRackFaceCageLeftX( object_offset_x, part_fit_clearance );
+    cage_right_x = NetoworkRackFaceCageRightX( object_x, object_offset_x, part_fit_clearance );
+
+    cage_front_y = NetoworkRackFaceCageFrontY( object_offset_y, part_fit_clearance );
+    cage_back_y = NetoworkRackFaceCageBackY( object_offset_y, object_y, part_fit_clearance );
+
+    cage_bottom_z = NetoworkRackFaceCageBottomZ( object_offset_z, part_fit_clearance );
+
+    // cage bottom
+    translate([ cage_left_x, cage_front_y, cage_bottom_z ])
+        cube([ cage_x, cage_y, NETWORK_RACK_FACE_CAGE_WALL_WIDTH ]);
+
+    // cage left side
+    translate([ cage_left_x, cage_front_y, cage_bottom_z ])
+        cube([ NETWORK_RACK_FACE_CAGE_WALL_WIDTH, cage_y, cage_z ]);
+
+    // cage right side
+    translate([ cage_right_x, cage_front_y, cage_bottom_z ])
+        cube([ NETWORK_RACK_FACE_CAGE_WALL_WIDTH, cage_y, cage_z ]);
+
+    // cage back/bottom
+    translate([ cage_left_x, cage_back_y, cage_bottom_z ])
+        cube([ cage_x, NETWORK_RACK_FACE_CAGE_WALL_WIDTH, cage_z ]);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

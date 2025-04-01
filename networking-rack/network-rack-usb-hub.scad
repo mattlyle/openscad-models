@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-include <../modules/network-rack.scad>
+include <../modules/network-rack-face.scad>
 include <../modules/utils.scad>
 include <../modules/text-label.scad>
 include <../modules/cord-clip.scad>
@@ -79,7 +79,7 @@ usb_hub_offset_x = face_cutout_offset_x + face_cutout_clearance_x - usb_slot_off
 usb_hub_offset_y = face_depth + part_fit_clearance;
 usb_hub_offset_z = face_cutout_offset_z;
 
-back_offset_y = NetworkRackFaceY();
+// back_offset_y = NetworkRackFaceY();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -152,54 +152,39 @@ module AcerUsbHubPreview()
 
 module AcerUsbHubNetworkRackFace()
 {
-    // face
     difference()
     {
-        NetworkRackFace1U( width_u, left_ear, right_ear, left_bracket, right_bracket );
+        NetworkRackHolder(
+            width_u,
+            cutout_x = face_cutout_x,
+            cutout_z = face_cutout_z,
+            cutout_offset_x = face_cutout_offset_x,
+            cutout_offset_z = face_cutout_offset_z,
+            object_x = acer_usb_hub_x,
+            object_y = acer_usb_hub_y,
+            object_z = acer_usb_hub_z,
+            object_offset_x = usb_hub_offset_x,
+            object_offset_y = usb_hub_offset_y,
+            object_offset_z = usb_hub_offset_z,
+            part_fit_clearance = part_fit_clearance,
+            left_ear = left_ear,
+            right_ear = right_ear,
+            left_bracket = left_bracket,
+            right_bracket = right_bracket,
+            text_lines = text_lines
+        );
 
-        // cut out the front where the USBs show
-        translate([ face_cutout_offset_x, -DIFFERENCE_CLEARANCE, face_cutout_offset_z ])
-            cube([ face_cutout_x, back_offset_y + DIFFERENCE_CLEARANCE * 2, face_cutout_z ]);
+        cage_x = NetoworkRackFaceCageX( acer_usb_hub_x, part_fit_clearance );
+        cage_y = NetoworkRackFaceCageY( acer_usb_hub_y, part_fit_clearance );
+        cage_z = NetoworkRackFaceCageZ( acer_usb_hub_z, part_fit_clearance );
 
-        // cut out more of the front so it fits more snug
-        translate([ -part_fit_clearance, 0, -part_fit_clearance ])
-            PositionAcerUsbHub()
-                cube([
-                    acer_usb_hub_x + part_fit_clearance * 2,
-                    acer_usb_hub_y,
-                    acer_usb_hub_z + part_fit_clearance * 2
-                    ]);
+        cage_left_x = NetoworkRackFaceCageLeftX( usb_hub_offset_x, part_fit_clearance );
+        cage_right_x = NetoworkRackFaceCageRightX( acer_usb_hub_x, usb_hub_offset_x, part_fit_clearance );
 
-        // cut out the text
-        NetoworkRackFaceLabel( text_lines, face_cutout_offset_x, color = false );
-    }
+        cage_front_y = NetoworkRackFaceCageFrontY( usb_hub_offset_y, part_fit_clearance );
+        cage_back_y = NetoworkRackFaceCageBackY( usb_hub_offset_y, acer_usb_hub_y, part_fit_clearance );
 
-    cage_x = acer_usb_hub_x + cage_wall_width * 2 + part_fit_clearance * 2;
-    cage_y = acer_usb_hub_y + cage_wall_width + part_fit_clearance * 2;
-    cage_z = acer_usb_hub_z + cage_wall_width + part_fit_clearance * 2;
-
-    cage_left_x = usb_hub_offset_x - cage_wall_width - part_fit_clearance;
-    cage_right_x = cage_left_x + cage_x - cage_wall_width;
-
-    cage_front_y = usb_hub_offset_y - part_fit_clearance;
-    cage_back_y = usb_hub_offset_y + acer_usb_hub_y + part_fit_clearance;
-    cage_right_cord_hole_y = acer_usb_hub_y / 2 - cord_exit_r - part_fit_clearance;
-
-    cage_bottom_z = usb_hub_offset_z - cage_wall_width - part_fit_clearance;
-
-    // cage bottom
-    translate([ cage_left_x, cage_front_y, cage_bottom_z ])
-        cube([ cage_x, cage_y, cage_wall_width ]);
-
-    // cage full side
-    translate([ flip_usb_hub ? cage_right_x : cage_left_x, cage_front_y, cage_bottom_z ])
-        cube([ cage_wall_width, cage_y, cage_z ]);
-
-    // cage side with cord cutout
-    difference()
-    {
-        translate([ flip_usb_hub ? cage_left_x : cage_right_x, cage_front_y, cage_bottom_z ])
-            cube([ cage_wall_width, cage_y, cage_z ]);
+        cage_bottom_z = NetoworkRackFaceCageBottomZ( usb_hub_offset_z, part_fit_clearance );
 
         translate([
             ( flip_usb_hub ? cage_left_x : cage_right_x ) - DIFFERENCE_CLEARANCE,
@@ -207,17 +192,15 @@ module AcerUsbHubNetworkRackFace()
             cage_bottom_z + cage_z
             ])
             rotate([ 0, 90, 0 ])
-                cylinder( r = cage_z - cord_exit_r, h = cage_wall_width + DIFFERENCE_CLEARANCE * 2 );
+                cylinder(
+                    r = cage_z - cord_exit_r,
+                    h = cage_wall_width + DIFFERENCE_CLEARANCE * 2 );
     }
-
-    // cage back/bottom
-    translate([ cage_left_x, cage_back_y, cage_bottom_z ])
-        cube([ cage_x, cage_wall_width, cage_z ]);
 
     // cord clip
     translate([
         cord_main_r + cage_wall_width + part_fit_clearance + cord_clip_offset_x,
-        back_offset_y,
+        NetworkRackFaceY(),
         cage_wall_width + cord_clip_offset_z
         ])
         rotate([ -90, 0, 0 ])
