@@ -3,6 +3,7 @@
 include <../modules/network-rack-face.scad>
 include <../modules/utils.scad>
 include <../modules/text-label.scad>
+include <../modules/svg.scad>
 include <../modules/cord-clip.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,8 +51,12 @@ preview_offset_x = 1.0;
 // this cuts into the actual network mount around the hub
 face_depth = 1.2;
 
+finger_hole_r = 10.0;
+
 cutout_offset_percent_x = 0.7;
 text_lines = [ "Home", "Assistant", "USB Hub" ];
+svg_path = "../assets/USB_icon.svg";
+decoration_depth = 0.4;
 
 flip_usb_hub = true;
 
@@ -78,8 +83,6 @@ face_cutout_offset_z = ( NetworkRackFaceZ() - face_cutout_z ) / 2;
 usb_hub_offset_x = face_cutout_offset_x + face_cutout_clearance_x - usb_slot_offset_x;
 usb_hub_offset_y = face_depth + part_fit_clearance;
 usb_hub_offset_z = face_cutout_offset_z;
-
-// back_offset_y = NetworkRackFaceY();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -115,7 +118,7 @@ else if( render_mode == "print-text" )
 {
     translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
         rotate([ 90, 0, 0 ])
-            AcerUsbHubNetworkRackFaceText();
+            AcerUsbHubNetworkRackFaceDecoration();
 }
 else
 {
@@ -170,22 +173,25 @@ module AcerUsbHubNetworkRackFace()
             left_ear = left_ear,
             right_ear = right_ear,
             left_bracket = left_bracket,
-            right_bracket = right_bracket,
-            text_lines = text_lines
+            right_bracket = right_bracket
         );
 
-        cage_x = NetoworkRackFaceCageX( acer_usb_hub_x, part_fit_clearance );
-        cage_y = NetoworkRackFaceCageY( acer_usb_hub_y, part_fit_clearance );
-        cage_z = NetoworkRackFaceCageZ( acer_usb_hub_z, part_fit_clearance );
+        // cut out the text / logo
+        AcerUsbHubNetworkRackFaceDecoration();
 
-        cage_left_x = NetoworkRackFaceCageLeftX( usb_hub_offset_x, part_fit_clearance );
-        cage_right_x = NetoworkRackFaceCageRightX( acer_usb_hub_x, usb_hub_offset_x, part_fit_clearance );
+        cage_x = NetworkRackFaceCageX( acer_usb_hub_x, part_fit_clearance );
+        cage_y = NetworkRackFaceCageY( acer_usb_hub_y, part_fit_clearance );
+        cage_z = NetworkRackFaceCageZ( acer_usb_hub_z, part_fit_clearance );
 
-        cage_front_y = NetoworkRackFaceCageFrontY( usb_hub_offset_y, part_fit_clearance );
-        cage_back_y = NetoworkRackFaceCageBackY( usb_hub_offset_y, acer_usb_hub_y, part_fit_clearance );
+        cage_left_x = NetworkRackFaceCageLeftX( usb_hub_offset_x, part_fit_clearance );
+        cage_right_x = NetworkRackFaceCageRightX( acer_usb_hub_x, usb_hub_offset_x, part_fit_clearance );
 
-        cage_bottom_z = NetoworkRackFaceCageBottomZ( usb_hub_offset_z, part_fit_clearance );
+        cage_front_y = NetworkRackFaceCageFrontY( usb_hub_offset_y, part_fit_clearance );
+        cage_back_y = NetworkRackFaceCageBackY( usb_hub_offset_y, acer_usb_hub_y, part_fit_clearance );
 
+        cage_bottom_z = NetworkRackFaceCageBottomZ( usb_hub_offset_z, part_fit_clearance );
+
+        // cut out the cord exit
         translate([
             ( flip_usb_hub ? cage_left_x : cage_right_x ) - DIFFERENCE_CLEARANCE,
             cage_front_y + cage_y / 2 - face_depth,
@@ -195,7 +201,15 @@ module AcerUsbHubNetworkRackFace()
                 cylinder(
                     r = cage_z - cord_exit_r,
                     h = cage_wall_width + DIFFERENCE_CLEARANCE * 2 );
+
+        // remove the finger hole
+        translate([ cage_left_x + cage_x / 2, cage_back_y - DIFFERENCE_CLEARANCE, cage_bottom_z + cage_z ])
+            rotate([ -90, 0, 0 ])
+                cylinder(
+                    r = finger_hole_r,
+                    h = NetworkRackFaceCageWidth() + DIFFERENCE_CLEARANCE * 2);
     }
+
 
     // cord clip
     translate([
@@ -213,10 +227,20 @@ module AcerUsbHubNetworkRackFace()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module AcerUsbHubNetworkRackFaceText()
+module AcerUsbHubNetworkRackFaceDecoration()
 {
+    // text
     translate([ 0, -DIFFERENCE_CLEARANCE, 0 ])
-        NetoworkRackFaceLabel( text_lines, face_cutout_offset_x );
+        NetworkRackFaceLabel(
+            text_lines,
+            text_depth = decoration_depth,
+            face_cutout_offset_x );
+
+    // logo svg
+    translate([ NetworkRackFaceWidthU( width_u ) - 30, decoration_depth - DIFFERENCE_CLEARANCE, -5 ])
+        rotate([ 90, -45, 0 ])
+            scale([ 0.3, 0.3, 1 ])
+                SVG( svg_path, decoration_depth );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

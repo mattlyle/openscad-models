@@ -34,37 +34,39 @@ function NetworkRackFaceY() = NETWORK_RACK_FACE_FACE_Y;
 
 function NetworkRackFaceZ() = NETWORK_RACK_FACE_1U_Z;
 
-function NetoworkRackFaceCageX( object_x, part_fit_clearance ) =
+function NetworkRackFaceCageWidth() = NETWORK_RACK_FACE_CAGE_WALL_WIDTH;
+
+function NetworkRackFaceCageX( object_x, part_fit_clearance ) =
     object_x
     + NETWORK_RACK_FACE_CAGE_WALL_WIDTH * 2
     + part_fit_clearance * 2;
-function NetoworkRackFaceCageY( object_y, part_fit_clearance ) =
+function NetworkRackFaceCageY( object_y, part_fit_clearance ) =
     object_y
     + NETWORK_RACK_FACE_CAGE_WALL_WIDTH
     + part_fit_clearance * 2;
-function NetoworkRackFaceCageZ( object_z, part_fit_clearance ) =
+function NetworkRackFaceCageZ( object_z, part_fit_clearance ) =
     object_z
     + NETWORK_RACK_FACE_CAGE_WALL_WIDTH
     + part_fit_clearance * 2;
 
-function NetoworkRackFaceCageLeftX( object_offset_x, part_fit_clearance ) =
+function NetworkRackFaceCageLeftX( object_offset_x, part_fit_clearance ) =
     object_offset_x
     - NETWORK_RACK_FACE_CAGE_WALL_WIDTH
     - part_fit_clearance;
-function NetoworkRackFaceCageRightX( object_x, object_offset_x, part_fit_clearance ) =
-    NetoworkRackFaceCageLeftX( object_offset_x, part_fit_clearance )
-    + NetoworkRackFaceCageX( object_x, part_fit_clearance )
+function NetworkRackFaceCageRightX( object_x, object_offset_x, part_fit_clearance ) =
+    NetworkRackFaceCageLeftX( object_offset_x, part_fit_clearance )
+    + NetworkRackFaceCageX( object_x, part_fit_clearance )
     - NETWORK_RACK_FACE_CAGE_WALL_WIDTH;
 
-function NetoworkRackFaceCageFrontY( object_offset_y, part_fit_clearance ) =
+function NetworkRackFaceCageFrontY( object_offset_y, part_fit_clearance ) =
     object_offset_y
     - part_fit_clearance;
-function NetoworkRackFaceCageBackY(object_offset_y, object_y, part_fit_clearance ) =
+function NetworkRackFaceCageBackY(object_offset_y, object_y, part_fit_clearance ) =
     object_offset_y
     + object_y
     + part_fit_clearance;
 
-function NetoworkRackFaceCageBottomZ( object_offset_z, part_fit_clearance ) =
+function NetworkRackFaceCageBottomZ( object_offset_z, part_fit_clearance ) =
     object_offset_z
     - NETWORK_RACK_FACE_CAGE_WALL_WIDTH
     - part_fit_clearance;
@@ -87,8 +89,7 @@ module NetworkRackHolder(
     left_ear = false,
     right_ear = false,
     left_bracket = false,
-    right_bracket = false,
-    text_lines = []
+    right_bracket = false
     )
 {
     // face
@@ -102,31 +103,25 @@ module NetworkRackHolder(
 
         // cut out more of the front so it fits more snug
         translate([ -part_fit_clearance, 0, -part_fit_clearance ])
-            PositionAcerUsbHub()
+            translate([ object_offset_x, object_offset_y, object_offset_z ])
                 cube([
                     object_x + part_fit_clearance * 2,
                     object_y,
                     object_z + part_fit_clearance * 2
                     ]);
-
-        // cut out the text
-        if( len( text_lines ) > 0 )
-        {
-            NetoworkRackFaceLabel( text_lines, face_cutout_offset_x, color = false );
-        }
     }
 
-    cage_x = NetoworkRackFaceCageX( object_x, part_fit_clearance );
-    cage_y = NetoworkRackFaceCageY( object_y, part_fit_clearance );
-    cage_z = NetoworkRackFaceCageZ( object_z, part_fit_clearance );
+    cage_x = NetworkRackFaceCageX( object_x, part_fit_clearance );
+    cage_y = NetworkRackFaceCageY( object_y, part_fit_clearance );
+    cage_z = NetworkRackFaceCageZ( object_z, part_fit_clearance );
 
-    cage_left_x = NetoworkRackFaceCageLeftX( object_offset_x, part_fit_clearance );
-    cage_right_x = NetoworkRackFaceCageRightX( object_x, object_offset_x, part_fit_clearance );
+    cage_left_x = NetworkRackFaceCageLeftX( object_offset_x, part_fit_clearance );
+    cage_right_x = NetworkRackFaceCageRightX( object_x, object_offset_x, part_fit_clearance );
 
-    cage_front_y = NetoworkRackFaceCageFrontY( object_offset_y, part_fit_clearance );
-    cage_back_y = NetoworkRackFaceCageBackY( object_offset_y, object_y, part_fit_clearance );
+    cage_front_y = NetworkRackFaceCageFrontY( object_offset_y, part_fit_clearance );
+    cage_back_y = NetworkRackFaceCageBackY( object_offset_y, object_y, part_fit_clearance );
 
-    cage_bottom_z = NetoworkRackFaceCageBottomZ( object_offset_z, part_fit_clearance );
+    cage_bottom_z = NetworkRackFaceCageBottomZ( object_offset_z, part_fit_clearance );
 
     // cage bottom
     translate([ cage_left_x, cage_front_y, cage_bottom_z ])
@@ -308,7 +303,12 @@ module _NetworkRackFaceBracket( is_left_side )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module NetoworkRackFaceLabel( text_lines, centered_in_area_x, text_depth = 0.4, color = [ 0, 0, 0 ] )
+module NetworkRackFaceLabel(
+    text_lines,
+    centered_in_area_x,
+    text_depth = 0.4,
+    color = [ 0, 0, 0 ]
+    )
 {
     translate([ 0, text_depth, 0 ])
     {
