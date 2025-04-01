@@ -2,8 +2,6 @@
 
 include <../modules/network-rack-face.scad>
 include <../modules/utils.scad>
-include <../modules/text-label.scad>
-include <../modules/svg.scad>
 include <../modules/cord-clip.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +55,11 @@ cutout_offset_percent_x = 0.7;
 text_lines = [ "Home", "Assistant", "USB Hub" ];
 svg_path = "../assets/USB_icon.svg";
 decoration_depth = 0.4;
+
+manual_svg_offset_x = -30;
+manual_svg_offset_z = -5;
+svg_scale = 0.3;
+svg_rotate = -45.0;
 
 flip_usb_hub = true;
 
@@ -230,17 +233,18 @@ module AcerUsbHubNetworkRackFace()
 module AcerUsbHubNetworkRackFaceDecoration()
 {
     // text
-    translate([ 0, -DIFFERENCE_CLEARANCE, 0 ])
-        NetworkRackFaceLabel(
-            text_lines,
-            text_depth = decoration_depth,
-            face_cutout_offset_x );
+    NetworkRackFaceLabel(
+        text_lines,
+        centered_in_area_x = face_cutout_offset_x,
+        text_depth = decoration_depth );
 
     // logo svg
-    translate([ NetworkRackFaceWidthU( width_u ) - 30, decoration_depth - DIFFERENCE_CLEARANCE, -5 ])
-        rotate([ 90, -45, 0 ])
-            scale([ 0.3, 0.3, 1 ])
-                SVG( svg_path, decoration_depth );
+    NetworkRackFaceSVG(
+        svg_path,
+        NetworkRackFaceWidthU( width_u ) + manual_svg_offset_x,
+        manual_svg_offset_z,
+        scale_xy = svg_scale,
+        rotate_degrees = svg_rotate );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
