@@ -20,7 +20,7 @@ render_mode = "preview";
 // render_mode = "print-face";
 // render_mode = "print-text";
 
-width_u = 2;
+width_quarters = 2;
 
 left_ear = false;
 right_ear = true;
@@ -55,7 +55,7 @@ svg_scale = 0.12;
 
 $fn = $preview ? 32 : 128;
 
-face_cutout_offset_x = ( NetworkRackFaceWidthU( width_u ) - google_fiber_modem_x ) * cutout_offset_percent_x;
+face_cutout_offset_x = ( NetworkRackFaceWidth( width_quarters ) - google_fiber_modem_x ) * cutout_offset_percent_x;
 face_cutout_offset_z = ( NetworkRackFaceZ() - face_cutout_z ) / 2;
 
 google_fiber_modem_offset_x = face_cutout_offset_x - ( google_fiber_modem_x - face_cutout_x ) / 2;
@@ -69,15 +69,15 @@ if( render_mode == "preview" )
 {
     translate([ NetworkRackFaceOffsetX( left_ear ), 0, 0 ])
     {
-        // PositionGoogleFiberModem()
-        //     GoogleFiberModemPreview();
+        translate([ google_fiber_modem_offset_x, google_fiber_modem_offset_y, google_fiber_modem_offset_z ])
+            GoogleFiberModemPreview();
 
         GoogleFiberModemNetworkRackFace();
 
         // show a preview of another face beside it
-        // translate([ NetworkRackFaceWidthU( width_u ) + preview_offset_x, 0, 0 ])
+        // translate([ NetworkRackFaceWidth( width_quarters ) + preview_offset_x, 0, 0 ])
         //     NetworkRackFace1U(
-        //         4 - width_u,
+        //         4 - width_quarters,
         //         false,
         //         true,
         //         true,
@@ -111,12 +111,13 @@ module GoogleFiberModemPreview()
         google_fiber_modem_x,
         google_fiber_modem_y,
         google_fiber_modem_z,
-        r = 10.0,
+        r = 4.0,
         round_top = false,
         round_bottom = false,
         round_left = true,
         round_right = true,
-        center = false );
+        center = false
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,7 +127,7 @@ module GoogleFiberModemNetworkRackFace()
     difference()
     {
         NetworkRackHolder(
-            width_u,
+            width_quarters = width_quarters,
             cutout_x = face_cutout_x,
             cutout_z = face_cutout_z,
             cutout_offset_x = face_cutout_offset_x,
@@ -141,30 +142,13 @@ module GoogleFiberModemNetworkRackFace()
             left_ear = left_ear,
             right_ear = right_ear,
             left_bracket = left_bracket,
-            right_bracket = right_bracket
+            right_bracket = right_bracket,
+            include_cage = true,
+            cage_finger_hole = true
         );
 
         // cut out the text / logo
         GoogleFiberModemNetworkRackFaceDecoration();
-
-        // remove a finger hole to help removing the object
-        cage_x = NetworkRackFaceCageX( google_fiber_modem_x, part_fit_clearance );
-        cage_y = NetworkRackFaceCageY( google_fiber_modem_y, part_fit_clearance );
-        cage_z = NetworkRackFaceCageZ( google_fiber_modem_z, part_fit_clearance );
-
-        cage_left_x = NetworkRackFaceCageLeftX( google_fiber_modem_offset_x, part_fit_clearance );
-        cage_right_x = NetworkRackFaceCageRightX( google_fiber_modem_x, google_fiber_modem_offset_x, part_fit_clearance );
-
-        cage_back_y = NetworkRackFaceCageBackY( google_fiber_modem_offset_y, google_fiber_modem_y, part_fit_clearance );
-
-        cage_bottom_z = NetworkRackFaceCageBottomZ( google_fiber_modem_offset_z, part_fit_clearance );
-
-        // remove the finger hole
-        translate([ cage_left_x + cage_x / 2, cage_back_y - DIFFERENCE_CLEARANCE, cage_bottom_z + cage_z ])
-            rotate([ -90, 0, 0 ])
-                cylinder(
-                    r = finger_hole_r,
-                    h = NetworkRackFaceCageWidth() + DIFFERENCE_CLEARANCE * 2);
     }
 }
 
@@ -177,22 +161,16 @@ module GoogleFiberModemNetworkRackFaceDecoration()
         NetworkRackFaceLabel(
             text_lines,
             centered_in_area_x = face_cutout_offset_x,
-            text_depth = decoration_depth );
+            text_depth = decoration_depth
+            );
 
     // logo svg
     NetworkRackFaceSVG(
         svg_path,
-        NetworkRackFaceWidthU( width_u ) + manual_svg_offset_x,
+        NetworkRackFaceWidth( width_quarters ) + manual_svg_offset_x,
         manual_svg_offset_z,
-        scale_xy = svg_scale );
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module PositionGoogleFiberModem()
-{
-    translate([ google_fiber_modem_offset_x, google_fiber_modem_offset_y, google_fiber_modem_offset_z ])
-        children();
+        scale_xy = svg_scale
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

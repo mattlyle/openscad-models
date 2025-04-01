@@ -20,7 +20,7 @@ render_mode = "preview";
 // render_mode = "print-face";
 // render_mode = "print-text";
 
-width_u = 2;
+width_quarters = 2;
 
 left_ear = false;
 right_ear = true;
@@ -52,7 +52,7 @@ svg_rotate = 0;
 
 $fn = $preview ? 32 : 128;
 
-face_cutout_offset_x = ( NetworkRackFaceWidthU( width_u ) - hue_bridge_x ) * cutout_offset_percent_x;
+face_cutout_offset_x = ( NetworkRackFaceWidth( width_quarters ) - hue_bridge_x ) * cutout_offset_percent_x;
 face_cutout_offset_z = ( NetworkRackFaceZ() - face_cutout_z ) / 2;
 
 hue_bridge_offset_x = face_cutout_offset_x - ( hue_bridge_x - face_cutout_x ) / 2;
@@ -66,19 +66,20 @@ if( render_mode == "preview" )
 {
     translate([ NetworkRackFaceOffsetX( left_ear ), 0, 0 ])
     {
-        PositionHueBridge()
+        translate([ hue_bridge_offset_x, hue_bridge_offset_y, hue_bridge_offset_z ])
             HueBridgePreview();
 
         HueBridgeNetworkRackFace();
 
         // show a preview of another face beside it
-        // translate([ NetworkRackFaceWidthU( width_u ) + preview_offset_x, 0, 0 ])
+        // translate([ NetworkRackFaceWidth( width_quarters ) + preview_offset_x, 0, 0 ])
         //     NetworkRackFace1U(
-        //         4 - width_u,
+        //         4 - width_quarters,
         //         false,
         //         true,
         //         true,
-        //         false );
+        //         false
+        //         );
     }
 
     BuildPlatePreview();
@@ -124,7 +125,7 @@ module HueBridgeNetworkRackFace()
     difference()
     {
         NetworkRackHolder(
-            width_u,
+            width_quarters = width_quarters,
             cutout_x = face_cutout_x,
             cutout_z = face_cutout_z,
             cutout_offset_x = face_cutout_offset_x,
@@ -139,30 +140,13 @@ module HueBridgeNetworkRackFace()
             left_ear = left_ear,
             right_ear = right_ear,
             left_bracket = left_bracket,
-            right_bracket = right_bracket
-        );
+            right_bracket = right_bracket,
+            include_cage = true,
+            cage_finger_hole = true
+            );
 
         // cut out the text / logo
         HueBridgeNetworkRackFaceDecoration();
-
-        // remove a finger hole to help removing the object
-        cage_x = NetworkRackFaceCageX( hue_bridge_x, part_fit_clearance );
-        cage_y = NetworkRackFaceCageY( hue_bridge_y, part_fit_clearance );
-        cage_z = NetworkRackFaceCageZ( hue_bridge_z, part_fit_clearance );
-
-        cage_left_x = NetworkRackFaceCageLeftX( hue_bridge_offset_x, part_fit_clearance );
-        cage_right_x = NetworkRackFaceCageRightX( hue_bridge_x, hue_bridge_offset_x, part_fit_clearance );
-
-        cage_back_y = NetworkRackFaceCageBackY( hue_bridge_offset_y, hue_bridge_y, part_fit_clearance );
-
-        cage_bottom_z = NetworkRackFaceCageBottomZ( hue_bridge_offset_z, part_fit_clearance );
-
-        // remove the finger hole
-        translate([ cage_left_x + cage_x / 2, cage_back_y - DIFFERENCE_CLEARANCE, cage_bottom_z + cage_z ])
-            rotate([ -90, 0, 0 ])
-                cylinder(
-                    r = finger_hole_r,
-                    h = NetworkRackFaceCageWidth() + DIFFERENCE_CLEARANCE * 2);
     }
 }
 
@@ -174,24 +158,17 @@ module HueBridgeNetworkRackFaceDecoration()
     NetworkRackFaceLabel(
         text_lines,
         centered_in_area_x = face_cutout_offset_x,
-        text_depth = decoration_depth );
+        text_depth = decoration_depth
+        );
 
     // logo svg
     NetworkRackFaceSVG(
         svg_path,
-        NetworkRackFaceWidthU( width_u ) + manual_svg_offset_x,
+        NetworkRackFaceWidth( width_quarters ) + manual_svg_offset_x,
         manual_svg_offset_z,
         scale_xy = svg_scale,
-        rotate_degrees = svg_rotate );
-
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module PositionHueBridge()
-{
-    translate([ hue_bridge_offset_x, hue_bridge_offset_y, hue_bridge_offset_z ])
-        children();
+        rotate_degrees = svg_rotate
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

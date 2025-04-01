@@ -27,7 +27,7 @@ NETWORK_RACK_FACE_CAGE_WALL_WIDTH = 2.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function NetworkRackFaceWidthU( width_u ) = NETWORK_RACK_FACE_INSIDE_X / 4 * width_u;
+function NetworkRackFaceWidth( width_quarters ) = NETWORK_RACK_FACE_INSIDE_X / 4 * width_quarters;
 function NetworkRackFaceWidthEar() = NETWORK_RACK_FACE_EAR_X;
 
 function NetworkRackFaceOffsetX( left_ear ) = left_ear ? NETWORK_RACK_FACE_EAR_X : 0;
@@ -91,17 +91,20 @@ module NetworkRackHolder(
     left_ear = false,
     right_ear = false,
     left_bracket = false,
-    right_bracket = false
+    right_bracket = false,
+    include_cage = false,
+    cage_finger_hole = false
     )
 {
     // face
     difference()
     {
-        NetworkRackFace1U( width_u, left_ear, right_ear, left_bracket, right_bracket );
+        NetworkRackFace1U( width_quarters, left_ear, right_ear, left_bracket, right_bracket );
 
         // cut out the front where the object show
         translate([ cutout_offset_x, -DIFFERENCE_CLEARANCE, cutout_offset_z ])
-            cube([ cutout_x, NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2, face_cutout_z ]);
+            cube([ cutout_x, NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2, cutout_z ]);
+        // TODO: should be rounded!
 
         // cut out more of the front so it fits more snug
         translate([ -part_fit_clearance, 0, -part_fit_clearance ])
@@ -113,6 +116,35 @@ module NetworkRackHolder(
                     ]);
     }
 
+    if( include_cage )
+    {
+        // cage
+        NetworkRackFaceCage(
+            object_x,
+            object_y,
+            object_z,
+            object_offset_x,
+            object_offset_y,
+            object_offset_z,
+            part_fit_clearance,
+            cage_finger_hole
+            );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module NetworkRackFaceCage(
+    object_x,
+    object_y,
+    object_z,
+    object_offset_x,
+    object_offset_y,
+    object_offset_z,
+    part_fit_clearance = 0.1,
+    include_finger_hole = false
+    )
+{
     cage_x = NetworkRackFaceCageX( object_x, part_fit_clearance );
     cage_y = NetworkRackFaceCageY( object_y, part_fit_clearance );
     cage_z = NetworkRackFaceCageZ( object_z, part_fit_clearance );
@@ -138,8 +170,25 @@ module NetworkRackHolder(
         cube([ NETWORK_RACK_FACE_CAGE_WALL_WIDTH, cage_y, cage_z ]);
 
     // cage back/bottom
-    translate([ cage_left_x, cage_back_y, cage_bottom_z ])
-        cube([ cage_x, NETWORK_RACK_FACE_CAGE_WALL_WIDTH, cage_z ]);
+    difference()
+    {
+        translate([ cage_left_x, cage_back_y, cage_bottom_z ])
+            cube([ cage_x, NETWORK_RACK_FACE_CAGE_WALL_WIDTH, cage_z ]);
+
+        // remove the finger hole
+        if( include_finger_hole )
+        {
+            translate([
+                cage_left_x + cage_x / 2,
+                cage_back_y - DIFFERENCE_CLEARANCE,
+                cage_bottom_z + cage_z
+                ])
+                rotate([ -90, 0, 0 ])
+                    cylinder(
+                        r = finger_hole_r,
+                        h = NetworkRackFaceCageWidth() + DIFFERENCE_CLEARANCE * 2);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

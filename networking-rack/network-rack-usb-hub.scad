@@ -28,7 +28,7 @@ render_mode = "preview";
 // render_mode = "print-face";
 // render_mode = "print-text";
 
-width_u = 2;
+width_quarters = 2;
 
 left_ear = true;
 right_ear = false;
@@ -78,7 +78,7 @@ usb_slot_offset_x = flip_usb_hub
 face_cutout_x = face_cutout_clearance_x * 2
     + usb_x * 4
     + usb_slot_spacer_x * 3;
-face_cutout_offset_x = ( NetworkRackFaceWidthU( width_u ) - face_cutout_x ) * cutout_offset_percent_x;
+face_cutout_offset_x = ( NetworkRackFaceWidth( width_quarters ) - face_cutout_x ) * cutout_offset_percent_x;
 
 face_cutout_z = usb_z + face_cutout_clearance_z * 2;
 face_cutout_offset_z = ( NetworkRackFaceZ() - face_cutout_z ) / 2;
@@ -100,13 +100,14 @@ if( render_mode == "preview" )
         AcerUsbHubNetworkRackFace();
 
         // show a preview of another face beside it
-        translate([ NetworkRackFaceWidthU( width_u ) + preview_offset_x, 0, 0 ])
+        translate([ NetworkRackFaceWidth( width_quarters ) + preview_offset_x, 0, 0 ])
             NetworkRackFace1U(
-                4 - width_u,
+                4 - width_quarters,
                 false,
                 true,
                 true,
-                false );
+                false
+                );
     }
 
     BuildPlatePreview();
@@ -160,29 +161,44 @@ module AcerUsbHubNetworkRackFace()
 {
     difference()
     {
-        NetworkRackHolder(
-            width_u,
-            cutout_x = face_cutout_x,
-            cutout_z = face_cutout_z,
-            cutout_offset_x = face_cutout_offset_x,
-            cutout_offset_z = face_cutout_offset_z,
-            object_x = acer_usb_hub_x,
-            object_y = acer_usb_hub_y,
-            object_z = acer_usb_hub_z,
-            object_offset_x = usb_hub_offset_x,
-            object_offset_y = usb_hub_offset_y,
-            object_offset_z = usb_hub_offset_z,
-            part_fit_clearance = part_fit_clearance,
-            left_ear = left_ear,
-            right_ear = right_ear,
-            left_bracket = left_bracket,
-            right_bracket = right_bracket
-        );
+        union()
+        {
+            NetworkRackHolder(
+                width_quarters = width_quarters,
+                cutout_x = face_cutout_x,
+                cutout_z = face_cutout_z,
+                cutout_offset_x = face_cutout_offset_x,
+                cutout_offset_z = face_cutout_offset_z,
+                object_x = acer_usb_hub_x,
+                object_y = acer_usb_hub_y,
+                object_z = acer_usb_hub_z,
+                object_offset_x = usb_hub_offset_x,
+                object_offset_y = usb_hub_offset_y,
+                object_offset_z = usb_hub_offset_z,
+                part_fit_clearance = part_fit_clearance,
+                left_ear = left_ear,
+                right_ear = right_ear,
+                left_bracket = left_bracket,
+                right_bracket = right_bracket,
+                include_cage = true
+                );
+
+            NetworkRackFaceCage(
+                object_x = acer_usb_hub_x,
+                object_y = acer_usb_hub_y,
+                object_z = acer_usb_hub_z,
+                object_offset_x = usb_hub_offset_x,
+                object_offset_y = usb_hub_offset_y,
+                object_offset_z = usb_hub_offset_z,
+                part_fit_clearance = part_fit_clearance,
+                include_finger_hole = true
+                );
+        }
 
         // cut out the text / logo
         AcerUsbHubNetworkRackFaceDecoration();
 
-        cage_x = NetworkRackFaceCageX( acer_usb_hub_x, part_fit_clearance );
+        // cage_x = NetworkRackFaceCageX( acer_usb_hub_x, part_fit_clearance );
         cage_y = NetworkRackFaceCageY( acer_usb_hub_y, part_fit_clearance );
         cage_z = NetworkRackFaceCageZ( acer_usb_hub_z, part_fit_clearance );
 
@@ -190,7 +206,7 @@ module AcerUsbHubNetworkRackFace()
         cage_right_x = NetworkRackFaceCageRightX( acer_usb_hub_x, usb_hub_offset_x, part_fit_clearance );
 
         cage_front_y = NetworkRackFaceCageFrontY( usb_hub_offset_y, part_fit_clearance );
-        cage_back_y = NetworkRackFaceCageBackY( usb_hub_offset_y, acer_usb_hub_y, part_fit_clearance );
+        // cage_back_y = NetworkRackFaceCageBackY( usb_hub_offset_y, acer_usb_hub_y, part_fit_clearance );
 
         cage_bottom_z = NetworkRackFaceCageBottomZ( usb_hub_offset_z, part_fit_clearance );
 
@@ -203,16 +219,9 @@ module AcerUsbHubNetworkRackFace()
             rotate([ 0, 90, 0 ])
                 cylinder(
                     r = cage_z - cord_exit_r,
-                    h = cage_wall_width + DIFFERENCE_CLEARANCE * 2 );
-
-        // remove the finger hole
-        translate([ cage_left_x + cage_x / 2, cage_back_y - DIFFERENCE_CLEARANCE, cage_bottom_z + cage_z ])
-            rotate([ -90, 0, 0 ])
-                cylinder(
-                    r = finger_hole_r,
-                    h = NetworkRackFaceCageWidth() + DIFFERENCE_CLEARANCE * 2);
+                    h = cage_wall_width + DIFFERENCE_CLEARANCE * 2
+                    );
     }
-
 
     // cord clip
     translate([
@@ -225,7 +234,8 @@ module AcerUsbHubNetworkRackFace()
                 inner_r = cord_main_r + part_fit_clearance,
                 wall_thickness = cage_wall_width,
                 length = cage_wall_width * 2,
-                show_preview = render_mode == "preview" );
+                show_preview = render_mode == "preview"
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,15 +246,17 @@ module AcerUsbHubNetworkRackFaceDecoration()
     NetworkRackFaceLabel(
         text_lines,
         centered_in_area_x = face_cutout_offset_x,
-        text_depth = decoration_depth );
+        text_depth = decoration_depth
+        );
 
     // logo svg
     NetworkRackFaceSVG(
         svg_path,
-        NetworkRackFaceWidthU( width_u ) + manual_svg_offset_x,
+        NetworkRackFaceWidth( width_quarters ) + manual_svg_offset_x,
         manual_svg_offset_z,
         scale_xy = svg_scale,
-        rotate_degrees = svg_rotate );
+        rotate_degrees = svg_rotate
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
