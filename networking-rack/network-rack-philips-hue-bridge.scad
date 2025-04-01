@@ -2,7 +2,6 @@
 
 include <../modules/network-rack-face.scad>
 include <../modules/rounded-cube.scad>
-include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -17,9 +16,9 @@ face_cutout_z = 23.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
+render_mode = "preview";
 // render_mode = "print-face";
-render_mode = "print-text";
+// render_mode = "print-text";
 
 width_u = 2;
 
@@ -28,9 +27,7 @@ right_ear = true;
 left_bracket = true;
 right_bracket = false;
 
-part_fit_clearance = 0.15;
-
-cage_wall_width = 2.0;
+part_fit_clearance = 0.2;
 
 // this cuts into the actual network mount around the hub
 face_depth = 1.2;
@@ -42,6 +39,13 @@ cutout_offset_percent_x = 0.85;
 preview_offset_x = 1.0;
 
 text_lines = [ "Philips", "Hue Bridge" ];
+svg_path = "../assets/philips-hue-simple.svg";
+decoration_depth = 0.4;
+
+manual_svg_offset_x = -40;
+manual_svg_offset_z = 14;
+svg_scale = 0.3;
+svg_rotate = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -166,8 +170,20 @@ module HueBridgeNetworkRackFace()
 
 module HueBridgeNetworkRackFaceDecoration()
 {
-    translate([ 0, -DIFFERENCE_CLEARANCE, 0 ])
-        NetworkRackFaceLabel( text_lines, face_cutout_offset_x );
+    // text
+    NetworkRackFaceLabel(
+        text_lines,
+        centered_in_area_x = face_cutout_offset_x,
+        text_depth = decoration_depth );
+
+    // logo svg
+    NetworkRackFaceSVG(
+        svg_path,
+        NetworkRackFaceWidthU( width_u ) + manual_svg_offset_x,
+        manual_svg_offset_z,
+        scale_xy = svg_scale,
+        rotate_degrees = svg_rotate );
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
