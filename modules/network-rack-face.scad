@@ -110,7 +110,10 @@ module NetworkRackHolder(
                     ]);
 
         // cut out the text
-        NetoworkRackFaceLabel( text_lines, face_cutout_offset_x, color = false );
+        if( len( text_lines ) > 0 )
+        {
+            NetoworkRackFaceLabel( text_lines, face_cutout_offset_x, color = false );
+        }
     }
 
     cage_x = NetoworkRackFaceCageX( object_x, part_fit_clearance );
