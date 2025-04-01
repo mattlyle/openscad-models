@@ -186,7 +186,8 @@ module NetworkRackFaceCage(
                 rotate([ -90, 0, 0 ])
                     cylinder(
                         r = finger_hole_r,
-                        h = NetworkRackFaceCageWidth() + DIFFERENCE_CLEARANCE * 2);
+                        h = NetworkRackFaceCageWidth() + DIFFERENCE_CLEARANCE * 2
+                        );
         }
     }
 }
@@ -198,7 +199,8 @@ module NetworkRackFace1U(
     left_ear = false,
     right_ear = false,
     left_bracket = false,
-    right_bracket = false )
+    right_bracket = false
+    )
 {
     x = NETWORK_RACK_FACE_INSIDE_X / 4 * width_quarters;
 
@@ -253,7 +255,8 @@ module _NetworkRackFaceEar1U()
                     round_bottom = false,
                     round_left = true,
                     round_right = false,
-                    r = NETWORK_RACK_FACE_FACE_Y / 2 - DIFFERENCE_CLEARANCE );
+                    r = NETWORK_RACK_FACE_FACE_Y / 2 - DIFFERENCE_CLEARANCE
+                    );
 
         // top ear hole
         hull()
@@ -261,21 +264,23 @@ module _NetworkRackFaceEar1U()
             translate([
                 -NETWORK_RACK_FACE_EAR_X + NETWORK_RACK_FACE_EAR_HOLE_OFFSET_X + NETWORK_RACK_FACE_EAR_HOLE_R,
                 NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE,
-                ear_hole_top_z ])
+                ear_hole_top_z
+                ])
                 rotate([ 90, 0, 0 ])
                     cylinder(
                         r = NETWORK_RACK_FACE_EAR_HOLE_R,
-                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2,
-                        $fn = 32 );
+                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2
+                        );
             translate([
                 -NETWORK_RACK_FACE_EAR_X + NETWORK_RACK_FACE_EAR_HOLE_X - NETWORK_RACK_FACE_EAR_HOLE_OFFSET_X + NETWORK_RACK_FACE_EAR_HOLE_R,
                 NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE,
-                ear_hole_top_z ])
+                ear_hole_top_z
+                ])
                 rotate([ 90, 0, 0 ])
                     cylinder(
                         r = NETWORK_RACK_FACE_EAR_HOLE_R,
-                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2,
-                        $fn = 32 );
+                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2
+                        );
         }
 
         // bottom ear hole
@@ -284,22 +289,24 @@ module _NetworkRackFaceEar1U()
             translate([
                 -NETWORK_RACK_FACE_EAR_X + NETWORK_RACK_FACE_EAR_HOLE_OFFSET_X + NETWORK_RACK_FACE_EAR_HOLE_R,
                 NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE,
-                ear_hole_bottom_z ])
+                ear_hole_bottom_z
+                ])
                 rotate([ 90, 0, 0 ])
                     cylinder(
                         r = NETWORK_RACK_FACE_EAR_HOLE_R,
-                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2,
-                        $fn = 32 );
+                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2
+                        );
 
             translate([
                 -NETWORK_RACK_FACE_EAR_X + NETWORK_RACK_FACE_EAR_HOLE_X - NETWORK_RACK_FACE_EAR_HOLE_OFFSET_X + NETWORK_RACK_FACE_EAR_HOLE_R,
                 NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE,
-                ear_hole_bottom_z ])
+                ear_hole_bottom_z
+                ])
                 rotate([ 90, 0, 0 ])
                     cylinder(
                         r = NETWORK_RACK_FACE_EAR_HOLE_R,
-                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2,
-                        $fn = 32 );
+                        h = NETWORK_RACK_FACE_FACE_Y + DIFFERENCE_CLEARANCE * 2
+                        );
         }
     }
 }
@@ -372,7 +379,8 @@ module NetworkRackFaceLabel(
                 depth = text_depth + DIFFERENCE_CLEARANCE,
                 font_size = 11,
                 font = "Liberation Sans:style=bold",
-                color = color );
+                color = color
+                );
         }
     }
 }

@@ -145,7 +145,7 @@ module GoogleFiberModemNetworkRackFace()
             right_bracket = right_bracket,
             include_cage = true,
             cage_finger_hole = true
-        );
+            );
 
         // cut out the text / logo
         GoogleFiberModemNetworkRackFaceDecoration();
@@ -157,7 +157,7 @@ module GoogleFiberModemNetworkRackFace()
 module GoogleFiberModemNetworkRackFaceDecoration()
 {
     // text
-    translate([ 0, -DIFFERENCE_CLEARANCE, manual_text_z_offset ])
+    translate([ 0, 0, manual_text_z_offset ])
         NetworkRackFaceLabel(
             text_lines,
             centered_in_area_x = face_cutout_offset_x,
