@@ -22,7 +22,6 @@ cord_r = 3.6 / 2;
 // settings
 
 // TODO: vertical entry for cord somewhere
-// TODO: sloped connector edges
 // TODO: command strip inset on the backs?
 
 render_mode = "preview";
@@ -294,13 +293,15 @@ module WindowTextLabelTop( section_config )
 
         if( connector_right )
         {
+            // add the 0.9 so the sides meet better
+
             translate([
                 base_x + DIFFERENCE_OFFSET,
                 -4 - DIFFERENCE_OFFSET,
                 0
                 ])
                 rotate([ 0, -90, 0 ])
-                    TriangularPrism( 30, connector_edge, connector_edge );
+                    TriangularPrism( 30, connector_edge, connector_edge  * 0.9 );
         }
     }
 
