@@ -23,6 +23,7 @@ cord_r = 3.6 / 2;
 
 // TODO: vertical entry for cord somewhere
 // TODO: command strip inset on the backs?
+// TODO: probably need to do each letter individually so they can be moved around... R is bad!
 
 render_mode = "preview";
 // render_mode = "print-bottom-tray";
