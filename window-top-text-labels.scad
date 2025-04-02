@@ -312,14 +312,13 @@ module WindowTextLabelTop( section_config )
     // text
     translate([
         extra_base_left,
-        bottom_tray_y - 6,
+        bottom_tray_y - 3,
         bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5
         ])
         rotate([ 90, 0, 0 ])
             scale([ 1, font_y_scale, 1 ])
             linear_extrude( window_text_label_y )
                 text( text_string, size = font_size, font = font );
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,7 +329,11 @@ module WindowTextLabelBottom( x )
 
     // offset
     translate([ 0, bottom_tray_y - window_base_offset_y, 0 ])
-        cube([ x, window_base_offset_y, bottom_tray_offset_z  + window_base_offset_overlap_z + bottom_tray_junction_z ]);
+        cube([
+            x,
+            window_base_offset_y,
+            bottom_tray_offset_z  + window_base_offset_overlap_z + bottom_tray_junction_z
+            ]);
 
     // connector top
     translate([
