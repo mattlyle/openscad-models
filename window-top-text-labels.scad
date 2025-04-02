@@ -2,7 +2,9 @@
 
 include <modules/text-label.scad>
 include <modules/trapezoidal-prism.scad>
+include <modules/triangular-prism.scad>
 include <modules/pinch-connector-tray.scad>
+include <modules/command-strips.scad>
 include <modules/utils.scad>
 
 use <assets/PermanentMarker-Regular.ttf>
@@ -20,12 +22,11 @@ cord_r = 3.6 / 2;
 // settings
 
 // TODO: vertical entry for cord somewhere
-// TODO: sloped bottom?
 // TODO: sloped connector edges
-// TODO: command tabs
+// TODO: command strip inset on the backs?
 
-// render_mode = "preview";
-render_mode = "print-bottom-tray";
+render_mode = "preview";
+// render_mode = "print-bottom-tray";
 // render_mode = "print-top-tray-0";
 // render_mode = "print-top-tray-1";
 // render_mode = "print-top-tray-2";
@@ -51,6 +52,8 @@ window_text_label_y = 3.0;
 font = "PermanentMarker";
 extra_text_descent = 0.3;
 
+connector_angle = 45;
+
 // for text under the sign
 // font_size = 60;
 // for_under_sign = true;
@@ -61,6 +64,8 @@ for_under_sign = false;
 
 vertical_preview_section_spacing = 1;
 
+// TODO: need to specify z offset for each set... R is bad!
+
 sections = [
     // 60 pt
     // [ "Caro", 20, 1, false, false ],
@@ -69,9 +74,9 @@ sections = [
     // [ "canes", 4, 0, false, false ]
 
     // 100 pt
-    [ "Ca", 20, 1, false, true ],
-    [ "rol", 0, 0, true, true ],
-    [ "ina", 0, 20, true, true ],
+    [ "Ca", 25, 11, false, true ],
+    [ "rol", 10, 10, true, true ],
+    [ "ina", 10, 25, true, true ],
 
     // [ "Hu", 20, 0, true, true ],Bottom
     // [ "rr", 0, 0, true, true ],
@@ -224,6 +229,7 @@ else
     assert( false, "Unknown render mode" );
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function CalculateSectionX( section_config ) =
@@ -261,46 +267,55 @@ module WindowTextLabelTop( section_config )
 
     assert( total_z < sign_z_offset || !for_under_sign, "Warning!  Will not find under sign!!!" );
 
-    // scale_y = bottom_tray_y / bottom_tray_z * 2;
+    connector_edge = bottom_tray_z + 0.5;
 
-    // base
-    // difference()
-    // {
-    //     union()
-    //     {
-            // base cylinder
-            // translate([ 0, bottom_tray_y, bottom_tray_offset_z + bottom_tray_z / 2 ])
-            //     rotate([ 0, 90, 0 ])
-            //         scale([ 1, scale_y, 1 ])
-            //             cylinder( r = bottom_tray_z / 2, h = base_x );
+    // TODO: where is this 1.8 coming from?
 
-//CalculatePinchConnectorTrayTopZOffset( bottom_tray_z )
+    difference()
+    {
+        translate([
+            0,
+            -4,
+            bottom_tray_offset_z + bottom_tray_junction_z - 1.8 + CalculatePinchConnectorTrayTopY( bottom_tray_y )
+            ])
+            rotate([ -90, 0, 0 ])
+                PinchConnectorTrayTop( base_x, bottom_tray_z );
 
-            // TODO: where is this 1.8 coming from?
+        if( connector_left )
+        {
+            translate([
+                -DIFFERENCE_OFFSET,
+                -4 - DIFFERENCE_OFFSET + connector_edge,
+                0
+                ])
+                rotate([ 180, -90, 0 ])
+                    TriangularPrism( 30, connector_edge, connector_edge );
+        }
 
-            translate([ 0, -4, bottom_tray_offset_z + bottom_tray_junction_z - 1.8 + CalculatePinchConnectorTrayTopY( bottom_tray_y ) ])
-                rotate([ -90, 0, 0 ])
-                    PinchConnectorTrayTop( base_x, bottom_tray_z );
+        if( connector_right )
+        {
+            translate([
+                base_x + DIFFERENCE_OFFSET,
+                -4 - DIFFERENCE_OFFSET,
+                0
+                ])
+                rotate([ 0, -90, 0 ])
+                    TriangularPrism( 30, connector_edge, connector_edge );
+        }
+    }
 
 // TODO: must cut out inside the tray or the join can get blocked?!
 
-            // TODO: extra 5?
-            // text
-            translate([ extra_base_left, bottom_tray_y - 6, bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5 ])
-                rotate([ 90, 0, 0 ])
-                    linear_extrude( window_text_label_y )
-                        text( text_string, size = font_size, font = font );
-    //     }
-
-    //     // remove the back
-    //     translate([ -DIFFERENCE_OFFSET, bottom_tray_y, bottom_tray_offset_z - DIFFERENCE_OFFSET ])
-    //         cube([ base_x + DIFFERENCE_OFFSET * 2, bottom_tray_y, bottom_tray_z + DIFFERENCE_OFFSET * 2 ]);
-
-    //     // remove the cord path
-    //     translate([ -DIFFERENCE_OFFSET, bottom_tray_y, bottom_tray_offset_z + bottom_tray_z / 2 ])
-    //         rotate([ 0, 90, 0 ])
-    //             cylinder( r = cord_cutout_r, h = base_x + DIFFERENCE_OFFSET * 2 );
-    // }
+    // TODO: extra 5?
+    // text
+    translate([
+        extra_base_left,
+        bottom_tray_y - 6,
+        bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5
+        ])
+        rotate([ 90, 0, 0 ])
+            linear_extrude( window_text_label_y )
+                text( text_string, size = font_size, font = font );
 
 }
 
