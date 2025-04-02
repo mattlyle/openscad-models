@@ -339,9 +339,8 @@ module WindowTextLabelBottom( x )
     translate([
         0,
         bottom_tray_y,
-        bottom_tray_offset_z
-            + CalculatePinchConnectorTrayTopYOffset()
-            ])
+        bottom_tray_offset_z + CalculatePinchConnectorTrayTopYOffset()
+        ])
         rotate([ 90, 0, 0 ])
             PinchConnectorTrayBottom( x, bottom_tray_z, bottom_tray_y );
 
@@ -349,8 +348,8 @@ module WindowTextLabelBottom( x )
     translate([ 0, 5, 2 ])
         rotate([ 135, 0, 0 ])
             cube([ x, bottom_tray_y + 4.4, 1.2 ]);
-    // TODO: constants?!
 
+    // TODO: constants?!
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
