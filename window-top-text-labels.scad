@@ -74,15 +74,15 @@ sections = [
     // [ "canes", 4, 0, false, false ]
 
     // 100 pt
-    [ "Ca", 25, 11, false, true ],
+    [ "Ca", 30, 11, false, true ],
     [ "rol", 10, 10, true, true ],
-    [ "ina", 10, 25, true, true ],
+    [ "ina", 10, 30, true, true ],
 
-    // [ "Hu", 20, 0, true, true ],Bottom
-    // [ "rr", 0, 0, true, true ],
-    // [ "ic", 0, 0, true, true ],
-    // [ "an", 0, 0, true, true ],
-    // [ "es", 0, 0, true, true ],
+    [ "Hu", 30, 10, true, true ],
+    [ "rr", 10, 10, true, true ],
+    [ "ic", 10, 20, true, true ],
+    [ "an", 10, 10, true, true ],
+    [ "es", 10, 30, true, true ],
 
     // 110 pt
     // [ "Ca", 20, 1, false, true ],
