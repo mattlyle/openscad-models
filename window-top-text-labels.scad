@@ -312,7 +312,7 @@ module WindowTextLabelTop( section_config )
     // text
     translate([
         extra_base_left,
-        bottom_tray_y - 3,
+        bottom_tray_y - 5,
         bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5
         ])
         rotate([ 90, 0, 0 ])
