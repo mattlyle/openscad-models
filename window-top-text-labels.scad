@@ -59,6 +59,7 @@ connector_angle = 45;
 
 // for text to the side of the sign
 font_size = 100;
+font_y_scale = 1.2;
 for_under_sign = false;
 
 vertical_preview_section_spacing = 1;
@@ -315,6 +316,7 @@ module WindowTextLabelTop( section_config )
         bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5
         ])
         rotate([ 90, 0, 0 ])
+            scale([ 1, font_y_scale, 1 ])
             linear_extrude( window_text_label_y )
                 text( text_string, size = font_size, font = font );
 
