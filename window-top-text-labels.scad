@@ -282,6 +282,16 @@ module WindowTextLabelTop( section_config )
             rotate([ -90, 0, 0 ])
                 PinchConnectorTrayTop( base_x, bottom_tray_z );
 
+        translate([
+            0,
+            -PINCH_CONNECTOR_OVERLAP_STOPPER_Y,
+            bottom_tray_offset_z + bottom_tray_junction_z - PINCH_CONNECTOR_OVERLAP_Y
+            ]) cube([
+                base_x,
+                2,
+                9
+                ]);
+
         if( connector_left )
         {
             translate([
