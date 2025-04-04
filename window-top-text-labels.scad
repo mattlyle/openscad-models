@@ -303,17 +303,6 @@ module WindowTextLabelTop( section_config )
             rotate([ -90, 0, 0 ])
                 PinchConnectorTrayTop( base_x, bottom_tray_z );
 
-        translate([
-            0,
-            -PINCH_CONNECTOR_OVERLAP_STOPPER_Y,
-            bottom_tray_offset_z + bottom_tray_junction_z - PINCH_CONNECTOR_OVERLAP_Y
-            ])
-            cube([
-                base_x,
-                2,
-                9
-                ]);
-
         if( connector_left )
         {
             translate([
@@ -351,18 +340,43 @@ module WindowTextLabelTop( section_config )
         letter_rotation = letter_config[ i ][ 3 ];
         letter_scale_x = letter_config[ i ][ 4 ];
 
+        difference()
+        {
+            translate([
+                CalculateLetterOffsetX( section_config, i ),
+                bottom_tray_y - 6,
+                bottom_tray_offset_z
+                    + bottom_tray_z
+                    // - extra_text_descent
+                    + letter_adjustment_z
+                ])
+                rotate([ 90, letter_rotation, 0 ])
+                    scale([ 1, letter_scale_x, 1 ])
+                        linear_extrude( window_text_label_y )
+                            text( letter, size = font_size, font = font );
+
         translate([
-            CalculateLetterOffsetX( section_config, i ),
-            bottom_tray_y - 6,
-            bottom_tray_offset_z
-                + bottom_tray_z
-                // - extra_text_descent
-                + letter_adjustment_z
+            0,
+            -PINCH_CONNECTOR_OVERLAP_STOPPER_Y - PINCH_CONNECTOR_OVERLAP_Y,
+            bottom_tray_offset_z + PINCH_CONNECTOR_WALL_THICKNESS
             ])
-            rotate([ 90, letter_rotation, 0 ])
-                scale([ 1, letter_scale_x, 1 ])
-                    linear_extrude( window_text_label_y )
-                        text( letter, size = font_size, font = font );
+            cube([
+                base_x,
+                2.5,
+                9.65
+                ]);
+        translate([
+            0,
+            -PINCH_CONNECTOR_OVERLAP_STOPPER_Y - PINCH_CONNECTOR_OVERLAP_Y,
+            bottom_tray_offset_z + PINCH_CONNECTOR_WALL_THICKNESS + 7
+            ])
+            rotate([ 45, 0, 0 ])
+                cube([
+                    base_x,
+                    1.72,
+                    1.72
+                    ]);
+        }
     }
 }
 
