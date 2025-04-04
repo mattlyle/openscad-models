@@ -27,14 +27,14 @@ cord_r = 3.6 / 2;
 
 render_mode = "preview";
 // render_mode = "print-bottom-tray";
-// render_mode = "print-top-tray-0";
-// render_mode = "print-top-tray-1";
-// render_mode = "print-top-tray-2";
-// render_mode = "print-top-tray-3";
-// render_mode = "print-top-tray-4";
-// render_mode = "print-top-tray-5";
-// render_mode = "print-top-tray-6";
-// render_mode = "print-top-tray-7";
+// render_mode = "print-top-tray-0"; // Ca
+// render_mode = "print-top-tray-1"; // ral
+// render_mode = "print-top-tray-2"; // ina
+// render_mode = "print-top-tray-3"; // Hu
+// render_mode = "print-top-tray-4"; // rr
+// render_mode = "print-top-tray-5"; // ic
+// render_mode = "print-top-tray-6"; // an
+// render_mode = "print-top-tray-7"; // es
 // render_mode = "print-top-tray-8";
 // render_mode = "print-top-tray-9";
 
