@@ -22,11 +22,17 @@ module BuildPlatePreview()
 
 // sum up the values in the given list
 function sumList( list ) = _sumListHelper( list, 0 );
-function _sumListHelper( list, n ) = n >= len( list ) ? 0 : list[ n ] + _sumListHelper( list, n + 1 );
+function _sumListHelper( list, n ) =
+    n >= len( list )
+        ? 0
+        : ( list[ n ] + _sumListHelper( list, n + 1 ) );
 
 // sum up the values in the given list from indicies 0..i (inclusive)
 function sumTo( list, i ) = _sumToHelper( list, i, 0 );
-function _sumToHelper( list, i, n ) = n >= i || n >= len( list ) ? 0 : list[ n ] + _sumToHelper( list, i, n + 1 );
+function _sumToHelper( list, i, n ) =
+    n >= i || n >= len( list )
+        ? 0
+        : ( list[ n ] + _sumToHelper( list, i, n + 1 ) );
 
 // adds val_to_add to each index of the given list, returning a new list
 function addValueToEachIndex( list, val_to_add ) = [ for( entry = list ) entry + val_to_add ];
@@ -40,8 +46,6 @@ function calculateEquallySpacedOffset( list, total_size, clearance, i ) =
 // function calculateEquallySpacedOffset( total_size, count, i, item_size ) = ( i + 1 ) / ( count + 1 ) * total_size - item_size / 2;
 
 function calculateOffsetToCenter( total_size, item_size ) = total_size / 2 - item_size / 2;
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // rotate so that we can draw an object from one point to the next
