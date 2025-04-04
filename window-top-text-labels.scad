@@ -138,12 +138,6 @@ function CalculateSectionX( section_config ) =
         + section_config[ 0 ]
         + section_config[ 1 ];
 
-// function LetterSizes( text_string ) = [
-//     for( i = [ 0 : len( text_string ) - 1 ] )
-//         textmetrics( text = text_string[ i ], size = font_size, font = font ).size[ 0 ]
-//             + letter_configs[ ord( text_string[ i ] ) - 65 ][ 0 ]
-//     ];
-
 function CalculateLetterOffsetX( section_config, i ) =
     section_config[ 0 ]
     + sumTo( GenerateSectionLetterSizesX( section_config ), i );
@@ -166,13 +160,6 @@ echo();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
-
-// translate([ 0, 0, bottom_tray_y ])
-// rotate([ -90, 0, 0 ])
-// WindowTextLabelBottom( 150 );
-
-// translate([ 0, 25, 0 ])
-// PinchConnectorTrayTop( 70, bottom_tray_z );
 
 if( render_mode == "preview" )
 {
@@ -291,17 +278,6 @@ module WindowTextLabelTop( section_config )
     connector_right = section_config[ 3 ];
     letter_config = section_config[ 4 ];
 
-    // text_string_metrics = textmetrics(
-    //     text = text_string,
-    //     size = font_size,
-    //     font = font );
-
-    // text_string_metrics_size = text_string_metrics.size;
-
-    // font_metrics = fontmetrics( font = font, size = font_size);
-
-    // TODO: technically some glyphs go below the baseline, but don't know how to handle?
-
     base_x = CalculateSectionX( section_config );
 
     assert( base_x < BUILD_PLATE_X, "TOO LONG!" );
@@ -315,7 +291,7 @@ module WindowTextLabelTop( section_config )
 */
     connector_edge = bottom_tray_z + 0.5;
 
-    // TODO: where is this 1.8 coming from?
+    // TODO: sooo many constants?!
 
     difference()
     {
@@ -364,18 +340,6 @@ module WindowTextLabelTop( section_config )
     }
 
 // TODO: must cut out inside the tray or the join can get blocked?!
-
-    // TODO: extra 5?
-    // text
-    // translate([
-    //     extra_base_left,
-    //     bottom_tray_y - 6,
-    //     bottom_tray_offset_z + bottom_tray_z - extra_text_descent + 5
-    //     ])
-    //     rotate([ 90, 0, 0 ])
-    //         scale([ 1, font_y_scale, 1 ])
-    //         linear_extrude( window_text_label_y )
-    //             text( text_string, size = font_size, font = font );
 
     letter_sizes = GenerateSectionLetterSizesX( section_config );
 
