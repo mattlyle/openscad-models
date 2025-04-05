@@ -50,17 +50,11 @@ window_base_offset_overlap_z = 1.0;
 window_text_label_y = 3.0;
 
 font = "PermanentMarker";
-// extra_text_descent = 0.3;
 
 connector_angle = 45;
 
-// for text under the sign
-// font_size = 60;
-// for_under_sign = true;
-
 // for text to the side of the sign
 font_size = 100;
-// font_y_scale = 1.2;
 for_under_sign = false;
 
 // 0 = letter
@@ -327,8 +321,6 @@ module WindowTextLabelTop( section_config )
                     TriangularPrism( 30, connector_edge, connector_edge  * 0.9 );
         }
     }
-
-// TODO: must cut out inside the tray or the join can get blocked?!
 
     letter_sizes = GenerateSectionLetterSizesX( section_config );
 
