@@ -12,8 +12,8 @@ render_mode = "preview";
 // render_mode = "print-body";
 // render_mode = "print-text";
 
-label_first_line = "Tomato";
-label_second_line = "Line 2";
+label_first_line = "Sunflower";
+label_second_line = "Tiger Eye Hybrid";
 svg_file = "plant.svg";
 
 label_section_x = 120;
@@ -22,7 +22,7 @@ tag_y = 25;
 tag_z = 10;
 
 label_first_line_font_size = 12;
-label_second_line_font_size = 8;
+label_second_line_font_size = 6;
 
 // TODO: rounded corners
 
