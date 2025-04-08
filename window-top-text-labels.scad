@@ -38,6 +38,11 @@ render_mode = "preview";
 // render_mode = "print-top-tray-9";
 
 bottom_tray_x = 250;
+// bottom_tray_cutout_start_x = 100;
+// bottom_tray_cutout_end_x = 140;
+bottom_tray_cutout_start_x = -1;
+bottom_tray_cutout_end_x = -1;
+
 bottom_tray_y = 5.0;
 bottom_tray_z = 6.0;
 bottom_tray_offset_z = 9.0;
@@ -198,7 +203,11 @@ else if( render_mode == "print-bottom-tray" )
     render()
         translate([ 0, 0, bottom_tray_y ])
             rotate([ -90, 0, 0 ])
-                WindowTextLabelBottom( bottom_tray_x );
+                WindowTextLabelBottom(
+                    bottom_tray_x,
+                    bottom_tray_cutout_start_x,
+                    bottom_tray_cutout_end_x
+                    );
 }
 else if( render_mode == "print-top-tray-0" )
 {
@@ -357,7 +366,7 @@ module WindowTextLabelTop( section_config )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module WindowTextLabelBottom( x )
+module WindowTextLabelBottom( x, cutout_start_x = -1, cutout_end_x = -1 )
 {
     assert( x < BUILD_PLATE_X, "TOO LONG!" );
 
@@ -370,13 +379,22 @@ module WindowTextLabelBottom( x )
             ]);
 
     // connector top
-    translate([
-        0,
-        bottom_tray_y,
-        bottom_tray_offset_z + CalculatePinchConnectorTrayTopYOffset()
-        ])
-        rotate([ 90, 0, 0 ])
-            PinchConnectorTrayBottom( x, bottom_tray_z, bottom_tray_y );
+    difference()
+    {
+        translate([
+            0,
+            bottom_tray_y,
+            bottom_tray_offset_z + CalculatePinchConnectorTrayTopYOffset()
+            ])
+            rotate([ 90, 0, 0 ])
+                PinchConnectorTrayBottom( x, bottom_tray_z, bottom_tray_y );
+
+        if( cutout_start_x >= 0 && cutout_end_x >=0 )
+        {
+            translate([ cutout_start_x, -2, bottom_tray_offset_z + bottom_tray_z - 2 ])
+                cube([ cutout_end_x - cutout_start_x, 5.6, 8 ]);
+        }
+    }
 
     // sloped section
     translate([ 0, 5, 2 ])
