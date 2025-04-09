@@ -4,7 +4,7 @@ include <modules/text-label.scad>
 include <modules/trapezoidal-prism.scad>
 include <modules/triangular-prism.scad>
 include <modules/pinch-connector-tray.scad>
-include <modules/command-strips.scad>
+// include <modules/command-strips.scad>
 include <modules/utils.scad>
 
 use <assets/PermanentMarker-Regular.ttf>
@@ -21,7 +21,6 @@ cord_r = 3.6 / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// TODO: vertical entry for cord somewhere
 // TODO: command strip inset on the backs?
 
 render_mode = "preview";
@@ -58,7 +57,8 @@ font = "PermanentMarker";
 connector_angle = 45;
 
 // for text to the side of the sign
-font_size = 120;
+// font_size = 120;
+font_size = 36;
 for_under_sign = false;
 
 // 0 = letter
@@ -67,6 +67,8 @@ for_under_sign = false;
 // 3 = rotation
 // 4 = scale adjustment (x only)
 sections = [
+
+    // carolina
     [ 30, 0, false, true, [
         [ "C", 2, 12, 8, 1.4 ],
         [ "a", 1, 6, 1, 1.2 ],
@@ -84,6 +86,7 @@ sections = [
         [ "a", 1, 6, 1, 1.2 ],
     ] ],
 
+    // hurricanes
     [ 30, 0, true, true, [
         [ "H", -4, 7, 5, 1.4 ],
         [ "u", 10, 5, 3, 1.2 ],
@@ -103,6 +106,18 @@ sections = [
     [ 0, 30, true, false, [
         [ "e", 0, 8, 5, 1.2 ],
         [ "s", 0, 8, 5, 1.2 ],
+    ] ],
+
+    // est 1997
+    [ 20, 20, true, false, [
+        [ "e", 0, 6, 5, 1.2 ],
+        [ "s", 1, 6, 5, 1.2 ],
+        [ "t", 20, 6, 5, 1.2 ],
+
+        [ "1", 1, 5, 5, 1.2 ],
+        [ "9", 2, 6, 5, 1.2 ],
+        [ "9", 1, 6, 5, 1.2 ],
+        [ "7", 0, 5, 5, 1.2 ],
     ] ],
 ];
 
