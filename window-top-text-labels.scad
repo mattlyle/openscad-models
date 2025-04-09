@@ -57,9 +57,8 @@ font = "PermanentMarker";
 connector_angle = 45;
 
 // for text to the side of the sign
-// font_size = 120;
-font_size = 36;
-for_under_sign = false;
+font_size_main = 120;
+font_size_under_sign = 36;
 
 // 0 = letter
 // 1 = width adjustment (after the letter)
@@ -69,47 +68,47 @@ for_under_sign = false;
 sections = [
 
     // carolina
-    [ 30, 0, false, true, [
+    [ font_size_main, 30, 0, false, true, [
         [ "C", 2, 12, 8, 1.4 ],
         [ "a", 1, 6, 1, 1.2 ],
-    ] ],
-    [ 2, 0, true, true, [
+        ] ],
+    [ font_size_main, 2, 0, true, true, [
         [ "r", 0, 5, -4, 1.2 ],
         [ "o", 3, 6, 0, 1.2 ],
-    ] ],
-    [ 5, 0, true, true, [
+        ] ],
+    [ font_size_main, 5, 0, true, true, [
         [ "l", -5, 6, 0, 1.2 ],
         [ "i", 9, 6, 0, 1.2 ],
-    ] ],
-    [ 2, 20, true, true, [
+        ] ],
+    [ font_size_main, 2, 20, true, true, [
         [ "n", -10, 2, 0, 1.2 ],
         [ "a", 1, 6, 1, 1.2 ],
-    ] ],
+        ] ],
 
     // hurricanes
-    [ 30, 0, true, true, [
+    [ font_size_main, 30, 0, true, true, [
         [ "H", -4, 7, 5, 1.4 ],
         [ "u", 10, 5, 3, 1.2 ],
-    ] ],
-    [ 5, 0, true, true, [
+        ] ],
+    [ font_size_main, 5, 0, true, true, [
         [ "r", 3, 5, -4, 1.2 ],
         [ "r", 6, 5, -4, 1.2 ],
-    ] ],
-    [ -6, 0, true, true, [
+        ] ],
+    [ font_size_main, -6, 0, true, true, [
         [ "i", 5, 6, 0, 1.2 ],
         [ "c", 2, 5, 0, 1.2 ],
-    ] ],
-    [ 6, -8, true, true, [
+        ] ],
+    [ font_size_main, 6, -8, true, true, [
         [ "a", -4, 6, 1, 1.2 ],
         [ "n", 2, 2, 0, 1.2 ],
-    ] ],
-    [ 0, 30, true, false, [
+        ] ],
+    [ font_size_main, 0, 30, true, false, [
         [ "e", 0, 8, 5, 1.2 ],
         [ "s", 0, 8, 5, 1.2 ],
-    ] ],
+        ] ],
 
     // est 1997
-    [ 20, 20, true, false, [
+    [ font_size_under_sign, 20, 20, true, false, [
         [ "e", 0, 6, 5, 1.2 ],
         [ "s", 1, 6, 5, 1.2 ],
         [ "t", 20, 6, 5, 1.2 ],
@@ -118,25 +117,45 @@ sections = [
         [ "9", 2, 6, 5, 1.2 ],
         [ "9", 1, 6, 5, 1.2 ],
         [ "7", 0, 5, 5, 1.2 ],
-    ] ],
+        ] ],
 ];
+SECTION_INDEX_FONT_SIZE = 0;
+SECTION_INDEX_PADDING_LEFT = 1;
+SECTION_INDEX_PADDING_RIGHT = 2;
+SECTION_INDEX_SLOPED_CONNECTOR_LEFT = 3;
+SECTION_INDEX_SLOPED_CONNECTOR_RIGHT = 4;
+SECTION_INDEX_LETTER_CONFIG = 5;
+
+LETTER_INDEX_CHAR = 0;
+LETTER_INDEX_ADJUSTMENT_X = 1;
+LETTER_INDEX_ADJUSTMENT_Z = 2;
+LETTER_INDEX_ROTATION = 3;
+LETTER_INDEX_SCALE_Z = 4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
 
-function CalculateLetterX( letter_config ) =
-    letter_config[ 1 ]
-    + textmetrics( text = letter_config[ 0 ], size = font_size, font = font ).size[ 0 ];
+function CalculateLetterX( letter_config, font_size ) =
+    letter_config[ LETTER_INDEX_ADJUSTMENT_X ]
+    + textmetrics(
+        text = letter_config[ LETTER_INDEX_CHAR ],
+        size = font_size,
+        font = font
+        ).size[ 0 ];
 
-function GenerateSectionLetterSizesX( section_config ) = [ for( letter_config = section_config[ 4 ] ) CalculateLetterX( letter_config ) ];
+function GenerateSectionLetterSizesX( section_config ) =
+    [
+        for( letter_config = section_config[ SECTION_INDEX_LETTER_CONFIG ] )
+            CalculateLetterX( letter_config, section_config[ SECTION_INDEX_FONT_SIZE ] )
+        ];
 
 function CalculateSectionX( section_config ) =
         sumList( GenerateSectionLetterSizesX( section_config ) )
-        + section_config[ 0 ]
-        + section_config[ 1 ];
+        + section_config[ SECTION_INDEX_PADDING_LEFT ]
+        + section_config[ SECTION_INDEX_PADDING_RIGHT ];
 
 function CalculateLetterOffsetX( section_config, i ) =
-    section_config[ 0 ]
+    section_config[ SECTION_INDEX_PADDING_LEFT ]
     + sumTo( GenerateSectionLetterSizesX( section_config ), i );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,16 +182,6 @@ if( render_mode == "preview" )
     // preview the window edge
     % translate([ -100, 0, -0.11 ])
         cube([ 1000, window_y, 0.1 ]);
-
-    // preview the LED strip
-    // TODO: finish!
-
-    // preview the sign bottom
-    if( for_under_sign )
-    {
-        % translate([ -100, 0, sign_z_offset ])
-            cube([ 1000, window_y, 0.1 ]);
-    }
 
     // preview the cord
     % translate([ -100, window_y - cord_r - 2, bottom_tray_offset_z + bottom_tray_z / 2 + 3 ])
@@ -266,18 +275,19 @@ else if( render_mode == "print-top-tray-9" )
 }
 else
 {
-    assert( false, "Unknown render mode" );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module WindowTextLabelTop( section_config )
 {
-    extra_base_left = section_config[ 0 ];
-    extra_base_right = section_config[ 1 ];
-    connector_left = section_config[ 2 ];
-    connector_right = section_config[ 3 ];
-    letter_config = section_config[ 4 ];
+    font_size = section_config[ SECTION_INDEX_FONT_SIZE ];
+    extra_base_left = section_config[ SECTION_INDEX_PADDING_LEFT ];
+    extra_base_right = section_config[ SECTION_INDEX_PADDING_RIGHT ];
+    connector_left = section_config[ SECTION_INDEX_SLOPED_CONNECTOR_LEFT ];
+    connector_right = section_config[ SECTION_INDEX_SLOPED_CONNECTOR_RIGHT ];
+    letter_config = section_config[ SECTION_INDEX_LETTER_CONFIG ];
 
     base_x = CalculateSectionX( section_config );
 
@@ -299,7 +309,10 @@ module WindowTextLabelTop( section_config )
         translate([
             0,
             -4,
-            bottom_tray_offset_z + bottom_tray_junction_z - 1.8 + CalculatePinchConnectorTrayTopY( bottom_tray_y )
+            bottom_tray_offset_z
+                + bottom_tray_junction_z
+                - 1.8
+                + CalculatePinchConnectorTrayTopY( bottom_tray_y )
             ])
             rotate([ -90, 0, 0 ])
                 PinchConnectorTrayTop( base_x, bottom_tray_z );
@@ -333,11 +346,11 @@ module WindowTextLabelTop( section_config )
 
     for( i = [ 0 : len( letter_config ) - 1 ] )
     {
-        letter = letter_config[ i ][ 0 ];
-        letter_adjustment_x = letter_config[ i ][ 1 ];
-        letter_adjustment_z = letter_config[ i ][ 2 ];
-        letter_rotation = letter_config[ i ][ 3 ];
-        letter_scale_x = letter_config[ i ][ 4 ];
+        letter = letter_config[ i ][ LETTER_INDEX_CHAR ];
+        letter_adjustment_x = letter_config[ i ][ LETTER_INDEX_ADJUSTMENT_X ];
+        letter_adjustment_z = letter_config[ i ][ LETTER_INDEX_ADJUSTMENT_Z ];
+        letter_rotation = letter_config[ i ][ LETTER_INDEX_ROTATION ];
+        letter_scale_z = letter_config[ i ][ LETTER_INDEX_SCALE_Z ];
 
         difference()
         {
@@ -350,7 +363,7 @@ module WindowTextLabelTop( section_config )
                     + letter_adjustment_z
                 ])
                 rotate([ 90, letter_rotation, 0 ])
-                    scale([ 1, letter_scale_x, 1 ])
+                    scale([ 1, letter_scale_z, 1 ])
                         linear_extrude( window_text_label_y )
                             text( letter, size = font_size, font = font );
 
