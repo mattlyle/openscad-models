@@ -104,7 +104,7 @@ sections = [
         [ "a", -4, 6, 1, 1.2 ],
         [ "n", 2, 2, 0, 1.2 ],
         ] ],
-    [ font_size_main, 0, 30, true, false, [
+    [ font_size_main, 0, 30, true, true, [
         [ "e", 0, 8, 5, 1.2 ],
         [ "s", 0, 8, 5, 1.2 ],
         ] ],
