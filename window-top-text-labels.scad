@@ -5,6 +5,7 @@ include <modules/trapezoidal-prism.scad>
 include <modules/triangular-prism.scad>
 include <modules/pinch-connector-tray.scad>
 // include <modules/command-strips.scad>
+include <modules/svg.scad>
 include <modules/utils.scad>
 
 use <assets/PermanentMarker-Regular.ttf>
@@ -18,23 +19,29 @@ sign_z_offset = 75.0;
 
 cord_r = 3.6 / 2;
 
+// the x-size of the flag svg at scale 1.0
+flag_width_x = 248;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // TODO: command strip inset on the backs?
 
 render_mode = "preview";
-// render_mode = "print-bottom-tray";
-// render_mode = "print-top-tray-0"; // Ca
-// render_mode = "print-top-tray-1"; // ro
-// render_mode = "print-top-tray-2"; // li
-// render_mode = "print-top-tray-3"; // na
-// render_mode = "print-top-tray-4"; // Hu
-// render_mode = "print-top-tray-5"; // rr
-// render_mode = "print-top-tray-6"; // ic
-// render_mode = "print-top-tray-7"; // an
-// render_mode = "print-top-tray-8"; // es
-// render_mode = "print-top-tray-9";
+// render_mode = "print-bottom";
+// render_mode = "print-top-text-0"; // Ca
+// render_mode = "print-top-text-1"; // ro
+// render_mode = "print-top-text-2"; // li
+// render_mode = "print-top-text-3"; // na
+// render_mode = "print-top-text-4"; // Hu
+// render_mode = "print-top-text-5"; // rr
+// render_mode = "print-top-text-6"; // ic
+// render_mode = "print-top-text-7"; // an
+// render_mode = "print-top-text-8"; // es
+// render_mode = "print-top-text-9";
+// render_mode = "print-top-svg-0";
+// render_mode = "print-top-svg-1";
+// render_mode = "print-top-svg-2";
 
 bottom_tray_x = 250;
 // bottom_tray_cutout_start_x = 100;
@@ -60,11 +67,6 @@ connector_angle = 45;
 font_size_main = 120;
 font_size_under_sign = 36;
 
-// 0 = letter
-// 1 = width adjustment (after the letter)
-// 2 = height adjustment (under the letter)
-// 3 = rotation
-// 4 = scale adjustment (x only)
 sections = [
 
     // carolina
@@ -118,7 +120,8 @@ sections = [
         [ "9", 1, 6, 5, 1.2 ],
         [ "7", 0, 5, 5, 1.2 ],
         ] ],
-];
+    ];
+
 SECTION_INDEX_FONT_SIZE = 0;
 SECTION_INDEX_PADDING_LEFT = 1;
 SECTION_INDEX_PADDING_RIGHT = 2;
@@ -131,6 +134,17 @@ LETTER_INDEX_ADJUSTMENT_X = 1;
 LETTER_INDEX_ADJUSTMENT_Z = 2;
 LETTER_INDEX_ROTATION = 3;
 LETTER_INDEX_SCALE_Z = 4;
+
+svg_plate_configs = [
+    [ 35, 35, 5, -4, 0.15 ],
+    [ 55, 55, 3, 10, 0.15 ],
+    ];
+
+SVG_PLATE_INDEX_PADDING_LEFT = 0;
+SVG_PLATE_INDEX_PADDING_RIGHT = 1;
+SVG_PLATE_INDEX_NUM_FLAGS = 2;
+SVG_PLATE_INDEX_FLAG_SPACING = 3;
+SVG_PLATE_INDEX_FLAG_SCALE = 4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -158,6 +172,12 @@ function CalculateLetterOffsetX( section_config, i ) =
     section_config[ SECTION_INDEX_PADDING_LEFT ]
     + sumTo( GenerateSectionLetterSizesX( section_config ), i );
 
+function CalculateSVGPlateX( svg_plate_config ) =
+        // sumList( GenerateSectionLetterSizesX( svg_plate_config ) )
+        0
+        + svg_plate_config[ SVG_PLATE_INDEX_PADDING_LEFT ]
+        + svg_plate_config[ SVG_PLATE_INDEX_PADDING_RIGHT ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -166,6 +186,7 @@ $fn = $preview ? 16 : 64;
 cord_cutout_r = cord_r * 2;
 
 section_sizes_x = [ for( section = sections ) CalculateSectionX( section ) ];
+svg_plate_sizes_x = [ for( svg_plate_config = svg_plate_configs ) CalculateSVGPlateX( svg_plate_config ) ];
 
 total_x = sumList( section_sizes_x );
 echo();
@@ -189,7 +210,7 @@ if( render_mode == "preview" )
             scale([ 1, 0.8, 1 ])
                 cylinder( r = cord_r, h = 1000 );
 
-    // preview vertical version
+    // preview text sections vertical
     for( i = [ 0 : len( sections ) - 1 ] )
     {
         section = sections[ i ];
@@ -201,6 +222,17 @@ if( render_mode == "preview" )
 
         // translate([ x_offset, window_y - bottom_tray_y, 0 ])
         //     WindowTextLabelBottom( CalculateSectionX( section ) );
+    }
+
+    // preview svg sections vertical
+    for( i = [ 0 : len( svg_plate_configs ) - 1 ] )
+    {
+        svg_plate_config = svg_plate_configs[ i ];
+
+        x_offset = sumList( section_sizes_x ) + sumTo( svg_plate_sizes_x, i ) + i * -5.1;
+
+        translate([ x_offset, window_y - bottom_tray_y, 0 ])
+            WindowSVGPlate( svg_plate_config );
     }
 
     // preview the build plates
@@ -222,7 +254,7 @@ if( render_mode == "preview" )
                 WindowTextLabelTop( section );
     }
 }
-else if( render_mode == "print-bottom-tray" )
+else if( render_mode == "print-bottom" )
 {
     render()
         translate([ 0, 0, bottom_tray_y ])
@@ -233,45 +265,57 @@ else if( render_mode == "print-bottom-tray" )
                     bottom_tray_cutout_end_x
                     );
 }
-else if( render_mode == "print-top-tray-0" )
+else if( render_mode == "print-top-text-0" )
 {
-    PrintPlate( 0 );
+    PrintTextPlate( 0 );
 }
-else if( render_mode == "print-top-tray-1" )
+else if( render_mode == "print-top-text-1" )
 {
-    PrintPlate( 1 );
+    PrintTextPlate( 1 );
 }
-else if( render_mode == "print-top-tray-2" )
+else if( render_mode == "print-top-text-2" )
 {
-    PrintPlate( 2 );
+    PrintTextPlate( 2 );
 }
-else if( render_mode == "print-top-tray-3" )
+else if( render_mode == "print-top-text-3" )
 {
-    PrintPlate( 3 );
+    PrintTextPlate( 3 );
 }
-else if( render_mode == "print-top-tray-4" )
+else if( render_mode == "print-top-text-4" )
 {
-    PrintPlate( 4 );
+    PrintTextPlate( 4 );
 }
-else if( render_mode == "print-top-tray-5" )
+else if( render_mode == "print-top-text-5" )
 {
-    PrintPlate( 5 );
+    PrintTextPlate( 5 );
 }
-else if( render_mode == "print-top-tray-6" )
+else if( render_mode == "print-top-text-6" )
 {
-    PrintPlate( 6 );
+    PrintTextPlate( 6 );
 }
-else if( render_mode == "print-top-tray-7" )
+else if( render_mode == "print-top-text-7" )
 {
-    PrintPlate( 7 );
+    PrintTextPlate( 7 );
 }
-else if( render_mode == "print-top-tray-8" )
+else if( render_mode == "print-top-text-8" )
 {
-    PrintPlate( 8 );
+    PrintTextPlate( 8 );
 }
-else if( render_mode == "print-top-tray-9" )
+else if( render_mode == "print-top-text-9" )
 {
-    PrintPlate( 9 );
+    PrintTextPlate( 9 );
+}
+else if( render_mode == "print-top-svg-0" )
+{
+    PrintSVGPlate( 0 );
+}
+else if( render_mode == "print-top-svg-1" )
+{
+    PrintSVGPlate( 1 );
+}
+else if( render_mode == "print-top-svg-2" )
+{
+    PrintSVGPlate( 2 );
 }
 else
 {
@@ -300,47 +344,11 @@ module WindowTextLabelTop( section_config )
 
     assert( total_z < sign_z_offset || !for_under_sign, "Warning!  Will not find under sign!!!" );
 */
-    connector_edge = bottom_tray_z + 0.5;
+
+    _WindowTopConnector( base_x, connector_left, connector_right );
 
     // TODO: sooo many constants?!
 
-    difference()
-    {
-        translate([
-            0,
-            -4,
-            bottom_tray_offset_z
-                + bottom_tray_junction_z
-                - 1.8
-                + CalculatePinchConnectorTrayTopY( bottom_tray_y )
-            ])
-            rotate([ -90, 0, 0 ])
-                PinchConnectorTrayTop( base_x, bottom_tray_z );
-
-        if( connector_left )
-        {
-            translate([
-                -DIFFERENCE_OFFSET,
-                -4 - DIFFERENCE_OFFSET + connector_edge,
-                0
-                ])
-                rotate([ 180, -90, 0 ])
-                    TriangularPrism( 30, connector_edge, connector_edge );
-        }
-
-        if( connector_right )
-        {
-            // add the 0.9 so the sides meet better
-
-            translate([
-                base_x + DIFFERENCE_OFFSET,
-                -4 - DIFFERENCE_OFFSET,
-                0
-                ])
-                rotate([ 0, -90, 0 ])
-                    TriangularPrism( 30, connector_edge, connector_edge  * 0.9 );
-        }
-    }
 
     letter_sizes = GenerateSectionLetterSizesX( section_config );
 
@@ -434,12 +442,127 @@ module WindowTextLabelBottom( x, cutout_start_x = -1, cutout_end_x = -1 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module PrintPlate( i )
+module WindowSVGPlate( svg_plate_config )
+{
+    padding_left = svg_plate_config[ SVG_PLATE_INDEX_PADDING_LEFT ];
+    padding_right = svg_plate_config[ SVG_PLATE_INDEX_PADDING_RIGHT ];
+    num_flags = svg_plate_config[ SVG_PLATE_INDEX_NUM_FLAGS ];
+    flag_spacing = svg_plate_config[ SVG_PLATE_INDEX_FLAG_SPACING ];
+    flag_scale = svg_plate_config[ SVG_PLATE_INDEX_FLAG_SCALE ];
+
+    scaled_flag_size_x = flag_width_x * flag_scale;
+
+    base_x =
+        padding_left
+        + padding_right
+        + num_flags * ( scaled_flag_size_x )
+        + flag_spacing * ( num_flags - 1 );
+
+    echo("base_x",base_x);
+
+    _WindowTopConnector( base_x, true, true );
+
+    for( i = [ 0 : num_flags - 1 ] )
+    {
+        translate([
+            padding_left + ( scaled_flag_size_x + flag_spacing ) * i,
+            bottom_tray_y - 6,
+            bottom_tray_offset_z
+                + bottom_tray_z
+                + 4
+            ])
+        {
+            rotate([ 90, 0, 0 ])
+            {
+                scale([ flag_scale, flag_scale, 1 ])
+                {
+                    linear_extrude( window_text_label_y ) // 0 = stick and flag outlines
+                        import( "assets/carolina-hurricanes-alternate-edit.svg", id = "id-0" );
+                    // linear_extrude( window_text_label_y ) // 1 = top flag center
+                    //     import( "assets/carolina-hurricanes-alternate-edit.svg", id="id-1" );
+                    // linear_extrude( window_text_label_y ) // 2 = bottom flag center
+                    //     import( "assets/carolina-hurricanes-alternate-edit.svg", id="id-2" );
+                    linear_extrude( window_text_label_y ) // 3 = top of stick
+                        import( "assets/carolina-hurricanes-alternate-edit.svg", id = "id-3" );
+                    linear_extrude( window_text_label_y ) // 4 = stick
+                        import( "assets/carolina-hurricanes-alternate-edit.svg", id = "id-4" );
+                    linear_extrude( window_text_label_y ) // 5 = top flag main section
+                        import( "assets/carolina-hurricanes-alternate-edit.svg", id = "id-5" );
+                    linear_extrude( window_text_label_y ) // 6 = bottom flag main section
+                        import( "assets/carolina-hurricanes-alternate-edit.svg", id = "id-6" );
+                }
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _WindowTopConnector(
+    base_x,
+    connector_left,
+    connector_right
+    )
+{
+    connector_edge = bottom_tray_z + 0.5;
+
+    difference()
+    {
+        translate([
+            0,
+            -4,
+            bottom_tray_offset_z
+                + bottom_tray_junction_z
+                - 1.8
+                + CalculatePinchConnectorTrayTopY( bottom_tray_y )
+            ])
+            rotate([ -90, 0, 0 ])
+                PinchConnectorTrayTop( base_x, bottom_tray_z );
+
+        if( connector_left )
+        {
+            translate([
+                -DIFFERENCE_OFFSET,
+                -4 - DIFFERENCE_OFFSET + connector_edge,
+                0
+                ])
+                rotate([ 180, -90, 0 ])
+                    TriangularPrism( 30, connector_edge, connector_edge );
+        }
+
+        if( connector_right )
+        {
+            // add the 0.9 so the sides meet better
+
+            translate([
+                base_x + DIFFERENCE_OFFSET,
+                -4 - DIFFERENCE_OFFSET,
+                0
+                ])
+                rotate([ 0, -90, 0 ])
+                    TriangularPrism( 30, connector_edge, connector_edge  * 0.9 );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PrintTextPlate( i )
 {
     render()
         translate([ 0, 0, bottom_tray_y ])
             rotate([ 90, 0, 180 ])
                 WindowTextLabelTop( sections[ i ] );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PrintSVGPlate( i )
+{
+    render()
+        translate([ 0, 0, bottom_tray_y ])
+            rotate([ 90, 0, 180 ])
+                WindowSVGPlate( svg_plate_configs[ i ] );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
