@@ -38,16 +38,21 @@ render_mode = "preview";
 // render_mode = "print-top-text-6"; // ic
 // render_mode = "print-top-text-7"; // an
 // render_mode = "print-top-text-8"; // es
-// render_mode = "print-top-text-9";
+// render_mode = "print-top-text-9"; // Est 1997
 // render_mode = "print-top-svg-0";
 // render_mode = "print-top-svg-1";
 // render_mode = "print-top-svg-2";
+// render_mode = "print-blank";
 
 bottom_tray_x = 250;
 // bottom_tray_cutout_start_x = 100;
 // bottom_tray_cutout_end_x = 140;
 bottom_tray_cutout_start_x = -1;
 bottom_tray_cutout_end_x = -1;
+
+blank_x = 180;
+blank_connector_left = true;
+blank_connector_right = true;
 
 bottom_tray_y = 5.0;
 bottom_tray_z = 6.0;
@@ -264,6 +269,16 @@ else if( render_mode == "print-bottom" )
                     bottom_tray_cutout_start_x,
                     bottom_tray_cutout_end_x
                     );
+}
+else if( render_mode == "print-blank" )
+{
+    translate([ 0, 0, bottom_tray_y ])
+        rotate([ 90, 0, 0 ])
+            _WindowTopConnector(
+                blank_x,
+                blank_connector_left,
+                blank_connector_right
+                );
 }
 else if( render_mode == "print-top-text-0" )
 {
