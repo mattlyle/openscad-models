@@ -178,8 +178,11 @@ function CalculateLetterOffsetX( section_config, i ) =
     + sumTo( GenerateSectionLetterSizesX( section_config ), i );
 
 function CalculateSVGPlateX( svg_plate_config ) =
-        // sumList( GenerateSectionLetterSizesX( svg_plate_config ) )
-        0
+        svg_plate_config[ SVG_PLATE_INDEX_NUM_FLAGS ]
+            * flag_width_x
+            * svg_plate_config[ SVG_PLATE_INDEX_FLAG_SCALE ]
+        + svg_plate_config[ SVG_PLATE_INDEX_FLAG_SPACING ]
+            * ( svg_plate_config[ SVG_PLATE_INDEX_NUM_FLAGS ] - 1 )
         + svg_plate_config[ SVG_PLATE_INDEX_PADDING_LEFT ]
         + svg_plate_config[ SVG_PLATE_INDEX_PADDING_RIGHT ];
 
