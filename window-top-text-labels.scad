@@ -143,6 +143,7 @@ LETTER_INDEX_SCALE_Z = 4;
 svg_plate_configs = [
     [ 35, 35, 5, -4, 0.15 ],
     [ 55, 55, 3, 10, 0.15 ],
+    [ 30, 60, 1, 0, 0.6 ],
     ];
 
 SVG_PLATE_INDEX_PADDING_LEFT = 0;
