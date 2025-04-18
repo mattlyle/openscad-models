@@ -14,7 +14,7 @@ render_mode = "preview";
 
 label_first_line = "Sunflower";
 label_second_line = "Tiger Eye Hybrid";
-svg_file = "plant.svg";
+// svg_file = "plant.svg";
 
 label_section_x = 120;
 stake_section_x = 50;
@@ -27,8 +27,14 @@ label_second_line_font_size = 6;
 label_first_line_offset_y = 1;
 label_second_line_offset_y = 2.6;
 
+outline_width = 0.8;
+
+decoration_depth = 0.2;
+
 // TODO: rounded corners
-// TODO: border line
+// TODO: border outline
+
+DIFFERENCE_OFFSET = 0.01; // TODO: remove!
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -36,7 +42,7 @@ label_second_line_offset_y = 2.6;
 $fn = $preview ? 32 : 128;
 
 rounded_top_r = tag_y / 2;
-svg_section_x = tag_y;
+// svg_section_x = tag_y;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -62,24 +68,29 @@ else
 
 module PlantTag()
 {
+    // main_body_x = svg_section_x + label_section_x;
+    main_body_x = label_section_x;
+
     // label section
     union()
     {
-        // tounded top
+        // rounded top
         translate([ rounded_top_r, rounded_top_r, 0 ])
             cylinder(
                 r = rounded_top_r,
                 h = tag_z
-            );
+                );
 
         // main body
         translate([ rounded_top_r, 0, 0 ])
-            cube([ svg_section_x + label_section_x, tag_y, tag_z ]);
+            cube([ main_body_x, tag_y, tag_z ]);
     }
 
     // stake section
-    stake_left_x = rounded_top_r + svg_section_x + label_section_x;
-    stake_right_x = rounded_top_r + svg_section_x + label_section_x + stake_section_x;
+    // stake_left_x = rounded_top_r + svg_section_x + label_section_x;
+    stake_left_x = rounded_top_r + label_section_x;
+    // stake_right_x = rounded_top_r + svg_section_x + label_section_x + stake_section_x;
+    stake_right_x = rounded_top_r + label_section_x + stake_section_x;
     polyhedron(
         points = [
             [ stake_left_x, tag_y, tag_z ],
@@ -106,7 +117,8 @@ module PlantTag()
 
 module PlantTagDecoration()
 {
-    offset_x = rounded_top_r + svg_section_x;
+    // offset_x = rounded_top_r + svg_section_x;
+    offset_x = rounded_top_r;
 
     first_line_y = tag_y * 0.6;
     second_line_y = tag_y - first_line_y;
@@ -115,8 +127,11 @@ module PlantTagDecoration()
     second_line_offset_y = 0;
 
     // first line
-    # translate([ offset_x, first_line_offset_y, tag_z + 0.1  ])
-        cube([ label_section_x, first_line_y, 0.1 ]);
+    if( render_mode == "preview" )
+    {
+        # translate([ offset_x, first_line_offset_y, tag_z + 0.1  ])
+            cube([ label_section_x, first_line_y, 0.01 ]);
+    }
 
     translate([ offset_x, first_line_offset_y + label_first_line_offset_y, tag_z + 0.1  ])
         CenteredTextLabel(
@@ -126,10 +141,14 @@ module PlantTagDecoration()
             font_size = label_first_line_font_size,
             font = "Liberation Sans:style=bold"
             );
+    // TODO: text needs to specify depth
 
     // second line
-    % translate([ offset_x, second_line_offset_y, tag_z+0.1  ])
-        cube([ label_section_x, second_line_y, 0.1 ]);
+    if( render_mode == "preview" )
+    {
+        % translate([ offset_x, second_line_offset_y, tag_z+0.1  ])
+            cube([ label_section_x, second_line_y, 0.01 ]);
+    }
     translate([ offset_x, second_line_offset_y + label_second_line_offset_y, tag_z + 0.1  ])
         CenteredTextLabel(
             text_string = label_second_line,
@@ -138,12 +157,40 @@ module PlantTagDecoration()
             font_size = label_second_line_font_size,
             font = "Liberation Sans:style=bold"
             );
+    // TODO: text needs to specify depth
 
     // svg
     // TODO: finish!
 
-    // outline
-    // TODO: finish!
+    difference()
+    {
+        translate([ rounded_top_r, rounded_top_r, tag_z ])
+            cylinder(
+                r = rounded_top_r,
+                h = decoration_depth
+                );
+
+        // cut out inside
+        translate([ rounded_top_r, rounded_top_r, tag_z - DIFFERENCE_OFFSET ])
+            cylinder(
+                r = rounded_top_r - outline_width,
+                h = outline_width + DIFFERENCE_OFFSET * 2
+                );
+
+        // cut off right half
+        translate([ rounded_top_r, 0, tag_z - DIFFERENCE_OFFSET ])
+            cube([ rounded_top_r, tag_y, outline_width + DIFFERENCE_OFFSET * 2 ]);
+    }
+
+    // top outline
+    color([ 0.2, 0, 0 ])
+        translate([ rounded_top_r, tag_y - outline_width, tag_z ])
+            cube([ label_section_x, outline_width, decoration_depth ]);
+
+    // bottom outline
+    color([ 0.2, 0, 0 ])
+        translate([ rounded_top_r, 0, tag_z ])
+            cube([ label_section_x, outline_width, decoration_depth ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
