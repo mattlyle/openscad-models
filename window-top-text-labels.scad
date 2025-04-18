@@ -141,16 +141,17 @@ LETTER_INDEX_ROTATION = 3;
 LETTER_INDEX_SCALE_Z = 4;
 
 svg_plate_configs = [
-    [ 35, 35, 5, -4, 0.15 ],
-    [ 55, 55, 3, 10, 0.15 ],
-    [ 30, 60, 1, 0, 0.6 ],
+    [ 35, 35, 5, -4, 0, 0.15 ],
+    [ 55, 55, 3, 10, 0, 0.15 ],
+    [ 30, 60, 1, 0, -1.6, 0.6 ],
     ];
 
 SVG_PLATE_INDEX_PADDING_LEFT = 0;
 SVG_PLATE_INDEX_PADDING_RIGHT = 1;
 SVG_PLATE_INDEX_NUM_FLAGS = 2;
 SVG_PLATE_INDEX_FLAG_SPACING = 3;
-SVG_PLATE_INDEX_FLAG_SCALE = 4;
+SVG_PLATE_INDEX_VERTICAL_OFFSET = 4;
+SVG_PLATE_INDEX_FLAG_SCALE = 5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -467,6 +468,7 @@ module WindowSVGPlate( svg_plate_config )
     padding_right = svg_plate_config[ SVG_PLATE_INDEX_PADDING_RIGHT ];
     num_flags = svg_plate_config[ SVG_PLATE_INDEX_NUM_FLAGS ];
     flag_spacing = svg_plate_config[ SVG_PLATE_INDEX_FLAG_SPACING ];
+    vertical_offset = svg_plate_config[ SVG_PLATE_INDEX_VERTICAL_OFFSET ];
     flag_scale = svg_plate_config[ SVG_PLATE_INDEX_FLAG_SCALE ];
 
     scaled_flag_size_x = flag_width_x * flag_scale;
@@ -489,6 +491,7 @@ module WindowSVGPlate( svg_plate_config )
             bottom_tray_offset_z
                 + bottom_tray_z
                 + 4
+                + vertical_offset
             ])
         {
             rotate([ 90, 0, 0 ])
