@@ -24,7 +24,11 @@ tag_z = 10;
 label_first_line_font_size = 12;
 label_second_line_font_size = 6;
 
+label_first_line_offset_y = 1;
+label_second_line_offset_y = 2.6;
+
 // TODO: rounded corners
+// TODO: border line
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -47,10 +51,7 @@ else if( render_mode == "print-body" )
 }
 else if( render_mode == "print-text" )
 {
-    // top
     PlantTagDecoration();
-
-    // bottom
 }
 else
 {
@@ -114,14 +115,14 @@ module PlantTagDecoration()
     second_line_offset_y = 0;
 
     // first line
-    # translate([ offset_x, first_line_offset_y, tag_z+0.1  ])
+    # translate([ offset_x, first_line_offset_y, tag_z + 0.1  ])
         cube([ label_section_x, first_line_y, 0.1 ]);
 
-    translate([ offset_x, first_line_offset_y, tag_z+0.1  ])
+    translate([ offset_x, first_line_offset_y + label_first_line_offset_y, tag_z + 0.1  ])
         CenteredTextLabel(
             text_string = label_first_line,
             centered_in_area_x = label_section_x,
-            centered_in_area_y = first_line_y,
+            centered_in_area_y = -1,
             font_size = label_first_line_font_size,
             font = "Liberation Sans:style=bold"
             );
@@ -129,11 +130,11 @@ module PlantTagDecoration()
     // second line
     % translate([ offset_x, second_line_offset_y, tag_z+0.1  ])
         cube([ label_section_x, second_line_y, 0.1 ]);
-    translate([ offset_x, second_line_offset_y, tag_z+0.1  ])
+    translate([ offset_x, second_line_offset_y + label_second_line_offset_y, tag_z + 0.1  ])
         CenteredTextLabel(
             text_string = label_second_line,
             centered_in_area_x = label_section_x,
-            centered_in_area_y = second_line_y,
+            centered_in_area_y = -1,
             font_size = label_second_line_font_size,
             font = "Liberation Sans:style=bold"
             );
