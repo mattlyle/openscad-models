@@ -33,7 +33,6 @@ outline_width = 0.8;
 decoration_depth = 0.2;
 
 // TODO: rounded corners
-// TODO: border outline
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -56,7 +55,14 @@ else if( render_mode == "print-body" )
 }
 else if( render_mode == "print-text" )
 {
-    PlantTagDecoration();
+    // top decoration
+    translate([ 0, 0, -decoration_depth ])
+        PlantTagDecoration( false );
+
+    // bottom decoration
+    translate([ 0, tag_y, tag_z + decoration_depth ])
+        rotate([ 180, 0, 0 ])
+            PlantTagDecoration( false );
 }
 else
 {
@@ -86,14 +92,14 @@ module PlantTag()
                 cube([ main_body_x, tag_y, tag_z ]);
         }
 
+        // cut out the top
         translate([ 0, 0, -decoration_depth ])
-            scale([ 1.0, 1.0, 1.0 + DIFFERENCE_CLEARANCE ])
-                PlantTagDecoration();
+                PlantTagDecoration( true );
 
+        // cut out the bottom
         translate([ 0, tag_y, tag_z + decoration_depth ])
             rotate([ 180, 0, 0 ])
-                scale([ 1.0, 1.0, 1.0 + DIFFERENCE_CLEARANCE ])
-                    PlantTagDecoration();
+                    PlantTagDecoration( true );
     }
 
     // stake section
@@ -120,21 +126,24 @@ module PlantTag()
             ]
         );
 
-    // top decoration
-    translate([ 0, 0, -decoration_depth ])
-        PlantTagDecoration( render_mode == "preview" );
+    if( render_mode == "preview" )
+    {
+        // top decoration
+        translate([ 0, 0, -decoration_depth ])
+            PlantTagDecoration( false );
 
-    // bottom decoration
-    translate([ 0, tag_y, tag_z + decoration_depth ])
-        rotate([ 180, 0, 0 ])
-            PlantTagDecoration( render_mode == "preview" );
+        // bottom decoration
+        translate([ 0, tag_y, tag_z + decoration_depth ])
+            rotate([ 180, 0, 0 ])
+                PlantTagDecoration( false );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module PlantTagDecoration( use_color = false )
+module PlantTagDecoration( for_cutout )
 {
-    colorname = use_color ? [ 0.2, 0, 0 ] : undef;
+    colorname = for_cutout ? undef : [ 0.2, 0, 0 ];
 
     // offset_x = rounded_top_r + svg_section_x;
     offset_x = rounded_top_r;
@@ -146,37 +155,39 @@ module PlantTagDecoration( use_color = false )
     second_line_offset_y = 0;
 
     // first line
-    if( use_color )
+    if( !for_cutout )
     {
-        # translate([ offset_x, first_line_offset_y, tag_z + 0.1  ])
-            cube([ label_section_x, first_line_y, 0.01 ]);
+        # translate([ offset_x, first_line_offset_y, tag_z  ])
+            cube([ label_section_x, first_line_y, 0 ]);
     }
 
-    translate([ offset_x, first_line_offset_y + label_first_line_offset_y, tag_z + 0.1  ])
+    translate([ offset_x, first_line_offset_y + label_first_line_offset_y, tag_z  ])
         CenteredTextLabel(
             text_string = label_first_line,
             centered_in_area_x = label_section_x,
             centered_in_area_y = -1,
-            depth = decoration_depth,
+            depth = decoration_depth + DIFFERENCE_CLEARANCE,
             font_size = label_first_line_font_size,
-            font = "Liberation Sans:style=bold"
+            font = "Liberation Sans:style=bold",
+            color = colorname
             );
     // TODO: text needs to specify depth
 
     // second line
-    if( use_color )
+    if( !for_cutout )
     {
-        % translate([ offset_x, second_line_offset_y, tag_z + 0.1  ])
-            cube([ label_section_x, second_line_y, 0.01 ]);
+        % translate([ offset_x, second_line_offset_y, tag_z  ])
+            cube([ label_section_x, second_line_y, 0 ]);
     }
-    translate([ offset_x, second_line_offset_y + label_second_line_offset_y, tag_z + 0.1  ])
+    translate([ offset_x, second_line_offset_y + label_second_line_offset_y, tag_z  ])
         CenteredTextLabel(
             text_string = label_second_line,
             centered_in_area_x = label_section_x,
             centered_in_area_y = -1,
-            depth = decoration_depth,
+            depth = decoration_depth + DIFFERENCE_CLEARANCE,
             font_size = label_second_line_font_size,
-            font = "Liberation Sans:style=bold"
+            font = "Liberation Sans:style=bold",
+            color = colorname
             );
     // TODO: text needs to specify depth
 
@@ -185,45 +196,42 @@ module PlantTagDecoration( use_color = false )
 
     color( colorname )
     {
-        render()
+        difference()
         {
-            difference()
-            {
-                // outer
-                translate([ rounded_top_r, rounded_top_r, tag_z ])
-                    cylinder(
-                        r = rounded_top_r + DIFFERENCE_CLEARANCE,
-                        h = decoration_depth
-                        );
+            // outer
+            translate([ rounded_top_r, rounded_top_r, tag_z ])
+                cylinder(
+                    r = rounded_top_r + DIFFERENCE_CLEARANCE,
+                    h = decoration_depth + DIFFERENCE_CLEARANCE
+                    );
 
-                // cut out inside
-                translate([ rounded_top_r, rounded_top_r, tag_z - DIFFERENCE_CLEARANCE ])
-                    cylinder(
-                        r = rounded_top_r - outline_width,
-                        h = outline_width + DIFFERENCE_CLEARANCE * 2
-                        );
+            // cut out inside
+            translate([ rounded_top_r, rounded_top_r, tag_z - DIFFERENCE_CLEARANCE ])
+                cylinder(
+                    r = rounded_top_r - outline_width,
+                    h = outline_width + DIFFERENCE_CLEARANCE * 2
+                    );
 
-                // cut off right half
-                translate([ rounded_top_r, 0, tag_z - DIFFERENCE_CLEARANCE ])
-                    cube([ rounded_top_r, tag_y, outline_width + DIFFERENCE_CLEARANCE * 2 ]);
-            }
-
-            // top outline
-            translate([ rounded_top_r, tag_y - outline_width, tag_z ])
-                cube([
-                    label_section_x,
-                    outline_width + DIFFERENCE_CLEARANCE,
-                    decoration_depth + DIFFERENCE_CLEARANCE
-                    ]);
-
-            // bottom outline
-            translate([ rounded_top_r, -DIFFERENCE_CLEARANCE, tag_z ])
-                cube([
-                    label_section_x,
-                    outline_width + DIFFERENCE_CLEARANCE,
-                    decoration_depth + DIFFERENCE_CLEARANCE
-                    ]);
+            // cut off right half
+            translate([ rounded_top_r, 0, tag_z - DIFFERENCE_CLEARANCE ])
+                cube([ rounded_top_r, tag_y, outline_width + DIFFERENCE_CLEARANCE * 2 ]);
         }
+
+        // top outline
+        translate([ rounded_top_r - DIFFERENCE_CLEARANCE, tag_y - outline_width, tag_z ])
+            cube([
+                label_section_x + DIFFERENCE_CLEARANCE * 2,
+                outline_width + DIFFERENCE_CLEARANCE,
+                decoration_depth + DIFFERENCE_CLEARANCE
+                ]);
+
+        // bottom outline
+        translate([ rounded_top_r - DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE, tag_z ])
+            cube([
+                label_section_x + DIFFERENCE_CLEARANCE * 2,
+                outline_width + DIFFERENCE_CLEARANCE,
+                decoration_depth + DIFFERENCE_CLEARANCE
+                ]);
     }
 }
 
