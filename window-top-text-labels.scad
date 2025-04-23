@@ -115,7 +115,7 @@ sections = [
         ] ],
 
     // est 1997
-    [ font_size_under_sign, 20, 20, true, false, [
+    [ font_size_under_sign, 20, 20, true, true, [
         [ "e", 0, 6, 5, 1.2 ],
         [ "s", 1, 6, 5, 1.2 ],
         [ "t", 20, 6, 5, 1.2 ],
