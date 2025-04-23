@@ -20,7 +20,7 @@ label_second_line = "Tiger Eye Hybrid";
 label_section_x = 120;
 stake_section_x = 80;
 tag_y = 25;
-tag_z = 10;
+tag_z = 6;
 rounded_top_scale_x = 0.7;
 
 label_first_line_font_size = 12;
