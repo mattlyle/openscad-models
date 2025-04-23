@@ -31,7 +31,7 @@ label_second_line_offset_y = 3;
 
 outline_width = 0.8;
 
-decoration_depth = 0.2;
+decoration_depth = 0.4;
 
 // TODO: rounded corners
 
