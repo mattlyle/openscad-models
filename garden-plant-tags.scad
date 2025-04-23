@@ -21,6 +21,7 @@ label_section_x = 120;
 stake_section_x = 80;
 tag_y = 25;
 tag_z = 10;
+rounded_top_scale_x = 0.7;
 
 label_first_line_font_size = 12;
 label_second_line_font_size = 6;
@@ -82,10 +83,11 @@ module PlantTag()
         {
             // rounded top
             translate([ rounded_top_r, rounded_top_r, 0 ])
-                cylinder(
-                    r = rounded_top_r,
-                    h = tag_z
-                    );
+                scale([ rounded_top_scale_x, 1.0, 1.0 ])
+                    cylinder(
+                        r = rounded_top_r,
+                        h = tag_z
+                        );
 
             // main body
             translate([ rounded_top_r, 0, 0 ])
@@ -200,17 +202,19 @@ module PlantTagDecoration( for_cutout )
         {
             // outer
             translate([ rounded_top_r, rounded_top_r, tag_z ])
-                cylinder(
-                    r = rounded_top_r + DIFFERENCE_CLEARANCE,
-                    h = decoration_depth + DIFFERENCE_CLEARANCE
-                    );
+                scale([ rounded_top_scale_x, 1.0, 1.0 ])
+                    cylinder(
+                        r = rounded_top_r + DIFFERENCE_CLEARANCE,
+                        h = decoration_depth + DIFFERENCE_CLEARANCE
+                        );
 
             // cut out inside
             translate([ rounded_top_r, rounded_top_r, tag_z - DIFFERENCE_CLEARANCE ])
-                cylinder(
-                    r = rounded_top_r - outline_width,
-                    h = outline_width + DIFFERENCE_CLEARANCE * 2
-                    );
+                scale([ rounded_top_scale_x, 1.0, 1.0 ])
+                    cylinder(
+                        r = rounded_top_r - outline_width,
+                        h = outline_width + DIFFERENCE_CLEARANCE * 2
+                        );
 
             // cut off right half
             translate([ rounded_top_r, 0, tag_z - DIFFERENCE_CLEARANCE ])
