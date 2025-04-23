@@ -18,7 +18,7 @@ label_second_line = "Tiger Eye Hybrid";
 // svg_file = "plant.svg";
 
 label_section_x = 120;
-stake_section_x = 50;
+stake_section_x = 80;
 tag_y = 25;
 tag_z = 10;
 
