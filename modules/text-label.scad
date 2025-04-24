@@ -24,9 +24,10 @@ module CenteredTextLabel(
     font = "Liberation Sans",
     color = [ 0, 0, 0 ] )
 {
-    text_string_metrics_size = textmetrics( text = text_string, size = font_size, font = font ).size;
+    metrics = textmetrics( text = text_string, size = font_size, font = font );
+    text_string_metrics_size = metrics.size;
 
-    x = ( centered_in_area_x - text_string_metrics_size[ 0 ] ) / 2;
+    x = ( centered_in_area_x - text_string_metrics_size[ 0 ] ) / 2 - metrics.position[ 0 ];
     y = centered_in_area_y <= 0 ? 0 : ( centered_in_area_y - text_string_metrics_size[ 1 ] ) / 2;
 
     // # cube([ centered_in_area_x, centered_in_area_y, 0.01 ]);
