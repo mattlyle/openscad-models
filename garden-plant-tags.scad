@@ -21,12 +21,10 @@ render_mode = "preview";
 label_first_line = "Fresh Salsa";
 label_second_line = "Tomato";
 // label_second_line = "SuperSauce";
-// label_second_line = "Two Tasty";
-// label_second_line = "Sungold";
+// label_section_x = 95;
+label_section_overlap_x = 0; // shift left/right to eat into the rounded section as needed
 // label_second_line = "Veranda Red";
 
-label_section_x = 95;
-label_section_overlap_x = -2; // shift left/right to eat into the rounded section as needed
 stake_section_x = 100;
 stake_section_taper_x = 15;
 stake_section_taper_y = 2;
@@ -36,6 +34,7 @@ rounded_top_scale_x = 0.4;
 
 label_first_line_font_size = 12;
 label_second_line_font_size = 6;
+fontname = "Liberation Sans:style=bold";
 
 label_first_line_offset_y = 1;
 label_second_line_offset_y = 3;
@@ -46,6 +45,14 @@ rounding_r = 1.4;
 stake_point_r = 0.2;
 
 decoration_depth = 0.4;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function CalculateLabelSectionX() =
+    max(
+        textmetrics( text = label_first_line, size = label_first_line_font_size, font = fontname ).size[ 0 ],
+        textmetrics( text = label_second_line, size = label_second_line_font_size, font = fontname ).size[ 0 ]
+    ) + label_section_overlap_x;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -86,6 +93,8 @@ else
 
 module PlantTag()
 {
+    label_section_x = CalculateLabelSectionX();
+
     // main_body_x = svg_section_x + label_section_x;
     main_body_x = label_section_x;
 
@@ -185,7 +194,6 @@ module PlantTag()
         }
     }
 
-
     // %hull()
     // {
         // translate([ stake_left_x, stake_far_y, stake_top_z ]) sphere( r = rounding_r );
@@ -242,6 +250,8 @@ module PlantTagDecoration( for_cutout )
     first_line_offset_y = tag_y - first_line_y;
     second_line_offset_y = 0;
 
+    label_section_x = CalculateLabelSectionX();
+
     // first line
     if( !for_cutout )
     {
@@ -256,7 +266,7 @@ module PlantTagDecoration( for_cutout )
             centered_in_area_y = -1,
             depth = decoration_depth + DIFFERENCE_CLEARANCE,
             font_size = label_first_line_font_size,
-            font = "Liberation Sans:style=bold",
+            font = fontname,
             color = colorname
             );
     // TODO: text needs to specify depth
@@ -274,7 +284,7 @@ module PlantTagDecoration( for_cutout )
             centered_in_area_y = -1,
             depth = decoration_depth + DIFFERENCE_CLEARANCE,
             font_size = label_second_line_font_size,
-            font = "Liberation Sans:style=bold",
+            font = fontname,
             color = colorname
             );
     // TODO: text needs to specify depth
