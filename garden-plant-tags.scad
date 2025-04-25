@@ -12,22 +12,23 @@ include <modules/utils.scad>
 // settings
 
 render_mode = "preview";
-// render_mode = "print-body";
-// render_mode = "print-text";
+// render_mode = "print-body-vertical";
+// render_mode = "print-body-horizontal";
+// render_mode = "print-text-vertical";
+// render_mode = "print-text-horizontal";
 
 label_first_line = "Fresh Salsa";
 label_second_line = "Roma Tomato";
 
-// label_section_x = 95;
-vertical_label_section_overlap_x = 0; // shift left/right to eat into the rounded section as needed
-horizontal_extra_y = 8;
+horizontal_extra_y = 5;
+
 stake_section_x = 100;
 stake_section_taper_x = 15;
 stake_section_taper_y = 2;
 tag_height = 25;
 tag_z = 6;
 rounded_top_vertical_scale_x = 0.4;
-rounded_top_horizontal_scale_x = 0.1;
+rounded_top_horizontal_scale_x = 0.2;
 
 label_first_line_font_size = 12;
 label_second_line_font_size = 6;
@@ -45,16 +46,13 @@ decoration_depth = 0.4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function CalculateVerticalLabelSectionX() =
+function CalculateMaxLabelLength() =
     max(
         textmetrics( text = label_first_line, size = label_first_line_font_size, font = fontname ).size[ 0 ],
         textmetrics( text = label_second_line, size = label_second_line_font_size, font = fontname ).size[ 0 ]
         );
 
 function CalculateRoundedTopX( tag_y, scale_x ) =  tag_y / 2 * scale_x;
-
-// function CalculateTagY( is_vertical_label ) =
-//     tag_height + ( is_vertical_label ? 0 : horizontal_extra_y );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -71,34 +69,39 @@ if( render_mode == "preview" )
     translate([ 0, 50, 0 ])
         HorizontalPlantTag();
 }
-else if( render_mode == "print-body" )
+else if( render_mode == "print-body-vertical" )
 {
-    if( label_orientation_vertical )
-    {
-        VerticalPlantTag();
-    }
-    else
-    {
-        HorizontalPlantTag();
-    }
+    VerticalPlantTag();
 }
-else if( render_mode == "print-text" )
+else if( render_mode == "print-body-horizontal" )
 {
-    if( label_orientation_vertical )
-    {
-        // top decoration
-        translate([ 0, 0, -decoration_depth ])
-            _PlantTagDecoration( false, true );
+    HorizontalPlantTag();
+}
+else if( render_mode == "print-text-vertical" )
+{
+    // top decoration
+    translate([ 0, 0, -decoration_depth ])
+        _PlantTagDecoration( false, true );
 
-        // bottom decoration
-        translate([ 0, tag_height, tag_z + decoration_depth ])
-            rotate([ 180, 0, 0 ])
-                _PlantTagDecoration( false, true );
-    }
-    else
-    {
-        // TODO: finish!
-    }
+    // bottom decoration
+    translate([ 0, tag_height, tag_z + decoration_depth ])
+        rotate([ 180, 0, 0 ])
+            _PlantTagDecoration( false, true );
+}
+else if( render_mode == "print-text-horizontal" )
+{
+    tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
+    offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x );
+
+    // top decoration
+    translate([ offset_x + tag_height, 0, -decoration_depth ])
+        rotate([ 0, 0, 90 ])
+            _PlantTagDecoration( false, false );
+
+    // bottom decoration
+    translate([ offset_x + tag_height, tag_y, tag_z + decoration_depth ])
+        rotate([ 180, 0, -90 ])
+            _PlantTagDecoration( false, false );
 }
 else
 {
@@ -109,7 +112,7 @@ else
 
 module VerticalPlantTag()
 {
-    label_section_x = CalculateVerticalLabelSectionX() + vertical_label_section_overlap_x;
+    label_section_x = CalculateMaxLabelLength();
 
     difference()
     {
@@ -148,8 +151,7 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
         tag_height,
         is_vertical_label
             ? rounded_top_vertical_scale_x
-            : rounded_top_horizontal_scale_x )
-        + vertical_label_section_overlap_x;
+            : rounded_top_horizontal_scale_x );
 
     first_line_y = tag_height * 0.6;
     second_line_y = tag_height - first_line_y;
@@ -157,8 +159,7 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
     first_line_offset_y = tag_height - first_line_y;
     second_line_offset_y = 0;
 
-    label_section_x = CalculateVerticalLabelSectionX()
-        + ( is_vertical_label ? vertical_label_section_overlap_x : 0 );
+    label_section_x = CalculateMaxLabelLength();
 
     // first line
     translate([ offset_x, first_line_offset_y + label_first_line_offset_y, tag_z  ])
@@ -232,24 +233,23 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
 
 module HorizontalPlantTag()
 {
-    label_section_y = CalculateVerticalLabelSectionX();
-    offset_x = CalculateRoundedTopX( label_section_y, rounded_top_horizontal_scale_x );
+    tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
+    offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x );
 
-    # translate([ offset_x, 0, tag_z ]) cube([ tag_height, label_section_y, 0.1 ]);
-
-    // difference()
-    // {
-        _PlantTag( tag_height, label_section_y, false );
+    difference()
+    {
+        _PlantTag( tag_height, tag_y, false );
 
         // cut out the top
-        // translate([ 0, 0, -decoration_depth ])
-        //     _PlantTagDecoration( true, false );
+        translate([ offset_x + tag_height, 0, -decoration_depth ])
+            rotate([ 0, 0, 90 ])
+                _PlantTagDecoration( true, false );
 
         // cut out the bottom
-        // translate([ 0, tag_height, tag_z + decoration_depth ])
-        //     rotate([ 180, 0, 0 ])
-        //         _PlantTagDecoration( true, false );
-    // }
+        translate([ offset_x + tag_height, tag_y, tag_z + decoration_depth ])
+            rotate([ 180, 0, -90 ])
+                _PlantTagDecoration( true, false );
+    }
 
     if( render_mode == "preview" )
     {
@@ -259,16 +259,10 @@ module HorizontalPlantTag()
                 _PlantTagDecoration( false, false );
 
         // bottom decoration
-        translate([ offset_x + tag_height, label_section_y, tag_z - decoration_depth ])
+        translate([ offset_x + tag_height, tag_y, tag_z - decoration_depth ])
             rotate([ 180, 0, -90 ])
                 _PlantTagDecoration( false, false );
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module HorizontalPlantTagDecoration( for_cutout )
-{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,8 +284,12 @@ module _PlantTag( tag_x, tag_y, is_vertical_label )
             // rounded top
             difference()
             {
+                rounded_top_scale_x = is_vertical_label
+                    ? rounded_top_vertical_scale_x
+                    : rounded_top_horizontal_scale_x;
+
                 translate([ rounded_top_x, rounded_top_y, 0 ])
-                    scale([ rounded_top_vertical_scale_x, 1.0, 1.0 ])
+                    scale([ rounded_top_scale_x, 1.0, 1.0 ])
                         RoundedCylinder(
                             r = rounded_top_y,
                             h = tag_z,
