@@ -19,17 +19,18 @@ label_first_line = "Fresh Salsa";
 label_second_line = "Roma Tomato";
 
 // label_section_x = 95;
-label_section_overlap_x = 0; // shift left/right to eat into the rounded section as needed
+vertical_label_section_overlap_x = 0; // shift left/right to eat into the rounded section as needed
+horizontal_extra_y = 8;
 stake_section_x = 100;
 stake_section_taper_x = 15;
 stake_section_taper_y = 2;
-vertical_tag_y = 25;
+tag_height = 25;
 tag_z = 6;
-rounded_top_scale_x = 0.4;
+rounded_top_vertical_scale_x = 0.4;
+rounded_top_horizontal_scale_x = 0.1;
 
 label_first_line_font_size = 12;
 label_second_line_font_size = 6;
-label_orientation_vertical = true;
 fontname = "Liberation Sans:style=bold";
 
 label_first_line_offset_y = 1;
@@ -48,9 +49,12 @@ function CalculateVerticalLabelSectionX() =
     max(
         textmetrics( text = label_first_line, size = label_first_line_font_size, font = fontname ).size[ 0 ],
         textmetrics( text = label_second_line, size = label_second_line_font_size, font = fontname ).size[ 0 ]
-    ) + label_section_overlap_x;
+        );
 
-function CalculateRoundedTopX( tag_y ) = tag_y / 2 * rounded_top_scale_x;
+function CalculateRoundedTopX( tag_y, scale_x ) =  tag_y / 2 * scale_x;
+
+// function CalculateTagY( is_vertical_label ) =
+//     tag_height + ( is_vertical_label ? 0 : horizontal_extra_y );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -64,7 +68,8 @@ if( render_mode == "preview" )
 {
     VerticalPlantTag();
 
-    HorizontalPlantTag();
+    translate([ 0, 50, 0 ])
+        HorizontalPlantTag();
 }
 else if( render_mode == "print-body" )
 {
@@ -83,12 +88,12 @@ else if( render_mode == "print-text" )
     {
         // top decoration
         translate([ 0, 0, -decoration_depth ])
-            VerticalPlantTagDecoration( false );
+            _PlantTagDecoration( false, true );
 
         // bottom decoration
-        translate([ 0, vertical_tag_y, tag_z + decoration_depth ])
+        translate([ 0, tag_height, tag_z + decoration_depth ])
             rotate([ 180, 0, 0 ])
-                VerticalPlantTagDecoration( false );
+                _PlantTagDecoration( false, true );
     }
     else
     {
@@ -104,50 +109,56 @@ else
 
 module VerticalPlantTag()
 {
-    label_section_x = CalculateVerticalLabelSectionX();
+    label_section_x = CalculateVerticalLabelSectionX() + vertical_label_section_overlap_x;
 
     difference()
     {
-        _PlantTag( label_section_x, vertical_tag_y );
+        _PlantTag( label_section_x, tag_height, true );
 
         // cut out the top
         translate([ 0, 0, -decoration_depth ])
-            VerticalPlantTagDecoration( true );
+            _PlantTagDecoration( true, true );
 
         // cut out the bottom
-        translate([ 0, vertical_tag_y, tag_z + decoration_depth ])
+        translate([ 0, tag_height, tag_z + decoration_depth ])
             rotate([ 180, 0, 0 ])
-                VerticalPlantTagDecoration( true );
+                _PlantTagDecoration( true, true );
     }
 
     if( render_mode == "preview" )
     {
         // top decoration
         translate([ 0, 0, decoration_depth ])
-            VerticalPlantTagDecoration( false );
+            _PlantTagDecoration( false, true );
 
         // bottom decoration
-        translate([ 0, vertical_tag_y, tag_z - decoration_depth ])
+        translate([ 0, tag_height, tag_z - decoration_depth ])
             rotate([ 180, 0, 0 ])
-                VerticalPlantTagDecoration( false );
+                _PlantTagDecoration( false, true );
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module VerticalPlantTagDecoration( for_cutout )
+module _PlantTagDecoration( for_cutout, is_vertical_label )
 {
     colorname = for_cutout ? undef : [ 0.2, 0, 0 ];
 
-    offset_x = CalculateRoundedTopX( vertical_tag_y ) + label_section_overlap_x;
+    offset_x = CalculateRoundedTopX(
+        tag_height,
+        is_vertical_label
+            ? rounded_top_vertical_scale_x
+            : rounded_top_horizontal_scale_x )
+        + vertical_label_section_overlap_x;
 
-    first_line_y = vertical_tag_y * 0.6;
-    second_line_y = vertical_tag_y - first_line_y;
+    first_line_y = tag_height * 0.6;
+    second_line_y = tag_height - first_line_y;
 
-    first_line_offset_y = vertical_tag_y - first_line_y;
+    first_line_offset_y = tag_height - first_line_y;
     second_line_offset_y = 0;
 
-    label_section_x = CalculateVerticalLabelSectionX();
+    label_section_x = CalculateVerticalLabelSectionX()
+        + ( is_vertical_label ? vertical_label_section_overlap_x : 0 );
 
     // first line
     translate([ offset_x, first_line_offset_y + label_first_line_offset_y, tag_z  ])
@@ -180,7 +191,7 @@ module VerticalPlantTagDecoration( for_cutout )
     //     {
     //         // outer
     //         translate([ vertical_rounded_top_r, vertical_rounded_top_r, tag_z ])
-    //             scale([ rounded_top_scale_x, 1.0, 1.0 ])
+    //             scale([ rounded_top_vertical_scale_x, 1.0, 1.0 ])
     //                 cylinder(
     //                     r = vertical_rounded_top_r + DIFFERENCE_CLEARANCE,
     //                     h = decoration_depth + DIFFERENCE_CLEARANCE
@@ -188,7 +199,7 @@ module VerticalPlantTagDecoration( for_cutout )
 
     //         // cut out inside
     //         translate([ vertical_rounded_top_r, vertical_rounded_top_r, tag_z - DIFFERENCE_CLEARANCE ])
-    //             scale([ rounded_top_scale_x, 1.0, 1.0 ])
+    //             scale([ rounded_top_vertical_scale_x, 1.0, 1.0 ])
     //                 cylinder(
     //                     r = vertical_rounded_top_r - outline_width,
     //                     h = outline_width + DIFFERENCE_CLEARANCE * 2
@@ -196,11 +207,11 @@ module VerticalPlantTagDecoration( for_cutout )
 
     //         // cut off right half
     //         translate([ vertical_rounded_top_r, 0, tag_z - DIFFERENCE_CLEARANCE ])
-    //             cube([ vertical_rounded_top_r, vertical_tag_y, outline_width + DIFFERENCE_CLEARANCE * 2 ]);
+    //             cube([ vertical_rounded_top_r, tag_height, outline_width + DIFFERENCE_CLEARANCE * 2 ]);
     //     }
 
     //     // top outline
-    //     translate([ vertical_rounded_top_r - DIFFERENCE_CLEARANCE, vertical_tag_y - outline_width, tag_z ])
+    //     translate([ vertical_rounded_top_r - DIFFERENCE_CLEARANCE, tag_height - outline_width, tag_z ])
     //         cube([
     //             label_section_x + DIFFERENCE_CLEARANCE * 2,
     //             outline_width + DIFFERENCE_CLEARANCE,
@@ -221,7 +232,37 @@ module VerticalPlantTagDecoration( for_cutout )
 
 module HorizontalPlantTag()
 {
+    label_section_y = CalculateVerticalLabelSectionX();
+    offset_x = CalculateRoundedTopX( label_section_y, rounded_top_horizontal_scale_x );
 
+    # translate([ offset_x, 0, tag_z ]) cube([ tag_height, label_section_y, 0.1 ]);
+
+    // difference()
+    // {
+        _PlantTag( tag_height, label_section_y, false );
+
+        // cut out the top
+        // translate([ 0, 0, -decoration_depth ])
+        //     _PlantTagDecoration( true, false );
+
+        // cut out the bottom
+        // translate([ 0, tag_height, tag_z + decoration_depth ])
+        //     rotate([ 180, 0, 0 ])
+        //         _PlantTagDecoration( true, false );
+    // }
+
+    if( render_mode == "preview" )
+    {
+        // top decoration
+        translate([ offset_x + tag_height, 0, decoration_depth ])
+            rotate([ 0, 0, 90 ])
+                _PlantTagDecoration( false, false );
+
+        // bottom decoration
+        translate([ offset_x + tag_height, label_section_y, tag_z - decoration_depth ])
+            rotate([ 180, 0, -90 ])
+                _PlantTagDecoration( false, false );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,20 +273,25 @@ module HorizontalPlantTagDecoration( for_cutout )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _PlantTag( tag_x, tag_y )
+module _PlantTag( tag_x, tag_y, is_vertical_label )
 {
     render()
     {
         union()
         {
             rounded_top_y = tag_y / 2;
-            rounded_top_x = CalculateRoundedTopX( tag_y );
+            rounded_top_x = CalculateRoundedTopX(
+                tag_y,
+                is_vertical_label
+                    ? rounded_top_vertical_scale_x
+                    : rounded_top_horizontal_scale_x
+                );
 
             // rounded top
             difference()
             {
                 translate([ rounded_top_x, rounded_top_y, 0 ])
-                    scale([ rounded_top_scale_x, 1.0, 1.0 ])
+                    scale([ rounded_top_vertical_scale_x, 1.0, 1.0 ])
                         RoundedCylinder(
                             r = rounded_top_y,
                             h = tag_z,
