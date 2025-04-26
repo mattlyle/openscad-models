@@ -114,7 +114,8 @@ intersection()
     else if( render_mode == "print-text-horizontal" )
     {
         tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
-        offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x );
+        offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x )
+            - horizontal_overlap_x;
 
         // top decoration
         translate([ offset_x + tag_height, 0, -decoration_depth ])
@@ -258,7 +259,6 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
 module HorizontalPlantTag()
 {
     tag_x = tag_height - horizontal_overlap_x * 2;
-
     tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
     offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x )
         - horizontal_overlap_x;
