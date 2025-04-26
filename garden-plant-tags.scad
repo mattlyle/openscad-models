@@ -326,9 +326,13 @@ module _PlantTag( tag_x, tag_y, is_vertical_label )
                 );
 
         // stake section
-        stake_left_x = rounded_top_x + tag_x;
-        stake_right_x = rounded_top_x + tag_x + stake_section_x;
-        stake_taper_x = rounded_top_x + tag_x + stake_section_taper_x;
+        stake_offset_x = rounded_top_x + tag_x;
+
+        stake_left_x = stake_offset_x;
+        stake_right_x = stake_offset_x + stake_section_x;
+        stake_taper_x = stake_offset_x
+            + stake_section_taper_x
+            + ( is_vertical_label ? 0 : -horizontal_overlap_x * 2 );
 
         stake_near_y = rounding_r;
         stake_point_y = tag_y / 2;
@@ -373,7 +377,7 @@ module _PlantTag( tag_x, tag_y, is_vertical_label )
                     ? rounded_top_vertical_scale_x
                     : rounded_top_horizontal_scale_x;
 
-                translate([ rounded_top_x + tag_x, rounded_top_y, 0 ])
+                translate([ stake_offset_x, rounded_top_y, 0 ])
                     scale([ rounded_top_scale_x, 1.0, 1.0 ])
                         RoundedCylinder(
                             r = rounded_top_y,
