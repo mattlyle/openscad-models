@@ -198,7 +198,7 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
             );
 
     // second line
-    translate([ offset_x, second_line_offset_y + label_second_line_offset_y, tag_z  ])
+    translate([ offset_x, second_line_offset_y + label_second_line_offset_y, tag_z ])
         CenteredTextLabel(
             text_string = label_second_line,
             centered_in_area_x = label_section_x,
