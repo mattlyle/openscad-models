@@ -21,6 +21,7 @@ label_first_line = "Fresh Salsa";
 label_second_line = "Roma Tomato";
 
 horizontal_extra_y = 5;
+horizontal_overlap_x = 2;
 
 stake_section_x = 100;
 stake_section_taper_x = 10;
@@ -238,12 +239,15 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
 
 module HorizontalPlantTag()
 {
+    tag_x = tag_height - horizontal_overlap_x * 2;
+
     tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
-    offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x );
+    offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x )
+        - horizontal_overlap_x;
 
     difference()
     {
-        _PlantTag( tag_height, tag_y, false );
+        _PlantTag( tag_x, tag_y, false );
 
         // cut out the top
         translate([ offset_x + tag_height, 0, -decoration_depth ])
