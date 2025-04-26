@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 
+import os
 import subprocess
 
 ####################################################################################
 
-# OUT_PATH = "~/projects/openscad-models/_renders"
-OUT_PATH = "~/projects/openscad-models/_temp"
-SCAD_PATH = "~/projects/openscad-models/garden-plant-tags.scad"
+OUT_PATH = "../_renders"
+SCAD_PATH = "../garden-plant-tags.scad"
 
-VERSION = 5
+VERSION = 10
+
+GENERATE_VERITCAL_TAGS = False
 
 LABELS = [
     ["Fresh Salsa", "Roma Tomato"],
@@ -25,37 +27,89 @@ LABELS = [
 ################################################################################
 
 
+def run_openscad(output_filename, render_mode, first_line, second_line):
+
+    print("Generating %s" % (output_filename))
+    result = subprocess.run(
+        [
+            "openscad-nightly",
+            "-o",
+            output_filename,
+            "--enable",
+            "textmetrics",
+            "--backend",
+            "manifold",
+            "-D",
+            'render_mode="%s"' % (render_mode),
+            "-D",
+            'label_first_line="%s"' % (first_line),
+            "-D",
+            'label_second_line="%s"' % (second_line),
+            SCAD_PATH,
+        ],
+        capture_output=True,
+        text=True,
+    )
+    print("Return code:", result.returncode)
+    print("stdout:")
+    if result.stdout:
+        print("    " + result.stdout.replace("\n", "\n    "))
+    print("stderr:")
+    if result.stderr:
+        print("    " + result.stderr.replace("\n", "\n    "))
+
+    if result.returncode != 0:
+        raise Exception("Failure generating STL")
+
+    if "NoError" in result.stdout:
+        raise Exception("Likely an error in the geometry")
+
+    print()
+
+    return
+
+
+################################################################################
+
+
 def main():
 
     for label in LABELS:
         first_line = label[0]
         second_line = label[1]
 
-        body_filename = "garden-plant-tag-%s-%s-v%d-c0.stl" % (
+        orientation = "vert" if GENERATE_VERITCAL_TAGS else "horiz"
+
+        body_filename = "garden-plant-tag-%s-%s-%s-v%d-c0.stl" % (
             second_line.lower().replace(" ", "-"),
             first_line.lower().replace(" ", "-"),
+            orientation,
             VERSION,
         )
 
-        print("%-60s | %-16s | %s" % (body_filename, first_line, second_line))
+        # print("%-60s | %-16s | %s" % (body_filename, first_line, second_line))
 
-        # generate body STL
-        subprocess.run(
-            [
-                "openscad-nightly",
-                "scripts/generate-label.py",
-                "-o",
-                body_filename,
-                "-D",
-                "render_mode=print-body",
-                "-D",
-                "label_first_line=" % (first_line),
-                "-D",
-                "label_second_line=" % (second_line),
-            ]
+        # generate the body
+        run_openscad(
+            os.path.join(OUT_PATH, body_filename),
+            "print-body-vertical" if GENERATE_VERITCAL_TAGS else "print-body-horizontal",
+            first_line,
+            second_line,
         )
 
-        break  # TODO: REMOVE
+        text_filename = "garden-plant-tag-%s-%s-%s-v%d-c1.stl" % (
+            second_line.lower().replace(" ", "-"),
+            first_line.lower().replace(" ", "-"),
+            orientation,
+            VERSION,
+        )
+
+        run_openscad(
+            os.path.join(OUT_PATH, text_filename),
+            "print-text-vertical" if GENERATE_VERITCAL_TAGS else "print-text-horizontal",
+            first_line,
+            second_line,
+        )
 
     return
 
