@@ -18,7 +18,25 @@ render_mode = "preview";
 // render_mode = "print-text-horizontal";
 
 label_first_line = "Fresh Salsa";
+// label_first_line = "SuperSauce";
 label_second_line = "Roma Tomato";
+
+// label_first_line = "Two Tasty";
+// label_first_line = "Veranda Red";
+// label_first_line = "Sungold";
+// label_second_line = "Cherry Tomato";
+
+// label_first_line = "Bodacious";
+// label_second_line = "Slicing Tomato";
+
+// label_first_line = "Tiger Eye";
+// label_second_line = "Sunflower";
+
+// label_first_line = "Alaska";
+// label_second_line = "Nasturtium";
+
+// label_first_line = "Asclepias";
+// label_second_line = "Butterfly Weed";
 
 horizontal_extra_y = 5;
 horizontal_overlap_x = 2;
