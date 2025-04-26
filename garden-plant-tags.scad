@@ -50,7 +50,7 @@ rounded_top_vertical_scale_x = 0.4;
 rounded_top_horizontal_scale_x = 0.2;
 
 label_first_line_font_size = 12;
-label_second_line_font_size = 6;
+label_second_line_font_size = 4;
 fontname = "Liberation Sans:style=bold";
 
 label_first_line_offset_y = 1;
