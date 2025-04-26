@@ -23,8 +23,8 @@ label_second_line = "Roma Tomato";
 horizontal_extra_y = 5;
 
 stake_section_x = 100;
-stake_section_taper_x = 15;
-stake_section_taper_y = 2;
+stake_section_taper_x = 10;
+stake_section_taper_y = 4;
 tag_height = 25;
 tag_z = 6;
 rounded_top_vertical_scale_x = 0.4;
@@ -62,50 +62,55 @@ $fn = $preview ? 64 : 128;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "preview" )
+intersection()
 {
-    VerticalPlantTag();
+    cube([ BUILD_PLATE_X, BUILD_PLATE_Y, tag_z ]);
 
-    translate([ 0, 50, 0 ])
+    if( render_mode == "preview" )
+    {
+        VerticalPlantTag();
+
+        translate([ 0, 50, 0 ])
+            HorizontalPlantTag();
+    }
+    else if( render_mode == "print-body-vertical" )
+    {
+        VerticalPlantTag();
+    }
+    else if( render_mode == "print-body-horizontal" )
+    {
         HorizontalPlantTag();
-}
-else if( render_mode == "print-body-vertical" )
-{
-    VerticalPlantTag();
-}
-else if( render_mode == "print-body-horizontal" )
-{
-    HorizontalPlantTag();
-}
-else if( render_mode == "print-text-vertical" )
-{
-    // top decoration
-    translate([ 0, 0, -decoration_depth ])
-        _PlantTagDecoration( false, true );
-
-    // bottom decoration
-    translate([ 0, tag_height, tag_z + decoration_depth ])
-        rotate([ 180, 0, 0 ])
+    }
+    else if( render_mode == "print-text-vertical" )
+    {
+        // top decoration
+        translate([ 0, 0, -decoration_depth ])
             _PlantTagDecoration( false, true );
-}
-else if( render_mode == "print-text-horizontal" )
-{
-    tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
-    offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x );
 
-    // top decoration
-    translate([ offset_x + tag_height, 0, -decoration_depth ])
-        rotate([ 0, 0, 90 ])
-            _PlantTagDecoration( false, false );
+        // bottom decoration
+        translate([ 0, tag_height, tag_z + decoration_depth ])
+            rotate([ 180, 0, 0 ])
+                _PlantTagDecoration( false, true );
+    }
+    else if( render_mode == "print-text-horizontal" )
+    {
+        tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
+        offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x );
 
-    // bottom decoration
-    translate([ offset_x + tag_height, tag_y, tag_z + decoration_depth ])
-        rotate([ 180, 0, -90 ])
-            _PlantTagDecoration( false, false );
-}
-else
-{
-    assert( false, str( "Unknown render mode: ", render_mode ) );
+        // top decoration
+        translate([ offset_x + tag_height, 0, -decoration_depth ])
+            rotate([ 0, 0, 90 ])
+                _PlantTagDecoration( false, false );
+
+        // bottom decoration
+        translate([ offset_x + tag_height, tag_y, tag_z + decoration_depth ])
+            rotate([ 180, 0, -90 ])
+                _PlantTagDecoration( false, false );
+    }
+    else
+    {
+        assert( false, str( "Unknown render mode: ", render_mode ) );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,71 +274,71 @@ module HorizontalPlantTag()
 
 module _PlantTag( tag_x, tag_y, is_vertical_label )
 {
-    render()
+    union()
     {
-        union()
+        rounded_top_y = tag_y / 2;
+        rounded_top_x = CalculateRoundedTopX(
+            tag_y,
+            is_vertical_label
+                ? rounded_top_vertical_scale_x
+                : rounded_top_horizontal_scale_x
+            );
+
+        // rounded top
+        difference()
         {
-            rounded_top_y = tag_y / 2;
-            rounded_top_x = CalculateRoundedTopX(
-                tag_y,
-                is_vertical_label
-                    ? rounded_top_vertical_scale_x
-                    : rounded_top_horizontal_scale_x
+            rounded_top_scale_x = is_vertical_label
+                ? rounded_top_vertical_scale_x
+                : rounded_top_horizontal_scale_x;
+
+            translate([ rounded_top_x, rounded_top_y, 0 ])
+                scale([ rounded_top_scale_x, 1.0, 1.0 ])
+                    RoundedCylinder(
+                        r = rounded_top_y,
+                        h = tag_z,
+                        rounding_r = rounding_r
+                        );
+
+            // cut off the right side
+            translate([ rounded_top_x, -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
+                cube([
+                    rounded_top_x + DIFFERENCE_CLEARANCE,
+                    tag_y + DIFFERENCE_CLEARANCE * 2,
+                    tag_z + DIFFERENCE_CLEARANCE * 2
+                    ]);
+        }
+
+        // main body
+        translate([ rounded_top_x, 0, 0 ])
+            RoundedCubeAlt2(
+                x = tag_x,
+                y = tag_y,
+                z = tag_z,
+                r = rounding_r,
+                round_top = true,
+                round_bottom = true,
+                round_left = false,
+                round_right = false
                 );
 
-            // rounded top
-            difference()
-            {
-                rounded_top_scale_x = is_vertical_label
-                    ? rounded_top_vertical_scale_x
-                    : rounded_top_horizontal_scale_x;
+        // stake section
+        stake_left_x = rounded_top_x + tag_x;
+        stake_right_x = rounded_top_x + tag_x + stake_section_x;
+        stake_taper_x = rounded_top_x + tag_x + stake_section_taper_x;
 
-                translate([ rounded_top_x, rounded_top_y, 0 ])
-                    scale([ rounded_top_scale_x, 1.0, 1.0 ])
-                        RoundedCylinder(
-                            r = rounded_top_y,
-                            h = tag_z,
-                            rounding_r = rounding_r
-                            );
+        stake_near_y = rounding_r;
+        stake_point_y = tag_y / 2;
+        stake_far_y = tag_y - rounding_r;
+        stake_taper_near_y = tag_y / 2 - stake_section_taper_y / 2;
+        stake_taper_far_y = tag_y / 2 + stake_section_taper_y / 2;
 
-                // cut off the right side
-                translate([ rounded_top_x, -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
-                    cube([
-                        rounded_top_x + DIFFERENCE_CLEARANCE,
-                        tag_y + DIFFERENCE_CLEARANCE * 2,
-                        tag_z + DIFFERENCE_CLEARANCE * 2
-                        ]);
-            }
+        stake_top_z = tag_z - rounding_r;
+        stake_point_top_z = tag_z;
+        stake_point_bottom_z = 0;
+        stake_bottom_z = rounding_r;
 
-            // main body
-            translate([ rounded_top_x, 0, 0 ])
-                RoundedCubeAlt2(
-                    x = tag_x,
-                    y = tag_y,
-                    z = tag_z,
-                    r = rounding_r,
-                    round_top = true,
-                    round_bottom = true,
-                    round_left = false,
-                    round_right = false
-                    );
-
-            // stake section
-            stake_left_x = rounded_top_x + tag_x;
-            stake_right_x = rounded_top_x + tag_x + stake_section_x;
-            stake_taper_x = rounded_top_x + tag_x + stake_section_taper_x;
-
-            stake_near_y = rounding_r;
-            stake_point_y = tag_y / 2;
-            stake_far_y = tag_y - rounding_r;
-            stake_taper_near_y = tag_y / 2 - stake_section_taper_y / 2;
-            stake_taper_far_y = tag_y / 2 + stake_section_taper_y / 2;
-
-            stake_top_z = tag_z - rounding_r;
-            stake_point_top_z = tag_z;
-            stake_point_bottom_z = 0;
-            stake_bottom_z = rounding_r;
-
+        if( is_vertical_label )
+        {
             // before taper
             points_before_taper = [
                 [ stake_left_x, stake_far_y, stake_top_z, rounding_r ],
@@ -350,28 +355,54 @@ module _PlantTag( tag_x, tag_y, is_vertical_label )
             {
                 for( point = points_before_taper )
                 {
-                    translate([ point[ 0 ], point[ 1 ], point[ 2 ] ])
+                    translate([ point.x, point.y, point.z ])
                         sphere( r = point[ 3 ] );
                 }
             }
-
-            // after taper
-            points_after_taper = [
-                [ stake_taper_x, stake_taper_far_y, stake_top_z, rounding_r ],
-                [ stake_right_x, stake_point_y, stake_point_top_z, stake_point_r ],
-                [ stake_taper_x, stake_taper_near_y, stake_top_z, rounding_r ],
-
-                [ stake_taper_x, stake_taper_far_y, stake_bottom_z, rounding_r ],
-                [ stake_right_x, stake_point_y, stake_point_bottom_z, stake_point_r ],
-                [ stake_taper_x, stake_taper_near_y, stake_bottom_z, rounding_r ],
-                ];
-            hull()
+        }
+        else
+        {
+            // rounded bottom
+            difference()
             {
-                for( point = points_after_taper )
-                {
-                    translate([ point[ 0 ], point[ 1 ], point[ 2 ] ])
-                        sphere( r = point[ 3 ] );
-                }
+                rounded_top_scale_x = is_vertical_label
+                    ? rounded_top_vertical_scale_x
+                    : rounded_top_horizontal_scale_x;
+
+                translate([ rounded_top_x + tag_x, rounded_top_y, 0 ])
+                    scale([ rounded_top_scale_x, 1.0, 1.0 ])
+                        RoundedCylinder(
+                            r = rounded_top_y,
+                            h = tag_z,
+                            rounding_r = rounding_r
+                            );
+
+                // cut off the left side
+                translate([ tag_x - DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
+                    cube([
+                        rounded_top_x + DIFFERENCE_CLEARANCE,
+                        tag_y + DIFFERENCE_CLEARANCE * 2,
+                        tag_z + DIFFERENCE_CLEARANCE * 2
+                        ]);
+            }
+        }
+
+        // after taper
+        points_after_taper = [
+            [ stake_taper_x, stake_taper_far_y, stake_top_z, rounding_r ],
+            [ stake_right_x, stake_point_y, stake_point_top_z, stake_point_r ],
+            [ stake_taper_x, stake_taper_near_y, stake_top_z, rounding_r ],
+
+            [ stake_taper_x, stake_taper_far_y, stake_bottom_z, rounding_r ],
+            [ stake_right_x, stake_point_y, stake_point_bottom_z, stake_point_r ],
+            [ stake_taper_x, stake_taper_near_y, stake_bottom_z, rounding_r ],
+            ];
+        hull()
+        {
+            for( point = points_after_taper )
+            {
+                translate([ point.x, point.y, point.z ])
+                    sphere( r = point[ 3 ] );
             }
         }
     }
