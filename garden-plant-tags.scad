@@ -44,17 +44,17 @@ horizontal_overlap_x = 2;
 stake_section_x = 100;
 stake_section_taper_x = 10;
 stake_section_taper_y = 4;
-tag_height = 25;
+tag_height = 28;
 tag_z = 6;
 rounded_top_vertical_scale_x = 0.4;
 rounded_top_horizontal_scale_x = 0.2;
 
 label_first_line_font_size = 12;
-label_second_line_font_size = 4;
+label_second_line_font_size = 6;
 fontname = "Liberation Sans:style=bold";
 
-label_first_line_offset_y = 1;
-label_second_line_offset_y = 3;
+label_first_line_offset_y = -1;
+label_second_line_offset_y = 1;
 
 outline_width = 0.8;
 
@@ -186,12 +186,38 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
 
     label_section_x = CalculateMaxLabelLength();
 
+    // show the full sections the text will be in
+    // if( render_mode == "preview" && !for_cutout )
+    // {
+    //     # translate([
+    //         offset_x,
+    //         first_line_offset_y + label_first_line_offset_y,
+    //         tag_z - decoration_depth + 0.01
+    //         ])
+    //         cube([
+    //             label_section_x,
+    //             first_line_y,
+    //             0.01
+    //             ]);
+
+    //     % translate([
+    //         offset_x,
+    //         second_line_offset_y + label_second_line_offset_y,
+    //         tag_z - decoration_depth + 0.01
+    //         ])
+    //         cube([
+    //             label_section_x,
+    //             second_line_y,
+    //             0.01
+    //             ]);
+    // }
+
     // first line
     translate([ offset_x, first_line_offset_y + label_first_line_offset_y, tag_z  ])
         CenteredTextLabel(
             text_string = label_first_line,
             centered_in_area_x = label_section_x,
-            centered_in_area_y = -1,
+            centered_in_area_y = first_line_y,
             depth = decoration_depth + DIFFERENCE_CLEARANCE,
             font_size = label_first_line_font_size,
             font = fontname,
@@ -203,7 +229,7 @@ module _PlantTagDecoration( for_cutout, is_vertical_label )
         CenteredTextLabel(
             text_string = label_second_line,
             centered_in_area_x = label_section_x,
-            centered_in_area_y = -1,
+            centered_in_area_y = second_line_y,
             depth = decoration_depth + DIFFERENCE_CLEARANCE,
             font_size = label_second_line_font_size,
             font = fontname,

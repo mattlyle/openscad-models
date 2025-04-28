@@ -5,51 +5,63 @@ import subprocess
 
 ####################################################################################
 
-OUT_PATH = "../_renders"
+OUT_PATH = "/media/turbo-general/3d-printing/_renders"
 SCAD_PATH = "../garden-plant-tags.scad"
 
-VERSION = 10
+VERSION = 11
 
 GENERATE_VERITCAL_TAGS = False
 
 LABELS = [
-    ["Fresh Salsa", "Roma Tomato"],
-    ["SuperSauce", "Roma Tomato"],
-    ["Two Tasty", "Cherry Tomato"],
-    ["Veranda Red", "Cherry Tomato"],
-    ["Sungold", "Cherry Tomato"],
-    ["Bodacious", "Slicing Tomato"],
-    ["Tiger Eye", "Sunflower"],
-    ["Alaska", "Nasturtium"],
-    ["Asclepias", "Butterfly Weed"],
+    ["Fresh Salsa", "Roma Tomato", -1, 1],
+    ["SuperSauce", "Roma Tomato", -1, 0],
+    ["Two Tasty", "Cherry Tomato", -1, 1],
+    ["Veranda Red", "Cherry Tomato", -1, 1],
+    ["Sungold", "Cherry Tomato", -1, 0],
+    ["Bodacious", "Slicing Tomato", -1, 0],
+    ["Tiger Eye", "Sunflower", -1, 1],
+    ["Alaska", "Nasturtium", -1, 1],
+    ["Asclepias", "Butterfly Weed", -1, 0],
 ]
 
 ################################################################################
 
 
-def run_openscad(output_filename, render_mode, first_line, second_line):
+def run_openscad(
+    output_filename,
+    render_mode,
+    first_line,
+    second_line,
+    first_line_offset_y,
+    second_line_offset_y,
+):
+
+    args = [
+        "openscad-nightly",
+        "-o",
+        output_filename,
+        "--enable",
+        "textmetrics",
+        "--backend",
+        "manifold",
+        "-D",
+        'render_mode="%s"' % (render_mode),
+        "-D",
+        'label_first_line="%s"' % (first_line),
+        "-D",
+        'label_second_line="%s"' % (second_line),
+        "-D",
+        "label_first_line_offset_y=%d" % first_line_offset_y,
+        "-D",
+        "label_second_line_offset_y=%d" % second_line_offset_y,
+        SCAD_PATH,
+    ]
+
+    # print("command:", " ".join(args))
 
     print("Generating %s" % (output_filename))
-    result = subprocess.run(
-        [
-            "openscad-nightly",
-            "-o",
-            output_filename,
-            "--enable",
-            "textmetrics",
-            "--backend",
-            "manifold",
-            "-D",
-            'render_mode="%s"' % (render_mode),
-            "-D",
-            'label_first_line="%s"' % (first_line),
-            "-D",
-            'label_second_line="%s"' % (second_line),
-            SCAD_PATH,
-        ],
-        capture_output=True,
-        text=True,
-    )
+    result = subprocess.run(args, capture_output=True, text=True)
+
     print("Return code:", result.returncode)
     print("stdout:")
     if result.stdout:
@@ -77,6 +89,8 @@ def main():
     for label in LABELS:
         first_line = label[0]
         second_line = label[1]
+        first_line_offset_y = label[2]
+        second_line_offset_y = label[3]
 
         orientation = "vert" if GENERATE_VERITCAL_TAGS else "horiz"
 
@@ -95,6 +109,8 @@ def main():
             "print-body-vertical" if GENERATE_VERITCAL_TAGS else "print-body-horizontal",
             first_line,
             second_line,
+            first_line_offset_y,
+            second_line_offset_y,
         )
 
         text_filename = "garden-plant-tag-%s-%s-%s-v%d-c1.stl" % (
@@ -109,6 +125,8 @@ def main():
             "print-text-vertical" if GENERATE_VERITCAL_TAGS else "print-text-horizontal",
             first_line,
             second_line,
+            first_line_offset_y,
+            second_line_offset_y,
         )
 
     return

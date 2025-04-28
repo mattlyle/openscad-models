@@ -28,7 +28,9 @@ module CenteredTextLabel(
     text_string_metrics_size = metrics.size;
 
     x = ( centered_in_area_x - text_string_metrics_size.x ) / 2 - metrics.position.x;
-    y = centered_in_area_y <= 0 ? 0 : ( centered_in_area_y - text_string_metrics_size.y ) / 2;
+    y = centered_in_area_y <= 0
+        ? 0
+        : ( centered_in_area_y - text_string_metrics_size.y ) / 2 - metrics.descent;
 
     // # cube([ centered_in_area_x, centered_in_area_y, 0.01 ]);
 
@@ -38,12 +40,17 @@ module CenteredTextLabel(
             depth = depth,
             font_size = font_size,
             font = font,
-            color = color );
+            color = color
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function _GetListOfLineHeights( text_lines, font_size, font ) = [ for( line = text_lines ) textmetrics( text = line, size = font_size, font = font ).size[ 1 ] ];
+function _GetListOfLineHeights( text_lines, font_size, font ) =
+    [
+        for( line = text_lines )
+            textmetrics( text = line, size = font_size, font = font ).size[ 1 ]
+        ];
 
 module MultilineTextLabel(
     text_lines,
@@ -81,7 +88,8 @@ module MultilineTextLabel(
                 depth = depth,
                 font_size = font_size,
                 font = font,
-                color = color );
+                color = color
+                );
     }
 }
 
