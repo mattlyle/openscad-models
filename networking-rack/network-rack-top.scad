@@ -31,7 +31,7 @@ rack_top_z = 4.0;
 side_bar_overlap_x = rack_side_bar_x * 0.75;
 front_overlap_y = rack_front_bar_y * 0.75;
 
-num_ribs_left_right = 3;
+num_ribs = 3;
 
 rib_width = 2.4;
 rib_height = 12.0;
@@ -185,10 +185,23 @@ module NetworkRackTop( is_back, is_left )
     translate([ strut_left_x, strut_far_y, -rib_height ])
         cube([ rack_top_section_x, rib_width, rib_height ]);
 
-
     // left-right ribs
+    for( i = [ 0 : num_ribs - 1 ] )
+    {
+        rib_y = ( i + 1 ) * ( rack_top_section_y / ( num_ribs + 1 ) );
 
-    //
+        translate([ strut_left_x, strut_near_y + rib_y - rib_width / 2, -rib_height ])
+            cube([ rack_top_section_x, rib_width, rib_height ]);
+    }
+
+    // front-back ribs
+    for( i = [ 0 : num_ribs - 1 ] )
+    {
+        rib_x = ( i + 1 ) * ( rack_top_section_x / ( num_ribs + 1 ) );
+
+        translate([ strut_left_x + rib_x - rib_width / 2, strut_near_y, -rib_height ])
+            cube([ rib_width, rack_top_section_y, rib_height ]);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
