@@ -57,18 +57,30 @@ module RoundedCubeAlt2(
     round_bottom = true,
     round_left = true,
     round_right = true,
-    center = false,
-    fn = 36 )
+    round_front = true,
+    round_back = true
+    )
 {
-    assert( x > r * 2, "radius is too small for x" );
-    assert( y > r * 2, "radius is too small for y" );
-    assert( z > r * 2, "radius is too small for y" );
+    if( round_left && round_right )
+        assert( x >= r * 2, "radius is too small for x" );
+    else if( round_left || round_right )
+        assert( x >= r, "radius is too small for x" );
+
+    if( round_front && round_back )
+        assert( y >= r * 2, "radius is too small for y" );
+    else if( round_front || round_back )
+        assert( y >= r, "radius is too small for y" );
+
+    if( round_top && round_bottom )
+        assert( z >= r * 2, "radius is too small for z" );
+    else
+        assert( z >= r, "radius is too small for z" );
 
     x0 = round_left ? r : 0;
     x1 = round_right ? x - r : x;
 
-    y0 = r;
-    y1 = y - r;
+    y0 = round_front ? r : 0;
+    y1 = round_back ? y - r : y;
 
     z0 = round_bottom ? r : 0;
     z1 = round_top ? z - r : z;
@@ -85,74 +97,16 @@ module RoundedCubeAlt2(
         [ x0, y1, z1 ]
     ];
 
-    render()
+    intersection()
     {
-        difference()
+        cube([ x, y, z ]);
+
+        hull()
         {
-            // outer hull
-            hull()
+            for( i = [ 0 : 7 ] )
             {
-                for( i = [ 0 : 7 ] )
-                {
-                    translate( points[ i ] )
-                        sphere( r = r, $fn = fn );
-                }
-            }
-
-            // chop off the top if not rounded
-            if( !round_top )
-            {
-                translate([ 0, 0, z ])
-                    cube([ x, y, r ]);
-            }
-
-            // chop off the bottom if not rounded
-            if( !round_bottom )
-            {
-                translate([ 0, 0, -r ])
-                    cube([ x, y, r ]);
-            }
-
-            // chop off the left if not rounded
-            if( !round_left )
-            {
-                translate([ -r, 0, 0 ])
-                    cube([ r, y, z ]);
-            }
-
-            // chop off the right if not rounded
-            if( !round_right )
-            {
-                translate([ x, 0, 0 ])
-                    cube([ r, y, z ]);
-            }
-
-            // chop off the top right if not rounded
-            if( !round_right && !round_top )
-            {
-                translate([ x, 0, z ])
-                    cube([ r, y, r ]);
-            }
-
-            // chop off the bottom right if not rounded
-            if( !round_right && !round_bottom )
-            {
-                translate([ x, 0, -r ])
-                    cube([ r, y, r ]);
-            }
-
-            // chop off the top left if not rounded
-            if( !round_left && !round_top )
-            {
-                translate([ -r, 0, z ])
-                    cube([ r, y, r ]);
-            }
-
-            // chop off the bottom left if not rounded
-            if( !round_left && !round_bottom )
-            {
-                translate([ -r, 0, -r ])
-                    cube([ r, y, r ]);
+                translate( points[ i ] )
+                    sphere( r = r );
             }
         }
     }
