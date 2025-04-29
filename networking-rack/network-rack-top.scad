@@ -75,9 +75,15 @@ if( render_mode == "preview" )
 }
 else if( render_mode == "print-section-back-left" )
 {
-    translate([ rack_top_section_x + side_bar_overlap_x, 0, rack_top_z ])
-        rotate([ 0, 180, 0 ])
-            NetworkRackTop( false, true );
+    difference() // TODO: remove!  this cuts out part so it prints faster and uses less filament
+    {
+        translate([ rack_top_section_x + side_bar_overlap_x, 0, rack_top_z ])
+            rotate([ 0, 180, 0 ])
+                NetworkRackTop( false, true );
+
+        translate([ -10, 130, 0 ])
+            cube([ 160, 120, 40 ]);
+    }
 }
 else if( render_mode == "print-section-back-right" )
 {
