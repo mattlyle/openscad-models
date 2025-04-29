@@ -14,7 +14,7 @@ rack_offset_back_y = 32;
 rack_front_bar_y = 31;
 rack_bar_z = 30;
 
-rack_front_offset_z = 2; // the front bar is 2mm higher than the side bars
+rack_front_offset_z = 4; // the front bar is higher than the side bars
 
 rack_front_corder_x = 7;
 rack_front_corder_y = 5;
@@ -208,7 +208,7 @@ module NetworkRackTop( is_back, is_left )
         cube([
             side_bar_overlap_x,
             rack_top_section_y,
-            rack_front_offset_z - edge_clearance
+            rack_front_offset_z
             ]);
 
     difference()
