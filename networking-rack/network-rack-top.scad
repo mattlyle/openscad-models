@@ -43,6 +43,10 @@ edge_clearance = 0.2;
 
 rack_preview_color = [ 0.2, 0.2, 0.2 ];
 
+fan_x = 120.0;
+fan_y = 120.0;
+fan_z = 10.0;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -72,6 +76,9 @@ if( render_mode == "preview" )
 
     // back right
     // NetworkRackTop( true, false );
+
+    translate([ 0, 0, 20 ])
+        FanPreview();
 }
 else if( render_mode == "print-section-back-left" )
 {
@@ -323,6 +330,35 @@ module RibStrut( is_left )
             [ 2, 6, 7, 3 ],
         ]
     );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module FanPreview()
+{
+    fan_inside_r = min( fan_x, fan_y ) / 2 - 1;
+    num_fan_blades = 8;
+
+    difference()
+    {
+        cube([ fan_x, fan_y, fan_z ]);
+
+        translate([ fan_x / 2, fan_y / 2, -DIFFERENCE_CLEARANCE ])
+            cylinder( r = fan_inside_r, h = fan_z + DIFFERENCE_CLEARANCE * 2 );
+    }
+
+    translate([ fan_x / 2, fan_y / 2, -DIFFERENCE_CLEARANCE ])
+        cylinder( r = fan_inside_r * 0.5, h = fan_z + DIFFERENCE_CLEARANCE * 2 );
+
+    for( i = [ 0 : num_fan_blades - 1 ] )
+    {
+        angle = i * 360 / num_fan_blades;
+
+        translate([ fan_x / 2 - DIFFERENCE_CLEARANCE, fan_y / 2, -DIFFERENCE_CLEARANCE + fan_z * 0.05 ])
+            rotate([ -30, 0, angle ])
+                cube([ fan_x / 2, 1, fan_z * 0.9 ]);
+    }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
