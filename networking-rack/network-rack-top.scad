@@ -35,7 +35,7 @@ front_overlap_y = rack_front_bar_y * 0.5;
 
 num_ribs = 3;
 
-rib_width = 2.4;
+rib_width = 1.2;
 rib_height_outside = 30.0;
 rib_height_inside = 16.0;
 
