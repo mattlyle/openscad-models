@@ -19,6 +19,11 @@ rack_front_offset_z = 4; // the front bar is higher than the side bars
 rack_front_corder_x = 7;
 rack_front_corder_y = 5;
 
+fan_x = 120.0;
+fan_y = 120.0;
+fan_top_bottom_z = 10.5;
+fan_center_z = 35.0 - fan_top_bottom_z * 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -42,10 +47,6 @@ rib_height_inside = 16.0;
 edge_clearance = 0.2;
 
 rack_preview_color = [ 0.2, 0.2, 0.2 ];
-
-fan_x = 120.0;
-fan_y = 120.0;
-fan_z = 10.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -77,7 +78,7 @@ if( render_mode == "preview" )
     // back right
     // NetworkRackTop( true, false );
 
-    translate([ 0, 0, 20 ])
+    translate([ 0, -200, 0 ])
         FanPreview();
 }
 else if( render_mode == "print-section-back-left" )
@@ -336,29 +337,54 @@ module RibStrut( is_left )
 
 module FanPreview()
 {
-    fan_inside_r = min( fan_x, fan_y ) / 2 - 1;
-    num_fan_blades = 8;
+    fan_outside_r = min( fan_x, fan_y ) / 2;
+    fan_inside_r = fan_outside_r - 1;
+    fan_core_r = fan_inside_r * 0.3;
 
+    fan_full_z = fan_top_bottom_z * 2 + fan_center_z;
+
+    num_fan_blades = 7;
+
+    // top
     difference()
     {
-        cube([ fan_x, fan_y, fan_z ]);
+        cube([ fan_x, fan_y, fan_top_bottom_z ]);
 
         translate([ fan_x / 2, fan_y / 2, -DIFFERENCE_CLEARANCE ])
-            cylinder( r = fan_inside_r, h = fan_z + DIFFERENCE_CLEARANCE * 2 );
+            cylinder( r = fan_inside_r, h = fan_top_bottom_z + DIFFERENCE_CLEARANCE * 2 );
+    }
+
+    // center
+    difference()
+    {
+        translate([ fan_x / 2, fan_y / 2, fan_top_bottom_z ])
+            cylinder( r = fan_outside_r, h = fan_center_z );
+
+        translate([ fan_x / 2, fan_y / 2, fan_top_bottom_z - DIFFERENCE_CLEARANCE])
+            cylinder( r = fan_inside_r, h = fan_center_z + DIFFERENCE_CLEARANCE * 2 );
+    }
+
+    // bottom
+    difference()
+    {
+        translate([ 0, 0, fan_top_bottom_z + fan_center_z ])
+            cube([ fan_x, fan_y, fan_top_bottom_z ]);
+
+        translate([ fan_x / 2, fan_y / 2, fan_top_bottom_z + fan_center_z - DIFFERENCE_CLEARANCE ])
+            cylinder( r = fan_inside_r, h = fan_top_bottom_z + DIFFERENCE_CLEARANCE * 2 );
     }
 
     translate([ fan_x / 2, fan_y / 2, -DIFFERENCE_CLEARANCE ])
-        cylinder( r = fan_inside_r * 0.5, h = fan_z + DIFFERENCE_CLEARANCE * 2 );
+        cylinder( r = fan_core_r, h = fan_full_z );
 
     for( i = [ 0 : num_fan_blades - 1 ] )
     {
         angle = i * 360 / num_fan_blades;
 
-        translate([ fan_x / 2 - DIFFERENCE_CLEARANCE, fan_y / 2, -DIFFERENCE_CLEARANCE + fan_z * 0.05 ])
+        translate([ fan_x / 2 - DIFFERENCE_CLEARANCE, fan_y / 2, -DIFFERENCE_CLEARANCE + fan_full_z * 0.05 ])
             rotate([ -30, 0, angle ])
-                cube([ fan_x / 2, 1, fan_z * 0.9 ]);
+                cube([ fan_x * 0.47, 1, fan_full_z * 0.9 ]);
     }
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
