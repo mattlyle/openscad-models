@@ -61,7 +61,10 @@ def run_openscad(
 
     # print("command:", " ".join(args))
 
-    print("Generating %s" % (output_filename))
+    print("First line:      %s" % first_line)
+    print("Second line:     %s" % second_line)
+    print("Render mode:     %s" % render_mode)
+    print("Output filename: %s" % (output_filename))
     result = subprocess.run(args, capture_output=True, text=True)
 
     print("Return code:", result.returncode)
