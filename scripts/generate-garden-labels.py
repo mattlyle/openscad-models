@@ -5,7 +5,9 @@ import subprocess
 
 ####################################################################################
 
-OUT_PATH = "/media/turbo-general/3d-printing/_renders"
+OPENSCAD_PATH = "/home/matt/apps/OpenSCAD-2025.05.04.ai25246-x86_64.AppImage"
+
+OUT_PATH = "/media/turbo-nas/3d-printing/_renders"
 SCAD_PATH = "../garden-plant-tags.scad"
 
 VERSION = 11
@@ -37,7 +39,7 @@ def run_openscad(
 ):
 
     args = [
-        "openscad-nightly",
+        OPENSCAD_PATH,
         "-o",
         output_filename,
         "--enable",
