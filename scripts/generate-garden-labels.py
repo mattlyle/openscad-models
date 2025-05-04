@@ -24,6 +24,8 @@ LABELS = [
     ["Tiger Eye", "Sunflower", -1, 1],
     ["Alaska", "Nasturtium", -1, 1],
     ["Asclepias", "Butterfly Weed", -1, 0],
+    ["Queen Sophia", "Marigold", -1, 0],
+    ["French Filet", "Bush Bean", -1, 0],
 ]
 
 ################################################################################
