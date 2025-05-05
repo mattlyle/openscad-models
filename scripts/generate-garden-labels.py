@@ -14,6 +14,7 @@ VERSION = 11
 
 GENERATE_VERITCAL_TAGS = False
 
+# [ first line, second line, first line offset y, second line offset y ]
 LABELS = [
     ["Fresh Salsa", "Roma Tomato", -1, 1],
     ["SuperSauce", "Roma Tomato", -1, 0],
@@ -26,6 +27,8 @@ LABELS = [
     ["Asclepias", "Butterfly Weed", -1, 0],
     ["Queen Sophia", "Marigold", -1, 0],
     ["French Filet", "Bush Bean", -1, 0],
+    ["Genovese", "Basil", -1, 0],
+    ["Organic", "Oregano", -1, 0],
 ]
 
 ################################################################################
