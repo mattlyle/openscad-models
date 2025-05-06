@@ -9,6 +9,7 @@ include <modules/utils.scad>
 wyze_cam_v3_base_x = 45.0;
 wyze_cam_v3_base_y = 45.0;
 wyze_cam_v3_base_z = 9.5;
+
 wyze_cam_v3_base_top_overlap_x = 10.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +28,8 @@ mount_rounding_r = 0.2;
 mount_overhang_percent = 0.6;
 
 bumper_r = clearance * 2 * 0.6;
+
+preview_inner_wall_width = 2.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -63,11 +66,9 @@ else
 
 module WyzeCamV3BasePreview()
 {
-    inner_wall_width = 2.0;
-
     cutout_x = wyze_cam_v3_base_x - wyze_cam_v3_base_top_overlap_x * 2;
-    cutout_y = wyze_cam_v3_base_y - inner_wall_width * 2;
-    cutout_z = wyze_cam_v3_base_z - inner_wall_width;
+    cutout_y = wyze_cam_v3_base_y - preview_inner_wall_width * 2;
+    cutout_z = wyze_cam_v3_base_z - preview_inner_wall_width;
 
     difference()
     {
@@ -80,7 +81,7 @@ module WyzeCamV3BasePreview()
             round_bottom = true
             );
 
-        translate( [ wyze_cam_v3_base_top_overlap_x, inner_wall_width, inner_wall_width ] )
+        translate( [ wyze_cam_v3_base_top_overlap_x, preview_inner_wall_width, preview_inner_wall_width ] )
             cube([ cutout_x, cutout_y + DIFFERENCE_CLEARANCE, cutout_z]);
     }
 }
