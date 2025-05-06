@@ -19,7 +19,7 @@ render_mode = "preview";
 // render_mode = "print-mount";
 
 wall_width = 1.4;
-clearance = 0.2;
+clearance = 0.1;
 
 back_cutout_r = 8;
 
@@ -27,7 +27,7 @@ mount_rounding_r = 0.2;
 
 mount_overhang_percent = 0.6;
 
-bumper_r = clearance * 2 * 0.6;
+bumper_r = clearance * 2 * 0.8;
 
 preview_inner_wall_width = 2.0;
 
@@ -92,7 +92,7 @@ module WyzeCamV3Mount()
 {
     bumper_bottom_h = mount_base_x - wall_width * 2;
     bumper_top_h = mount_overhang_x - wall_width - mount_rounding_r;
-    bumper_offset_y = mount_rounding_r + clearance + bumper_r;
+    bumper_offset_y = wall_width + clearance + bumper_r;
 
     // base
     RoundedCubeAlt2(
