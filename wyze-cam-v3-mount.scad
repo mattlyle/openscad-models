@@ -20,6 +20,8 @@ render_mode = "preview";
 wall_width = 1.4;
 clearance = 0.2;
 
+back_cutout_r = 8;
+
 mount_rounding_r = 0.2;
 
 mount_overhang_percent = 0.6;
@@ -123,16 +125,23 @@ module WyzeCamV3Mount()
             );
 
     // back
-    translate([ 0, mount_base_y - wall_width, 0 ])
-        RoundedCubeAlt2(
-            x = mount_base_x,
-            y = wall_width,
-            z = mount_base_z,
-            r = mount_rounding_r,
-            round_top = true,
-            round_bottom = true
-            );
-    
+    difference()
+    {
+        translate([ 0, mount_base_y - wall_width, 0 ])
+            RoundedCubeAlt2(
+                x = mount_base_x,
+                y = wall_width,
+                z = mount_base_z,
+                r = mount_rounding_r,
+                round_top = true,
+                round_bottom = true
+                );
+        
+        translate([ mount_base_x / 2, mount_base_y + DIFFERENCE_CLEARANCE, mount_base_z ])
+            rotate([ 90, 0, 0 ])
+                cylinder( h = wall_width + DIFFERENCE_CLEARANCE * 2, r = back_cutout_r );
+    }
+
     // top - left
     translate([ 0, 0, mount_base_z - wall_width ])
         RoundedCubeAlt2(
@@ -172,7 +181,11 @@ module WyzeCamV3Mount()
                 );
 
     // bumper - top - right
-    translate([ mount_base_x - wall_width - bumper_top_h, bumper_offset_y, mount_base_z - wall_width ])
+    translate([
+        mount_base_x - wall_width - bumper_top_h,
+        bumper_offset_y,
+        mount_base_z - wall_width
+        ])
         rotate([ 0, 90, 0 ])
             cylinder(
                 h = bumper_top_h,
