@@ -215,7 +215,7 @@ module NetworkRackTop( is_back, is_left )
 
     // under the overhang
     translate([
-        is_left ? 0 : 10,
+        is_left ? 0 : section_x - side_bar_overlap_x,
         is_back ? 0 : front_overlap_y,
         -rack_front_offset_z + edge_clearance
         ])
