@@ -21,10 +21,10 @@ rack_front_corder_y = 5;
 
 fan_x = 120.0;
 fan_y = 120.0;
-fan_top_bottom_z = 10.5;
-fan_center_z = 35.0 - fan_top_bottom_z * 2;
+fan_top_bottom_z = 4.1;
+fan_center_z = 25.3 - fan_top_bottom_z * 2;
 fan_screw_hole_offset = 7.5;
-fan_screw_hole_r = 8.2 / 2;
+fan_screw_hole_r = 5.0 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -411,16 +411,19 @@ module NetworkRackTop(
 
         if( fan_cutout_location_xy )
         {
+            fan_cutout_z = rib_height_outside + DIFFERENCE_CLEARANCE;
+
             // remove the fan cutout from the ribs
             translate([
                 fan_cutout_location_xy.x - edge_clearance - DIFFERENCE_CLEARANCE,
                 fan_cutout_location_xy.y - edge_clearance - DIFFERENCE_CLEARANCE,
-                -fan_full_z + DIFFERENCE_CLEARANCE
+                -fan_cutout_z + DIFFERENCE_CLEARANCE
                 ])
                 cube([
                     fan_x + edge_clearance * 2 + DIFFERENCE_CLEARANCE * 2,
                     fan_y + edge_clearance * 2 + DIFFERENCE_CLEARANCE * 2,
-                    fan_full_z ]);
+                    fan_cutout_z
+                    ]);
         }
     }
 }
