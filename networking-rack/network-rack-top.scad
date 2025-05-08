@@ -23,12 +23,14 @@ fan_x = 120.0;
 fan_y = 120.0;
 fan_top_bottom_z = 10.5;
 fan_center_z = 35.0 - fan_top_bottom_z * 2;
+fan_screw_hole_offset = 7.5;
+fan_screw_hole_r = 8.2 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print-section-back-left";
+render_mode = "preview";
+// render_mode = "print-section-back-left";
 // render_mode = "print-section-back-right";
 // render_mode = "print-section-front-left";
 // render_mode = "print-section-front-right";
@@ -345,7 +347,7 @@ module FanPreview()
 
     num_fan_blades = 7;
 
-    // top
+    // bottom
     difference()
     {
         cube([ fan_x, fan_y, fan_top_bottom_z ]);
@@ -364,14 +366,48 @@ module FanPreview()
             cylinder( r = fan_inside_r, h = fan_center_z + DIFFERENCE_CLEARANCE * 2 );
     }
 
-    // bottom
+    // top
     difference()
     {
-        translate([ 0, 0, fan_top_bottom_z + fan_center_z ])
+        section_z = fan_top_bottom_z + fan_center_z;
+
+        translate([ 0, 0, section_z ])
             cube([ fan_x, fan_y, fan_top_bottom_z ]);
 
-        translate([ fan_x / 2, fan_y / 2, fan_top_bottom_z + fan_center_z - DIFFERENCE_CLEARANCE ])
+        translate([ fan_x / 2, fan_y / 2, section_z - DIFFERENCE_CLEARANCE ])
             cylinder( r = fan_inside_r, h = fan_top_bottom_z + DIFFERENCE_CLEARANCE * 2 );
+
+        // bottom left screw hole
+        translate([
+            fan_screw_hole_offset,
+            fan_screw_hole_offset,
+            section_z - DIFFERENCE_CLEARANCE
+            ])
+            cylinder( r = fan_screw_hole_r, h = fan_top_bottom_z + DIFFERENCE_CLEARANCE * 2 );
+
+        // bottom right screw hole
+        translate([
+            fan_x - fan_screw_hole_offset,
+            fan_screw_hole_offset,
+            section_z - DIFFERENCE_CLEARANCE
+            ])
+            cylinder( r = fan_screw_hole_r, h = fan_top_bottom_z + DIFFERENCE_CLEARANCE * 2 );
+
+        // top left screw hole
+        translate([
+            fan_screw_hole_offset,
+            fan_y - fan_screw_hole_offset,
+            section_z - DIFFERENCE_CLEARANCE
+            ])
+            cylinder( r = fan_screw_hole_r, h = fan_top_bottom_z + DIFFERENCE_CLEARANCE * 2 );
+
+        // top right screw hole
+        translate([
+            fan_x - fan_screw_hole_offset,
+            fan_y - fan_screw_hole_offset,
+            section_z - DIFFERENCE_CLEARANCE
+            ])
+            cylinder( r = fan_screw_hole_r, h = fan_top_bottom_z + DIFFERENCE_CLEARANCE * 2 );
     }
 
     translate([ fan_x / 2, fan_y / 2, -DIFFERENCE_CLEARANCE ])
