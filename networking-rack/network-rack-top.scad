@@ -38,7 +38,9 @@ render_mode = "preview";
 rack_top_z = 2.4;
 
 side_bar_overlap_x = rack_side_bar_x * 0.5;
+
 front_overlap_y = rack_front_bar_y * 0.5;
+back_overlap_y = 10;
 
 num_ribs = 3;
 
@@ -75,10 +77,12 @@ if( render_mode == "preview" )
     //     NetworkRackTop( false, false );
 
     // back left
-    // NetworkRackTop( true, true );
+    translate([ -side_bar_overlap_x, rack_top_section_y, 0 ])
+        NetworkRackTop( true, true );
 
     // back right
-    // NetworkRackTop( true, false );
+    translate([ rack_top_section_x, rack_top_section_y, 0 ])
+        NetworkRackTop( true, false );
 
     translate([ 0, -200, 0 ])
         FanPreview();
@@ -165,9 +169,9 @@ module NetworkRackPreview()
 module NetworkRackTop( is_back, is_left )
 {
     section_x = side_bar_overlap_x + rack_top_section_x;
-    section_y = is_back
-        ? 0 // TODO: finish with back setup
-        : front_overlap_y + rack_top_section_y;
+    section_y = !is_back
+        ? rack_top_section_y + front_overlap_y
+        : rack_top_section_y + back_overlap_y;
 
     echo( str( "section_x=", section_x ) );
     echo( str( "section_y=", section_y ) );
@@ -188,12 +192,6 @@ module NetworkRackTop( is_back, is_left )
         round_back = is_back
         );
 
-    // % cube([
-    //     section_x,
-    //     section_y,
-    //     rack_top_z
-    //     ]);
-
     strut_left_x = is_left
         ? side_bar_overlap_x
         : 0;
@@ -202,10 +200,10 @@ module NetworkRackTop( is_back, is_left )
         : section_x - side_bar_overlap_x - rib_width;
 
     strut_near_y = is_back
-        ? -1 // TODO: finish
+        ? 0
         : front_overlap_y;
     strut_far_y = is_back
-        ? -1 // TODO: finish
+        ? section_y - rib_width - back_overlap_y
         : section_y - rib_width;
 
     strut_left_z = is_left
@@ -305,15 +303,22 @@ module RibStrut( is_left )
 {
     // %cube([ rack_top_section_x, rib_width, rib_height_outside ]);
 
+    left_z = is_left
+        ? rib_height_outside - rib_height_inside
+        : 0;
+    right_z = is_left
+        ? 0
+        : rib_height_outside - rib_height_inside;
+
     points = [
         [ rib_width, 0, rib_height_outside ],
         [ rack_top_section_x - rib_width, 0, rib_height_outside ],
-        [ rack_top_section_x - rib_width, 0, rib_height_outside - rib_height_inside ],
-        [ rib_width, 0, 0 ],
+        [ rack_top_section_x - rib_width, 0, left_z ],
+        [ rib_width, 0, right_z ],
         [ rib_width, rib_width, rib_height_outside ],
         [ rack_top_section_x - rib_width, rib_width, rib_height_outside ],
         [ rack_top_section_x - rib_width, rib_width, rib_height_outside - rib_height_inside ],
-        [ rib_width, rib_width, 0 ],
+        [ rib_width, rib_width, right_z ],
     ];
 
     // for( point = points )
