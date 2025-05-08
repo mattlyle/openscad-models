@@ -60,6 +60,17 @@ $fn = $preview ? 64 : 128;
 rack_top_section_x = rack_inside_x / 2 - edge_clearance;
 rack_top_section_y = rack_inside_y / 2 - edge_clearance;
 
+fan_location_xy = [
+    calculateOffsetToCenter( rack_top_section_x, fan_x ),
+    calculateOffsetToCenter( rack_top_section_y, fan_y )
+    ];
+
+fan_outside_r = min( fan_x, fan_y ) / 2;
+fan_inside_r = fan_outside_r - 1;
+fan_core_r = fan_inside_r * 0.3;
+
+fan_full_z = fan_top_bottom_z * 2 + fan_center_z;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -82,10 +93,10 @@ if( render_mode == "preview" )
 
     // back right
     translate([ rack_top_section_x, rack_top_section_y, 0 ])
-        NetworkRackTop( true, false );
+        NetworkRackTop( true, false, fan_location_xy );
 
-    translate([ 0, -200, 0 ])
-        FanPreview();
+    // translate([ 0, -200, 0 ])
+    //     FanPreview();
 }
 else if( render_mode == "print-section-back-left" )
 {
@@ -101,6 +112,9 @@ else if( render_mode == "print-section-back-left" )
 }
 else if( render_mode == "print-section-back-right" )
 {
+    translate([ rack_top_section_x + side_bar_overlap_x, 0, 0 ])
+        rotate([ 0, 180, 0 ])
+            NetworkRackTop( true, false, fan_location_xy );
 }
 else if( render_mode == "print-section-front-left" )
 {
@@ -166,31 +180,82 @@ module NetworkRackPreview()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module NetworkRackTop( is_back, is_left )
+module NetworkRackTop(
+    is_back,
+    is_left,
+    fan_cutout_location_xy = undef,
+    usb_hub_cutout_location_xy = undef
+    )
 {
     section_x = side_bar_overlap_x + rack_top_section_x;
     section_y = !is_back
         ? rack_top_section_y + front_overlap_y
         : rack_top_section_y + back_overlap_y;
 
-    echo( str( "section_x=", section_x ) );
-    echo( str( "section_y=", section_y ) );
+    // echo( str( "section_x=", section_x ) );
+    // echo( str( "section_y=", section_y ) );
     assert( section_x <= BUILD_PLATE_X, "Too big for build plate (x)" );
     assert( section_y <= BUILD_PLATE_Y, "Too big for build plate (y)" );
 
     // flat top
-    RoundedCubeAlt2(
-        x = section_x,
-        y = section_y,
-        z = rack_top_z,
-        r = rack_top_z,
-        round_top = true,
-        round_bottom = false,
-        round_left = is_left,
-        round_right = !is_left,
-        round_front = !is_back,
-        round_back = is_back
-        );
+    difference()
+    {
+        RoundedCubeAlt2(
+            x = section_x,
+            y = section_y,
+            z = rack_top_z,
+            r = rack_top_z,
+            round_top = true,
+            round_bottom = false,
+            round_left = is_left,
+            round_right = !is_left,
+            round_front = !is_back,
+            round_back = is_back
+            );
+
+        if( fan_cutout_location_xy )
+        {
+            // remove the fan cutout from the top
+            translate([
+                fan_cutout_location_xy.x + fan_x / 2,
+                fan_cutout_location_xy.y + fan_y / 2,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cylinder( r = fan_outside_r, h = rack_top_z + DIFFERENCE_CLEARANCE * 2 );
+
+            // cut out for the bottom left screw hole
+            translate([
+                fan_cutout_location_xy.x + fan_screw_hole_offset,
+                fan_cutout_location_xy.y + fan_screw_hole_offset,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cylinder( r = fan_screw_hole_r, h = rack_top_z + DIFFERENCE_CLEARANCE * 2 );
+
+            // cut out for the bottom right screw hole
+            translate([
+                fan_cutout_location_xy.x + fan_x - fan_screw_hole_offset,
+                fan_cutout_location_xy.y + fan_screw_hole_offset,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cylinder( r = fan_screw_hole_r, h = rack_top_z + DIFFERENCE_CLEARANCE * 2 );
+
+            // cut out for the top left screw hole
+            translate([
+                fan_cutout_location_xy.x + fan_screw_hole_offset,
+                fan_cutout_location_xy.y + fan_y - fan_screw_hole_offset,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cylinder( r = fan_screw_hole_r, h = rack_top_z + DIFFERENCE_CLEARANCE * 2 );
+
+            // cut out for the top right screw hole
+            translate([
+                fan_cutout_location_xy.x + fan_x - fan_screw_hole_offset,
+                fan_cutout_location_xy.y + fan_y - fan_screw_hole_offset,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cylinder( r = fan_screw_hole_r, h = rack_top_z + DIFFERENCE_CLEARANCE * 2 );
+        }
+    }
 
     strut_left_x = is_left
         ? side_bar_overlap_x
@@ -224,6 +289,55 @@ module NetworkRackTop( is_back, is_left )
             rack_top_section_y,
             rack_front_offset_z
             ]);
+
+    // fan cutout
+    if( fan_cutout_location_xy )
+    {
+        // translate([ fan_cutout_location_xy.x, fan_cutout_location_xy.y, -50 ])
+        //     FanPreview();
+        // # translate([
+        //     fan_cutout_location_xy.x,
+        //     fan_cutout_location_xy.y,
+        //     -fan_full_z
+        //     ])
+        //     cube([ fan_x, fan_y, fan_full_z ]);
+
+        fan_frame_x = fan_x + rib_width * 2 + edge_clearance * 2;
+        fan_frame_y = fan_y + rib_width * 2 + edge_clearance * 2;
+        fan_frame_z = fan_full_z;
+
+        // frame bottom
+        translate([
+            fan_cutout_location_xy.x - rib_width - edge_clearance,
+            fan_cutout_location_xy.y - rib_width - edge_clearance,
+            -fan_frame_z
+            ])
+            cube([ fan_frame_x, rib_width, fan_frame_z ]);
+
+        // frame top
+        translate([
+            fan_cutout_location_xy.x - rib_width - edge_clearance,
+            fan_cutout_location_xy.y + fan_y + edge_clearance,
+            -fan_frame_z
+            ])
+            cube([ fan_frame_x, rib_width, fan_frame_z ]);
+
+        // frame left
+        translate([
+            fan_cutout_location_xy.x - rib_width - edge_clearance,
+            fan_cutout_location_xy.y - rib_width - edge_clearance,
+            -fan_frame_z
+            ])
+            cube([ rib_width, fan_frame_y, fan_frame_z ]);
+
+        // frame right
+        translate([
+            fan_cutout_location_xy.x + fan_x + edge_clearance,
+            fan_cutout_location_xy.y - rib_width - edge_clearance,
+            -fan_frame_z
+            ])
+            cube([ rib_width, fan_frame_y, fan_frame_z ]);
+    }
 
     difference()
     {
@@ -294,6 +408,20 @@ module NetworkRackTop( is_back, is_left )
                         ]);
             }
         }
+
+        if( fan_cutout_location_xy )
+        {
+            // remove the fan cutout from the ribs
+            translate([
+                fan_cutout_location_xy.x - edge_clearance - DIFFERENCE_CLEARANCE,
+                fan_cutout_location_xy.y - edge_clearance - DIFFERENCE_CLEARANCE,
+                -fan_full_z + DIFFERENCE_CLEARANCE
+                ])
+                cube([
+                    fan_x + edge_clearance * 2 + DIFFERENCE_CLEARANCE * 2,
+                    fan_y + edge_clearance * 2 + DIFFERENCE_CLEARANCE * 2,
+                    fan_full_z ]);
+        }
     }
 }
 
@@ -344,12 +472,6 @@ module RibStrut( is_left )
 
 module FanPreview()
 {
-    fan_outside_r = min( fan_x, fan_y ) / 2;
-    fan_inside_r = fan_outside_r - 1;
-    fan_core_r = fan_inside_r * 0.3;
-
-    fan_full_z = fan_top_bottom_z * 2 + fan_center_z;
-
     num_fan_blades = 7;
 
     // bottom
