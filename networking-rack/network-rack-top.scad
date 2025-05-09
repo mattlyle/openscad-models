@@ -53,8 +53,6 @@ rib_height_inside = 16.0;
 
 edge_clearance = 0.2;
 
-rack_preview_color = [ 0.2, 0.2, 0.2 ];
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -360,8 +358,6 @@ module NetworkRackTop(
 
         for( i = [ 0 : 3 ] )
         {
-            // echo( str( i, " = ", i * 90 ) );
-            
             translate([
                 fan_cutout_location_xy.x + fan_x / 2,
                 fan_cutout_location_xy.y + fan_y / 2,
@@ -509,12 +505,6 @@ module RibStrut( is_left )
         [ rib_width, rib_width, right_z ],
     ];
 
-    // for( point = points )
-    // {
-    //     #translate( point )
-    //         sphere( r = 0.25 );
-    // }
-
     polyhedron(
         points = points,
         faces = [
@@ -547,12 +537,6 @@ module CordClipAndBase()
         [ cord_clip_base_width / 2, cord_clip_length, 0 ],
         [ -cord_clip_base_width / 2, 2 * cord_clip_length, -cord_clip_support_height ],
     ];
-
-    // for( point = points )
-    // {
-    //     #translate( point )
-    //         sphere( r = 0.25 );
-    // }
 
     polyhedron(
     points = points,
