@@ -53,6 +53,8 @@ rib_height_inside = 16.0;
 
 edge_clearance = 0.2;
 
+rack_preview_color = [ 0.2, 0.2, 0.2 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -162,7 +164,7 @@ module NetworkRackPreview()
     //             ]);
 
     // left bar
-    color( [ 0.2, 0.2, 0.2 ] )
+    color( rack_preview_color )
         translate([ -rack_side_bar_x, 0, -rack_bar_z ])
             cube([ rack_side_bar_x, rack_inside_y, rack_bar_z - rack_front_offset_z ]);
 
