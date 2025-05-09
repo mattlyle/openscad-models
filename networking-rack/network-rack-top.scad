@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 include <../modules/rounded-cube.scad>
+include <../modules/cord-clip.scad>
 include <../modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +26,8 @@ fan_top_bottom_z = 4.1;
 fan_center_z = 25.3 - fan_top_bottom_z * 2;
 fan_screw_hole_offset = 7.5;
 fan_screw_hole_r = 5.0 / 2;
+
+fan_wire_r = 3.35 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -70,6 +73,26 @@ fan_inside_r = fan_outside_r - 1;
 fan_core_r = fan_inside_r * 0.3;
 
 fan_full_z = fan_top_bottom_z * 2 + fan_center_z;
+
+fan_frame_width = rib_width;
+fan_frame_x = fan_x + fan_frame_width * 2 + edge_clearance * 2;
+fan_frame_y = fan_y + fan_frame_width * 2 + edge_clearance * 2;
+fan_frame_z = fan_full_z;
+
+cord_clip_inner_r = fan_wire_r + edge_clearance;
+cord_clip_wall_thickness = rack_top_z;
+cord_clip_length = rack_top_z;
+cord_clip_base_width = CalculateCordClipBaseWidth(
+    cord_clip_inner_r,
+    cord_clip_wall_thickness
+    );
+cord_clip_base_height = CalculateCordClipBaseHeight(
+    cord_clip_inner_r,
+    cord_clip_wall_thickness
+    );
+cord_clip_spacing = fan_x / 4.5;
+// cord_clip_support_size = cord_clip_inner_r * 1.2;
+cord_clip_support_height = cord_clip_base_width * 1.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -302,41 +325,75 @@ module NetworkRackTop(
         //     ])
         //     cube([ fan_x, fan_y, fan_full_z ]);
 
-        fan_frame_x = fan_x + rib_width * 2 + edge_clearance * 2;
-        fan_frame_y = fan_y + rib_width * 2 + edge_clearance * 2;
-        fan_frame_z = fan_full_z;
 
         // frame bottom
         translate([
-            fan_cutout_location_xy.x - rib_width - edge_clearance,
-            fan_cutout_location_xy.y - rib_width - edge_clearance,
+            fan_cutout_location_xy.x - fan_frame_width - edge_clearance,
+            fan_cutout_location_xy.y - fan_frame_width - edge_clearance,
             -fan_frame_z
             ])
-            cube([ fan_frame_x, rib_width, fan_frame_z ]);
+            cube([ fan_frame_x, fan_frame_width, fan_frame_z ]);
 
         // frame top
         translate([
-            fan_cutout_location_xy.x - rib_width - edge_clearance,
+            fan_cutout_location_xy.x - fan_frame_width - edge_clearance,
             fan_cutout_location_xy.y + fan_y + edge_clearance,
             -fan_frame_z
             ])
-            cube([ fan_frame_x, rib_width, fan_frame_z ]);
+            cube([ fan_frame_x, fan_frame_width, fan_frame_z ]);
 
         // frame left
         translate([
-            fan_cutout_location_xy.x - rib_width - edge_clearance,
-            fan_cutout_location_xy.y - rib_width - edge_clearance,
+            fan_cutout_location_xy.x - fan_frame_width - edge_clearance,
+            fan_cutout_location_xy.y - fan_frame_width - edge_clearance,
             -fan_frame_z
             ])
-            cube([ rib_width, fan_frame_y, fan_frame_z ]);
+            cube([ fan_frame_width, fan_frame_y, fan_frame_z ]);
 
         // frame right
         translate([
             fan_cutout_location_xy.x + fan_x + edge_clearance,
-            fan_cutout_location_xy.y - rib_width - edge_clearance,
+            fan_cutout_location_xy.y - fan_frame_width - edge_clearance,
             -fan_frame_z
             ])
-            cube([ rib_width, fan_frame_y, fan_frame_z ]);
+            cube([ fan_frame_width, fan_frame_y, fan_frame_z ]);
+
+        for( i = [ 0 : 3 ] )
+        {
+            // echo( str( i, " = ", i * 90 ) );
+            
+            translate([
+                fan_cutout_location_xy.x + fan_x / 2,
+                fan_cutout_location_xy.y + fan_y / 2,
+                -fan_frame_z
+                ])
+                rotate([ 0, 0, i * 90 ])
+                {
+                    // #translate([
+                    //     -fan_x / 2 - edge_clearance,
+                    //     fan_y / 2 + edge_clearance,
+                    //     -0.25
+                    //     ])
+                    //     cube([ fan_x + edge_clearance * 2, fan_frame_width, 0.25 ]);
+
+                    translate([
+                        -cord_clip_spacing,
+                        fan_y / 2 + edge_clearance + fan_frame_width + cord_clip_base_width / 2,
+                        cord_clip_base_height
+                        ])
+                        rotate([ 180, 0, 90 ])
+                            CordClipAndBase();
+                            
+
+                    translate([
+                        cord_clip_spacing,
+                        fan_y / 2 + edge_clearance + fan_frame_width + cord_clip_base_width / 2,
+                        cord_clip_base_height
+                        ])
+                        rotate([ 180, 0, 90 ])
+                            CordClipAndBase();
+                }
+        }
     }
 
     difference()
@@ -467,6 +524,44 @@ module RibStrut( is_left )
             [ 0, 4, 5, 1 ],
             [ 1, 5, 6, 2 ],
             [ 2, 6, 7, 3 ],
+        ]
+    );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module CordClipAndBase()
+{
+    CordClip(
+        cord_clip_inner_r,
+        cord_clip_wall_thickness,
+        cord_clip_length,
+        show_preview = $preview,
+        );
+
+    points = [
+        [ -cord_clip_base_width / 2, 0, 0 ],
+        [ cord_clip_base_width / 2, 0, 0 ],
+        [ -cord_clip_base_width / 2, -cord_clip_length, -cord_clip_support_height ],
+        [ -cord_clip_base_width / 2, cord_clip_length, 0 ],
+        [ cord_clip_base_width / 2, cord_clip_length, 0 ],
+        [ -cord_clip_base_width / 2, 2 * cord_clip_length, -cord_clip_support_height ],
+    ];
+
+    // for( point = points )
+    // {
+    //     #translate( point )
+    //         sphere( r = 0.25 );
+    // }
+
+    polyhedron(
+    points = points,
+    faces = [
+        [ 0, 1, 2 ],
+        [ 3, 5, 4 ],
+        [ 1, 4, 5, 2 ],
+        [ 0, 2, 5, 3 ],
+        [ 0, 3, 4, 1 ]
         ]
     );
 }

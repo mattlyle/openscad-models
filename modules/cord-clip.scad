@@ -3,9 +3,15 @@
 include <utils.scad>
 include <pie-slice-prism.scad>
 
+DEFAULT_CUTOUT_ANGLE = 100;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function CalculateCordClipBaseWidth( inner_r, wall_thickness ) = ( inner_r + wall_thickness ) * 2;
+function CalculateCordClipBaseWidth( inner_r, wall_thickness ) =
+    ( inner_r + wall_thickness ) * 2;
+
+function CalculateCordClipBaseHeight( inner_r, wall_thickness, cutout_angle = DEFAULT_CUTOUT_ANGLE ) =
+    ( inner_r + wall_thickness ) * sin( 90 - cutout_angle / 2 ) + ( inner_r + wall_thickness );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -16,7 +22,7 @@ module CordClip(
     show_preview = true,
     left_support_size = -1,
     right_support_size = -1,
-    cutout_angle = 100
+    cutout_angle = DEFAULT_CUTOUT_ANGLE
     )
 {
     outer_r = inner_r + wall_thickness;
