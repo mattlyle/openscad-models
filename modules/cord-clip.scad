@@ -79,35 +79,32 @@ module _CordClipSupport( is_left, length, cutout_angle, support_size, outer_r )
 
     points = is_left
         ? [
-            [ -support_offset_x - support_size, 0, 0 ],
+            [ -outer_r - support_size, 0, 0 ],
             [ -support_offset_x, 0, support_offset_z ],
-            [ -support_offset_x, 0, 0 ],
-            [ -support_offset_x - support_size, length, 0 ],
+            [ -outer_r, 0, 0 ],
+            [ -outer_r - support_size, length, 0 ],
             [ -support_offset_x, length, support_offset_z ],
-            [ -support_offset_x, length, 0 ],
+            [ -outer_r, length, 0 ],
             ]
         : [
             [ support_offset_x, 0, support_offset_z ],
-            [ support_offset_x + support_size, 0, 0 ],
-            [ support_offset_x, 0, 0 ],
+            [ outer_r + support_size, 0, 0 ],
+            [ outer_r, 0, 0 ],
             [ support_offset_x, length, support_offset_z ],
-            [ support_offset_x + support_size, length, 0 ],
-            [ support_offset_x, length, 0 ]
+            [ outer_r + support_size, length, 0 ],
+            [ outer_r, length, 0 ]
         ];
 
-    // for( point = points )
-    // {
-    //     #translate( point )
-    //         sphere( r = 2 );
-    // }
-
-    polyhedron( points = points, faces = [
-        [ 0, 1, 2 ],
-        [ 3, 5, 4 ],
-        [ 1, 4, 5, 2 ],
-        [ 0, 2, 5, 3 ],
-        [ 0, 3, 4, 1 ]
-    ] );
+    polyhedron(
+        points = points,
+        faces = [
+            [ 0, 1, 2 ],
+            [ 3, 5, 4 ],
+            [ 1, 4, 5, 2 ],
+            [ 0, 2, 5, 3 ],
+            [ 0, 3, 4, 1 ]
+            ]
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
