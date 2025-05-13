@@ -64,23 +64,23 @@ module SnapConnectorM(
         [ 0, depth, height ],
         [ 0, depth + nose_depth, height + nose_lock_z ],
         [ 0, depth + nose_depth, height + nose_lock_z + nose_height ],
-        [ 0, depth, height + nose_lock_z + nose_height + nose_in_z ],
+        [ 0, depth / 2, height + nose_lock_z + nose_height + nose_in_z ],
         [ 0, 0, height + nose_lock_z + nose_height + nose_in_z ],
         [ 0, 0, height ],
 
         [ width, depth, height ],
         [ width, depth + nose_depth, height + nose_lock_z ],
         [ width, depth + nose_depth, height + nose_lock_z + nose_height ],
-        [ width, depth, height + nose_lock_z + nose_height + nose_in_z ],
+        [ width, depth / 2, height + nose_lock_z + nose_height + nose_in_z ],
         [ width, 0, height + nose_lock_z + nose_height + nose_in_z ],
         [ width, 0, height ],
-    ];
+        ];
 
     polyhedron(
         points = points,
         faces = [
             [ 0, 5, 4, 3, 2, 1 ],
-            [ 6, 11, 10, 9, 8, 7 ],
+            [ 6, 7, 8, 9, 10, 11 ],
             [ 0, 6, 11, 5 ],
             [ 0, 1, 7, 6 ],
             [ 1, 2, 8, 7 ],
@@ -88,29 +88,32 @@ module SnapConnectorM(
             [ 3, 4, 10, 9 ],
             [ 4, 5, 11, 10 ]
             ]
-    );
+        );
 
-    // base back
-    difference()
+    if( base_radius > 0 )
     {
-        translate([ 0, -base_radius, 0 ])
-            cube([ width, base_radius, base_radius ]);
+        // base back
+        // difference()
+        // {
+        //     translate([ 0, -base_radius, 0 ])
+        //         cube([ width, base_radius, base_radius ]);
 
-        translate([ -DIFFERENCE_CLEARANCE, -base_radius, base_radius ])
-            rotate([ 0, 90, 0 ])
-                cylinder( r = base_radius, h = width + DIFFERENCE_CLEARANCE * 2 );
+        //     translate([ -DIFFERENCE_CLEARANCE, -base_radius, base_radius ])
+        //         rotate([ 0, 90, 0 ])
+        //             cylinder( r = base_radius, h = width + DIFFERENCE_CLEARANCE * 2 );
+        // }
+
+        // base front
+        // difference()
+        // {
+        //     translate([ 0, depth, 0 ])
+        //         cube([ width, base_radius, base_radius ]);
+
+        //     translate([ -DIFFERENCE_CLEARANCE, base_radius + depth, base_radius ])
+        //         rotate([ 0, 90, 0 ])
+        //             cylinder( r = base_radius, h = width + DIFFERENCE_CLEARANCE * 2 );
+        // }
     }
-
-    // base front
-    // difference()
-    // {
-    //     translate([ 0, depth, 0 ])
-    //         cube([ width, base_radius, base_radius ]);
-
-    //     translate([ -DIFFERENCE_CLEARANCE, base_radius + depth, base_radius ])
-    //         rotate([ 0, 90, 0 ])
-    //             cylinder( r = base_radius, h = width + DIFFERENCE_CLEARANCE * 2 );
-    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

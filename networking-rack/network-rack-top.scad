@@ -2,6 +2,7 @@
 
 include <../modules/rounded-cube.scad>
 include <../modules/cord-clip.scad>
+include <../modules/snap-connectors.scad>
 include <../modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +38,7 @@ render_mode = "preview";
 // render_mode = "print-section-back-right";
 // render_mode = "print-section-front-left";
 // render_mode = "print-section-front-right";
+render_mode = "print-snap-connector-test";
 
 rack_top_z = 2.4;
 
@@ -52,6 +54,18 @@ rib_height_outside = 30.0;
 rib_height_inside = 16.0;
 
 edge_clearance = 0.2;
+
+snap_connector_width = 8.0;
+snap_connector_height = rib_width; // TODO: should be the wall width?
+snap_connector_depth = 1.2;
+snap_connector_angle_in = 45;
+snap_connector_angle_lock = 80;
+snap_connector_nose_depth = 0.6;
+snap_connector_nose_height = 0.8;
+snap_connector_base_radius = 2.0;
+snap_connector_offset_percent = 0.2;
+
+snap_connector_test_y = 40;
 
 rack_preview_color = [ 0.2, 0.2, 0.2 ];
 
@@ -120,6 +134,12 @@ if( render_mode == "preview" )
 
     // translate([ 0, -200, 0 ])
     //     FanPreview();
+
+    // snap connector test
+    translate([ -100, 0, 0 ])
+        SnapConnectorTest( true );
+    translate([ -100, 0, 0 ])
+        SnapConnectorTest( false );
 }
 else if( render_mode == "print-section-back-left" )
 {
@@ -144,6 +164,28 @@ else if( render_mode == "print-section-front-left" )
 }
 else if( render_mode == "print-section-front-right" )
 {
+}
+else if( render_mode == "print-snap-connector-test" )
+{
+    translate([ -10, snap_connector_test_y, rib_width ])
+        rotate([ 0, -90, 0 ])
+            SnapConnectorTest( true );
+
+    translate([ 20, snap_connector_test_y, 0 ])
+        rotate([ 0, -90, 0 ])
+            SnapConnectorTest( false );
+
+    // translate([ 0, -10, 0 ])
+    //     SnapConnectorM(
+    //         width = snap_connector_width,
+    //         height = snap_connector_height,
+    //         depth = snap_connector_depth,
+    //         angle_in = snap_connector_angle_in,
+    //         angle_lock = snap_connector_angle_lock,
+    //         nose_depth = snap_connector_nose_depth,
+    //         nose_height = snap_connector_nose_height,
+    //         base_radius = snap_connector_base_radius
+    //         );
 }
 else
 {
@@ -394,6 +436,13 @@ module NetworkRackTop(
         }
     }
 
+    snap_offset_bottom_y = rack_top_section_y * snap_connector_offset_percent;
+    snap_offset_top_y = rack_top_section_y * ( 1.0 - snap_connector_offset_percent );
+    // snap_cutout_y = snap_connector_depth
+    //     // + snap_connector_nose_depth
+    //     + snap_connector_base_radius
+    //     + DIFFERENCE_CLEARANCE;
+
     difference()
     {
         union()
@@ -413,6 +462,45 @@ module NetworkRackTop(
             // rear outer strut
             translate([ strut_left_x, strut_far_y, -rib_height_outside ])
                 RibStrut( is_left );
+
+/*
+            if( is_left )
+            {
+                translate([ strut_right_x + rib_width, snap_offset_bottom_y, 0 ])
+                    rotate([ 0, 90, 0 ])
+                        SnapConnectorM(
+                            width = snap_connector_width,
+                            height = snap_connector_height,
+                            depth = snap_connector_depth,
+                            angle_in = snap_connector_angle_in,
+                            angle_lock = snap_connector_angle_lock,
+                            nose_depth = snap_connector_nose_depth,
+                            nose_height = snap_connector_nose_height,
+                            base_radius = snap_connector_base_radius
+                            );
+                // # translate([
+                //     strut_right_x + rib_width,
+                //     snap_offset_bottom_y - snap_connector_base_radius,
+                //     -snap_connector_width - DIFFERENCE_CLEARANCE
+                //     ])
+                //     cube([
+                //         snap_connector_height,
+                //         snap_cutout_y,
+                //         snap_connector_width + DIFFERENCE_CLEARANCE * 2
+                //         ]);
+            }
+            else
+            {
+                // TODO: finish
+            }
+*/
+            // bottom connector
+            translate([ strut_right_x + rib_width, snap_offset_bottom_y, 0 ])
+                SnapConnectorSection( is_left );
+
+            // top connector
+            translate([ strut_right_x + rib_width, snap_offset_top_y, 0 ])
+                SnapConnectorSection( !is_left );
 
             // left-right ribs
             for( i = [ 0 : num_ribs - 1 ] )
@@ -480,6 +568,39 @@ module NetworkRackTop(
                     fan_cutout_z
                     ]);
         }
+
+        // remove the snap connector cutouts
+        SnapConnectorSection( !is_left );
+        /*
+        if( is_left )
+        {
+
+            // translate([
+            //     strut_right_x + rib_width - snap_connector_base_radius,
+            //     snap_offset_bottom_y - snap_connector_base_radius,
+            //     -snap_connector_width - DIFFERENCE_CLEARANCE
+            //     ])
+            //     cube([
+            //         snap_connector_height + snap_connector_base_radius * 2,
+            //         snap_cutout_y,
+            //         snap_connector_width + DIFFERENCE_CLEARANCE * 2
+            //         ]);
+
+        }
+        else
+        {
+            translate([
+                -DIFFERENCE_CLEARANCE,
+                snap_offset_bottom_y - snap_connector_base_radius,
+                -snap_connector_width - DIFFERENCE_CLEARANCE
+                ])
+                cube([
+                    snap_connector_height + DIFFERENCE_CLEARANCE * 2,
+                    snap_cutout_y,
+                    snap_connector_width + DIFFERENCE_CLEARANCE * 2
+                    ]);
+        }
+        */
     }
 }
 
@@ -522,6 +643,58 @@ module RibStrut( is_left )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module SnapConnectorSection( is_m, is_reversed )
+{
+    // sphere(0.2);
+
+    if( is_m )
+    {
+        rotation = is_reversed
+            ? [ 0, 90, 0 ]
+            : [ 0, -90, 180 ];
+        translation = is_reversed
+            ? [ 0, -snap_connector_depth, snap_connector_width ]
+            : [ 0, snap_connector_depth, 0 ];
+
+        translate( translation )
+            rotate( rotation )
+                SnapConnectorM(
+                    width = snap_connector_width,
+                    height = snap_connector_height,
+                    depth = snap_connector_depth,
+                    angle_in = snap_connector_angle_in,
+                    angle_lock = snap_connector_angle_lock,
+                    nose_depth = snap_connector_nose_depth,
+                    nose_height = snap_connector_nose_height,
+                    base_radius = snap_connector_base_radius
+                    );
+    }
+    else
+    {
+        snap_connector_full_height = snap_connector_height
+            + CalculateSnapConnectorHeightM(
+                height = snap_connector_height,
+                nose_depth = snap_connector_nose_depth,
+                nose_height = snap_connector_nose_height,
+                angle_in = snap_connector_angle_in,
+                angle_lock = snap_connector_angle_lock
+                );
+
+        y_offset = is_reversed
+            ? -snap_connector_depth - snap_connector_nose_depth - edge_clearance
+            : -edge_clearance;
+
+        translate([ -DIFFERENCE_CLEARANCE, y_offset, -edge_clearance ])
+            cube([
+                snap_connector_full_height + edge_clearance + DIFFERENCE_CLEARANCE * 2,
+                snap_connector_depth + snap_connector_nose_depth + edge_clearance * 2,
+                snap_connector_width + edge_clearance * 2
+                ]);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module CordClipAndBase()
 {
     CordClip(
@@ -538,18 +711,18 @@ module CordClipAndBase()
         [ -cord_clip_base_width / 2, cord_clip_length, 0 ],
         [ cord_clip_base_width / 2, cord_clip_length, 0 ],
         [ -cord_clip_base_width / 2, 2 * cord_clip_length, -cord_clip_support_height ],
-    ];
+        ];
 
     polyhedron(
-    points = points,
-    faces = [
-        [ 0, 1, 2 ],
-        [ 3, 5, 4 ],
-        [ 1, 4, 5, 2 ],
-        [ 0, 2, 5, 3 ],
-        [ 0, 3, 4, 1 ]
-        ]
-    );
+        points = points,
+        faces = [
+            [ 0, 1, 2 ],
+            [ 3, 5, 4 ],
+            [ 1, 4, 5, 2 ],
+            [ 0, 2, 5, 3 ],
+            [ 0, 3, 4, 1 ]
+            ]
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -631,6 +804,40 @@ module FanPreview()
         translate([ fan_x / 2 - DIFFERENCE_CLEARANCE, fan_y / 2, -DIFFERENCE_CLEARANCE + fan_full_z * 0.05 ])
             rotate([ -30, 0, angle ])
                 cube([ fan_x * 0.47, 1, fan_full_z * 0.9 ]);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SnapConnectorTest( is_m )
+{
+    test_top_y = snap_connector_test_y * 2 / 3;
+    test_bottom_y = snap_connector_test_y / 3;
+    test_z_extra = 6;
+    test_z = snap_connector_width + test_z_extra * 2 + edge_clearance * 2;
+
+    if( is_m )
+    {
+        translate([ -rib_width, -snap_connector_test_y, 0 ])
+            cube([ rib_width, snap_connector_test_y, test_z ]);
+        translate([ 0, -snap_connector_test_y + test_bottom_y, test_z_extra + edge_clearance ])
+            SnapConnectorSection( true, false );
+        translate([ 0, -snap_connector_test_y + test_top_y, test_z_extra + edge_clearance ])
+            SnapConnectorSection( true, true );
+    }
+    else
+    {
+        difference()
+        {
+            // plate
+            translate([ 0, -snap_connector_test_y, 0 ])
+                cube([ rib_width, snap_connector_test_y, test_z ]);
+
+            translate([ 0, -snap_connector_test_y + test_bottom_y, test_z_extra + edge_clearance ])
+                SnapConnectorSection( false, false );
+            translate([ 0, -snap_connector_test_y + test_top_y, test_z_extra + edge_clearance ])
+                SnapConnectorSection( false, true );
+        }
     }
 }
 
