@@ -1,9 +1,10 @@
 include <triangular-prism.scad>
 
+DEFAULT_DEPTH = 1.2;
 DEFAULT_NOSE_DEPTH = 1.2;
 DEFAULT_NOSE_HEIGHT = 1.2;
-DEFAULT_ANGLE_in = 40;
-DEFAULT_ANGLE = 80;
+DEFAULT_ANGLE_IN = 40;
+DEFAULT_ANGLE_LOCK = 80;
 DEFAULT_BASE_RADIUS = 2.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,10 +44,10 @@ function CalculateSnapConnectorHeightM(
     angle_lock = DEFAULT_ANGLE_LOCK
     ) = nose_depth / tan( angle_lock ) + nose_height + nose_depth / tan( angle_in );
 
-module SnapConnectorM(
+module SnapConnectorA(
     width,
     height,
-    depth = 1.2,
+    depth = DEFAULT_DEPTH,
     nose_depth = DEFAULT_NOSE_DEPTH,
     nose_height = DEFAULT_NOSE_HEIGHT,
     angle_in = DEFAULT_ANGLE_IN,
@@ -114,6 +115,49 @@ module SnapConnectorM(
         //             cylinder( r = base_radius, h = width + DIFFERENCE_CLEARANCE * 2 );
         // }
     }
+}
+
+module SnapConnectorCutout(
+    width,
+    height,
+    clearance,
+    depth = DEFAULT_DEPTH,
+    nose_depth = DEFAULT_NOSE_DEPTH,
+    nose_height = DEFAULT_NOSE_HEIGHT,
+    angle_in = DEFAULT_ANGLE_IN,
+    angle_lock = DEFAULT_ANGLE_LOCK,
+    base_radius = DEFAULT_BASE_RADIUS,
+    )
+{
+        full_height = height
+            + CalculateSnapConnectorHeightM(
+                height = height,
+                nose_depth = nose_depth,
+                nose_height = nose_height,
+                angle_in = angle_in,
+                angle_lock = angle_lock
+                );
+    
+    translate([ -DIFFERENCE_CLEARANCE, -clearance, -clearance ])
+        cube([
+            full_height + clearance + DIFFERENCE_CLEARANCE * 2,
+            depth + snap_connector_nose_depth + clearance * 2,
+            width + clearance * 2
+            ]);
+}
+
+module SnapConnectorB(
+    width,
+    height,
+    depth = 1.2,
+    nose_depth = DEFAULT_NOSE_DEPTH,
+    nose_height = DEFAULT_NOSE_HEIGHT,
+    angle_in = DEFAULT_ANGLE_IN,
+    angle_lock = DEFAULT_ANGLE_LOCK,
+    base_radius = DEFAULT_BASE_RADIUS,
+    )
+{
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
