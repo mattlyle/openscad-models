@@ -55,19 +55,22 @@ rib_height_inside = 16.0;
 
 edge_clearance = 0.2;
 
-snap_connector_width = 10.0;
-snap_connector_height = 12.0;
+snap_connector_width = 8.0;
+snap_connector_height = 10.0;
 snap_connector_depth = 1.6;
 snap_connector_angle_in = 45;
 snap_connector_angle_lock = 70;
 snap_connector_nose_depth = 2.0;
 snap_connector_nose_height = 1.0;
 snap_connector_base_radius = 2.0;
-snap_connector_offset_percent = 0.2;
+snap_connector_offset_percent = 0.2; // from top/bottom
+snap_connector_offset_z = 4.0;
 
 snap_connector_test_y = 40;
 
 rack_preview_color = [ 0.2, 0.2, 0.2 ];
+
+// TODO still need connectors on the front-to-back
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -121,8 +124,8 @@ if( render_mode == "preview" )
         NetworkRackTop( false, true );
 
     // front right
-    // translate([ rack_top_section_x, -front_overlap_y, 0 ])
-    //     NetworkRackTop( false, false );
+    translate([ rack_top_section_x, -front_overlap_y, 0 ])
+        NetworkRackTop( false, false );
 
     // back left
     translate([ -side_bar_overlap_x, rack_top_section_y, 0 ])
@@ -136,9 +139,9 @@ if( render_mode == "preview" )
     //     FanPreview();
 
     // snap connector test
-    translate([ -100, 0, 0 ])
+    translate([ -200, 0, 0 ])
         SnapConnectorTest( true );
-    translate([ -100, 0, 0 ])
+    translate([ -200, 0, 0 ])
         SnapConnectorTest( false );
 }
 else if( render_mode == "print-section-back-left" )
@@ -434,8 +437,13 @@ module NetworkRackTop(
         }
     }
 
-    snap_offset_bottom_y = rack_top_section_y * snap_connector_offset_percent;
-    snap_offset_top_y = rack_top_section_y * ( 1.0 - snap_connector_offset_percent );
+    snap_connector_x = is_left
+        ? strut_right_x + rib_width
+        : rib_width;
+    snap_connector_z = -rib_height_inside + snap_connector_offset_z;
+    snap_offset_bottom_y = ( is_back ? 0 : front_overlap_y ) + rack_top_section_y * snap_connector_offset_percent;
+    snap_offset_top_y =
+        ( is_back ? 0 : front_overlap_y ) + rack_top_section_y * ( 1.0 - snap_connector_offset_percent );
 
     difference()
     {
@@ -460,12 +468,20 @@ module NetworkRackTop(
             if( is_left )
             {
                 // bottom connector
-                translate([ strut_right_x + rib_width, snap_offset_bottom_y, 0 ])
-                    TopConnectorM();
+                translate([ snap_connector_x, snap_offset_bottom_y, snap_connector_z ])
+                    TopConnectorM( false );
 
                 // top connector
-                translate([ strut_right_x + rib_width, snap_offset_top_y, 0 ])
-                    TopConnectorM();
+                translate([ snap_connector_x, snap_offset_top_y, snap_connector_z ])
+                    TopConnectorM( true );
+            }
+            else
+            {
+                translate([ snap_connector_x, snap_offset_bottom_y, snap_connector_z ])
+                    TopConnectorBraceF( false );
+
+                translate([ snap_connector_x, snap_offset_top_y, snap_connector_z ])
+                    TopConnectorBraceF( true );
             }
 
             // left-right ribs
@@ -538,7 +554,11 @@ module NetworkRackTop(
         // remove the snap connector cutouts
         if( !is_left  )
         {
-            TopConnectorCutoutF();
+            translate([ snap_connector_x - rib_width, snap_offset_bottom_y, snap_connector_z ])
+                TopConnectorCutoutF( false );
+
+            translate([ snap_connector_x - rib_width, snap_offset_top_y, snap_connector_z ])
+                TopConnectorCutoutF( true );
         }
     }
 }
@@ -651,7 +671,7 @@ module TopConnectorBraceF( is_reversed )
         : [ 0, 0, 0 ];
 
     left_x = 0;
-    right_x = snap_connector_height - rib_width - edge_clearance;
+    right_x = snap_connector_height - rib_width;
 
     near_y = -edge_clearance - snap_connector_nose_depth - snap_connector_depth;
     mid_y = -edge_clearance - snap_connector_nose_depth;
@@ -670,12 +690,6 @@ module TopConnectorBraceF( is_reversed )
         [ left_x, near_y, bottom_z ], // 6
         [ left_x, far_y, bottom_z ], // 7
         ];
-
-    // translate( translation )
-    //     rotate( rotation )
-    //         for( point = points )
-    //             # translate( point )
-    //                 sphere( 0.2 );
 
     translate( translation )
         rotate( rotation )
