@@ -59,9 +59,9 @@ snap_connector_width = 10.0;
 snap_connector_height = 12.0;
 snap_connector_depth = 1.6;
 snap_connector_angle_in = 45;
-snap_connector_angle_lock = 80;
+snap_connector_angle_lock = 70;
 snap_connector_nose_depth = 2.0;
-snap_connector_nose_height = 1.6;
+snap_connector_nose_height = 1.0;
 snap_connector_base_radius = 2.0;
 snap_connector_offset_percent = 0.2;
 
@@ -651,7 +651,7 @@ module TopConnectorBraceF( is_reversed )
         : [ 0, 0, 0 ];
 
     left_x = 0;
-    right_x = snap_connector_height - rib_width;
+    right_x = snap_connector_height - rib_width - edge_clearance;
 
     near_y = -edge_clearance - snap_connector_nose_depth - snap_connector_depth;
     mid_y = -edge_clearance - snap_connector_nose_depth;
