@@ -14,7 +14,7 @@ stake_r = 11.2 / 2;
 render_mode = "preview";
 // render_mode = "print-support";
 
-support_length = 120;
+support_length = 180;
 support_width = 12.0;
 support_depth = 3.0;
 
@@ -23,7 +23,7 @@ back_support_size = 2.0;
 connector_cutout_angle = 90;
 connector_wall_thickness = 1.8;
 
-max_vertical_support_spacing = 50;
+max_vertical_support_spacing = 40;
 num_vertical_supports = ceil( support_length / max_vertical_support_spacing );
 
 clearance = 0.15;
@@ -72,12 +72,7 @@ module TomatoStakeSupport()
         _TomatoStakeSupportConnector();
 
     // beam
-    translate([ stake_r + clearance, -support_depth / 2, 0 ])
-        cube([ beam_x, support_depth, support_width ]);
-
-    // beam - back brace
-    translate([ stake_r + clearance, support_depth / 2, support_width / 2 - support_depth / 2 ])
-        cube([ beam_x, back_support_size, support_depth ]);
+    _TomatoStakeSupportBeam( support_length );
 
     // vertical supports
     for( i = [ 0 : num_vertical_supports - 1 ] )
@@ -89,8 +84,21 @@ module TomatoStakeSupport()
         
         translate([ support_x, support_depth / 2, 0 ])
             cube([ back_support_size, back_support_size, support_width ]);
-
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _TomatoStakeSupportBeam( length )
+{
+    beam_x = length - ( stake_r + clearance ) * 2;
+
+    translate([ stake_r + clearance, -support_depth / 2, 0 ])
+        cube([ beam_x, support_depth, support_width ]);
+
+    // beam - back brace
+    translate([ stake_r + clearance, support_depth / 2, support_width / 2 - support_depth / 2 ])
+        cube([ beam_x, back_support_size, support_depth ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
