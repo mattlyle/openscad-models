@@ -14,8 +14,8 @@ stake_r = 11.2 / 2;
 render_mode = "preview";
 // render_mode = "print-support";
 
-support_length = 180;
-support_width = 12.0;
+support_length = 220;
+support_width = 14.0;
 support_depth = 3.0;
 
 back_support_size = 2.0;
