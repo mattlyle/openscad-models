@@ -53,9 +53,9 @@ clip_guide_1_offset_x = 58.0;
 clip_guide_2_offset_x = 11.0;
 
 clip_bottom_z = 4;
-clip_overlap_y = 2.0;
+clip_overlap_y = 4.0;
 clip_overlap_z = 20.0;
-clip_pinch_angle = 5.0;
+clip_pinch_angle = 4.0;
 clip_rounding_r = 0.5;
 
 gate_overlap_x = foot_cleat_x + 2;
