@@ -12,6 +12,8 @@ GRIDFINITY_BASE_MAGNETS_ALL = 2;
 GRIDFINITY_BASE_Z = 4.75;
 GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE = 0.4;
 
+GRIDFINITY_ROUNDING_R = 3.7; // the radius of the rounded corners on the base
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function CalculateGridfinitySize( cells ) = 42.0 * cells;
@@ -63,7 +65,14 @@ module GridfinityBase(
         if( top_z > 0 )
         {
             translate([ -size_x / 2 , -size_y / 2, size_z ])
-                RoundedCubeAlt2( size_x, size_y, top_z, r = 3.7, round_top = round_top, round_bottom = false );
+                RoundedCubeAlt2(
+                    size_x,
+                    size_y,
+                    top_z,
+                    r = GRIDFINITY_ROUNDING_R,
+                    round_top = round_top,
+                    round_bottom = false
+                    );
         }
     }
 }
