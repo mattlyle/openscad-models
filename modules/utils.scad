@@ -50,9 +50,9 @@ module RotateFromPointAtoB( a, b )
 {
     // from: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
 
-    x = b[ 0 ]- a[ 0 ];
-    y = b[ 1 ]- a[ 1 ];
-    z = b[ 2 ]- a[ 2 ];
+    x = b[ 0 ] - a[ 0 ];
+    y = b[ 1 ] - a[ 1 ];
+    z = b[ 2 ] - a[ 2 ];
 
     length = norm([ x, y, z ]);
     b = acos( z / length );
