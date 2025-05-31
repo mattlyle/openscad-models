@@ -28,10 +28,10 @@ mini_screwdriver_setups = [
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-render_mode = "preview";
-// render_mode = "print";
+// render_mode = "preview";
+render_mode = "print";
 
-screwdriver_angle = -8.0;
+screwdriver_angle = -9.0;
 
 cells_x = 3;
 cells_y = 1;
@@ -52,6 +52,8 @@ screwdriver_extra_spacing_x = 1.2;
 label_font_size = 4.0;
 label_font = "Liberation Sans";
 label_depth = 0.4;
+
+cradle_offset_y = 16.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -83,14 +85,14 @@ cradle_right_z = wall_width * 2
 
 screwdrivers_offset_x = ( base_x - screwdriver_spacing_x * 5 ) / 2;
 
-echo(cradle_x);
-echo("base_x",base_x);
+cradle_offset_x = calculateOffsetToCenter( base_x, cradle_x );
+cradle_offset_z = base_offset_z;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-rotate([ -90, 0, 0 ])
-    _MiniScrewdriverHolderCradle();
+// rotate([ -90, 0, 0 ])
+//     _MiniScrewdriverHolderCradle();
 
 if ( render_mode == "print" )
 {
@@ -98,37 +100,11 @@ if ( render_mode == "print" )
 }
 else if ( render_mode == "preview" )
 {
-    // for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
-    // {
-    //     #translate([
-    //         screwdrivers_offset_x + screwdriver_spacing_x * i,
-    //         screwdrivers_offset_y,
-    //         screwdrivers_offset_z
-    //         ])
-    //         rotate([ screwdriver_angle, 0, 0 ])
-    //             MiniScrewdriverPreview( mini_screwdriver_setups[ i ] );
-    // }
+    MiniScrewdriverSetHolder();
 
-    // translate([ screwdrivers_offset_x + screwdriver_spacing_x * 0, screwdrivers_offset_y, screwdrivers_offset_z ])
-    //     rotate([ screwdriver_angle, 0, 0 ])
-    //         MiniScrewdriverPreview( mini_screwdriver_handle_a_z );
-    // translate([ screwdrivers_offset_x + screwdriver_spacing_x * 1, screwdrivers_offset_y, screwdrivers_offset_z ])
-    //     rotate([ screwdriver_angle, 0, 0 ])
-    //         MiniScrewdriverPreview( mini_screwdriver_handle_a_z );
-    // translate([ screwdrivers_offset_x + screwdriver_spacing_x * 2, screwdrivers_offset_y, screwdrivers_offset_z ])
-    //     rotate([ screwdriver_angle, 0, 0 ])
-    //         MiniScrewdriverPreview( mini_screwdriver_handle_b_z );
-    // translate([ screwdrivers_offset_x + screwdriver_spacing_x * 3, screwdrivers_offset_y, screwdrivers_offset_z ])
-    //     rotate([ screwdriver_angle, 0, 0 ])
-    //         MiniScrewdriverPreview( mini_screwdriver_handle_b_z );
-    // translate([ screwdrivers_offset_x + screwdriver_spacing_x * 4, screwdrivers_offset_y, screwdrivers_offset_z ])
-    //     rotate([ screwdriver_angle, 0, 0 ])
-    //         MiniScrewdriverPreview( mini_screwdriver_handle_c_z );
-    // translate([ screwdrivers_offset_x + screwdriver_spacing_x * 5, screwdrivers_offset_y, screwdrivers_offset_z ])
-    //     rotate([ screwdriver_angle, 0, 0 ])
-    //         MiniScrewdriverPreview( mini_screwdriver_handle_c_z );
-
-    // MiniScrewdriverSetHolder();
+    // preview a plane behind the back
+    % translate([0, base_y, 0 ])
+        cube([ base_x, 0.01, 180 ]);
 }
 else
 {
@@ -174,58 +150,60 @@ module MiniScrewdriverSetHolder()
     GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
 
     // walls
-    // difference()
-    // {
-    //     translate([ 0, 0, base_offset_z ])
-    //         RoundedCubeAlt2(
-    //             x = base_x,
-    //             y = base_y,
-    //             z = base_wall_z,
-    //             r = GRIDFINITY_ROUNDING_R,
-    //             round_top = true,
-    //             round_bottom = false,
-    //             round_left = true,
-    //             round_right = true,
-    //             center = false,
-    //             );
+    difference()
+    {
+        translate([ 0, 0, base_offset_z ])
+            RoundedCubeAlt2(
+                x = base_x,
+                y = base_y,
+                z = base_wall_z,
+                r = GRIDFINITY_ROUNDING_R,
+                round_top = true,
+                round_bottom = false,
+                round_left = true,
+                round_right = true
+                );
 
-    //     translate([ wall_width, -GRIDFINITY_ROUNDING_R, base_offset_z - DIFFERENCE_CLEARANCE ])
-    //         RoundedCubeAlt2(
-    //             x = base_x - wall_width * 2,
-    //             y = base_y - wall_width + GRIDFINITY_ROUNDING_R,
-    //             z = base_wall_z + DIFFERENCE_CLEARANCE * 2,
-    //             r = GRIDFINITY_ROUNDING_R,
-    //             round_top = false,
-    //             round_bottom = false,
-    //             round_left = true,
-    //             round_right = true,
-    //             center = false,
-    //             );
-    // }
+        translate([ wall_width, -GRIDFINITY_ROUNDING_R, base_offset_z - DIFFERENCE_CLEARANCE ])
+            RoundedCubeAlt2(
+                x = base_x - wall_width * 2,
+                y = base_y - wall_width + GRIDFINITY_ROUNDING_R,
+                z = base_wall_z + DIFFERENCE_CLEARANCE * 2,
+                r = GRIDFINITY_ROUNDING_R,
+                round_top = false,
+                round_bottom = false,
+                round_left = true,
+                round_right = true
+                );
+    }
 
     // cradle
-    translate([ 0, screwdrivers_cradle_offset_y, screwdrivers_cradle_offset_z ])
+    translate([ cradle_offset_x, cradle_offset_y, cradle_offset_z ])
         rotate([ screwdriver_angle, 0, 0 ])
             _MiniScrewdriverHolderCradle();
 
     // cradle base
-    _MiniScrewdriverHolderCradleBase();
+    translate([ cradle_offset_x, cradle_offset_y, cradle_offset_z ])
+        _MiniScrewdriverHolderCradleBase();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module _MiniScrewdriverHolderCradle()
 {
-    for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
+    if( render_mode == "preview" )
     {
-        #translate([
-            wall_width + screwdriver_spacing_x * ( i + 0.5 ),
-            -cradle_support_y - wall_width,
-            wall_width + cradle_clearance
-            ])
-            // rotate([ screwdriver_angle, 0, 360/12 ])
-            rotate([ 0, 0, 360/12 ])
-                MiniScrewdriverPreview( mini_screwdriver_setups[ i ] );
+        for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
+        {
+            #translate([
+                wall_width + screwdriver_spacing_x * ( i + 0.5 ),
+                -cradle_support_y - wall_width,
+                wall_width + cradle_clearance
+                ])
+                // rotate([ screwdriver_angle, 0, 360/12 ])
+                rotate([ 0, 0, 360/12 ])
+                    MiniScrewdriverPreview( mini_screwdriver_setups[ i ] );
+        }
     }
 
     // back wall
@@ -375,7 +353,53 @@ module _MiniScrewdriverHolderCradle()
 
 module _MiniScrewdriverHolderCradleBase()
 {
+    // front support
+    front_points = [
+        [ 0, 0, 0 ],
+        [ 0, -8.28, 1.32 ],
+        [ 0, -cradle_offset_y + wall_width, 0 ],
+        [ cradle_x, 0, 0 ],
+        [ cradle_x, -8.28, 1.32 ],
+        [ cradle_x, -cradle_offset_y + wall_width, 0 ],
+    ];
 
+    polyhedron(
+        points = front_points,
+        faces = [
+            [ 0, 1, 2 ],
+            [ 3, 5, 4 ],
+            [ 0, 3, 4, 1 ],
+            [ 1, 4, 5, 2 ],
+            [ 0, 2, 5, 3 ],
+        ]
+    );
+
+    // back support
+    back_points = [
+        [ 0, base_y - wall_width - cradle_offset_y, 0 ],
+        [ 0, 5, 31.6 ],
+        [ 0, 0, 0 ],
+        [ cradle_x, base_y - wall_width - cradle_offset_y, 0 ],
+        [ cradle_x, 5, 31.6 ],
+        [ cradle_x, 0, 0 ],
+    ];
+
+    // for( point = back_points )
+    // {
+    //     # translate( point )
+    //         sphere( 0.05 );
+    // }
+
+    polyhedron(
+        points = back_points,
+        faces = [
+            [ 0, 1, 2 ],
+            [ 3, 5, 4 ],
+            [ 0, 3, 4, 1 ],
+            [ 1, 4, 5, 2 ],
+            [ 0, 2, 5, 3 ],
+        ]
+    );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
