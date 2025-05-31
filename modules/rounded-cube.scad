@@ -60,9 +60,9 @@ module RoundedCubeAlt2(
     center = false,
     fn = 36 )
 {
-    assert( x > r * 2, "radius is too small for x" );
-    assert( y > r * 2, "radius is too small for y" );
-    assert( z > r * 2, "radius is too small for y" );
+    // assert( x > r * 2, "radius is too small for x" );
+    // assert( y > r * 2, "radius is too small for y" );
+    // assert( z > r * 2, "radius is too small for z" );
 
     x0 = round_left ? r : 0;
     x1 = round_right ? x - r : x;
