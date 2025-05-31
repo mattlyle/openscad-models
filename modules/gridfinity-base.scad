@@ -71,7 +71,11 @@ module GridfinityBase(
                     top_z,
                     r = GRIDFINITY_ROUNDING_R,
                     round_top = round_top,
-                    round_bottom = false
+                    round_bottom = false,
+                    round_left = true,
+                    round_right = true,
+                    round_front = true,
+                    round_back = true
                     );
         }
     }

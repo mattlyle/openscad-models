@@ -73,7 +73,7 @@ module RoundedCubeAlt2(
 
     if( round_top && round_bottom )
         assert( z >= r * 2, "radius is too small for z" );
-    else
+    else if( round_top || round_bottom )
         assert( z >= r, "radius is too small for z" );
 
     x0 = round_left ? r : 0;
