@@ -31,7 +31,6 @@ mini_screwdriver_setups = [
 render_mode = "preview";
 // render_mode = "print";
 
-screwdriver_spacing_x = 18.0;
 screwdriver_angle = -8.0;
 
 cells_x = 3;
@@ -40,17 +39,16 @@ cells_y = 1;
 // the height to be added on top of the base
 top_z = 1;
 
-screwdrivers_offset_y = 10;
-screwdrivers_offset_z = 7;
-
 wall_width = 1.6;
 base_wall_z = 50.0;
 
-holder_z = 2.4;
-top_holder_offset_z = 75;
-bottom_holder_offset_z = 10;
+cradle_bottom_offset_z = 6.0;
+cradle_label_offset_z = 27.0;
 
-handle_clearance_r = 1.0;
+cradle_clearance = 0.6;
+
+screwdriver_extra_spacing_x = 1.2;
+
 label_font_size = 4.0;
 label_font = "Liberation Sans";
 label_depth = 0.4;
@@ -64,13 +62,35 @@ base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
 base_offset_z = GRIDFINITY_BASE_Z + top_z;
 
-holder_x = screwdriver_spacing_x * 6 + wall_width * 2;
-holder_y = max( getListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) );
+cradle_support_y = max( getListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) );
+
+screwdriver_spacing_x = max( getListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) ) * 2
+    + screwdriver_extra_spacing_x;
+
+setup_left = mini_screwdriver_setups[ 0 ];
+setup_right = mini_screwdriver_setups[ len( mini_screwdriver_setups ) - 1 ];
+
+cradle_x = screwdriver_spacing_x * 6 + wall_width * 2;
+cradle_y = cradle_support_y + wall_width;
+cradle_left_z = wall_width * 2
+    + cradle_clearance
+    + setup_left[ MINI_SCREWDRIVER_SETUP_INDEX_FULL_BARREL_Z ]
+    + setup_left[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_Z ] * 0.2;
+cradle_right_z = wall_width * 2
+    + cradle_clearance
+    + setup_right[ MINI_SCREWDRIVER_SETUP_INDEX_FULL_BARREL_Z ]
+    + setup_right[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_Z ] * 0.7;
 
 screwdrivers_offset_x = ( base_x - screwdriver_spacing_x * 5 ) / 2;
 
+echo(cradle_x);
+echo("base_x",base_x);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
+
+rotate([ -90, 0, 0 ])
+    _MiniScrewdriverHolderCradle();
 
 if ( render_mode == "print" )
 {
@@ -109,9 +129,10 @@ else if ( render_mode == "preview" )
     //         MiniScrewdriverPreview( mini_screwdriver_handle_c_z );
 
     // MiniScrewdriverSetHolder();
-    
-    rotate([ -90, 0, 0 ])
-        MiniScrewdriverSetHolder();
+}
+else
+{
+    echo( str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +171,7 @@ module MiniScrewdriverPreview( setup )
 module MiniScrewdriverSetHolder()
 {
     // base
-    // GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
+    GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
 
     // walls
     // difference()
@@ -182,126 +203,179 @@ module MiniScrewdriverSetHolder()
     //             );
     // }
 
-    // holder
-    translate([ 0, 0, 0 ])
-        // rotate([ screwdriver_angle, 0, 0 ])
-            _MiniScrewdriverHolderCombinedSupports();
+    // cradle
+    translate([ 0, screwdrivers_cradle_offset_y, screwdrivers_cradle_offset_z ])
+        rotate([ screwdriver_angle, 0, 0 ])
+            _MiniScrewdriverHolderCradle();
+
+    // cradle base
+    _MiniScrewdriverHolderCradleBase();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _MiniScrewdriverHolderCombinedSupports()
+module _MiniScrewdriverHolderCradle()
 {
-    holder_top_y = holder_y / 2 + wall_width;
-    holder_bottom_y = holder_y + wall_width;
-
-    holder_top_offset_y = holder_y - holder_top_y + wall_width;
+    for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
+    {
+        #translate([
+            wall_width + screwdriver_spacing_x * ( i + 0.5 ),
+            -cradle_support_y - wall_width,
+            wall_width + cradle_clearance
+            ])
+            // rotate([ screwdriver_angle, 0, 360/12 ])
+            rotate([ 0, 0, 360/12 ])
+                MiniScrewdriverPreview( mini_screwdriver_setups[ i ] );
+    }
 
     // back wall
-    translate([ ( base_x - holder_x ) / 2, holder_bottom_y - wall_width, bottom_holder_offset_z ])
-        RoundedCubeAlt2(
-            x = holder_x,
-            y = wall_width,
-            z = top_holder_offset_z - bottom_holder_offset_z + holder_z,
-            r = 1.0,
-            round_top = true,
-            round_bottom = true,
-            round_left = true,
-            round_right = true
-            );
 
-    // top holder
-    translate([ 0, 0, top_holder_offset_z ])
+    back_wall_left_x = 0;
+    back_wall_right_x = cradle_x;
+
+    back_wall_front_y = -wall_width;
+    back_wall_back_y = 0;
+    top_support_front_y = back_wall_front_y - cradle_support_y;
+    
+    back_wall_bottom_z = 0;
+    back_wall_top_left_z = cradle_left_z;
+    back_wall_top_right_z = cradle_right_z;
+    top_support_left_z = cradle_left_z - wall_width;
+    top_support_right_z = cradle_right_z - wall_width;
+
+    back_wall_points = [
+        [ back_wall_left_x, back_wall_back_y, back_wall_top_left_z ], // 0 - top left
+        [ back_wall_right_x, back_wall_back_y, back_wall_top_right_z ], // 1 - top right
+        [ back_wall_right_x, back_wall_back_y, back_wall_bottom_z ], // 2 - bottom right
+        [ back_wall_left_x, back_wall_back_y, back_wall_bottom_z ], // 3 - bottom left
+
+        [ back_wall_left_x, back_wall_front_y, back_wall_top_left_z ], // 4 - top left
+        [ back_wall_right_x, back_wall_front_y, back_wall_top_right_z ], // 5 - top right
+        [ back_wall_right_x, back_wall_front_y, back_wall_bottom_z ], // 6 - bottom right
+        [ back_wall_left_x, back_wall_front_y, back_wall_bottom_z ], // 7 - bottom left
+    ];
+
+    // for( point = back_wall_points )
+    // {
+    //     translate( point )
+    //         sphere( 0.5 );
+    // }
+
+    polyhedron(
+        points = back_wall_points,
+        faces = [
+            [ 4, 5, 6, 7 ],
+            [ 0, 4, 7, 3 ],
+            [ 2, 3, 7, 6 ],
+            [ 1, 2, 6, 5 ],
+            [ 0, 1, 5, 4 ],
+            [ 0, 3, 2, 1 ],
+        ]
+    );
+
+    // labels
+    for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
     {
-        difference()
-        {
-            translate([ ( base_x - holder_x ) / 2, holder_top_offset_y, 0 ])
-                RoundedCubeAlt2(
-                    x = holder_x,
-                    y = holder_top_y,
-                    z = holder_z,
-                    r = 1.0,
-                    round_top = true,
-                    round_bottom = true,
-                    round_left = true,
-                    round_right = true,
-                    center = false
+        translate([
+            wall_width + screwdriver_spacing_x * ( i + 0.5 ),
+            -wall_width,
+            wall_width + cradle_label_offset_z
+            ])
+            rotate([ 90, -90, 0 ])
+                TextLabel(
+                    mini_screwdriver_setups[ i ][ MINI_SCREWDRIVER_SETUP_INDEX_LABEL ],
+                    depth = label_depth,
+                    label_font_size,
+                    label_font,
+                    color = [ 0, 0, 0 ]
                     );
+    }
+    
+    // bottom wall
+    translate([ back_wall_left_x, top_support_front_y, back_wall_bottom_z ])
+        cube([ cradle_x, cradle_support_y, wall_width ]);
+    
+    // bottom support bar
+    difference()
+    {
+        translate([
+            back_wall_left_x,
+            top_support_front_y,
+            back_wall_bottom_z + wall_width + cradle_bottom_offset_z
+            ])
+            cube([ cradle_x, cradle_support_y, wall_width ]);
 
-            for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
-            {
-                setup = mini_screwdriver_setups[ i ];
+        for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
+        {
+            setup = mini_screwdriver_setups[ i ];
 
-                // tip_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_Z ];
-                tip_r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_R ];
-                // cone_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_CONE_Z ];
-                // full_barrel_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_FULL_BARREL_Z ];
-                // handle_r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_HANDLE_R ];
-                // base_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_BASE_Z ];
-                // base_r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ];
-                // label  = setup[ MINI_SCREWDRIVER_SETUP_INDEX_LABEL ];
-
-                // handle_z = full_barrel_z - base_z - cone_z;
-
-                translate([
-                    screwdrivers_offset_x + screwdriver_spacing_x * i,
-                    holder_top_offset_y,
-                    -DIFFERENCE_CLEARANCE
-                    ])
-                    cylinder(
-                        r = tip_r + handle_clearance_r,
-                        h = holder_z + DIFFERENCE_CLEARANCE * 2
-                        );
-            }
+            translate([
+                wall_width + screwdriver_spacing_x * ( i + 0.5 ),
+                - wall_width - cradle_support_y,
+                back_wall_bottom_z + wall_width + cradle_bottom_offset_z - DIFFERENCE_CLEARANCE,
+                ])
+                cylinder(
+                    h = wall_width + DIFFERENCE_CLEARANCE * 2,
+                    r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_HANDLE_R ] + cradle_clearance
+                    );
         }
     }
+    
+    // top support bar
+    top_support_bar_points = [
+        [ back_wall_left_x, back_wall_front_y, back_wall_top_left_z ], // 0 - top left
+        [ back_wall_right_x, back_wall_front_y, back_wall_top_right_z ], // 1 - top right
+        [ back_wall_right_x, back_wall_front_y, top_support_right_z ], // 2 - bottom right
+        [ back_wall_left_x, back_wall_front_y, top_support_left_z ], // 3 - bottom left
 
-    // bottom holder
-    translate([ 0, 0, bottom_holder_offset_z ])
+        [ back_wall_left_x, top_support_front_y, back_wall_top_left_z ], // 0 - top left
+        [ back_wall_right_x, top_support_front_y, back_wall_top_right_z ], // 1 - top right
+        [ back_wall_right_x, top_support_front_y, top_support_right_z ], // 2 - bottom right
+        [ back_wall_left_x, top_support_front_y, top_support_left_z ], // 3 - bottom left
+    ];
+
+    // for( point = top_support_bar_points )
+    // {
+    //     translate( point )
+    //         sphere( 0.5 );
+    // }
+
+    difference()
     {
-        difference()
+        polyhedron(
+            points = top_support_bar_points,
+            faces = [
+                [ 4, 5, 6, 7 ],
+                [ 0, 4, 7, 3 ],
+                [ 2, 3, 7, 6 ],
+                [ 1, 2, 6, 5 ],
+                [ 0, 1, 5, 4 ],
+                [ 0, 3, 2, 1 ],
+            ]
+        );
+
+        for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
         {
-            translate([ ( base_x - holder_x ) / 2, 0, 0 ])
-                RoundedCubeAlt2(
-                    x = holder_x,
-                    y = holder_bottom_y,
-                    z = holder_z,
-                    r = 1.0,
-                    round_top = true,
-                    round_bottom = true,
-                    round_left = true,
-                    round_right = true,
-                    center = false
+            setup = mini_screwdriver_setups[ i ];
+
+            translate([
+                wall_width + screwdriver_spacing_x * ( i + 0.5 ),
+                - wall_width - cradle_support_y,
+                back_wall_bottom_z + wall_width,
+                ])
+                cylinder(
+                    h = max( cradle_left_z, cradle_right_z ),
+                    r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_R ] + cradle_clearance
                     );
-
-            for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
-            {
-                setup = mini_screwdriver_setups[ i ];
-
-                // tip_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_Z ];
-                // tip_r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_R ];
-                // cone_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_CONE_Z ];
-                // full_barrel_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_FULL_BARREL_Z ];
-                handle_r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_HANDLE_R ];
-                // base_z = setup[ MINI_SCREWDRIVER_SETUP_INDEX_BASE_Z ];
-                // base_r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ];
-                // label  = setup[ MINI_SCREWDRIVER_SETUP_INDEX_LABEL ];
-
-                // handle_z = full_barrel_z - base_z - cone_z;
-
-                translate([
-                    screwdrivers_offset_x + screwdriver_spacing_x * i,
-                    0,
-                    -DIFFERENCE_CLEARANCE
-                    ])
-                    cylinder(
-                        r = handle_r + handle_clearance_r,
-                        h = holder_z + DIFFERENCE_CLEARANCE * 2
-                        );
-            }
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _MiniScrewdriverHolderCradleBase()
+{
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
