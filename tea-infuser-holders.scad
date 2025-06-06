@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 include <modules/elliptical-prism.scad>
+include <modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -34,11 +35,15 @@ spoon_handle_y = 17.2;
 spoon_handle_z = 2.5;
 spoon_cup_r = 32 / 2;
 
+cleanout_plate_r = 203.2 / 2;
+cleanout_plate_z = 19.7;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 render_mode = "preview";
 // render_mode = "print-holder";
+// render_mode = "print-cleanout";
 
 cup_wall_width = 2.8;
 floor_thickness = 2.0;
@@ -72,10 +77,18 @@ holder_offset_short_x = holder_base_x * 0.20;
 holder_offset_tall_x = holder_base_x * 0.60;
 holder_offset_spoon_x = holder_base_x * 0.90;
 
+cleanout_plate_clearance_r = 1.0;
+cleanout_infuser_clearance_r = 1.8;
+cleanout_infuser_ledge_overhang = 4.0; // how far the ledge extends into the infuser
+cleanout_wall_thickness = 2.0;
+cleanout_base_z = 40;
+cleanout_cone_z = 70;
+cleanout_top_z = 50;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
-$fn = $preview ? 32 : 128;
+$fn = $preview ? 64 : 128;
 
 holder_offset_y = holder_base_y / 2;
 
@@ -90,6 +103,8 @@ tall_infuser_top_section_offset_z = tall_infuser_z
 
 tall_infuser_lip_offset_z = tall_infuser_z
     - tall_infuser_lip_z;
+
+cleanout_base_outer_r = cleanout_plate_r + cleanout_plate_clearance_r + cleanout_wall_thickness;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -106,10 +121,33 @@ if( render_mode == "preview" )
 
     translate([ holder_offset_spoon_x, holder_offset_y, floor_thickness + infuser_lift_spoon ])
         SpoonPreview();
+
+    // cleanout
+    cleanout_offset_x = holder_base_x * 1.5 + cleanout_plate_r;
+    cleanout_offset_y = cleanout_plate_r * 1.1;
+
+    translate([ cleanout_offset_x, cleanout_offset_y, 0 ])
+        PlatePreview();
+
+    translate([ cleanout_offset_x, cleanout_offset_y, 0 ])
+        TeaInfuserCleanout();
+
+    translate([
+        cleanout_offset_x,
+        cleanout_offset_y,
+        tall_infuser_z + cleanout_base_z + cleanout_cone_z + cleanout_wall_thickness + DIFFERENCE_CLEARANCE
+        ])
+        rotate([ 180, 0, -90 ])
+            TallInfuserPreview();
 }
 else if( render_mode == "print-holder" )
 {
     TeaInfuserHolder();
+}
+else if( render_mode == "print-cleanout" )
+{
+    // translate()
+    //     TeaInfuserCleanout();
 }
 else
 {
@@ -299,6 +337,151 @@ module HolderCup( bottom_r, top_r, h, num_cutout_levels, num_cutouts, cutout_per
             }
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module TeaInfuserCleanout()
+{
+// cleanout_plate_clearance_r
+// cleanout_infuser_clearance_r
+// cleanout_wall_thickness
+// cleanout_base_z
+// cleanout_cone_z
+// cleanout_top_z
+
+    infuser_ledge_r = tall_infuser_lip_r - cleanout_infuser_ledge_overhang;
+
+    cleanout_top_inner_r1 = tall_infuser_lip_r + cleanout_infuser_clearance_r;
+    cleanout_top_outer_r1 = cleanout_top_inner_r1 + cleanout_wall_thickness;
+
+    cleanout_top_inner_r2 = tall_infuser_r + cleanout_infuser_clearance_r;
+    cleanout_top_outer_r2 = cleanout_top_inner_r2 + cleanout_wall_thickness;
+
+
+
+    // base
+    difference()
+    {
+        cylinder( r = cleanout_base_outer_r, h = cleanout_base_z );
+
+        // remove the inside
+        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+            cylinder(
+                r = cleanout_base_outer_r - cleanout_wall_thickness,
+                h = cleanout_base_z + DIFFERENCE_CLEARANCE * 2
+                );
+
+        // remove the front
+        translate([
+            -cleanout_base_outer_r - DIFFERENCE_CLEARANCE,
+            -cleanout_base_outer_r - DIFFERENCE_CLEARANCE,
+            -DIFFERENCE_CLEARANCE ])
+            cube([
+                cleanout_base_outer_r * 2 + DIFFERENCE_CLEARANCE * 2,
+                cleanout_base_outer_r + DIFFERENCE_CLEARANCE,
+                cleanout_base_z + DIFFERENCE_CLEARANCE * 2
+                ]);
+    }
+
+    // base - front
+    // TODO finish!
+
+    // cone
+    translate([ 0, 0, cleanout_base_z ])
+    {
+        difference()
+        {
+            cylinder(
+                r1 = cleanout_base_outer_r,
+                r2 = cleanout_top_outer_r1,
+                h = cleanout_cone_z
+                );
+
+            // remove the inside
+            translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                cylinder(
+                    r1 = cleanout_base_outer_r - cleanout_wall_thickness,
+                    r2 = cleanout_top_inner_r1,
+                    h = cleanout_cone_z + DIFFERENCE_CLEARANCE * 2
+                    );
+
+            // remove the front
+            translate([
+                -cleanout_base_outer_r - DIFFERENCE_CLEARANCE,
+                -cleanout_base_outer_r - DIFFERENCE_CLEARANCE,
+                -DIFFERENCE_CLEARANCE ])
+                cube([
+                    cleanout_base_outer_r * 2 + DIFFERENCE_CLEARANCE * 2,
+                    cleanout_base_outer_r + DIFFERENCE_CLEARANCE,
+                    cleanout_cone_z + DIFFERENCE_CLEARANCE * 2
+                    ]);
+        }
+    }
+
+    // ledge
+    translate([ 0, 0, cleanout_base_z + cleanout_cone_z ])
+    {
+        difference()
+        {
+            cylinder( r = tall_infuser_lip_r, h = cleanout_wall_thickness );
+
+            // remove the inside
+            translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                cylinder(
+                    r = infuser_ledge_r,
+                    h = cleanout_wall_thickness + DIFFERENCE_CLEARANCE * 2
+                    );
+
+            // remove the front
+        }
+    }
+
+    // cone - front
+    // TODO finish!
+/*
+    // top
+    translate([ 0, 0, cleanout_base_z + cleanout_cone_z ])
+    {
+        difference()
+        {
+            cylinder(
+                r1 = cleanout_top_outer_r1,
+                r2 = cleanout_top_outer_r2,
+                h = cleanout_top_z
+                );
+
+            // translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+            //     cylinder(
+            //         r1 = cleanout_plate_r - cleanout_wall_thickness,
+            //         r2 =
+            //         h = cleanout_top_z + DIFFERENCE_CLEARANCE * 2
+            //         );
+
+            // remove inside the ledge
+
+            // remove the front
+            translate([
+                -cleanout_base_outer_r - DIFFERENCE_CLEARANCE,
+                -cleanout_base_outer_r - DIFFERENCE_CLEARANCE,
+                -DIFFERENCE_CLEARANCE ])
+                cube([
+                    cleanout_base_outer_r * 2 + DIFFERENCE_CLEARANCE * 2,
+                    cleanout_base_outer_r + DIFFERENCE_CLEARANCE,
+                    cleanout_top_z + DIFFERENCE_CLEARANCE * 2
+                    ]);
+        }
+    }
+*/
+    // top - front
+    // TODO finish!
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PlatePreview()
+{
+    % cylinder( r = cleanout_plate_r, h = cleanout_plate_z );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
