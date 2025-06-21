@@ -28,8 +28,9 @@ mini_screwdriver_setups = [
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print-bin";
+// render_mode = "print-text";
 
 screwdriver_angle = -9.0;
 
@@ -50,7 +51,7 @@ cradle_clearance = 0.6;
 screwdriver_extra_spacing_x = 1.2;
 
 label_font_size = 4.0;
-label_font = "Liberation Sans";
+label_font = "Liberation Sans:style=bold";
 label_depth = 0.4;
 
 cradle_offset_y = 16.0;
@@ -94,17 +95,23 @@ cradle_offset_z = base_offset_z;
 // rotate([ -90, 0, 0 ])
 //     _MiniScrewdriverHolderCradle();
 
-if ( render_mode == "print" )
-{
-    MiniScrewdriverSetHolder();
-}
-else if ( render_mode == "preview" )
+if ( render_mode == "preview" )
 {
     MiniScrewdriverSetHolder();
 
     // preview a plane behind the back
     % translate([0, base_y, 0 ])
         cube([ base_x, 0.01, 180 ]);
+}
+else if ( render_mode == "print-bin" )
+{
+    MiniScrewdriverSetHolder();
+}
+else if ( render_mode == "print-text" )
+{
+    translate([ cradle_offset_x, cradle_offset_y, cradle_offset_z ])
+        rotate([ screwdriver_angle, 0, 0 ])
+            MiniScrewdriverHolderCradleBaseText( false );
 }
 else
 {
@@ -207,7 +214,6 @@ module _MiniScrewdriverHolderCradle()
     }
 
     // back wall
-
     back_wall_left_x = 0;
     back_wall_right_x = cradle_x;
 
@@ -221,52 +227,40 @@ module _MiniScrewdriverHolderCradle()
     top_support_left_z = cradle_left_z - wall_width;
     top_support_right_z = cradle_right_z - wall_width;
 
-    back_wall_points = [
-        [ back_wall_left_x, back_wall_back_y, back_wall_top_left_z ], // 0 - top left
-        [ back_wall_right_x, back_wall_back_y, back_wall_top_right_z ], // 1 - top right
-        [ back_wall_right_x, back_wall_back_y, back_wall_bottom_z ], // 2 - bottom right
-        [ back_wall_left_x, back_wall_back_y, back_wall_bottom_z ], // 3 - bottom left
-
-        [ back_wall_left_x, back_wall_front_y, back_wall_top_left_z ], // 4 - top left
-        [ back_wall_right_x, back_wall_front_y, back_wall_top_right_z ], // 5 - top right
-        [ back_wall_right_x, back_wall_front_y, back_wall_bottom_z ], // 6 - bottom right
-        [ back_wall_left_x, back_wall_front_y, back_wall_bottom_z ], // 7 - bottom left
-    ];
-
-    // for( point = back_wall_points )
-    // {
-    //     translate( point )
-    //         sphere( 0.5 );
-    // }
-
-    polyhedron(
-        points = back_wall_points,
-        faces = [
-            [ 4, 5, 6, 7 ],
-            [ 0, 4, 7, 3 ],
-            [ 2, 3, 7, 6 ],
-            [ 1, 2, 6, 5 ],
-            [ 0, 1, 5, 4 ],
-            [ 0, 3, 2, 1 ],
-        ]
-    );
-
-    // labels
-    for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
+    difference()
     {
-        translate([
-            wall_width + screwdriver_spacing_x * ( i + 0.5 ),
-            -wall_width,
-            wall_width + cradle_label_offset_z
-            ])
-            rotate([ 90, -90, 0 ])
-                TextLabel(
-                    mini_screwdriver_setups[ i ][ MINI_SCREWDRIVER_SETUP_INDEX_LABEL ],
-                    depth = label_depth,
-                    label_font_size,
-                    label_font,
-                    color = [ 0, 0, 0 ]
-                    );
+        back_wall_points = [
+            [ back_wall_left_x, back_wall_back_y, back_wall_top_left_z ], // 0 - top left
+            [ back_wall_right_x, back_wall_back_y, back_wall_top_right_z ], // 1 - top right
+            [ back_wall_right_x, back_wall_back_y, back_wall_bottom_z ], // 2 - bottom right
+            [ back_wall_left_x, back_wall_back_y, back_wall_bottom_z ], // 3 - bottom left
+
+            [ back_wall_left_x, back_wall_front_y, back_wall_top_left_z ], // 4 - top left
+            [ back_wall_right_x, back_wall_front_y, back_wall_top_right_z ], // 5 - top right
+            [ back_wall_right_x, back_wall_front_y, back_wall_bottom_z ], // 6 - bottom right
+            [ back_wall_left_x, back_wall_front_y, back_wall_bottom_z ], // 7 - bottom left
+        ];
+
+        // for( point = back_wall_points )
+        // {
+        //     translate( point )
+        //         sphere( 0.5 );
+        // }
+
+        polyhedron(
+            points = back_wall_points,
+            faces = [
+                [ 4, 5, 6, 7 ],
+                [ 0, 4, 7, 3 ],
+                [ 2, 3, 7, 6 ],
+                [ 1, 2, 6, 5 ],
+                [ 0, 1, 5, 4 ],
+                [ 0, 3, 2, 1 ],
+            ]
+        );
+
+        // remove the labels
+        MiniScrewdriverHolderCradleBaseText( true );
     }
     
     // bottom wall
@@ -346,6 +340,28 @@ module _MiniScrewdriverHolderCradle()
                     r = setup[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_R ] + cradle_clearance
                     );
         }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module MiniScrewdriverHolderCradleBaseText( is_for_difference )
+{
+    for( i = [ 0 : len( mini_screwdriver_setups ) - 1 ] )
+    {
+        translate([
+            wall_width + screwdriver_spacing_x * ( i + 0.5 ),
+            -wall_width + label_depth - DIFFERENCE_CLEARANCE,
+            wall_width + cradle_label_offset_z
+            ])
+            rotate([ 90, -90, 0 ])
+                TextLabel(
+                    mini_screwdriver_setups[ i ][ MINI_SCREWDRIVER_SETUP_INDEX_LABEL ],
+                    depth = label_depth,
+                    label_font_size,
+                    label_font,
+                    color = is_for_difference ? undef : [ 0, 0, 0 ]
+                    );
     }
 }
 
