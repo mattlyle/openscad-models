@@ -32,10 +32,10 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
-screwdriver_angle = -9.0;
+screwdriver_angle = -35.0;
 
 cells_x = 3;
-cells_y = 1;
+cells_y = 2;
 
 // the height to be added on top of the base
 top_z = 1;
@@ -55,6 +55,8 @@ label_font = "Liberation Sans:style=bold";
 label_depth = 0.4;
 
 cradle_offset_y = 16.0;
+
+back_wall_support_point_percent = 0.6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -369,15 +371,24 @@ module MiniScrewdriverHolderCradleBaseText( is_for_difference )
 
 module _MiniScrewdriverHolderCradleBase()
 {
+    front_support_y = -cradle_y * cos( screwdriver_angle );
+    front_support_z = -cradle_y * sin( screwdriver_angle );
+
     // front support
     front_points = [
         [ 0, 0, 0 ],
-        [ 0, -8.28, 1.32 ],
+        [ 0, front_support_y, front_support_z ],
         [ 0, -cradle_offset_y + wall_width, 0 ],
         [ cradle_x, 0, 0 ],
-        [ cradle_x, -8.28, 1.32 ],
+        [ cradle_x, front_support_y, front_support_z ],
         [ cradle_x, -cradle_offset_y + wall_width, 0 ],
     ];
+
+    // for( point = front_points )
+    // {
+    //     # translate( point )
+    //         sphere( 0.2 );
+    // }
 
     polyhedron(
         points = front_points,
@@ -390,20 +401,24 @@ module _MiniScrewdriverHolderCradleBase()
         ]
     );
 
+    back_support_length = cradle_left_z * back_wall_support_point_percent;
+    back_support_y = -back_support_length * cos( 90 - screwdriver_angle );
+    back_support_z = back_support_length * sin( 90 - screwdriver_angle );
+
     // back support
     back_points = [
         [ 0, base_y - wall_width - cradle_offset_y, 0 ],
-        [ 0, 5, 31.6 ],
+        [ 0, back_support_y, back_support_z ],
         [ 0, 0, 0 ],
         [ cradle_x, base_y - wall_width - cradle_offset_y, 0 ],
-        [ cradle_x, 5, 31.6 ],
+        [ cradle_x, back_support_y, back_support_z ],
         [ cradle_x, 0, 0 ],
     ];
 
     // for( point = back_points )
     // {
     //     # translate( point )
-    //         sphere( 0.05 );
+    //         sphere( 0.5 );
     // }
 
     polyhedron(
