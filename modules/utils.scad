@@ -30,6 +30,8 @@ function _sumListHelper( list, n ) = n >= len( list ) ? 0 : list[ n ] + _sumList
 function sumTo( list, i ) = _sumToHelper( list, i, 0 );
 function _sumToHelper( list, i, n ) = n >= i || n >= len( list ) ? 0 : list[ n ] + _sumToHelper( list, i, n + 1 );
 
+function getListAtIndex( list, i ) = [ for ( entry = list ) entry[ i ] ];
+
 // adds val_to_add to each index of the given list, returning a new list
 function addValueToEachIndex( list, val_to_add ) = [ for( entry = list ) entry + val_to_add ];
 
@@ -50,9 +52,9 @@ module RotateFromPointAtoB( a, b )
 {
     // from: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations
 
-    x = b[ 0 ]- a[ 0 ];
-    y = b[ 1 ]- a[ 1 ];
-    z = b[ 2 ]- a[ 2 ];
+    x = b[ 0 ] - a[ 0 ];
+    y = b[ 1 ] - a[ 1 ];
+    z = b[ 2 ] - a[ 2 ];
 
     length = norm([ x, y, z ]);
     b = acos( z / length );
