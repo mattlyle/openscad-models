@@ -1,7 +1,7 @@
 use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_baseplate.scad>
 include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
-GRIDFINITY_BASEPLATE_Z = 5.8; // from https://gridfinity.xyz/specification/
+GRIDFINITY_BASEPLATE_Z = 5.8;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -13,7 +13,9 @@ module GridfinityBaseplate( grid_cells_x, grid_cells_y )
     gridfinity_baseplate(
         num_x = grid_cells_x,
         num_y = grid_cells_y,
-        oversizeMethod = "fill"
+        oversizeMethod = "fill",
+        magnetSize = [ 6.3, 2.0 ],
+        magnetZOffset = 0.4
         );
 }
 
