@@ -5,10 +5,10 @@ module TextLabel(
     depth = 0.5,
     font_size,
     font = "Liberation Sans",
-    color = [ 0, 0, 0 ]
+    color = undef
     )
 {
-    OptionalColor( color )
+    color( color )
         linear_extrude( depth )
             text( text_string, size = font_size, font = font );
 }

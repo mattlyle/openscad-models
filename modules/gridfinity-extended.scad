@@ -1,9 +1,27 @@
 use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_baseplate.scad>
 include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
+GRIDFINITY_BASEPLATE_Z = 5.8;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module gridfinity_baseplate_snug_fit_into( max_x, max_y, grid_cells_x, grid_cells_y )
+module GridfinityBaseplate( grid_cells_x, grid_cells_y )
+{
+    assert( grid_cells_x > 0 && grid_cells_x, "Invalid x cells count" );
+    assert( grid_cells_y > 0 && grid_cells_y, "Invalid y cells count" );
+
+    gridfinity_baseplate(
+        num_x = grid_cells_x,
+        num_y = grid_cells_y,
+        oversizeMethod = "fill",
+        magnetSize = [ 6.3, 2.0 ],
+        magnetZOffset = 0.4
+        );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module GridfinityBaseplateSnugFitInto( max_x, max_y, grid_cells_x, grid_cells_y )
 {
     // from https://gridfinity.xyz/specification/
     extension_z = 4.0;
