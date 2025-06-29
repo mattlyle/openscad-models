@@ -58,8 +58,8 @@ pliers_handle_z = pliers_handle_z_small_medium;
 // front_text = "Large Pliers";
 // holder_connector_row_setups = [ [ 6, 5 ], [ 4, 3 ], [ 2, 1 ] ];
 // num_pliers = 6;
-// pliers_handle_x = pliers_handle_x_large + 5;
-// pliers_handle_z = pliers_handle_z_large + 30;
+// pliers_handle_x = pliers_handle_x_large + 3;
+// pliers_handle_z = pliers_handle_z_large + 20;
 
 // this helps the two rounded cubes intersect each other without the rounded edges showing
 rounded_cube_inset_overlap = 2.0;
