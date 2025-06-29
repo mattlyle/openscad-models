@@ -5,6 +5,7 @@ include <../modules/triangular-prism.scad>
 include <../modules/rounded-cube.scad>
 include <../modules/flattened-pyramid.scad>
 include <../modules/text-label.scad>
+include <../modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -37,197 +38,236 @@ floor_height_min = 2.0;
 floor_height_max = 14.0;
 
 // small version
-holder_y = 120;
-front_text = "Small Pliers";
-holder_connector_row_setups = [ [4,3], [2] ];
-num_pliers = 4;
-pliers_handle_x = pliers_handle_x_small_medium;
-pliers_handle_z = pliers_handle_z_small_medium;
-
-// medium version
-// holder_y = 135;
-// front_text = "Medium Pliers";
-// holder_connector_row_setups = [ [5,4], [3,2], [1] ];
-// num_pliers = 8;
+// holder_y = 120;
+// front_text = "Small Pliers";
+// holder_connector_row_setups = [ [ 4, 3 ], [ 2 ] ];
+// num_pliers = 6;
 // pliers_handle_x = pliers_handle_x_small_medium;
 // pliers_handle_z = pliers_handle_z_small_medium;
+
+// medium version
+holder_y = 135;
+front_text = "Medium Pliers";
+holder_connector_row_setups = [ [ 5, 4 ], [ 3, 2 ], [ 1 ] ];
+num_pliers = 10;
+pliers_handle_x = pliers_handle_x_small_medium + 2.5;
+pliers_handle_z = pliers_handle_z_small_medium;
 
 // large version
 // holder_y = 155;
 // front_text = "Large Pliers";
-// holder_connector_row_setups = [ [6,5], [4,3], [2,1] ];
-// num_pliers = 4;
-// pliers_handle_x = pliers_handle_x_large;
-// pliers_handle_z = pliers_handle_z_large;
+// holder_connector_row_setups = [ [ 6, 5 ], [ 4, 3 ], [ 2, 1 ] ];
+// num_pliers = 6;
+// pliers_handle_x = pliers_handle_x_large + 5;
+// pliers_handle_z = pliers_handle_z_large + 30;
 
 // this helps the two rounded cubes intersect each other without the rounded edges showing
 rounded_cube_inset_overlap = 2.0;
 
+label_font = "Liberation Sans:style=bold";
+label_font_size = 8;
+label_depth = 0.4;
+
 ////////////////////////////////////////////////////////////////////////////////
 // calculations
 
-holder_x = ring_wall_width + ( pliers_handle_x + handle_clearance * 2 + ring_wall_width ) * num_pliers;
-holder_z = multiboard_connector_back_z + pliers_handle_z + ring_wall_width + handle_clearance * 2;
+holder_x = ring_wall_width
+    + ( pliers_handle_x + handle_clearance * 2 + ring_wall_width ) * num_pliers;
+holder_z = multiboard_connector_back_z
+    + pliers_handle_z
+    + ring_wall_width
+    + handle_clearance * 2;
+
+echo( "X: ", holder_x );
+echo( "Z: ", holder_z );
 
 holder_offset_x = MultiboardConnectorBackAltXOffset( holder_x );
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// draw a sample multiboard tile
 if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
         color( workroom_multiboard_color )
-            MultiboardMockUpTile( 6, 6 );
-}
+            MultiboardMockUpTile( 10, 6 );
 
-// draw the holder
-if( render_mode == "preview" || render_mode == "only-holder" )
-{
-    translate( render_mode == "preview" ? [ multiboard_cell_size - holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
-        rotate( render_mode == "only-holder" ? [ 90, 0, 0 ]: [ 0, 0, 0 ] )
-            PliersHolder();
-}
+    translate([ multiboard_cell_size - holder_offset_x, 0, 0 ])
+        PliersHolder();
 
-// draw a preview of the pliers inside
-if( render_mode == "preview" )
-{
     // pliers preview
     for( i = [ 0 : num_pliers - 1 ] )
     {
         Pliers( i );
     }
-}
 
-// if( render_mode == "preview" || render_mode == "text-only" )
-if( render_mode == "preview" || render_mode == "only-holder" )
+    translate([ multiboard_cell_size - holder_offset_x, holder_y - ring_wall_height, holder_z ])
+        color([ 0, 0, 0.4 ])
+            CenteredTextLabel(
+                front_text,
+                font = label_font,
+                font_size = label_font_size,
+                centered_in_area_x = holder_x,
+                centered_in_area_y = ring_wall_height
+                );
+}
+else if( render_mode == "print-holder" )
 {
-    rotate( render_mode == "only-holder" ? [ 90, 0, 0 ]: [ 0, 0, 0 ] )
-        translate([ render_mode == "preview" ?  multiboard_cell_size - holder_offset_x : 0, holder_y - ring_wall_height, holder_z ])
+    rotate([ 90, 0, 0 ])
+        PliersHolder();
+}
+else if( render_mode == "print-text" )
+{
+    rotate([ 90, 0, 0 ])
+        translate([ 0, holder_y - ring_wall_height, holder_z - label_depth + DIFFERENCE_CLEARANCE ])
             color([ 0, 0, 0.4 ])
-                CenteredTextLabel( front_text, font_size = 8, centered_in_area_x = holder_x, centered_in_area_y = ring_wall_height );
+                CenteredTextLabel(
+                    front_text,
+                    font = label_font,
+                    font_size = label_font_size,
+                    centered_in_area_x = holder_x,
+                    centered_in_area_y = ring_wall_height
+                    );
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 module PliersHolder()
 {
-    union()
+    difference()
     {
-        // back
-        MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups );
-
-        // bottom
-        translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-            RoundedCubeAlt( holder_x, floor_height_min, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
-
-        render()
+        union()
         {
-            difference()
+            // back
+            MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups );
+
+            // bottom
+            translate([ 0, 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                RoundedCubeAlt( holder_x, floor_height_min, holder_z - multiboard_connector_back_z + rounded_cube_inset_overlap );
+
+            render()
             {
-                translate([ ring_wall_width, ring_wall_width, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    cube([ holder_x - ring_wall_width * 2, floor_height_max - floor_height_min, holder_z - multiboard_connector_back_z ]);
-
-                for( i = [ 0 : num_pliers - 1 ] )
+                difference()
                 {
-                    PliersHolderBaseGuide( i );
-                }
-            }
-        }
+                    translate([ ring_wall_width, ring_wall_width, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                        cube([ holder_x - ring_wall_width * 2, floor_height_max - floor_height_min, holder_z - multiboard_connector_back_z ]);
 
-        // corner - left side
-        translate([ 0, 0, holder_z - front_face_column_width ])
-            RoundedCubeAlt( ring_wall_width, holder_y, front_face_column_width );
-
-        // corner - left front
-        // translate([ 0, 0, holder_z - ring_wall_width ])
-        //     RoundedCubeAlt( front_face_column_width, holder_y, ring_wall_width );
-
-        // corner - right side
-        translate([ holder_x - ring_wall_width, 0, holder_z - front_face_column_width ])
-            RoundedCubeAlt( ring_wall_width, holder_y, front_face_column_width );
-
-        // corner - right front
-        // translate([ holder_x - front_face_column_width, 0, holder_z - ring_wall_width ])
-        //     RoundedCubeAlt( front_face_column_width, holder_y, ring_wall_width );
-
-        // front column support
-        for( i = [ 0 : num_pliers - 2 ] )
-        {
-            translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, holder_z - front_face_column_width ])
-                RoundedCubeAlt( ring_wall_width, holder_y, front_face_column_width );
-        }
-
-        // top ring
-        translate([ 0, holder_y - ring_wall_height, 0 ])
-        {
-            PliersHolderRing( false, true );
-
-            for( i = [ 0 : num_pliers - 2 ] )
-            {
-                // Y bridge
-                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliersHolderHorizontalBridgeY( false, true );
-
-                // X support
-                for( i = [ 0 : num_pliers - 1 ] )
-                {
-                    translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
-                        rotate([ 0, 90, 0 ])
-                            PliersHolderHorizontalBridgeLowerSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
-                }
-            }
-        }
-
-        // middle ring
-        translate([ 0, ( holder_y - ring_wall_height ) / 2, 0 ])
-        {
-            PliersHolderRing( true, true );
-
-            for( i = [ 0 : num_pliers - 2 ] )
-            {
-                // Y bridge
-                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliersHolderHorizontalBridgeY( true, true );
-
-                // X support
-                for( i = [ 0 : num_pliers - 1 ] )
-                {
-                    translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
+                    for( i = [ 0 : num_pliers - 1 ] )
                     {
-                        rotate([ 0, 90, 0 ])
-                        {
-                            // top support
-                            PliersHolderHorizontalBridgeUpperSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
+                        PliersHolderBaseGuide( i );
+                    }
+                }
+            }
 
-                            // bottom support
-                            PliersHolderHorizontalBridgeLowerSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
+            // corner - left side
+            translate([ 0, 0, holder_z - front_face_column_width ])
+                RoundedCubeAlt( ring_wall_width, holder_y, front_face_column_width );
+
+            // corner - left front
+            // translate([ 0, 0, holder_z - ring_wall_width ])
+            //     RoundedCubeAlt( front_face_column_width, holder_y, ring_wall_width );
+
+            // corner - right side
+            translate([ holder_x - ring_wall_width, 0, holder_z - front_face_column_width ])
+                RoundedCubeAlt( ring_wall_width, holder_y, front_face_column_width );
+
+            // corner - right front
+            // translate([ holder_x - front_face_column_width, 0, holder_z - ring_wall_width ])
+            //     RoundedCubeAlt( front_face_column_width, holder_y, ring_wall_width );
+
+            // front column support
+            for( i = [ 0 : num_pliers - 2 ] )
+            {
+                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, holder_z - front_face_column_width ])
+                    RoundedCubeAlt( ring_wall_width, holder_y, front_face_column_width );
+            }
+
+            // top ring
+            translate([ 0, holder_y - ring_wall_height, 0 ])
+            {
+                PliersHolderRing( false, true );
+
+                for( i = [ 0 : num_pliers - 2 ] )
+                {
+                    // Y bridge
+                    translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                        PliersHolderHorizontalBridgeY( false, true );
+
+                    // X support
+                    for( i = [ 0 : num_pliers - 1 ] )
+                    {
+                        translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
+                            rotate([ 0, 90, 0 ])
+                                PliersHolderHorizontalBridgeLowerSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
+                    }
+                }
+            }
+
+            // middle ring
+            translate([ 0, ( holder_y - ring_wall_height ) / 2, 0 ])
+            {
+                PliersHolderRing( true, true );
+
+                for( i = [ 0 : num_pliers - 2 ] )
+                {
+                    // Y bridge
+                    translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                        PliersHolderHorizontalBridgeY( true, true );
+
+                    // X support
+                    for( i = [ 0 : num_pliers - 1 ] )
+                    {
+                        translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
+                        {
+                            rotate([ 0, 90, 0 ])
+                            {
+                                // top support
+                                PliersHolderHorizontalBridgeUpperSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
+
+                                // bottom support
+                                PliersHolderHorizontalBridgeLowerSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
+                            }
                         }
                     }
                 }
             }
+
+            // bottom ring
+            translate([ 0, 0, 0 ])
+            {
+                PliersHolderRing( true, false );
+
+                for( i = [ 0 : num_pliers - 2 ] )
+                {
+                    // Y bridge
+                    translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
+                        PliersHolderHorizontalBridgeY( true, false );
+                }
+
+                // X support
+                for( i = [ 0 : num_pliers - 1 ] )
+                {
+                    translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
+                        rotate([ 0, 90, 0 ])
+                            PliersHolderHorizontalBridgeUpperSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
+                }
+            }
         }
 
-        // bottom ring
-        translate([ 0, 0, 0 ])
-        {
-            PliersHolderRing( true, false );
-
-            for( i = [ 0 : num_pliers - 2 ] )
-            {
-                // Y bridge
-                translate([ ( i + 1 ) * ( handle_clearance * 2 + pliers_handle_x + ring_wall_width ), 0, multiboard_connector_back_z - rounded_cube_inset_overlap ])
-                    PliersHolderHorizontalBridgeY( true, false );
-            }
-
-            // X support
-            for( i = [ 0 : num_pliers - 1 ] )
-            {
-                translate([ ring_wall_width / 2 + i * ( ring_wall_width + pliers_handle_x + handle_clearance * 2 ), 0, holder_z ])
-                    rotate([ 0, 90, 0 ])
-                        PliersHolderHorizontalBridgeUpperSupport( pliers_handle_x + handle_clearance * 2 + ring_wall_width );
-            }
-        }
+        // remove the inset text
+        translate([ 0, holder_y - ring_wall_height, holder_z - label_depth + DIFFERENCE_CLEARANCE ])
+            CenteredTextLabel(
+                front_text,
+                font = label_font,
+                font_size = label_font_size,
+                centered_in_area_x = holder_x,
+                centered_in_area_y = ring_wall_height,
+                depth = label_depth,
+                color = undef
+                );
     }
 }
 
