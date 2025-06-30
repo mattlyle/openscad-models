@@ -66,6 +66,24 @@ module RotateFromPointAtoB( a, b )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function RotatePointAboutPoint( rotateThisPoint, aboutThisPoint, angle ) =
+    let( xdiff = rotateThisPoint.x - aboutThisPoint.x )
+    let( ydiff = rotateThisPoint.y - aboutThisPoint.y )
+    [
+        aboutThisPoint.x + xdiff * cos( angle ) - ydiff * sin( angle ),
+        aboutThisPoint.y + xdiff * sin( angle ) + ydiff * cos( angle ),
+    ];
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// returns [ m, b ] in slope intercept form y = mx + b
+
+function findSlopeIntercept( pointA, pointB ) =
+    let( m = ( pointB.y - pointA.y ) / ( pointB.x - pointA.x ) )
+    let( b = pointA.y - m * pointA.x )
+    [ m, b ];
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module OptionalColor( color = false )
 {
     if( color )
