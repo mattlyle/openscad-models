@@ -1,0 +1,173 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+include <modules/utils.scad>;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// measurements
+
+wall_stud_ab_separation = 406;
+wall_stud_bc_separation = 419;
+
+
+ams_2_pro_bottom_ledge_back_x = 235;
+ams_2_pro_bottom_ledge_front_x = 235;
+ams_2_pro_bottom_ledge_y = 250;
+ams_2_pro_bottom_ledge_z = 11;
+
+// the length in front of the AMS 2 Pro bottom edge to the fron of the AMS
+ams_extra_front_y = 10;
+
+// the length behind the AMS 2 Pro bottom edge to the back of the AMS
+ams_extra_back_y = 25;
+
+// the length behind the AMS 2 Pro to the wall
+// shelf_extra_y = 130;
+shelf_extra_y = 70;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// settings
+
+render_mode = "preview";
+// render_mode = "print-shelf-a";
+// render_mode = "print-shelf-b";
+// render_mode = "print-shelf-c";
+
+wall_stud_width = 30; // approx
+
+shelf_extra_x = 60;
+
+// the width of the vertical brackets
+shelf_bracket_x = 20;
+
+// the height of the triangular bracket above the shelf
+shelf_top_bracket_z = 100;
+
+// the height of the triangular bracket under the shelf
+shelf_bottom_bracket_z = 80;
+
+shelf_base_angle = -20;
+shelf_base_z = 8.0; // this is before the guide rails
+
+shelf_screw_r = 4.5 / 2;
+shelf_screw_holder_z = 12;
+
+shelf_wall_plate_y = 10;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// calculations
+
+wall_stud_a_center_offset_x = shelf_extra_x;
+wall_stud_b_center_offset_x = wall_stud_a_center_offset_x + wall_stud_ab_separation;
+wall_stud_c_center_offset_x = wall_stud_b_center_offset_x + wall_stud_bc_separation;
+
+wall_plate_z = shelf_screw_holder_z
+    + shelf_top_bracket_z
+    + shelf_base_z
+    + shelf_bottom_bracket_z
+    + shelf_screw_holder_z;
+
+bottom_bracket_offset_z = shelf_screw_holder_z;
+shelf_base_offset_z = bottom_bracket_offset_z + shelf_bottom_bracket_z;
+top_bracket_offset_z = shelf_base_offset_z + shelf_base_z;
+
+shelf_base_y = ams_2_pro_bottom_ledge_y
+    + ams_extra_front_y
+    + ams_extra_back_y
+    + shelf_extra_y;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
+
+if( render_mode == "preview" )
+{
+    WallPreview();
+
+    translate([ wall_stud_a_center_offset_x, 0, 0 ])
+        Shelf( shelf_extra_x, wall_stud_ab_separation / 2, false, true );
+
+    translate([ wall_stud_b_center_offset_x, 0, 0 ])
+        Shelf( wall_stud_ab_separation / 2, wall_stud_bc_separation / 2, true, true );
+
+    translate([ wall_stud_c_center_offset_x, 0, 0 ])
+        Shelf( wall_stud_bc_separation / 2, shelf_extra_x, true, false );
+}
+else if( render_mode == "print-shelf-a" )
+{
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Shelf( left_x, right_x, left_connection, right_connection )
+{
+    total_x = left_x + right_x;
+    total_y = shelf_base_y * cos( shelf_base_angle );
+    total_z = wall_plate_z;
+
+    echo( str( "total x: ", total_x ) );
+    echo( str( "total y: ", total_y ) );
+    echo( str( "total z: ", total_z ) );
+
+    // wall plate
+    translate([ -shelf_bracket_x / 2, -shelf_wall_plate_y, 0 ])
+        cube([ shelf_bracket_x, shelf_wall_plate_y, wall_plate_z  ]);
+
+    // bottom triangular bracket
+
+    // horizontal shelf
+    translate([ -left_x, 0, shelf_base_offset_z ])
+        _ShelfBase( left_x + right_x );
+
+    // AMS bottom ledge
+
+    // top triangular bracket
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfTrianglarBracket()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfBase( x )
+{
+    translate([ x, 0, 0 ])
+        rotate([ shelf_base_angle, 0, 180 ])
+            cube([ x, shelf_base_y, shelf_base_z ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module AMS2ProPreview()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module WallPreview()
+{
+    translate([ wall_stud_a_center_offset_x, 0, 0 ])
+        WallStudPreview();
+    translate([ wall_stud_b_center_offset_x, 0, 0 ])
+        WallStudPreview();
+    translate([ wall_stud_c_center_offset_x, 0, 0 ])
+        WallStudPreview();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module WallStudPreview()
+{
+    stud_y = 100;
+    stud_z = 1000;
+
+    % translate([ -wall_stud_width / 2, 0, -stud_z / 2 ])
+        cube([ wall_stud_width, stud_y, stud_z ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
