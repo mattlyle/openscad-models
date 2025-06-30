@@ -36,14 +36,19 @@ wall_stud_width = 30; // approx
 
 shelf_extra_x = 60;
 
-// the width of the vertical brackets
-shelf_bracket_x = 20;
+// the width of the wall plate and top bracket
+shelf_wall_plate_x = 20;
+
+// the depth of the wall plate
+shelf_wall_plate_y = 10;
 
 // the height of the triangular bracket above the shelf
-shelf_top_bracket_z = 100;
+shelf_top_bracket_z = 40;
+
+shelf_top_bracket_percent_y = 0.4;
 
 // the height of the triangular bracket under the shelf
-shelf_bottom_bracket_z = 80;
+shelf_bottom_bracket_z = 100;
 
 shelf_base_angle = -20;
 shelf_base_z = 8.0; // this is before the guide rails
@@ -51,10 +56,10 @@ shelf_base_z = 8.0; // this is before the guide rails
 shelf_screw_r = 4.5 / 2;
 shelf_screw_holder_z = 12;
 
-shelf_wall_plate_y = 10;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
+
+$fn = $preview ? 32 : 128;
 
 wall_stud_a_center_offset_x = shelf_extra_x;
 wall_stud_b_center_offset_x = wall_stud_a_center_offset_x + wall_stud_ab_separation;
@@ -112,8 +117,8 @@ module Shelf( left_x, right_x, left_connection, right_connection )
     echo( str( "total z: ", total_z ) );
 
     // wall plate
-    translate([ -shelf_bracket_x / 2, -shelf_wall_plate_y, 0 ])
-        cube([ shelf_bracket_x, shelf_wall_plate_y, wall_plate_z  ]);
+    translate([ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, 0 ])
+        cube([ shelf_wall_plate_x, shelf_wall_plate_y, wall_plate_z  ]);
 
     // bottom triangular bracket
 
@@ -124,11 +129,91 @@ module Shelf( left_x, right_x, left_connection, right_connection )
     // AMS bottom ledge
 
     // top triangular bracket
+    _ShelfTopBracket();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _ShelfTrianglarBracket()
+module _ShelfTopBracket()
+{
+    // rotateThis = ;
+    rotateAbout = [ 0, shelf_base_offset_z ];
+
+    rotatedTopFar_xy = RotatePointAboutPoint( // using y,z as x,y
+        [ 0, shelf_base_offset_z + shelf_base_z ],
+        rotateAbout,
+        -shelf_base_angle
+        );
+    rotatedTopNear_xy = RotatePointAboutPoint( // using y,z as x,y
+        [ -shelf_base_y, shelf_base_offset_z + shelf_base_z ],
+        rotateAbout,
+        -shelf_base_angle
+        );
+
+    // calculate the z where the shelf base meets the wall plate
+    top_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
+        rotatedTopFar_xy,
+        rotatedTopNear_xy
+        );
+    top_face_wall_intercept_z =
+        top_face_wall_slope_intercept[ 0 ] * -shelf_wall_plate_y
+        + top_face_wall_slope_intercept[ 1 ];
+
+    // calculate the point where the bracket meets the base
+    top_face_brace_intercept_y =
+        -shelf_top_bracket_percent_y * shelf_base_y * cos( shelf_base_angle )
+        + rotatedTopFar_xy.x;
+    top_face_brace_intercept_z =
+        shelf_top_bracket_percent_y * shelf_base_y * sin( shelf_base_angle )
+        + rotatedTopFar_xy.y;
+
+    points = [
+        // [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, shelf_base_offset_z + shelf_base_z ],
+
+        // [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ],
+        // [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z + shelf_base_z ],
+        // [ -shelf_wall_plate_x / 2, -shelf_base_y, shelf_base_offset_z + shelf_base_z ],
+
+        // top far
+        // [ -shelf_wall_plate_x / 2, rotatedTopFar_xy.x, rotatedTopFar_xy.y ],
+
+        // top near
+        // [ -shelf_wall_plate_x / 2, rotatedTopNear_xy.x, rotatedTopNear_xy.y ],
+
+        // where the shelf top face meets the wall plate
+        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z ],
+
+        // the top of the bracket at the wall plate
+        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z + shelf_top_bracket_z ],
+
+        // where the top face meets the bracket
+        [ -shelf_wall_plate_x / 2, top_face_brace_intercept_y, top_face_brace_intercept_z ],
+
+        // backside
+        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z ],
+        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z + shelf_top_bracket_z ],
+        [ shelf_wall_plate_x / 2, top_face_brace_intercept_y, top_face_brace_intercept_z ],
+    ];
+
+    // for( point = points )
+    //     # translate( point )
+    //         sphere( r = 1 );
+
+    polyhedron(
+        points = points,
+        faces = [
+            [ 0, 1, 2 ],
+            [ 3, 5, 4 ],
+            [ 1, 4, 5, 2 ],
+            [ 0, 2, 5, 3 ],
+            [ 0, 3, 4, 1 ],
+        ]
+    );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfBottomBracket()
 {
 }
 
