@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+include <modules/rounded-cube.scad>;
 include <modules/utils.scad>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -8,12 +9,17 @@ include <modules/utils.scad>;
 wall_stud_ab_separation = 406;
 wall_stud_bc_separation = 419;
 
-ams_2_pro_bottom_ledge_back_x = 235;
-ams_2_pro_bottom_ledge_front_x = 235;
+ams_2_pro_bottom_ledge_x = 338; // note the front is actually 324
 ams_2_pro_bottom_ledge_y = 250;
 ams_2_pro_bottom_ledge_z = 11;
 
-// the length in front of the AMS 2 Pro bottom edge to the fron of the AMS
+ams_2_pro_x = 372;
+ams_2_pro_y = 278;
+ams_2_pro_body_z = 110; // this is above the ledge below it
+ams_2_pro_lid_z = 102;
+ams_2_pro_lid_r = 210 / 2;
+
+// the length in front of the AMS 2 Pro bottom edge to the front of the AMS
 ams_extra_front_y = 10;
 
 // the length behind the AMS 2 Pro bottom edge to the back of the AMS
@@ -77,8 +83,8 @@ preview_spacers_below_shelf_level_z = -12;
 // TODO cutouts for the AMS 2 Pro bottom ledge
 // TODO cutouts for the power cable and the filament tube
 // TODO x is too big, so need spacers... tongue and groove?
-// TODO preview the AMS itself
 // TODO add a dowel at the end for strength!
+// TODO add grip on the top flat face so it won't slip
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -123,6 +129,7 @@ if( render_mode == "preview" )
 {
     WallPreview();
 
+    // shelf a
     translate([ wall_stud_a_center_offset_x, 0, 0 ])
         Shelf(
             shelf_extra_x,
@@ -131,9 +138,11 @@ if( render_mode == "preview" )
             true
             );
 
+    // spacer a-b
     translate([ spacer_ab_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
         ShelfSpacer();
 
+    // shelf b
     translate([ wall_stud_b_center_offset_x, 0, 0 ])
         Shelf(
             ( wall_stud_ab_separation - spacer_x ) / 2,
@@ -142,9 +151,11 @@ if( render_mode == "preview" )
             true
             );
 
+    // spacer b-c
     translate([ spacer_bc_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
         ShelfSpacer();
 
+    // shelf c
     translate([ wall_stud_c_center_offset_x, 0, 0 ])
         Shelf(
             ( wall_stud_bc_separation - spacer_x ) / 2,
@@ -152,6 +163,15 @@ if( render_mode == "preview" )
             true,
             false
             );
+
+    // left ams
+    translate([
+        shelf_extra_x + ( wall_stud_ab_separation - ams_2_pro_x ) / 2,
+        -shelf_base_y + ams_extra_front_y,
+        0
+        ])
+        rotate([ -shelf_base_angle, 0, 0 ])
+            AMS2ProPreview();
 }
 else if( render_mode == "print-shelf-a" )
 {
@@ -489,6 +509,59 @@ module ShelfSpacer()
 
 module AMS2ProPreview()
 {
+    // ledge
+    % translate([ ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2, ams_extra_front_y, 0 ])
+        RoundedCubeAlt2(
+                x = ams_2_pro_bottom_ledge_x,
+                y = ams_2_pro_bottom_ledge_y,
+                z = ams_2_pro_bottom_ledge_z,
+                r = 10,
+                round_top = false,
+                round_bottom = false
+                );
+
+    // body
+    % translate([ 0, 0, ams_2_pro_bottom_ledge_z ])
+        RoundedCubeAlt2(
+            x = ams_2_pro_x,
+            y = ams_2_pro_y,
+            z = ams_2_pro_body_z,
+            r = 20,
+            round_top = false,
+            round_bottom = false
+            );
+
+    animate_angle = $t < 0.5
+        ? $t * 90 / 0.5
+        : ( 1.0 - $t ) * 90 / 0.5;
+    // echo( $t, " ===> ", animate_angle);
+
+    // lid
+    % translate([ 0, ams_2_pro_y - ams_extra_back_y, ams_2_pro_bottom_ledge_z + ams_2_pro_body_z ])
+    {
+        rotate([ -animate_angle, 0, 0 ])
+        {
+            translate([ 0, -ams_2_pro_lid_r, 0 ])
+            {
+                difference()
+                {
+                    rotate([ 0, 90, 0 ])
+                        cylinder( r = ams_2_pro_lid_r, h = ams_2_pro_x );
+
+                    translate([
+                        -DIFFERENCE_CLEARANCE,
+                        -ams_2_pro_lid_r - DIFFERENCE_CLEARANCE,
+                        -ams_2_pro_lid_r - DIFFERENCE_CLEARANCE
+                        ])
+                        cube([
+                            ams_2_pro_x + DIFFERENCE_CLEARANCE * 2,
+                            ams_2_pro_lid_r * 2 + DIFFERENCE_CLEARANCE * 2,
+                            ams_2_pro_lid_r + DIFFERENCE_CLEARANCE
+                            ]);
+                }
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
