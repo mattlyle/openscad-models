@@ -61,13 +61,16 @@ shelf_base_angle = -20;
 shelf_base_z = 8.0; // this is before the guide rails
 
 spacer_x = 150;
-spacer_tongue_groove_x = 6;
+spacer_tongue_groove_x = 4.0;
+spacer_tongue_groove_z = 3.0;
+spacer_tongue_groove_offset_near_y = 20;
+spacer_tongue_groove_clearance = 0.2;
 
 shelf_screw_r = 4.5 / 2;
 shelf_screw_cone_r = 8.0 / 2;
 shelf_screw_holder_z = 12;
 
-preview_spacers_below_shelf_level_z = -20;
+preview_spacers_below_shelf_level_z = -12;
 
 // TODO hexagon cutouts
 // TODO cutouts for drying ports
@@ -75,6 +78,7 @@ preview_spacers_below_shelf_level_z = -20;
 // TODO cutouts for the power cable and the filament tube
 // TODO x is too big, so need spacers... tongue and groove?
 // TODO preview the AMS itself
+// TODO add a dowel at the end for strength!
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -229,7 +233,7 @@ module Shelf( left_x, right_x, left_connection, right_connection )
 
     // horizontal shelf
     translate([ -left_x, 0, shelf_base_offset_z ])
-        _ShelfBase( left_x + right_x );
+        _ShelfBase( left_x + right_x, left_connection, right_connection );
 
     // AMS ledge
 
@@ -380,11 +384,59 @@ module _ShelfBottomBracket()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _ShelfBase( x )
+module _ShelfBase( x, left_connection, right_connection )
 {
     translate([ x, 0, 0 ])
+    {
         rotate([ shelf_base_angle, 0, 180 ])
-            cube([ x, shelf_base_y, shelf_base_z ]);
+        {
+            difference()
+            {
+                // main section
+                cube([ x, shelf_base_y, shelf_base_z ]);
+
+                // remove the left groove
+                if( left_connection )
+                {
+                    translate([
+                        x
+                            - spacer_tongue_groove_x
+                            + spacer_tongue_groove_clearance
+                            + DIFFERENCE_CLEARANCE,
+                        -DIFFERENCE_CLEARANCE,
+                        ( shelf_base_z - spacer_tongue_groove_z ) / 2 + spacer_tongue_groove_clearance
+                        ])
+                        cube([
+                            spacer_tongue_groove_x - spacer_tongue_groove_clearance,
+                            shelf_base_y
+                                - spacer_tongue_groove_offset_near_y
+                                - spacer_tongue_groove_clearance,
+                            spacer_tongue_groove_z
+                                - spacer_tongue_groove_clearance * 2
+                            ]);
+                }
+
+                // remove the right grove
+                if( right_connection )
+                {
+                    translate([
+                        -DIFFERENCE_CLEARANCE,
+                        -DIFFERENCE_CLEARANCE,
+                        ( shelf_base_z - spacer_tongue_groove_z ) / 2 + spacer_tongue_groove_clearance
+                        ])
+                        cube([
+                            spacer_tongue_groove_x - spacer_tongue_groove_clearance,
+                            shelf_base_y
+                                - spacer_tongue_groove_offset_near_y
+                                - spacer_tongue_groove_clearance,
+                            spacer_tongue_groove_z
+                                - spacer_tongue_groove_clearance * 2
+                            ]);
+
+                }
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -394,8 +446,37 @@ module ShelfSpacer()
     // TODO tongue
 
     translate([ spacer_x, 0, 0 ])
+    {
         rotate([ shelf_base_angle, 0, 180 ])
+        {
+            // main section
             cube([ spacer_x, shelf_base_y, shelf_base_z ]);
+
+            // tongue left
+            translate([
+                spacer_x,
+                0,
+                ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                ])
+                cube([
+                    spacer_tongue_groove_x,
+                    shelf_base_y - spacer_tongue_groove_offset_near_y,
+                    spacer_tongue_groove_z
+                    ]);
+
+            // tongue right
+            translate([
+                -spacer_tongue_groove_x,
+                0,
+                ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                ])
+                cube([
+                    spacer_tongue_groove_x,
+                    shelf_base_y - spacer_tongue_groove_offset_near_y,
+                    spacer_tongue_groove_z
+                    ]);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
