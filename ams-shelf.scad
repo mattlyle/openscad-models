@@ -85,6 +85,12 @@ preview_spacers_below_shelf_level_z = -12;
 
 $fn = $preview ? 32 : 128;
 
+full_x = shelf_extra_x
+    + wall_stud_ab_separation
+    + wall_stud_bc_separation
+    + shelf_extra_x;
+echo( str( "Full X: ", full_x, " mm = ", full_x * 0.03937008, " inches" ) );
+
 wall_stud_a_center_offset_x = shelf_extra_x;
 wall_stud_b_center_offset_x = wall_stud_a_center_offset_x + wall_stud_ab_separation;
 wall_stud_c_center_offset_x = wall_stud_b_center_offset_x + wall_stud_bc_separation;
