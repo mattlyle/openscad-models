@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 include <modules/rounded-cube.scad>;
+include <modules/triangular-prism.scad>;
 include <modules/utils.scad>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +28,7 @@ ams_extra_back_y = 25;
 
 // the length behind the AMS 2 Pro to the wall
 // shelf_extra_y = 130;
-shelf_extra_y = 70;
+shelf_extra_y = 50;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -69,12 +70,22 @@ shelf_base_z = 8.0; // this is before the guide rails
 spacer_x = 150;
 spacer_tongue_groove_x = 4.0;
 spacer_tongue_groove_z = 3.0;
-spacer_tongue_groove_offset_near_y = 20;
+spacer_tongue_groove_offset_near_y = 45;
 spacer_tongue_groove_clearance = 0.2;
 
 shelf_screw_r = 4.5 / 2;
 shelf_screw_cone_r = 8.0 / 2;
 shelf_screw_holder_z = 12;
+
+// the width (y) of the front ledge of the shelf
+shelf_front_ledge_y = 4;
+shelf_front_ledge_z = 5;
+
+dowel_r = 15 / 2; // including clearance!
+dowel_offset_y = -30; // from the near bottom edge of the shelf
+dowel_offset_z = -3;
+dowel_support_ring_r = 3;
+dowel_support_ring_extra_z = 2; // this is the extra height of the ring below the dowel
 
 preview_spacers_below_shelf_level_z = -12;
 
@@ -82,7 +93,6 @@ preview_spacers_below_shelf_level_z = -12;
 // TODO cutouts for drying ports
 // TODO cutouts for the AMS 2 Pro bottom ledge
 // TODO cutouts for the power cable and the filament tube
-// TODO x is too big, so need spacers... tongue and groove?
 // TODO add a dowel at the end for strength!
 // TODO add grip on the top flat face so it won't slip
 
@@ -167,7 +177,7 @@ if( render_mode == "preview" )
     // left ams
     translate([
         shelf_extra_x + ( wall_stud_ab_separation - ams_2_pro_x ) / 2,
-        -shelf_base_y + ams_extra_front_y,
+        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2,
         0
         ])
         rotate([ -shelf_base_angle, 0, 0 ])
@@ -260,8 +270,6 @@ module Shelf( left_x, right_x, left_connection, right_connection )
     // horizontal shelf
     translate([ -left_x, 0, shelf_base_offset_z ])
         _ShelfBase( left_x + right_x, left_connection, right_connection );
-
-    // AMS ledge
 
     // top triangular bracket
     _ShelfTopBracket();
@@ -419,7 +427,7 @@ module _ShelfBase( x, left_connection, right_connection )
             difference()
             {
                 // main section
-                cube([ x, shelf_base_y, shelf_base_z ]);
+                _ShelfBaseMainFace( x );
 
                 // remove the left groove
                 if( left_connection )
@@ -458,7 +466,6 @@ module _ShelfBase( x, left_connection, right_connection )
                             spacer_tongue_groove_z
                                 - spacer_tongue_groove_clearance * 2
                             ]);
-
                 }
             }
         }
@@ -469,14 +476,12 @@ module _ShelfBase( x, left_connection, right_connection )
 
 module ShelfSpacer()
 {
-    // TODO tongue
-
     translate([ spacer_x, 0, 0 ])
     {
         rotate([ shelf_base_angle, 0, 180 ])
         {
             // main section
-            cube([ spacer_x, shelf_base_y, shelf_base_z ]);
+            _ShelfBaseMainFace( spacer_x );
 
             // tongue left
             translate([
@@ -507,18 +512,82 @@ module ShelfSpacer()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module _ShelfBaseMainFace( x )
+{
+    // bottom dowel support
+    dowel_support_under_ring_z = shelf_base_z
+        + dowel_offset_z
+        - dowel_r * 2
+        - dowel_support_ring_r
+        - dowel_support_ring_extra_z;
+    dowel_support_points = [
+        [ 0, shelf_base_y, 0 ],
+        [ 0, shelf_base_y + dowel_offset_y, dowel_support_under_ring_z ],
+        [ 0, shelf_base_y + dowel_offset_y * 2, 0 ],
+
+        [ x, shelf_base_y, 0 ],
+        [ x, shelf_base_y + dowel_offset_y, dowel_support_under_ring_z ],
+        [ x, shelf_base_y + dowel_offset_y * 2, 0 ],
+        ];
+    // for( point = dowel_support_points )
+    //     # translate( point )       
+    //         sphere( r = 1 );
+
+    // main face
+    difference()
+    {
+        union()
+        {
+            cube([ x, shelf_base_y, shelf_base_z ]);
+
+            // add the dowel support ring
+            translate([ 0, shelf_base_y + dowel_offset_y, dowel_offset_z ])
+                rotate([ 0, 90, 0 ])
+                    cylinder(
+                        r = dowel_r + dowel_support_ring_r,
+                        h = x
+                        );
+
+            // bottom dowel support
+            polyhedron(
+                points = dowel_support_points,
+                faces = [
+                    [ 0, 2, 1 ],
+                    [ 3, 4, 5 ],
+                    [ 0, 3, 5, 2 ],
+                    [ 0, 1, 4, 3 ],
+                    [ 1, 2, 5, 4 ],
+                ]
+            );
+        }
+
+        // remove the dowel
+        translate([ -DIFFERENCE_CLEARANCE, shelf_base_y + dowel_offset_y, dowel_offset_z ])
+            rotate([ 0, 90, 0 ])
+                cylinder( r = dowel_r, h = x + DIFFERENCE_CLEARANCE * 2 );
+    }
+
+    // front ledge
+    translate([ 0, shelf_base_y - shelf_front_ledge_y, shelf_base_z ])
+        cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_z ]);
+    translate([ 0, shelf_base_y - shelf_front_ledge_y / 2, shelf_base_z ])
+        TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_z );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module AMS2ProPreview()
 {
     // ledge
     % translate([ ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2, ams_extra_front_y, 0 ])
         RoundedCubeAlt2(
-                x = ams_2_pro_bottom_ledge_x,
-                y = ams_2_pro_bottom_ledge_y,
-                z = ams_2_pro_bottom_ledge_z,
-                r = 10,
-                round_top = false,
-                round_bottom = false
-                );
+            x = ams_2_pro_bottom_ledge_x,
+            y = ams_2_pro_bottom_ledge_y,
+            z = ams_2_pro_bottom_ledge_z,
+            r = 10,
+            round_top = false,
+            round_bottom = false
+            );
 
     // body
     % translate([ 0, 0, ams_2_pro_bottom_ledge_z ])
