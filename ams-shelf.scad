@@ -61,10 +61,12 @@ shelf_base_angle = -20;
 shelf_base_z = 8.0; // this is before the guide rails
 
 shelf_screw_r = 4.5 / 2;
+shelf_screw_cone_r = 8.0 / 2;
 shelf_screw_holder_z = 12;
 
 // TODO screw holes
 // TODO hexagon cutouts
+// TODO cutouts for drying ports
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -84,6 +86,7 @@ wall_plate_z = shelf_screw_holder_z
 bottom_bracket_offset_z = shelf_screw_holder_z;
 shelf_base_offset_z = bottom_bracket_offset_z + shelf_bottom_bracket_z;
 top_bracket_offset_z = shelf_base_offset_z + shelf_base_z;
+top_screw_holder_section_offset_z = top_bracket_offset_z + shelf_top_bracket_z;
 
 shelf_base_y = ams_2_pro_bottom_ledge_y
     + ams_extra_front_y
@@ -139,13 +142,53 @@ module Shelf( left_x, right_x, left_connection, right_connection )
     total_y = shelf_base_y * cos( shelf_base_angle );
     total_z = wall_plate_z;
 
+    echo();
     echo( str( "total x: ", total_x ) );
     echo( str( "total y: ", total_y ) );
     echo( str( "total z: ", total_z ) );
 
     // wall plate
-    translate([ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, 0 ])
-        cube([ shelf_wall_plate_x, shelf_wall_plate_y, wall_plate_z  ]);
+    difference()
+    {
+        translate([ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, 0 ])
+            cube([ shelf_wall_plate_x, shelf_wall_plate_y, wall_plate_z  ]);
+
+        // bottom screw hole shaft
+        translate([
+            0,
+            DIFFERENCE_CLEARANCE,
+            shelf_screw_holder_z / 2
+            ])
+            rotate([ 90, 0, 0 ])
+                cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
+        
+        // bottom screw hole cone
+        translate([
+            0,
+            -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
+            shelf_screw_holder_z / 2
+            ])
+            rotate([ 90, 0, 0 ])
+                cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
+
+        // top screw hole shaft
+        translate([
+            0,
+            DIFFERENCE_CLEARANCE,
+            top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
+            ])
+            rotate([ 90, 0, 0 ])
+                cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
+
+        // top screw hole cone
+        translate([
+            0,
+            -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
+            top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
+            ])
+            rotate([ 90, 0, 0 ])
+                cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
+    }
 
     // bottom triangular bracket
     _ShelfBottomBracket();
@@ -164,7 +207,6 @@ module Shelf( left_x, right_x, left_connection, right_connection )
 
 module _ShelfTopBracket()
 {
-    // rotateThis = ;
     rotateAbout = [ 0, shelf_base_offset_z ];
 
     rotatedTopFar_xy = RotatePointAboutPoint( // using y,z as x,y
@@ -269,15 +311,8 @@ module _ShelfBottomBracket()
     bottom_face_brace_intercept_z =
         shelf_bottom_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
         + farBottom.z;
-// shelf_bottom_bracket_y_percent
         
     points = [
-        // far
-        // farBottom,
-
-        // near
-        // [ -shelf_wall_plate_x / 2, rotatedBottomNear_xy.x, rotatedBottomNear_xy.y ],
-
         // where the top face meets the bracket
         [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z ],
 
@@ -285,12 +320,12 @@ module _ShelfBottomBracket()
         [ -shelf_bottom_bracket_full_x / 2, bottom_face_brace_intercept_y, bottom_face_brace_intercept_z ],
 
         // where the bottom base meets the wall plate
-        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z - shelf_bottom_bracket_z ],
+        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_bracket_offset_z ],
 
         // backside
         [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z ],
         [ shelf_bottom_bracket_full_x / 2, bottom_face_brace_intercept_y, bottom_face_brace_intercept_z ],
-        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z - shelf_bottom_bracket_z ],
+        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_bracket_offset_z ],
         ];
 
     // for( point = points )
@@ -305,8 +340,8 @@ module _ShelfBottomBracket()
             [ 1, 4, 5, 2 ],
             [ 0, 2, 5, 3 ],
             [ 0, 3, 4, 1 ],
-        ]
-    );
+            ]    
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
