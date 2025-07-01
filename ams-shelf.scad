@@ -60,13 +60,21 @@ shelf_bottom_bracket_full_x = 80;
 shelf_base_angle = -20;
 shelf_base_z = 8.0; // this is before the guide rails
 
+spacer_x = 150;
+spacer_tongue_groove_x = 6;
+
 shelf_screw_r = 4.5 / 2;
 shelf_screw_cone_r = 8.0 / 2;
 shelf_screw_holder_z = 12;
 
-// TODO screw holes
+preview_spacers_below_shelf_level_z = -20;
+
 // TODO hexagon cutouts
 // TODO cutouts for drying ports
+// TODO cutouts for the AMS 2 Pro bottom ledge
+// TODO cutouts for the power cable and the filament tube
+// TODO x is too big, so need spacers... tongue and groove?
+// TODO preview the AMS itself
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -93,6 +101,11 @@ shelf_base_y = ams_2_pro_bottom_ledge_y
     + ams_extra_back_y
     + shelf_extra_y;
 
+spacer_ab_offset_x = shelf_extra_x + ( wall_stud_ab_separation - spacer_x ) / 2;
+spacer_bc_offset_x = shelf_extra_x
+    + wall_stud_ab_separation
+    + ( wall_stud_bc_separation - spacer_x ) / 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -101,13 +114,34 @@ if( render_mode == "preview" )
     WallPreview();
 
     translate([ wall_stud_a_center_offset_x, 0, 0 ])
-        Shelf( shelf_extra_x, wall_stud_ab_separation / 2, false, true );
+        Shelf(
+            shelf_extra_x,
+            ( wall_stud_ab_separation - spacer_x ) / 2,
+            false,
+            true
+            );
+
+    translate([ spacer_ab_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
+        ShelfSpacer();
 
     translate([ wall_stud_b_center_offset_x, 0, 0 ])
-        Shelf( wall_stud_ab_separation / 2, wall_stud_bc_separation / 2, true, true );
+        Shelf(
+            ( wall_stud_ab_separation - spacer_x ) / 2,
+            ( wall_stud_bc_separation - spacer_x ) / 2,
+            true,
+            true
+            );
+
+    translate([ spacer_bc_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
+        ShelfSpacer();
 
     translate([ wall_stud_c_center_offset_x, 0, 0 ])
-        Shelf( wall_stud_bc_separation / 2, shelf_extra_x, true, false );
+        Shelf(
+            ( wall_stud_bc_separation - spacer_x ) / 2,
+            shelf_extra_x,
+            true,
+            false
+            );
 }
 else if( render_mode == "print-shelf-a" )
 {
@@ -351,6 +385,17 @@ module _ShelfBase( x )
     translate([ x, 0, 0 ])
         rotate([ shelf_base_angle, 0, 180 ])
             cube([ x, shelf_base_y, shelf_base_z ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ShelfSpacer()
+{
+    // TODO tongue
+
+    translate([ spacer_x, 0, 0 ])
+        rotate([ shelf_base_angle, 0, 180 ])
+            cube([ spacer_x, shelf_base_y, shelf_base_z ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
