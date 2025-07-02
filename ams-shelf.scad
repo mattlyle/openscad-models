@@ -182,6 +182,15 @@ if( render_mode == "preview" )
         ])
         rotate([ -shelf_base_angle, 0, 0 ])
             AMS2ProPreview();
+
+    // right ams
+    translate([
+        shelf_extra_x + wall_stud_ab_separation + ( wall_stud_bc_separation - ams_2_pro_x ) / 2,
+        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2,
+        0
+        ])
+        rotate([ -shelf_base_angle, 0, 0 ])
+            AMS2ProPreview();
 }
 else if( render_mode == "print-shelf-a" )
 {
