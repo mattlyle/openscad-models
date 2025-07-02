@@ -30,7 +30,7 @@ ams_extra_back_y = 25;
 // shelf_extra_y = 130;
 shelf_extra_y = 50;
 
-dowel_r = 9.6 / 2 + 0.1; // including clearance!
+dowel_r = 9.7 / 2 + 0.3; // including clearance!
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
