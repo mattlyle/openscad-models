@@ -30,17 +30,17 @@ ams_extra_back_y = 25;
 // shelf_extra_y = 130;
 shelf_extra_y = 50;
 
-dowel_r = 9 / 2 + 0.1; // including clearance!
+dowel_r = 9.6 / 2 + 0.1; // including clearance!
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-render_mode = "preview";
+// render_mode = "preview";
 // render_mode = "print-shelf-a";
 // render_mode = "print-shelf-b";
 // render_mode = "print-shelf-c";
 // render_mode = "print-shelf-test";
-// render_mode = "print-spacer-test";
+render_mode = "print-spacer-test";
 
 wall_stud_width = 30; // approx
 
@@ -86,10 +86,10 @@ shelf_front_ledge_y = 6;
 // width
 shelf_front_ledge_z = 9;
 
-dowel_front_offset_y = -30; // from the near bottom edge of the shelf
+dowel_front_offset_y = -20; // from the near bottom edge of the shelf
 dowel_front_offset_z = -1;
-dowel_front_support_ring_extra_z = 3.8; // this is the extra height of the ring below the dowel
-dowel_back_offset_y = -250;
+dowel_front_support_ring_extra_z = 4.2; // this is the extra height of the ring below the dowel
+dowel_back_offset_y = -246;
 dowel_back_offset_z = -3;
 dowel_back_support_ring_extra_z = 4.0;
 dowel_support_ring_r = 3;
@@ -214,7 +214,11 @@ else if( render_mode == "print-shelf-c" )
 }
 else if( render_mode == "print-shelf-test" )
 {
-    Shelf( shelf_bottom_bracket_full_x * 0.55, shelf_bottom_bracket_full_x * 0.55, true, true );
+    side_x = shelf_bottom_bracket_full_x * 0.55;
+
+    translate([ 0, 0, side_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( side_x, side_x, true, true );
 }
 else if( render_mode == "print-spacer-test" )
 {
