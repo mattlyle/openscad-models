@@ -30,6 +30,8 @@ ams_extra_back_y = 25;
 // shelf_extra_y = 130;
 shelf_extra_y = 50;
 
+dowel_r = 9 / 2 + 0.1; // including clearance!
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -38,6 +40,7 @@ render_mode = "preview";
 // render_mode = "print-shelf-b";
 // render_mode = "print-shelf-c";
 // render_mode = "print-shelf-test";
+// render_mode = "print-spacer-test";
 
 wall_stud_width = 30; // approx
 
@@ -77,23 +80,25 @@ shelf_screw_r = 4.5 / 2;
 shelf_screw_cone_r = 8.0 / 2;
 shelf_screw_holder_z = 12;
 
-// the width (y) of the front ledge of the shelf
-shelf_front_ledge_y = 4;
-shelf_front_ledge_z = 5;
+// width (y) of the front ledge of the shelf
+shelf_front_ledge_y = 6;
 
-dowel_r = 15 / 2; // including clearance!
-dowel_offset_y = -30; // from the near bottom edge of the shelf
-dowel_offset_z = -3;
+// width
+shelf_front_ledge_z = 9;
+
+dowel_front_offset_y = -30; // from the near bottom edge of the shelf
+dowel_front_offset_z = -1;
+dowel_front_support_ring_extra_z = 3.8; // this is the extra height of the ring below the dowel
+dowel_back_offset_y = -250;
+dowel_back_offset_z = -3;
+dowel_back_support_ring_extra_z = 4.0;
 dowel_support_ring_r = 3;
-dowel_support_ring_extra_z = 2; // this is the extra height of the ring below the dowel
 
 preview_spacers_below_shelf_level_z = -12;
 
 // TODO hexagon cutouts
 // TODO cutouts for drying ports
-// TODO cutouts for the AMS 2 Pro bottom ledge
 // TODO cutouts for the power cable and the filament tube
-// TODO add a dowel at the end for strength!
 // TODO add grip on the top flat face so it won't slip
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +155,7 @@ if( render_mode == "preview" )
 
     // spacer a-b
     translate([ spacer_ab_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
-        ShelfSpacer();
+        ShelfSpacer( spacer_x );
 
     // shelf b
     translate([ wall_stud_b_center_offset_x, 0, 0 ])
@@ -163,7 +168,7 @@ if( render_mode == "preview" )
 
     // spacer b-c
     translate([ spacer_bc_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
-        ShelfSpacer();
+        ShelfSpacer( spacer_x );
 
     // shelf c
     translate([ wall_stud_c_center_offset_x, 0, 0 ])
@@ -209,8 +214,12 @@ else if( render_mode == "print-shelf-c" )
 }
 else if( render_mode == "print-shelf-test" )
 {
-    translate([ wall_stud_c_center_offset_x, 0, 0 ])
-        Shelf( shelf_bottom_bracket_full_x * 0.7, shelf_bottom_bracket_full_x * 0.7, true, false );
+    Shelf( shelf_bottom_bracket_full_x * 0.55, shelf_bottom_bracket_full_x * 0.55, true, true );
+}
+else if( render_mode == "print-spacer-test" )
+{
+    rotate([ 0, -90, 0 ])
+        ShelfSpacer( 30 );
 }
 else
 {
@@ -413,16 +422,26 @@ module _ShelfBottomBracket()
     //     # translate( point )
     //         sphere( r = 1 );
 
-    polyhedron(
-        points = points,
-        faces = [
-            [ 0, 1, 2 ],
-            [ 3, 5, 4 ],
-            [ 1, 4, 5, 2 ],
-            [ 0, 2, 5, 3 ],
-            [ 0, 3, 4, 1 ],
-            ]    
-        );
+    difference()
+    {
+        polyhedron(
+            points = points,
+            faces = [
+                [ 0, 1, 2 ],
+                [ 3, 5, 4 ],
+                [ 1, 4, 5, 2 ],
+                [ 0, 2, 5, 3 ],
+                [ 0, 3, 4, 1 ],
+                ]    
+            );
+
+        // remove the back dowel
+        translate([ -200, 0, shelf_base_offset_z ])
+            rotate([ -shelf_base_angle, 0, 0 ])
+                translate([ 0, -shelf_base_y - dowel_back_offset_y, dowel_back_offset_z ])
+                    rotate([ 0, 90, 0 ])
+                        cylinder( r = dowel_r, h = 400 );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -483,38 +502,66 @@ module _ShelfBase( x, left_connection, right_connection )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ShelfSpacer()
+module ShelfSpacer( x )
 {
-    translate([ spacer_x, 0, 0 ])
+    translate([ x, 0, 0 ])
     {
         rotate([ shelf_base_angle, 0, 180 ])
         {
             // main section
-            _ShelfBaseMainFace( spacer_x );
+            _ShelfBaseMainFace( x );
 
             // tongue left
-            translate([
-                spacer_x,
-                0,
-                ( shelf_base_z - spacer_tongue_groove_z ) / 2
-                ])
-                cube([
-                    spacer_tongue_groove_x,
-                    shelf_base_y - spacer_tongue_groove_offset_near_y,
-                    spacer_tongue_groove_z
-                    ]);
+            difference()
+            {
+                translate([
+                    x,
+                    0,
+                    ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                    ])
+                    cube([
+                        spacer_tongue_groove_x,
+                        shelf_base_y - spacer_tongue_groove_offset_near_y,
+                        spacer_tongue_groove_z
+                        ]);
+
+                translate([
+                    x - DIFFERENCE_CLEARANCE,
+                    shelf_base_y + dowel_back_offset_y - dowel_r,
+                    0
+                    ])
+                    cube([
+                        spacer_tongue_groove_x + DIFFERENCE_CLEARANCE * 2,
+                        dowel_r * 2,
+                        dowel_r * 2
+                        ]);
+            }
 
             // tongue right
-            translate([
-                -spacer_tongue_groove_x,
-                0,
-                ( shelf_base_z - spacer_tongue_groove_z ) / 2
-                ])
-                cube([
-                    spacer_tongue_groove_x,
-                    shelf_base_y - spacer_tongue_groove_offset_near_y,
-                    spacer_tongue_groove_z
-                    ]);
+            difference()
+            {
+                translate([
+                    -spacer_tongue_groove_x,
+                    0,
+                    ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                    ])
+                    cube([
+                        spacer_tongue_groove_x,
+                        shelf_base_y - spacer_tongue_groove_offset_near_y,
+                        spacer_tongue_groove_z
+                        ]);
+
+                translate([
+                    -spacer_tongue_groove_x - DIFFERENCE_CLEARANCE,
+                    shelf_base_y + dowel_back_offset_y - dowel_r,
+                    0
+                    ])
+                    cube([
+                        spacer_tongue_groove_x + DIFFERENCE_CLEARANCE * 2,
+                        dowel_r * 2,
+                        dowel_r * 2
+                        ]);
+            }
         }
     }
 }
@@ -524,21 +571,41 @@ module ShelfSpacer()
 module _ShelfBaseMainFace( x )
 {
     // bottom dowel support
-    dowel_support_under_ring_z = shelf_base_z
-        + dowel_offset_z
+    dowel_front_support_under_ring_z = shelf_base_z
+        + dowel_front_offset_z
         - dowel_r * 2
         - dowel_support_ring_r
-        - dowel_support_ring_extra_z;
-    dowel_support_points = [
+        - dowel_front_support_ring_extra_z;
+    front_dowel_support_points = [
         [ 0, shelf_base_y, 0 ],
-        [ 0, shelf_base_y + dowel_offset_y, dowel_support_under_ring_z ],
-        [ 0, shelf_base_y + dowel_offset_y * 2, 0 ],
+        [ 0, shelf_base_y + dowel_front_offset_y, dowel_front_support_under_ring_z ],
+        [ 0, shelf_base_y + dowel_front_offset_y * 2, 0 ],
 
         [ x, shelf_base_y, 0 ],
-        [ x, shelf_base_y + dowel_offset_y, dowel_support_under_ring_z ],
-        [ x, shelf_base_y + dowel_offset_y * 2, 0 ],
+        [ x, shelf_base_y + dowel_front_offset_y, dowel_front_support_under_ring_z ],
+        [ x, shelf_base_y + dowel_front_offset_y * 2, 0 ],
         ];
-    // for( point = dowel_support_points )
+    // for( point = front_dowel_support_points )
+    //     # translate( point )       
+    //         sphere( r = 1 );
+
+    dowel_back_support_under_ring_z = shelf_base_z
+        + dowel_back_offset_z
+        - dowel_r * 2
+        - dowel_support_ring_r
+        - dowel_back_support_ring_extra_z;
+    back_dowel_support_y = 30;
+    back_dowel_support_points = [
+        [ 0, shelf_base_y + dowel_back_offset_y + back_dowel_support_y, 0 ],
+        [ 0, shelf_base_y + dowel_back_offset_y, dowel_back_support_under_ring_z ],
+        [ 0, shelf_base_y + dowel_back_offset_y - back_dowel_support_y, 0 ],
+
+        [ x, shelf_base_y + dowel_back_offset_y + back_dowel_support_y, 0 ],
+        [ x, shelf_base_y + dowel_back_offset_y, dowel_back_support_under_ring_z ],
+        [ x, shelf_base_y + dowel_back_offset_y - back_dowel_support_y, 0 ],
+        ];
+
+    // for( point = back_dowel_support_points )
     //     # translate( point )       
     //         sphere( r = 1 );
 
@@ -549,17 +616,31 @@ module _ShelfBaseMainFace( x )
         {
             cube([ x, shelf_base_y, shelf_base_z ]);
 
-            // add the dowel support ring
-            translate([ 0, shelf_base_y + dowel_offset_y, dowel_offset_z ])
+            // front dowel support ring
+            translate([ 0, shelf_base_y + dowel_front_offset_y, dowel_front_offset_z ])
                 rotate([ 0, 90, 0 ])
-                    cylinder(
-                        r = dowel_r + dowel_support_ring_r,
-                        h = x
-                        );
+                    cylinder( r = dowel_r + dowel_support_ring_r, h = x );
 
-            // bottom dowel support
+            // front dowel bottom support
             polyhedron(
-                points = dowel_support_points,
+                points = front_dowel_support_points,
+                faces = [
+                    [ 0, 2, 1 ],
+                    [ 3, 4, 5 ],
+                    [ 0, 3, 5, 2 ],
+                    [ 0, 1, 4, 3 ],
+                    [ 1, 2, 5, 4 ],
+                ]
+            );
+
+            // back dowel support ring
+            translate([ 0, shelf_base_y + dowel_back_offset_y, dowel_back_offset_z ])
+                rotate([ 0, 90, 0 ])
+                    cylinder( r = dowel_r + dowel_support_ring_r, h = x );
+
+            // back dowel bottom support
+            polyhedron(
+                points = back_dowel_support_points,
                 faces = [
                     [ 0, 2, 1 ],
                     [ 3, 4, 5 ],
@@ -570,8 +651,21 @@ module _ShelfBaseMainFace( x )
             );
         }
 
-        // remove the dowel
-        translate([ -DIFFERENCE_CLEARANCE, shelf_base_y + dowel_offset_y, dowel_offset_z ])
+        // remove the front dowel
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y + dowel_front_offset_y,
+            dowel_front_offset_z
+            ])
+            rotate([ 0, 90, 0 ])
+                cylinder( r = dowel_r, h = x + DIFFERENCE_CLEARANCE * 2 );
+
+        // remove the back dowel
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y + dowel_back_offset_y,
+            dowel_back_offset_z
+            ])
             rotate([ 0, 90, 0 ])
                 cylinder( r = dowel_r, h = x + DIFFERENCE_CLEARANCE * 2 );
     }
