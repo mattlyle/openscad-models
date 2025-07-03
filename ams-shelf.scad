@@ -32,7 +32,8 @@ ams_extra_back_y = 25;
 // shelf_extra_y = 130;
 shelf_extra_y = 50;
 
-dowel_r = 9.6 / 2 + 0.2; // including clearance!
+// dowel size including clearance!
+dowel_r = 9.6 / 2 + 0.2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -110,7 +111,7 @@ preview_spacers_below_shelf_level_z = -12;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
-$fn = $preview ? 32 : 128;
+$fn = $preview ? 32 : 256;
 
 full_x = shelf_extra_x
     + wall_stud_ab_separation
