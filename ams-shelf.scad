@@ -94,12 +94,16 @@ dowel_back_offset_z = -3;
 dowel_back_support_ring_extra_z = 4.0;
 dowel_support_ring_r = 3;
 
+bottom_bracket_hex_cutouts_r = 6;
+bottom_bracket_hex_cutouts_spacing = 2;
+bottom_bracket_edge_thickness = 8;
+
 preview_spacers_below_shelf_level_z = -12;
 
-// TODO hexagon cutouts
 // TODO cutouts for drying ports
 // TODO cutouts for the power cable and the filament tube
 // TODO add grip on the top flat face so it won't slip
+// TODO add cutouts for the feet
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -379,7 +383,7 @@ module _ShelfTopBracket()
 
 module _ShelfBottomBracket()
 {
-    // TODO this needs to have the hexagon cutouts for weight/filament reduction
+    max_x = 400;
 
     farBottom = [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ];
 
@@ -406,7 +410,7 @@ module _ShelfBottomBracket()
         shelf_bottom_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
         + farBottom.z;
         
-    points = [
+    bracket_points = [
         // where the top face meets the bracket
         [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z ],
 
@@ -422,14 +426,14 @@ module _ShelfBottomBracket()
         [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_bracket_offset_z ],
         ];
 
-    // for( point = points )
+    // for( point = bracket_points )
     //     # translate( point )
     //         sphere( r = 1 );
 
     difference()
     {
         polyhedron(
-            points = points,
+            points = bracket_points,
             faces = [
                 [ 0, 1, 2 ],
                 [ 3, 5, 4 ],
@@ -440,12 +444,71 @@ module _ShelfBottomBracket()
             );
 
         // remove the back dowel
-        translate([ -200, 0, shelf_base_offset_z ])
+        translate([ -max_x, 0, shelf_base_offset_z ])
             rotate([ -shelf_base_angle, 0, 0 ])
                 translate([ 0, -shelf_base_y - dowel_back_offset_y, dowel_back_offset_z ])
                     rotate([ 0, 90, 0 ])
-                        cylinder( r = dowel_r, h = 400 );
+                        cylinder( r = dowel_r, h = max_x * 2 );
+
+
+        bottom_bracket_hex_cutouts_spacing_x = bottom_bracket_hex_cutouts_spacing;
+        bottom_bracket_hex_cutouts_spacing_z = bottom_bracket_hex_cutouts_spacing * sqrt( 3 ) / 2;
+        translate([ max_x / 2, 0, bottom_bracket_offset_z ])
+        {
+            rotate([ 90, 0, -90 ])
+            {
+                for( row = [ 0 : 10 ] )
+                {
+                    for( col = [ 0 : 10 ] )
+                    {
+                        translate([
+                            CalculateHexagonOffsetX(
+                                row,
+                                col,
+                                bottom_bracket_hex_cutouts_r,
+                                bottom_bracket_hex_cutouts_spacing_x
+                                ),
+                            CalculateHexagonOffsetY(
+                                row,
+                                bottom_bracket_hex_cutouts_r,
+                                bottom_bracket_hex_cutouts_spacing_z
+                                ),
+                            0
+                            ])
+                            Hexagon( bottom_bracket_hex_cutouts_r, max_x );
+                    }
+                }
+            }
+        }
     }
+
+    // bottom_bracket_edge_thickness
+    bottom_edge_points = [
+        [ bracket_points[ 2 ].x, bracket_points[ 2 ].y, bracket_points[ 2 ].z + bottom_bracket_edge_thickness ],
+        [ bracket_points[ 1 ].x, bracket_points[ 1 ].y, bracket_points[ 1 ].z + bottom_bracket_edge_thickness ],
+        bracket_points[ 1 ],
+        bracket_points[ 2 ],
+
+        [ bracket_points[ 5 ].x, bracket_points[ 5 ].y, bracket_points[ 5 ].z + bottom_bracket_edge_thickness ],
+        [ bracket_points[ 4 ].x, bracket_points[ 4 ].y, bracket_points[ 4 ].z + bottom_bracket_edge_thickness ],
+        bracket_points[ 4 ],
+        bracket_points[ 5 ],
+        ];
+
+    // for( point = bottom_edge_points )
+    //     # translate( point )
+    //         sphere( r = 1 );
+
+    polyhedron(
+        points = bottom_edge_points,
+        faces = [
+            [ 0, 4, 5, 1 ],
+            [ 0, 1, 2, 3 ],
+            [ 1, 5, 6, 2 ],
+            [ 4, 7, 6, 5 ],
+            [ 0, 3, 7, 4 ],
+            [ 2, 6, 7, 3 ],
+        ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
