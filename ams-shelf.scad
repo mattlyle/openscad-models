@@ -16,6 +16,11 @@ ams_2_pro_bottom_ledge_x = 338; // note the front is actually 324
 ams_2_pro_bottom_ledge_y = 250;
 ams_2_pro_bottom_ledge_z = 11;
 
+ams_2_pro_foot_x = 36;
+ams_2_pro_foot_y = 17;
+ams_2_pro_foot_z = 2.5;
+ams_2_pro_foot_back_offset_y = 231; // distance to the back foot of the AMS
+
 ams_2_pro_x = 372;
 ams_2_pro_y = 278;
 ams_2_pro_body_z = 110; // this is above the ledge below it
@@ -74,7 +79,7 @@ shelf_bottom_bracket_y_percent = 0.5;
 shelf_bottom_bracket_full_x = 80;
 
 shelf_base_angle = -20;
-shelf_base_z = 8.0; // this is before the guide rails
+shelf_base_z = 8.2; // this is before the guide rails
 
 spacer_x = 150;
 spacer_tongue_groove_x = 4.0;
@@ -727,6 +732,30 @@ module _ShelfBaseMainFace( x )
             ])
             rotate([ 0, 90, 0 ])
                 cylinder( r = dowel_r, h = x + DIFFERENCE_CLEARANCE * 2 );
+
+        // remove the front feet groove
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y - shelf_front_ledge_y - ams_2_pro_foot_y,
+            shelf_base_z - ams_2_pro_foot_z
+            ])
+            cube([
+                x + DIFFERENCE_CLEARANCE * 2,
+                ams_2_pro_foot_y,
+                ams_2_pro_foot_z + DIFFERENCE_CLEARANCE
+                ]);
+
+        // remove the rear feet groove
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y - shelf_front_ledge_y - ams_2_pro_foot_y - ams_2_pro_foot_back_offset_y,
+            shelf_base_z - ams_2_pro_foot_z
+            ])
+            cube([
+                x + DIFFERENCE_CLEARANCE * 2,
+                ams_2_pro_foot_y,
+                ams_2_pro_foot_z + DIFFERENCE_CLEARANCE
+                ]);
     }
 
     // front ledge
