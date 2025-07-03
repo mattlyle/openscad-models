@@ -336,18 +336,6 @@ module _ShelfTopBracket()
         + rotatedTopFar_xy.y;
 
     points = [
-        // [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, shelf_base_offset_z + shelf_base_z ],
-
-        // [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ],
-        // [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z + shelf_base_z ],
-        // [ -shelf_wall_plate_x / 2, -shelf_base_y, shelf_base_offset_z + shelf_base_z ],
-
-        // top far
-        // [ -shelf_wall_plate_x / 2, rotatedTopFar_xy.x, rotatedTopFar_xy.y ],
-
-        // top near
-        // [ -shelf_wall_plate_x / 2, rotatedTopNear_xy.x, rotatedTopNear_xy.y ],
-
         // where the shelf top face meets the wall plate
         [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z ],
 
@@ -697,8 +685,8 @@ module _ShelfBaseMainFace( x )
                     [ 0, 3, 5, 2 ],
                     [ 0, 1, 4, 3 ],
                     [ 1, 2, 5, 4 ],
-                ]
-            );
+                    ]
+                );
 
             // back dowel support ring
             translate([ 0, shelf_base_y + dowel_back_offset_y, dowel_back_offset_z ])
@@ -714,8 +702,8 @@ module _ShelfBaseMainFace( x )
                     [ 0, 3, 5, 2 ],
                     [ 0, 1, 4, 3 ],
                     [ 1, 2, 5, 4 ],
-                ]
-            );
+                    ]
+                );
         }
 
         // remove the front dowel
@@ -773,7 +761,6 @@ module AMS2ProPreview()
     animate_angle = $t < 0.5
         ? $t * 90 / 0.5
         : ( 1.0 - $t ) * 90 / 0.5;
-    // echo( $t, " ===> ", animate_angle);
 
     // lid
     % translate([ 0, ams_2_pro_y - ams_extra_back_y, ams_2_pro_bottom_ledge_z + ams_2_pro_body_z ])
