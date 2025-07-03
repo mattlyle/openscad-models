@@ -30,17 +30,17 @@ ams_extra_back_y = 25;
 // shelf_extra_y = 130;
 shelf_extra_y = 50;
 
-dowel_r = 9.7 / 2 + 0.3; // including clearance!
+dowel_r = 9.6 / 2 + 0.2; // including clearance!
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
+render_mode = "preview";
 // render_mode = "print-shelf-a";
 // render_mode = "print-shelf-b";
 // render_mode = "print-shelf-c";
 // render_mode = "print-shelf-test";
-render_mode = "print-spacer-test";
+// render_mode = "print-spacer-test";
 
 wall_stud_width = 30; // approx
 
