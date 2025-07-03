@@ -1,6 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 include <modules/rounded-cube.scad>
 include <modules/triangular-prism.scad>
 include <modules/hexagons.scad>
@@ -82,6 +79,7 @@ shelf_base_angle = -20;
 shelf_base_z = 8.2; // this is before the guide rails
 
 spacer_x = 150;
+spacer_back_cutout_r_percent = 0.4;
 spacer_tongue_groove_x = 4.0;
 spacer_tongue_groove_z = 3.0;
 spacer_tongue_groove_offset_near_y = 45;
@@ -110,9 +108,7 @@ bottom_bracket_edge_thickness = 8;
 preview_spacers_below_shelf_level_z = -12;
 
 // TODO cutouts for drying ports
-// TODO cutouts for the power cable and the filament tube
 // TODO add grip on the top flat face so it won't slip
-// TODO add cutouts for the feet
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -573,7 +569,16 @@ module ShelfSpacer( x )
         rotate([ shelf_base_angle, 0, 180 ])
         {
             // main section
-            _ShelfBaseMainFace( x );
+            difference()
+            {
+                _ShelfBaseMainFace( x );
+
+                translate([ x / 2, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder(
+                        r = x * spacer_back_cutout_r_percent,
+                        h = shelf_base_z + DIFFERENCE_CLEARANCE * 2
+                        );
+            }
 
             // tongue left
             difference()
