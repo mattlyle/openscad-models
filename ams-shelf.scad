@@ -548,7 +548,8 @@ module _ShelfBase( x, left_connection, right_connection )
                             + spacer_tongue_groove_clearance
                             + DIFFERENCE_CLEARANCE,
                         -DIFFERENCE_CLEARANCE,
-                        ( shelf_base_z - spacer_tongue_groove_z ) / 2 + spacer_tongue_groove_clearance
+                        ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                            - spacer_tongue_groove_clearance
                         ])
                         cube([
                             spacer_tongue_groove_x - spacer_tongue_groove_clearance,
@@ -556,7 +557,7 @@ module _ShelfBase( x, left_connection, right_connection )
                                 - spacer_tongue_groove_offset_near_y
                                 - spacer_tongue_groove_clearance,
                             spacer_tongue_groove_z
-                                - spacer_tongue_groove_clearance * 2
+                                + spacer_tongue_groove_clearance * 2
                             ]);
                 }
 
@@ -566,7 +567,8 @@ module _ShelfBase( x, left_connection, right_connection )
                     translate([
                         -DIFFERENCE_CLEARANCE,
                         -DIFFERENCE_CLEARANCE,
-                        ( shelf_base_z - spacer_tongue_groove_z ) / 2 + spacer_tongue_groove_clearance
+                        ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                            - spacer_tongue_groove_clearance
                         ])
                         cube([
                             spacer_tongue_groove_x - spacer_tongue_groove_clearance,
@@ -574,7 +576,7 @@ module _ShelfBase( x, left_connection, right_connection )
                                 - spacer_tongue_groove_offset_near_y
                                 - spacer_tongue_groove_clearance,
                             spacer_tongue_groove_z
-                                - spacer_tongue_groove_clearance * 2
+                                + spacer_tongue_groove_clearance * 2
                             ]);
                 }
             }
@@ -612,7 +614,7 @@ module ShelfSpacer( x )
                     ])
                     cube([
                         spacer_tongue_groove_x,
-                        shelf_base_y - spacer_tongue_groove_offset_near_y,
+                        shelf_base_y - spacer_tongue_groove_offset_near_y - 2,
                         spacer_tongue_groove_z
                         ]);
 
@@ -638,7 +640,7 @@ module ShelfSpacer( x )
                     ])
                     cube([
                         spacer_tongue_groove_x,
-                        shelf_base_y - spacer_tongue_groove_offset_near_y,
+                        shelf_base_y - spacer_tongue_groove_offset_near_y - 2,
                         spacer_tongue_groove_z
                         ]);
 
