@@ -398,7 +398,22 @@ module _ShelfTopBracket()
             [ 0, 3, 4, 1 ],
         ]
     );
-}
+
+    // fill in the space under the bracket where the foot cutout removed
+    translate([ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ])
+        rotate([ -shelf_base_angle, 0, 0 ])
+            translate([
+                -DIFFERENCE_CLEARANCE,
+                -shelf_base_y
+                    + shelf_front_ledge_y
+                    + ams_2_pro_foot_back_offset_y,
+                shelf_base_z - ams_2_pro_foot_z
+                ])
+                cube([
+                    shelf_wall_plate_x + DIFFERENCE_CLEARANCE * 2,
+                    ams_2_pro_foot_y,
+                    ams_2_pro_foot_z + DIFFERENCE_CLEARANCE
+                    ]);}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
