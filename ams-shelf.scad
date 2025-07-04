@@ -14,8 +14,8 @@ ams_2_pro_bottom_ledge_y = 250;
 ams_2_pro_bottom_ledge_z = 11;
 
 ams_2_pro_foot_x = 36;
-ams_2_pro_foot_y = 17;
-ams_2_pro_foot_z = 2.5;
+ams_2_pro_foot_y = 19;
+ams_2_pro_foot_z = 2;
 ams_2_pro_foot_back_offset_y = 231; // distance to the back foot of the AMS
 
 ams_2_pro_x = 372;
@@ -91,7 +91,7 @@ shelf_screw_holder_z = 12;
 shelf_front_ledge_y = 6;
 
 // width
-shelf_front_ledge_z = 9;
+shelf_front_ledge_z = 10;
 
 dowel_front_offset_y = -20; // from the near bottom edge of the shelf
 dowel_front_offset_z = -1;
