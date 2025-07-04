@@ -38,7 +38,7 @@ shelf_extra_y = 50;
 dowel_r = 9.6 / 2 + 0.3;
 
 shelf_screw_r = 4.7 / 2;
-shelf_screw_cone_r = 8.0 / 2;
+shelf_screw_cone_r = 9.0 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -86,7 +86,7 @@ spacer_tongue_groove_z = 3.0;
 spacer_tongue_groove_offset_near_y = 45;
 spacer_tongue_groove_clearance = 0.4;
 
-shelf_screw_holder_z = 12;
+shelf_screw_holder_z = 13;
 
 // width (y) of the front ledge of the shelf
 shelf_front_ledge_y = 6;
