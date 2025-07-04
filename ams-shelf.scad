@@ -105,7 +105,9 @@ bottom_bracket_hex_cutouts_r = 6;
 bottom_bracket_hex_cutouts_spacing = 2;
 bottom_bracket_edge_thickness = 8;
 
-preview_spacers_below_shelf_level_z = -12;
+// preview_spacing_z = -12;
+preview_spacing_z = 0;
+preview_spacing_x = 5;
 
 // TODO cutouts for drying ports
 // TODO add grip on the top flat face so it won't slip
@@ -154,7 +156,11 @@ if( render_mode == "preview" )
     WallPreview();
 
     // shelf a
-    translate([ wall_stud_a_center_offset_x, 0, 0 ])
+    translate([
+        wall_stud_a_center_offset_x,
+        0,
+        0
+        ])
         Shelf(
             shelf_extra_x,
             ( wall_stud_ab_separation - spacer_x ) / 2,
@@ -163,11 +169,19 @@ if( render_mode == "preview" )
             );
 
     // spacer a-b
-    translate([ spacer_ab_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
+    translate([
+        spacer_ab_offset_x + preview_spacing_x,
+        0,
+        shelf_base_offset_z + preview_spacing_z
+        ])
         ShelfSpacer( spacer_x );
 
     // shelf b
-    translate([ wall_stud_b_center_offset_x, 0, 0 ])
+    translate([
+        wall_stud_b_center_offset_x + preview_spacing_x * 2,
+        0,
+        0
+        ])
         Shelf(
             ( wall_stud_ab_separation - spacer_x ) / 2,
             ( wall_stud_bc_separation - spacer_x ) / 2,
@@ -176,11 +190,19 @@ if( render_mode == "preview" )
             );
 
     // spacer b-c
-    translate([ spacer_bc_offset_x, 0, shelf_base_offset_z + preview_spacers_below_shelf_level_z ])
+    translate([
+        spacer_bc_offset_x + preview_spacing_x * 3,
+        0,
+        shelf_base_offset_z + preview_spacing_z
+        ])
         ShelfSpacer( spacer_x );
 
     // shelf c
-    translate([ wall_stud_c_center_offset_x, 0, 0 ])
+    translate([
+        wall_stud_c_center_offset_x + preview_spacing_x * 4,
+        0,
+        0
+        ])
         Shelf(
             ( wall_stud_bc_separation - spacer_x ) / 2,
             shelf_extra_x,
