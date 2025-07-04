@@ -98,7 +98,7 @@ dowel_front_offset_y = -20; // from the near bottom edge of the shelf
 dowel_front_offset_z = -1;
 dowel_front_support_ring_extra_z = 4.2; // this is the extra height of the ring below the dowel
 dowel_back_offset_y = -246;
-dowel_back_offset_z = -3;
+dowel_back_offset_z = -5;
 dowel_back_support_ring_extra_z = 4.0;
 dowel_support_ring_r = 3;
 
