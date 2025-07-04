@@ -47,6 +47,7 @@ render_mode = "preview";
 // render_mode = "print-shelf-a";
 // render_mode = "print-shelf-b";
 // render_mode = "print-shelf-c";
+// render_mode = "print-spacer";
 // render_mode = "print-shelf-test";
 // render_mode = "print-spacer-test";
 
@@ -242,6 +243,11 @@ else if( render_mode == "print-shelf-c" )
 {
     translate([ wall_stud_c_center_offset_x, 0, 0 ])
         Shelf( wall_stud_bc_separation / 2, shelf_extra_x, true, false );
+}
+else if( render_mode == "print-spacer" )
+{
+    rotate([ 0, -90, 0 ])
+        ShelfSpacer( spacer_x );
 }
 else if( render_mode == "print-shelf-test" )
 {
