@@ -114,10 +114,10 @@ drying_port_extra_r = 12;
 
 // preview_spacing_z = -12;
 preview_spacing_z = 0;
-preview_spacing_x = 5;
+preview_spacing_x = 8;
+// preview_spacing_x = 0;
 
-// TODO cutouts for drying ports
-// TODO add grip on the top flat face so it won't slip
+// TODO additional second ledge?
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
