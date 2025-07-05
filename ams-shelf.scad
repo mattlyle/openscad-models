@@ -24,6 +24,10 @@ ams_2_pro_body_z = 110; // this is above the ledge below it
 ams_2_pro_lid_z = 102;
 ams_2_pro_lid_r = 210 / 2;
 
+ams_pro_2_drying_port_offset_x = 38;
+ams_pro_2_drying_port_offset_y = 75;
+ams_pro_2_drying_port_r = 25 / 2;
+
 // the length in front of the AMS 2 Pro bottom edge to the front of the AMS
 ams_extra_front_y = 10;
 
@@ -105,6 +109,8 @@ dowel_support_ring_r = 3;
 bottom_bracket_hex_cutouts_r = 6;
 bottom_bracket_hex_cutouts_spacing = 2;
 bottom_bracket_edge_thickness = 8;
+
+drying_port_extra_r = 12;
 
 // preview_spacing_z = -12;
 preview_spacing_z = 0;
@@ -255,7 +261,7 @@ else if( render_mode == "print-shelf-test" )
 
     translate([ 0, 0, side_x ])
         rotate([ 0, -90, 0 ])
-            Shelf( side_x, side_x, true, true );
+            Shelf( side_x, side_x, true, true, true );
 }
 else if( render_mode == "print-spacer-test" )
 {
@@ -269,7 +275,7 @@ else
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module Shelf( left_x, right_x, left_connection, right_connection )
+module Shelf( left_x, right_x, left_connection, right_connection, drying_port )
 {
     total_x = left_x + right_x;
     total_y = shelf_base_y * cos( shelf_base_angle );
@@ -328,7 +334,12 @@ module Shelf( left_x, right_x, left_connection, right_connection )
 
     // horizontal shelf
     translate([ -left_x, 0, shelf_base_offset_z ])
-        _ShelfBase( left_x + right_x, left_connection, right_connection );
+        _ShelfBase(
+            left_x + right_x,
+            left_connection,
+            right_connection,
+            drying_port ? right_x + shelf_wall_plate_x: -1
+            );
 
     // top triangular bracket
     _ShelfTopBracket();
@@ -549,7 +560,7 @@ module _ShelfBottomBracket()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _ShelfBase( x, left_connection, right_connection )
+module _ShelfBase( x, left_connection, right_connection, drying_port_x )
 {
     translate([ x, 0, 0 ])
     {
@@ -599,6 +610,19 @@ module _ShelfBase( x, left_connection, right_connection )
                             spacer_tongue_groove_z
                                 + spacer_tongue_groove_clearance * 2
                             ]);
+                }
+
+                if( drying_port_x >= 0 )
+                {
+                    translate([
+                        drying_port_x + ams_pro_2_drying_port_offset_x,
+                        shelf_base_y - ams_pro_2_drying_port_offset_y,
+                        -DIFFERENCE_CLEARANCE
+                        ])
+                        cylinder(
+                            r = ams_pro_2_drying_port_r + drying_port_extra_r,
+                            h = shelf_base_z + DIFFERENCE_CLEARANCE * 2
+                            );
                 }
             }
         }
