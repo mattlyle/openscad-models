@@ -6,6 +6,8 @@ include <modules/utils.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
+wall_stud_width = 30; // approx
+
 wall_stud_ab_separation = 406;
 wall_stud_bc_separation = 419;
 
@@ -54,8 +56,6 @@ render_mode = "preview";
 // render_mode = "print-spacer";
 // render_mode = "print-shelf-test";
 // render_mode = "print-spacer-test";
-
-wall_stud_width = 30; // approx
 
 shelf_extra_x = 60;
 
@@ -155,6 +155,13 @@ spacer_bc_offset_x = shelf_extra_x
     + wall_stud_ab_separation
     + ( wall_stud_bc_separation - spacer_x ) / 2;
 
+shelf_a_left_x = shelf_extra_x;
+shelf_a_right_x = ( wall_stud_ab_separation - spacer_x ) / 2;
+shelf_b_left_x = ( wall_stud_ab_separation - spacer_x ) / 2;
+shelf_b_right_x = ( wall_stud_bc_separation - spacer_x ) / 2;
+shelf_c_left_x = ( wall_stud_bc_separation - spacer_x ) / 2;
+shelf_c_right_x = shelf_extra_x;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -168,12 +175,7 @@ if( render_mode == "preview" )
         0,
         0
         ])
-        Shelf(
-            shelf_extra_x,
-            ( wall_stud_ab_separation - spacer_x ) / 2,
-            false,
-            true
-            );
+        Shelf( shelf_a_left_x, shelf_a_right_x, false, true, false );
 
     // spacer a-b
     translate([
@@ -189,12 +191,7 @@ if( render_mode == "preview" )
         0,
         0
         ])
-        Shelf(
-            ( wall_stud_ab_separation - spacer_x ) / 2,
-            ( wall_stud_bc_separation - spacer_x ) / 2,
-            true,
-            true
-            );
+        Shelf( shelf_b_left_x, shelf_b_right_x, true, true, true );
 
     // spacer b-c
     translate([
@@ -210,12 +207,7 @@ if( render_mode == "preview" )
         0,
         0
         ])
-        Shelf(
-            ( wall_stud_bc_separation - spacer_x ) / 2,
-            shelf_extra_x,
-            true,
-            false
-            );
+        Shelf( shelf_c_left_x, shelf_c_right_x, true, false, true );
 
     // left ams
     translate([
@@ -233,22 +225,26 @@ if( render_mode == "preview" )
         0
         ])
         rotate([ -shelf_base_angle, 0, 0 ])
-            AMS2ProPreview();
+            translate([ 0, 0, ams_2_pro_foot_z ])
+                AMS2ProPreview();
 }
 else if( render_mode == "print-shelf-a" )
 {
-    translate([ wall_stud_a_center_offset_x, 0, 0 ])
-        Shelf( shelf_extra_x, wall_stud_ab_separation / 2, false, true );
+    translate([ 0, 0, shelf_a_left_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( shelf_a_left_x, shelf_a_right_x, true, false, true );
 }
 else if( render_mode == "print-shelf-b" )
 {
-    translate([ wall_stud_b_center_offset_x, 0, 0 ])
-        Shelf( wall_stud_ab_separation / 2, wall_stud_bc_separation / 2, true, true );
+    translate([ 0, 0, shelf_b_left_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( shelf_b_left_x, shelf_b_right_x, true, false, true );
 }
 else if( render_mode == "print-shelf-c" )
 {
-    translate([ wall_stud_c_center_offset_x, 0, 0 ])
-        Shelf( wall_stud_bc_separation / 2, shelf_extra_x, true, false );
+    translate([ 0, 0, shelf_c_left_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( shelf_c_left_x, shelf_c_right_x, true, false, true );
 }
 else if( render_mode == "print-spacer" )
 {
@@ -424,7 +420,8 @@ module _ShelfTopBracket()
                     shelf_wall_plate_x + DIFFERENCE_CLEARANCE * 2,
                     ams_2_pro_foot_y,
                     ams_2_pro_foot_z + DIFFERENCE_CLEARANCE
-                    ]);}
+                    ]);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
