@@ -96,7 +96,7 @@ shelf_screw_holder_z = 13;
 shelf_front_ledge_y = 6;
 
 // width
-shelf_front_ledge_z = 10;
+shelf_front_ledge_z = 9;
 
 dowel_front_offset_y = -20; // from the near bottom edge of the shelf
 dowel_front_offset_z = -1;
