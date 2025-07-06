@@ -232,13 +232,13 @@ else if( render_mode == "print-shelf-a" )
 {
     translate([ 0, 0, shelf_a_left_x ])
         rotate([ 0, -90, 0 ])
-            Shelf( shelf_a_left_x, shelf_a_right_x, true, false, true );
+            Shelf( shelf_a_left_x, shelf_a_right_x, false, true, false );
 }
 else if( render_mode == "print-shelf-b" )
 {
     translate([ 0, 0, shelf_b_left_x ])
         rotate([ 0, -90, 0 ])
-            Shelf( shelf_b_left_x, shelf_b_right_x, true, false, true );
+            Shelf( shelf_b_left_x, shelf_b_right_x, true, true, true );
 }
 else if( render_mode == "print-shelf-c" )
 {
