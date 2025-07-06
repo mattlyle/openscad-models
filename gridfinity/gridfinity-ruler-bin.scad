@@ -1,5 +1,6 @@
 include <../modules/gridfinity-base.scad>
 include <../modules/rounded-cube.scad>
+include <../modules/text-label.scad>
 include <../modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,6 +31,7 @@ angle_calipers_y = 35.3;
 
 // render_mode = "preview";
 render_mode = "print-bin";
+// render_mode = "print-text";
 
 cells_x = 2;
 
@@ -71,6 +73,11 @@ cutouts = [
 
 preview_z = 200;
 
+label_font = "Georgia:style=Bold";
+label_font_size = 14;
+label_depth = 0.5;
+label_offset_z = 58;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -93,6 +100,10 @@ if ( render_mode == "preview" )
 else if ( render_mode == "print-bin" )
 {
     RulerBin();
+}
+else if ( render_mode == "print-text" )
+{
+    RulerBinTextLabel( false );
 }
 else
 {
@@ -166,7 +177,27 @@ module RulerBin()
                     Ruler3Cutout( x, y );
             }
         }
+
+        // remove the label
+        RulerBinTextLabel( true );
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module RulerBinTextLabel( is_difference )
+{
+    translate([ 0, back_row_offset_y + label_depth, label_offset_z ])
+        rotate([ 90, 0, 0 ])
+            CenteredTextLabel(
+                "Rulers",
+                font = label_font,
+                font_size = label_font_size,
+                centered_in_area_x = base_x,
+                centered_in_area_y = -1,
+                depth = label_depth,
+                color = is_difference ? undef : [ 0, 0, 0 ]
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
