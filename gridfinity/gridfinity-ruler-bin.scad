@@ -44,8 +44,8 @@ front_bin_z = 40;
 // the height to be added on top of the base
 top_min_z = 1;
 
-clearance_x = 0.2;
-clearance_y = 0.2;
+clearance_x = 0.3;
+clearance_y = 0.4;
 
 cutouts = [
     // ===== back row =====
