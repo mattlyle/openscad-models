@@ -119,7 +119,13 @@ module RulerBin()
         union()
         {
             // base
-            GridfinityBase( cells_x, cells_bottom_y, top_min_z, center = false );
+            GridfinityBase(
+                cells_x,
+                cells_bottom_y,
+                top_min_z,
+                magnets = GRIDFINITY_BASE_MAGNETS_ALL,
+                center = false
+                );
 
             // bottom level
             translate([ 0, 0, base_offset_z ])
