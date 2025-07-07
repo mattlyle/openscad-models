@@ -117,6 +117,11 @@ preview_spacing_z = 0;
 preview_spacing_x = 8;
 // preview_spacing_x = 0;
 
+preview_colors = true;
+preview_black = [ 25 / 255, 25 / 255, 25 / 255 ];
+preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
+preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
+
 // TODO additional second ledge?
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,44 +175,49 @@ if( render_mode == "preview" )
     WallPreview();
 
     // shelf a
-    translate([
-        wall_stud_a_center_offset_x,
-        0,
-        0
-        ])
-        Shelf( shelf_a_left_x, shelf_a_right_x, false, true, false );
+    color( preview_colors ? preview_black : undef )
+        translate([
+            wall_stud_a_center_offset_x,
+            0,
+            0
+            ])
+            Shelf( shelf_a_left_x, shelf_a_right_x, false, true, false );
 
     // spacer a-b
-    translate([
-        spacer_ab_offset_x + preview_spacing_x,
-        0,
-        shelf_base_offset_z + preview_spacing_z
-        ])
-        ShelfSpacer( spacer_x );
+    color( preview_colors ? preview_blue : undef )
+        translate([
+            spacer_ab_offset_x + preview_spacing_x,
+            0,
+            shelf_base_offset_z + preview_spacing_z
+            ])
+            ShelfSpacer( spacer_x );
 
     // shelf b
-    translate([
-        wall_stud_b_center_offset_x + preview_spacing_x * 2,
-        0,
-        0
-        ])
-        Shelf( shelf_b_left_x, shelf_b_right_x, true, true, true );
+    color( preview_colors ? preview_orange : undef )
+        translate([
+            wall_stud_b_center_offset_x + preview_spacing_x * 2,
+            0,
+            0
+            ])
+            Shelf( shelf_b_left_x, shelf_b_right_x, true, true, true );
 
     // spacer b-c
-    translate([
-        spacer_bc_offset_x + preview_spacing_x * 3,
-        0,
-        shelf_base_offset_z + preview_spacing_z
-        ])
-        ShelfSpacer( spacer_x );
+    color( preview_colors ? preview_blue : undef )
+        translate([
+            spacer_bc_offset_x + preview_spacing_x * 3,
+            0,
+            shelf_base_offset_z + preview_spacing_z
+            ])
+            ShelfSpacer( spacer_x );
 
     // shelf c
-    translate([
-        wall_stud_c_center_offset_x + preview_spacing_x * 4,
-        0,
-        0
-        ])
-        Shelf( shelf_c_left_x, shelf_c_right_x, true, false, true );
+    color( preview_colors ? preview_black : undef )
+        translate([
+            wall_stud_c_center_offset_x + preview_spacing_x * 4,
+            0,
+            0
+            ])
+            Shelf( shelf_c_left_x, shelf_c_right_x, true, false, true );
 
     // left ams
     translate([
