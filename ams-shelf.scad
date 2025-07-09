@@ -39,7 +39,7 @@ ams_extra_back_y = 25;
 
 // the length behind the AMS 2 Pro to the wall
 // shelf_extra_y = 130;
-shelf_extra_y = 50;
+shelf_extra_y = 44;
 
 // dowel size including clearance!
 dowel_r = 9.6 / 2 + 0.3;
@@ -124,7 +124,7 @@ preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
 preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
 
 // TODO additional second ledge?
-// TODO slightly shorter y
+// TODO fix weird gap in spacer by back dowel
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
