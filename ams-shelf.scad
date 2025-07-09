@@ -85,7 +85,7 @@ shelf_base_angle = -20;
 shelf_base_z = 8.2; // this is before the guide rails
 
 spacer_x = 150;
-spacer_back_cutout_r_percent = 0.4;
+spacer_back_cutout_r_percent = 0.3;
 spacer_tongue_groove_x = 4.0;
 spacer_tongue_groove_z = 3.0;
 spacer_tongue_groove_offset_near_y = 45;
@@ -124,7 +124,6 @@ preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
 preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
 
 // TODO additional second ledge?
-// TODO shrink back cutout size
 // TODO slightly shorter y
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -652,6 +651,7 @@ module ShelfSpacer( x )
             {
                 _ShelfBaseMainFace( x );
 
+                // remove the spacer back cutout
                 translate([ x / 2, 0, -DIFFERENCE_CLEARANCE ])
                     cylinder(
                         r = x * spacer_back_cutout_r_percent,
