@@ -93,6 +93,9 @@ spacer_tongue_groove_clearance = 0.4;
 
 shelf_screw_holder_z = 13;
 
+shelf_front_ledge_second_tier_y = 3;
+shelf_front_ledge_second_tier_z = 10;
+
 // width (y) of the front ledge of the shelf
 shelf_front_ledge_y = 6;
 
@@ -123,8 +126,8 @@ preview_black = [ 25 / 255, 25 / 255, 25 / 255 ];
 preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
 preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
 
-// TODO additional second ledge?
 // TODO fix weird gap in spacer by back dowel
+// TODO extra support on the front ledge where the brackets are
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -842,11 +845,44 @@ module _ShelfBaseMainFace( x )
                 ]);
     }
 
-    // front ledge
-    translate([ 0, shelf_base_y - shelf_front_ledge_y, shelf_base_z ])
-        cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_z ]);
-    translate([ 0, shelf_base_y - shelf_front_ledge_y / 2, shelf_base_z ])
-        TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_z );
+    // front ledge main block
+    translate([
+        0,
+        shelf_base_y - shelf_front_ledge_y,
+        shelf_base_z
+        ])
+        cube([
+            x,
+            shelf_front_ledge_y + shelf_front_ledge_y * 2,
+            shelf_front_ledge_z
+            ]);
+
+    // second tier front ledge
+    translate([
+        0,
+        shelf_base_y + shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
+        shelf_base_z + shelf_front_ledge_z
+        ])
+        cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z ]);
+    translate([
+        0,
+        shelf_base_y + shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
+        shelf_base_z + shelf_front_ledge_z
+        ])
+        TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z );
+
+    // triangle under the second tier
+    translate([
+        0,
+        shelf_base_y,
+        shelf_base_z
+        ])
+        rotate([ -90, 0, 0 ])
+            TriangularPrism(
+                x,
+                shelf_base_z, // z
+                shelf_front_ledge_y * 2 // y
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
