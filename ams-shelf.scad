@@ -26,7 +26,8 @@ ams_2_pro_body_z = 110; // this is above the ledge below it
 ams_2_pro_lid_z = 102;
 ams_2_pro_lid_r = 210 / 2;
 
-ams_pro_2_drying_port_offset_x = 38;
+// these are referenced off the ledge!
+ams_pro_2_drying_port_offset_x = 40;
 ams_pro_2_drying_port_offset_y = 75;
 ams_pro_2_drying_port_r = 25 / 2;
 
@@ -110,7 +111,7 @@ bottom_bracket_hex_cutouts_r = 6;
 bottom_bracket_hex_cutouts_spacing = 2;
 bottom_bracket_edge_thickness = 8;
 
-drying_port_extra_r = 12;
+drying_port_extra_r = 10;
 
 // preview_spacing_z = -12;
 preview_spacing_z = 0;
@@ -123,6 +124,8 @@ preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
 preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
 
 // TODO additional second ledge?
+// TODO shrink back cutout size
+// TODO slightly shorter y
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -222,8 +225,8 @@ if( render_mode == "preview" )
     // left ams
     translate([
         shelf_extra_x + ( wall_stud_ab_separation - ams_2_pro_x ) / 2,
-        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2,
-        0
+        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2 - ams_2_pro_foot_y / 2,
+        shelf_base_z
         ])
         rotate([ -shelf_base_angle, 0, 0 ])
             AMS2ProPreview();
@@ -231,8 +234,8 @@ if( render_mode == "preview" )
     // right ams
     translate([
         shelf_extra_x + wall_stud_ab_separation + ( wall_stud_bc_separation - ams_2_pro_x ) / 2,
-        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2,
-        0
+        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2 - ams_2_pro_foot_y / 2,
+        shelf_base_z
         ])
         rotate([ -shelf_base_angle, 0, 0 ])
             translate([ 0, 0, ams_2_pro_foot_z ])
@@ -622,8 +625,8 @@ module _ShelfBase( x, left_connection, right_connection, drying_port_x )
                 if( drying_port_x >= 0 )
                 {
                     translate([
-                        drying_port_x + ams_pro_2_drying_port_offset_x,
-                        shelf_base_y - ams_pro_2_drying_port_offset_y,
+                        drying_port_x + ams_pro_2_drying_port_offset_x + ams_pro_2_drying_port_r,
+                        shelf_base_y - ams_pro_2_drying_port_offset_y - ams_pro_2_drying_port_r / 2,
                         -DIFFERENCE_CLEARANCE
                         ])
                         cylinder(
@@ -850,6 +853,8 @@ module _ShelfBaseMainFace( x )
 
 module AMS2ProPreview()
 {
+    drying_port_preview_z = 50;
+
     // ledge
     % translate([ ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2, ams_extra_front_y, 0 ])
         RoundedCubeAlt2(
@@ -860,6 +865,17 @@ module AMS2ProPreview()
             round_top = false,
             round_bottom = false
             );
+
+    // drying port
+    % translate([
+        ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2
+            + ams_2_pro_bottom_ledge_x
+            - ams_pro_2_drying_port_offset_x,
+        ams_extra_front_y
+            + ams_pro_2_drying_port_offset_y,
+        -drying_port_preview_z
+        ])
+        cylinder( r = ams_pro_2_drying_port_r, h = drying_port_preview_z );
 
     // body
     % translate([ 0, 0, ams_2_pro_bottom_ledge_z ])
