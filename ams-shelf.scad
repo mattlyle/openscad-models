@@ -55,7 +55,7 @@ render_mode = "preview";
 // render_mode = "print-shelf-c";
 // render_mode = "print-spacer";
 // render_mode = "print-shelf-test";
-render_mode = "print-shelf-test-mini";
+// render_mode = "print-shelf-test-mini";
 // render_mode = "print-spacer-test";
 
 shelf_extra_x = 60;
@@ -902,20 +902,20 @@ module _ShelfBaseMainFace( x )
             ])
             cube([
                 x,
-                shelf_front_ledge_second_tier_y + shelf_front_ledge_y * 2,
+                shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
                 shelf_front_ledge_z
                 ]);
 
         // second tier front ledge
         translate([
             0,
-            shelf_base_y + shelf_front_ledge_second_tier_y,
+            shelf_base_y - shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
             shelf_base_z + shelf_front_ledge_z
             ])
             cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z ]);
         translate([
             0,
-            shelf_base_y + shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
+            shelf_base_y - shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
             shelf_base_z + shelf_front_ledge_z
             ])
             TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z );
@@ -930,7 +930,7 @@ module _ShelfBaseMainFace( x )
                 TriangularPrism(
                     x,
                     shelf_base_z, // z
-                    shelf_front_ledge_second_tier_y + shelf_front_ledge_y // y
+                    shelf_front_ledge_second_tier_y // y
                     );
     }
 }
