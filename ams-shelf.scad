@@ -69,8 +69,11 @@ shelf_wall_plate_y = 10;
 // the height of the triangular bracket above the shelf
 shelf_top_bracket_z = 40;
 
-// the percent along the shelf top the bracket will extend
+// the percent along the shelf top the top back bracket will extend
 shelf_top_bracket_y_percent = 0.4;
+
+// the percent along the shelf top the top front brace will extend
+shelf_top_brace_y_percent = 0.15;
 
 // the height of the triangular bracket under the shelf
 shelf_bottom_bracket_z = 100;
@@ -126,7 +129,7 @@ preview_black = [ 25 / 255, 25 / 255, 25 / 255 ];
 preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
 preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
 
-// TODO fix weird gap in spacer by back dowel
+// TODO fix weird gap in non-spacers by back dowel
 // TODO extra support on the front ledge where the brackets are
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,7 +343,7 @@ module Shelf( left_x, right_x, left_connection, right_connection, drying_port )
                 cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
     }
 
-    // bottom triangular bracket
+    // bottom back bracket
     _ShelfBottomBracket();
 
     // horizontal shelf
@@ -349,11 +352,14 @@ module Shelf( left_x, right_x, left_connection, right_connection, drying_port )
             left_x + right_x,
             left_connection,
             right_connection,
-            drying_port ? right_x + shelf_wall_plate_x: -1
+            drying_port ? right_x + shelf_wall_plate_x : -1
             );
 
-    // top triangular bracket
+    // top back bracket
     _ShelfTopBracket();
+
+    // top front brace
+    _ShelfTopFrontBrace();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -568,6 +574,36 @@ module _ShelfBottomBracket()
             [ 0, 3, 7, 4 ],
             [ 2, 6, 7, 3 ],
         ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfTopFrontBrace()
+{
+    translate([ shelf_wall_plate_x / 2, 0, shelf_base_offset_z ])
+    {
+        rotate([ shelf_base_angle, 0, 180 ])
+        {
+            translate([ 0, shelf_base_y + shelf_front_ledge_y, shelf_base_z])
+                rotate([ 90, 0, 0 ])
+                    TriangularPrism(
+                        shelf_wall_plate_x,
+                        shelf_front_ledge_z + shelf_front_ledge_second_tier_z,
+                        shelf_base_y * shelf_top_brace_y_percent + shelf_front_ledge_y
+                        );
+
+            translate([
+                0,
+                shelf_base_y - shelf_front_ledge_y - ams_2_pro_foot_y,
+                shelf_base_z - ams_2_pro_foot_z
+                ])
+                cube([
+                    shelf_wall_plate_x,
+                    ams_2_pro_foot_y,
+                    ams_2_pro_foot_z
+                    ]);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -845,44 +881,48 @@ module _ShelfBaseMainFace( x )
                 ]);
     }
 
-    // front ledge main block
-    translate([
-        0,
-        shelf_base_y - shelf_front_ledge_y,
-        shelf_base_z
-        ])
-        cube([
-            x,
-            shelf_front_ledge_y + shelf_front_ledge_y * 2,
-            shelf_front_ledge_z
-            ]);
-
-    // second tier front ledge
-    translate([
-        0,
-        shelf_base_y + shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
-        shelf_base_z + shelf_front_ledge_z
-        ])
-        cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z ]);
-    translate([
-        0,
-        shelf_base_y + shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
-        shelf_base_z + shelf_front_ledge_z
-        ])
-        TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z );
-
-    // triangle under the second tier
-    translate([
-        0,
-        shelf_base_y,
-        shelf_base_z
-        ])
-        rotate([ -90, 0, 0 ])
-            TriangularPrism(
+    // front ledge
+    union()
+    {
+        // front ledge main block
+        translate([
+            0,
+            shelf_base_y - shelf_front_ledge_y,
+            shelf_base_z
+            ])
+            cube([
                 x,
-                shelf_base_z, // z
-                shelf_front_ledge_y * 2 // y
-                );
+                shelf_front_ledge_y + shelf_front_ledge_y * 2,
+                shelf_front_ledge_z
+                ]);
+
+        // second tier front ledge
+        translate([
+            0,
+            shelf_base_y + shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
+            shelf_base_z + shelf_front_ledge_z
+            ])
+            cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z ]);
+        translate([
+            0,
+            shelf_base_y + shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
+            shelf_base_z + shelf_front_ledge_z
+            ])
+            TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z );
+
+        // triangle under the second tier
+        translate([
+            0,
+            shelf_base_y,
+            shelf_base_z
+            ])
+            rotate([ -90, 0, 0 ])
+                TriangularPrism(
+                    x,
+                    shelf_base_z, // z
+                    shelf_front_ledge_y * 2 // y
+                    );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
