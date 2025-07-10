@@ -18,6 +18,8 @@ GRIDFINITY_ROUNDING_R = 3.7; // the radius of the rounded corners on the base
 
 function CalculateGridfinitySize( cells ) = 42.0 * cells - 0.5;
 
+function CenterInGridfinityCell( size, cells ) = ( CalculateGridfinitySize( cells ) - size ) / 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module GridfinityBase(
@@ -33,8 +35,8 @@ module GridfinityBase(
     assert( cells_y > 0, "Cells Y must be >0" );
     assert( top_z >= 0, "Top Z must be >=0" );
 
-    size_x = cells_x * 42.0 - 0.5;
-    size_y = cells_y * 42.0 - 0.5;
+    size_x = CalculateGridfinitySize( cells_x );
+    size_y = CalculateGridfinitySize( cells_y );
     size_z = GRIDFINITY_BASE_Z;
 
     magnet_hole = magnets != GRIDFINITY_BASE_MAGNETS_NONE;
@@ -65,20 +67,30 @@ module GridfinityBase(
         if( top_z > 0 )
         {
             translate([ -size_x / 2 , -size_y / 2, size_z ])
-                RoundedCubeAlt2(
-                    size_x,
-                    size_y,
-                    top_z,
-                    r = GRIDFINITY_ROUNDING_R,
-                    round_top = round_top,
-                    round_bottom = false,
-                    round_left = true,
-                    round_right = true,
-                    round_front = true,
-                    round_back = true
-                    );
+                GridfinityTop( cells_x, cells_y, top_z, round_top );
         }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module GridfinityTop( cells_x, cells_y, top_z, round_top = false )
+{
+    size_x = CalculateGridfinitySize( cells_x );
+    size_y = CalculateGridfinitySize( cells_y );
+
+    RoundedCubeAlt2(
+        size_x,
+        size_y,
+        top_z,
+        r = GRIDFINITY_ROUNDING_R,
+        round_top = round_top,
+        round_bottom = false,
+        round_left = true,
+        round_right = true,
+        round_front = true,
+        round_back = true
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
