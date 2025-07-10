@@ -38,8 +38,7 @@ ams_extra_front_y = 10;
 ams_extra_back_y = 25;
 
 // the length behind the AMS 2 Pro to the wall
-// shelf_extra_y = 130;
-shelf_extra_y = 44;
+shelf_extra_y = 40;
 
 // dowel size including clearance!
 dowel_r = 9.6 / 2 + 0.3;
@@ -85,7 +84,7 @@ shelf_bottom_bracket_y_percent = 0.5;
 shelf_bottom_bracket_full_x = 80;
 
 shelf_base_angle = -20;
-shelf_base_z = 8.2; // this is before the guide rails
+shelf_base_z = 8.6; // this is before the guide rails
 
 spacer_x = 150;
 spacer_back_cutout_r_percent = 0.3;
@@ -107,10 +106,10 @@ shelf_front_ledge_z = 9;
 
 dowel_front_offset_y = -20; // from the near bottom edge of the shelf
 dowel_front_offset_z = -1;
-dowel_front_support_ring_extra_z = 4.2; // this is the extra height of the ring below the dowel
+dowel_front_support_ring_extra_z = 4.5; // this is the extra height of the ring below the dowel
 dowel_back_offset_y = -246;
 dowel_back_offset_z = -5;
-dowel_back_support_ring_extra_z = 4.0;
+dowel_back_support_ring_extra_z = 5.0;
 dowel_support_ring_r = 3;
 
 bottom_bracket_hex_cutouts_r = 6;
@@ -128,9 +127,6 @@ preview_colors = true;
 preview_black = [ 25 / 255, 25 / 255, 25 / 255 ];
 preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
 preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
-
-// TODO fix weird gap in non-spacers by back dowel
-// TODO extra support on the front ledge where the brackets are
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
