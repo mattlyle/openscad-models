@@ -38,7 +38,7 @@ ams_extra_front_y = 10;
 ams_extra_back_y = 25;
 
 // the length behind the AMS 2 Pro to the wall
-shelf_extra_y = 40;
+shelf_extra_y = 44;
 
 // dowel size including clearance!
 dowel_r = 9.6 / 2 + 0.3;
@@ -96,7 +96,7 @@ spacer_tongue_groove_clearance = 0.4;
 
 shelf_screw_holder_z = 13;
 
-shelf_front_ledge_second_tier_y = 3;
+shelf_front_ledge_second_tier_y = 7.5;
 shelf_front_ledge_second_tier_z = 10;
 
 // width (y) of the front ledge of the shelf
@@ -902,20 +902,20 @@ module _ShelfBaseMainFace( x )
             ])
             cube([
                 x,
-                shelf_front_ledge_y + shelf_front_ledge_y * 2,
+                shelf_front_ledge_second_tier_y + shelf_front_ledge_y * 2,
                 shelf_front_ledge_z
                 ]);
 
         // second tier front ledge
         translate([
             0,
-            shelf_base_y + shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
+            shelf_base_y + shelf_front_ledge_second_tier_y,
             shelf_base_z + shelf_front_ledge_z
             ])
             cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z ]);
         translate([
             0,
-            shelf_base_y + shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
+            shelf_base_y + shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
             shelf_base_z + shelf_front_ledge_z
             ])
             TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z );
@@ -930,7 +930,7 @@ module _ShelfBaseMainFace( x )
                 TriangularPrism(
                     x,
                     shelf_base_z, // z
-                    shelf_front_ledge_y * 2 // y
+                    shelf_front_ledge_second_tier_y + shelf_front_ledge_y // y
                     );
     }
 }
