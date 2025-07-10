@@ -55,6 +55,7 @@ render_mode = "preview";
 // render_mode = "print-shelf-c";
 // render_mode = "print-spacer";
 // render_mode = "print-shelf-test";
+render_mode = "print-shelf-test-mini";
 // render_mode = "print-spacer-test";
 
 shelf_extra_x = 60;
@@ -185,7 +186,7 @@ if( render_mode == "preview" )
             0,
             0
             ])
-            Shelf( shelf_a_left_x, shelf_a_right_x, false, true, false );
+            Shelf( true, shelf_a_left_x, shelf_a_right_x, false, true, false );
 
     // spacer a-b
     color( preview_colors ? preview_blue : undef )
@@ -203,7 +204,7 @@ if( render_mode == "preview" )
             0,
             0
             ])
-            Shelf( shelf_b_left_x, shelf_b_right_x, true, true, true );
+            Shelf( true, shelf_b_left_x, shelf_b_right_x, true, true, true );
 
     // spacer b-c
     color( preview_colors ? preview_blue : undef )
@@ -221,7 +222,7 @@ if( render_mode == "preview" )
             0,
             0
             ])
-            Shelf( shelf_c_left_x, shelf_c_right_x, true, false, true );
+            Shelf( true, shelf_c_left_x, shelf_c_right_x, true, false, true );
 
     // left ams
     translate([
@@ -246,19 +247,19 @@ else if( render_mode == "print-shelf-a" )
 {
     translate([ 0, 0, shelf_a_left_x ])
         rotate([ 0, -90, 0 ])
-            Shelf( shelf_a_left_x, shelf_a_right_x, false, true, false );
+            Shelf( true, shelf_a_left_x, shelf_a_right_x, false, true, false );
 }
 else if( render_mode == "print-shelf-b" )
 {
     translate([ 0, 0, shelf_b_left_x ])
         rotate([ 0, -90, 0 ])
-            Shelf( shelf_b_left_x, shelf_b_right_x, true, true, true );
+            Shelf( true, shelf_b_left_x, shelf_b_right_x, true, true, true );
 }
 else if( render_mode == "print-shelf-c" )
 {
     translate([ 0, 0, shelf_c_left_x ])
         rotate([ 0, -90, 0 ])
-            Shelf( shelf_c_left_x, shelf_c_right_x, true, false, true );
+            Shelf( true, shelf_c_left_x, shelf_c_right_x, true, false, true );
 }
 else if( render_mode == "print-spacer" )
 {
@@ -271,7 +272,15 @@ else if( render_mode == "print-shelf-test" )
 
     translate([ 0, 0, side_x ])
         rotate([ 0, -90, 0 ])
-            Shelf( side_x, side_x, true, true, true );
+            Shelf( true, side_x, side_x, true, true, true );
+}
+else if( render_mode == "print-shelf-test-mini" )
+{
+    side_x = 4.0;
+
+    translate([ 0, 0, side_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( false, side_x, side_x, false, false, false );
 }
 else if( render_mode == "print-spacer-test" )
 {
@@ -285,7 +294,7 @@ else
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module Shelf( left_x, right_x, left_connection, right_connection, drying_port )
+module Shelf( add_brackets, left_x, right_x, left_connection, right_connection, drying_port )
 {
     total_x = left_x + right_x;
     total_y = shelf_base_y * cos( shelf_base_angle );
@@ -297,50 +306,54 @@ module Shelf( left_x, right_x, left_connection, right_connection, drying_port )
     echo( str( "total z: ", total_z ) );
 
     // wall plate
-    difference()
+    if( add_brackets )
     {
-        translate([ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, 0 ])
-            cube([ shelf_wall_plate_x, shelf_wall_plate_y, wall_plate_z  ]);
+        difference()
+        {
+            translate([ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, 0 ])
+                cube([ shelf_wall_plate_x, shelf_wall_plate_y, wall_plate_z  ]);
 
-        // bottom screw hole shaft
-        translate([
-            0,
-            DIFFERENCE_CLEARANCE,
-            shelf_screw_holder_z / 2
-            ])
-            rotate([ 90, 0, 0 ])
-                cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
-        
-        // bottom screw hole cone
-        translate([
-            0,
-            -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
-            shelf_screw_holder_z / 2
-            ])
-            rotate([ 90, 0, 0 ])
-                cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
+            // bottom screw hole shaft
+            translate([
+                0,
+                DIFFERENCE_CLEARANCE,
+                shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
+            
+            // bottom screw hole cone
+            translate([
+                0,
+                -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
+                shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
 
-        // top screw hole shaft
-        translate([
-            0,
-            DIFFERENCE_CLEARANCE,
-            top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
-            ])
-            rotate([ 90, 0, 0 ])
-                cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
+            // top screw hole shaft
+            translate([
+                0,
+                DIFFERENCE_CLEARANCE,
+                top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
 
-        // top screw hole cone
-        translate([
-            0,
-            -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
-            top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
-            ])
-            rotate([ 90, 0, 0 ])
-                cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
+            // top screw hole cone
+            translate([
+                0,
+                -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
+                top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
+        }
     }
 
     // bottom back bracket
-    _ShelfBottomBracket();
+    if( add_brackets )
+        _ShelfBottomBracket();
 
     // horizontal shelf
     translate([ -left_x, 0, shelf_base_offset_z ])
@@ -352,10 +365,12 @@ module Shelf( left_x, right_x, left_connection, right_connection, drying_port )
             );
 
     // top back bracket
-    _ShelfTopBracket();
+    if( add_brackets )
+        _ShelfTopBracket();
 
     // top front brace
-    _ShelfTopFrontBrace();
+    if( add_brackets )
+        _ShelfTopFrontBrace();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -510,7 +525,6 @@ module _ShelfBottomBracket()
                 translate([ 0, -shelf_base_y - dowel_back_offset_y, dowel_back_offset_z ])
                     rotate([ 0, 90, 0 ])
                         cylinder( r = dowel_r, h = max_x * 2 );
-
 
         bottom_bracket_hex_cutouts_spacing_x = bottom_bracket_hex_cutouts_spacing;
         bottom_bracket_hex_cutouts_spacing_z = bottom_bracket_hex_cutouts_spacing * sqrt( 3 ) / 2;
