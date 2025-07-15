@@ -594,7 +594,7 @@ module _ShelfTopFrontBrace()
     {
         rotate([ shelf_base_angle, 0, 180 ])
         {
-            translate([ 0, shelf_base_y + shelf_front_ledge_y, shelf_base_z])
+            // brace on top
                 rotate([ 90, 0, 0 ])
                     TriangularPrism(
                         shelf_wall_plate_x,
@@ -602,6 +602,7 @@ module _ShelfTopFrontBrace()
                         shelf_base_y * shelf_top_brace_y_percent + shelf_front_ledge_y
                         );
 
+            // fill in the space under the brace
             translate([
                 0,
                 shelf_base_y - shelf_front_ledge_y - ams_2_pro_foot_y,
