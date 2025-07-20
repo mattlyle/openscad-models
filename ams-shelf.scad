@@ -87,7 +87,8 @@ shelf_bottom_bracket_full_x = 80;
 shelf_base_angle = -20;
 shelf_base_z = 8.6; // this is before the guide rails
 
-spacer_x = 150;
+spacer_left_x = 150;
+spacer_right_x = 140; // this is different because once printed, it doesn't fit on the wall, so this fixes that
 spacer_back_cutout_r_percent = 0.3;
 spacer_tongue_groove_x = 4.0;
 spacer_tongue_groove_z = 3.0;
@@ -160,16 +161,16 @@ shelf_base_y = ams_2_pro_bottom_ledge_y
     + ams_extra_back_y
     + shelf_extra_y;
 
-spacer_ab_offset_x = shelf_extra_x + ( wall_stud_ab_separation - spacer_x ) / 2;
+spacer_ab_offset_x = shelf_extra_x + ( wall_stud_ab_separation - spacer_left_x ) / 2;
 spacer_bc_offset_x = shelf_extra_x
     + wall_stud_ab_separation
-    + ( wall_stud_bc_separation - spacer_x ) / 2;
+    + ( wall_stud_bc_separation - spacer_right_x ) / 2;
 
 shelf_a_left_x = shelf_extra_x;
-shelf_a_right_x = ( wall_stud_ab_separation - spacer_x ) / 2;
-shelf_b_left_x = ( wall_stud_ab_separation - spacer_x ) / 2;
-shelf_b_right_x = ( wall_stud_bc_separation - spacer_x ) / 2;
-shelf_c_left_x = ( wall_stud_bc_separation - spacer_x ) / 2;
+shelf_a_right_x = ( wall_stud_ab_separation - spacer_left_x ) / 2;
+shelf_b_left_x = ( wall_stud_ab_separation - spacer_left_x ) / 2;
+shelf_b_right_x = ( wall_stud_bc_separation - spacer_right_x ) / 2;
+shelf_c_left_x = ( wall_stud_bc_separation - spacer_right_x ) / 2;
 shelf_c_right_x = shelf_extra_x;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +196,7 @@ if( render_mode == "preview" )
             0,
             shelf_base_offset_z + preview_spacing_z
             ])
-            ShelfSpacer( spacer_x );
+            ShelfSpacer( spacer_left_x );
 
     // shelf b
     color( preview_colors ? preview_orange : undef )
@@ -213,7 +214,7 @@ if( render_mode == "preview" )
             0,
             shelf_base_offset_z + preview_spacing_z
             ])
-            ShelfSpacer( spacer_x );
+            ShelfSpacer( spacer_right_x );
 
     // shelf c
     color( preview_colors ? preview_black : undef )
@@ -261,10 +262,15 @@ else if( render_mode == "print-shelf-c" )
         rotate([ 0, -90, 0 ])
             Shelf( true, shelf_c_left_x, shelf_c_right_x, true, false, true );
 }
-else if( render_mode == "print-spacer" )
+else if( render_mode == "print-spacer-left" )
 {
     rotate([ 0, -90, 0 ])
-        ShelfSpacer( spacer_x );
+        ShelfSpacer( spacer_left_x );
+}
+else if( render_mode == "print-spacer-right" )
+{
+    rotate([ 0, -90, 0 ])
+        ShelfSpacer( spacer_right_x );
 }
 else if( render_mode == "print-shelf-test" )
 {
@@ -697,6 +703,8 @@ module _ShelfBase( x, left_connection, right_connection, drying_port_x )
 
 module ShelfSpacer( x )
 {
+    echo( str( "Spacer: ", x ) );
+
     translate([ x, 0, 0 ])
     {
         rotate([ shelf_base_angle, 0, 180 ])
