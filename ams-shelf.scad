@@ -87,7 +87,7 @@ shelf_bottom_bracket_full_x = 80;
 shelf_base_angle = -20;
 shelf_base_z = 8.6; // this is before the guide rails
 
-spacer_left_x = 150;
+spacer_left_x = 153;
 spacer_right_x = 140; // this is different because once printed, it doesn't fit on the wall, so this fixes that
 spacer_back_cutout_r_percent = 0.3;
 spacer_tongue_groove_x = 4.0;
