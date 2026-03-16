@@ -32,7 +32,10 @@ bracket_back_plate_width = 10;
 dowel_gripper_angle_cutout = 135;
 
 // distance from the back dowel center to the wall
-bracket_offset_y = 50;
+bracket_offset_y = 40;
+
+// distance from the dowel center point to where the bracket meets the wall (screw hole is still above)
+bracket_top_z = 16;
 
 // distance from the dowel center point to where the bracket meets the wall (screw hole is still below)
 bracket_bottom_z = 80;
@@ -50,7 +53,7 @@ filament_spool_offset_z = 88.32;
 dowel_gripper_angle = atan2( filament_spool_offset_z, dowel_spacing_y / 2 );
 
 // this is the angle where the bottom of the bracket intersects with the dowel gripper
-bottom_bracker_gripper_intercept_angle = 25; // TODO would be great to calculate this
+bottom_bracket_gripper_intercept_angle = 25; // TODO would be great to calculate this too
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -180,6 +183,8 @@ module FilamentSpoolBracket()
             }
         }
 
+// TODO these need to be at the end!
+
         // cut out the dowel
         rotate([ 0, 90, 0 ])
             difference()
@@ -193,34 +198,32 @@ module FilamentSpoolBracket()
                     cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
     }
 
+    // top edge
+    top_outer_intercept_angle = -120;
+    top_outer_intercept_y = dowel_spacing_y - sin( top_outer_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
+    top_outer_intercept_z = -cos( top_outer_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
 
-    inner_intercept_y = -sin( bottom_bracker_gripper_intercept_angle ) * ( dowel_r );
-    inner_intercept_z = -cos( bottom_bracker_gripper_intercept_angle ) * ( dowel_r );
+    top_inner_intercept_angle = -100;
+    top_inner_intercept_y = dowel_spacing_y - sin( top_inner_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
+    top_inner_intercept_z = -cos( top_inner_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
 
-    outer_intercept_y = -sin( bottom_bracker_gripper_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
-    outer_intercept_z = -cos( bottom_bracker_gripper_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
+    top_edge_points = [
+        [ 0, top_outer_intercept_y, top_outer_intercept_z ],
+        [ 0, top_inner_intercept_y, top_inner_intercept_z ],
+        [ 0, dowel_spacing_y + bracket_offset_y, bracket_top_z - bracket_support_outer_edge_width ],
+        [ 0, dowel_spacing_y + bracket_offset_y, bracket_top_z ],
+        [ bracket_x, top_outer_intercept_y, top_outer_intercept_z ],
+        [ bracket_x, top_inner_intercept_y, top_inner_intercept_z ],
+        [ bracket_x, dowel_spacing_y + bracket_offset_y, bracket_top_z - bracket_support_outer_edge_width ],
+        [ bracket_x, dowel_spacing_y + bracket_offset_y, bracket_top_z ]
+        ];
 
-    // bottom edge
-    points = [
-        [ 0, inner_intercept_y, inner_intercept_z ],
-        // [ 0, 0, -dowel_r - bracket_support_outer_edge_width ], // TODO this point should really be rotated around
-        [ 0, outer_intercept_y, outer_intercept_z ],
-        [ 0, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z ],
-        [ 0, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z + bracket_support_outer_edge_width ],
-
-        [ bracket_x, inner_intercept_y, inner_intercept_z ],
-        // [ bracket_x, 0, -dowel_r - bracket_support_outer_edge_width ], // TODO this point should really be rotated around
-        [ bracket_x, outer_intercept_y, outer_intercept_z ],
-        [ bracket_x, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z ],
-        [ bracket_x, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z + bracket_support_outer_edge_width ],
-    ];
-
-    // for( point = points )
+    // for( point = top_edge_points )
     //     translate( point )
     //         sphere( r = 1 );
 
     polyhedron(
-        points = points,
+        points = top_edge_points,
         faces = [
             [ 0, 4, 5, 1 ],
             [ 1, 5, 6, 2 ],
@@ -231,7 +234,46 @@ module FilamentSpoolBracket()
             ]
         );
 
+    // bottom edge
+    bottom_inner_intercept_y = -sin( bottom_bracket_gripper_intercept_angle ) * ( dowel_r );
+    bottom_inner_intercept_z = -cos( bottom_bracket_gripper_intercept_angle ) * ( dowel_r );
+    bottom_outer_intercept_y = -sin( bottom_bracket_gripper_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
+    bottom_outer_intercept_z = -cos( bottom_bracket_gripper_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
+
+    bottom_edge_points = [
+        [ 0, bottom_inner_intercept_y, bottom_inner_intercept_z ],
+        [ 0, bottom_outer_intercept_y, bottom_outer_intercept_z ],
+        [ 0, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z ],
+        [ 0, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z + bracket_support_outer_edge_width ],
+
+        [ bracket_x, bottom_inner_intercept_y, bottom_inner_intercept_z ],
+        [ bracket_x, bottom_outer_intercept_y, bottom_outer_intercept_z ],
+        [ bracket_x, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z ],
+        [ bracket_x, dowel_spacing_y + bracket_offset_y, -bracket_bottom_z + bracket_support_outer_edge_width ],
+    ];
+
+    polyhedron(
+        points = bottom_edge_points,
+        faces = [
+            [ 0, 4, 5, 1 ],
+            [ 1, 5, 6, 2 ],
+            [ 7, 3, 2, 6 ],
+            [ 4, 0, 3, 7 ],
+            [ 0, 1, 2, 3 ],
+            [ 4, 7, 6, 5 ],
+            ]
+        );
+
+
+    // bracket_top_z
+
     // wall plate
+
+    // cut out the top screw
+
+    // cut out the bottom screw
+
+    // front face to mount a label
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
