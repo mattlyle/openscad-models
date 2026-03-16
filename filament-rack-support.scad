@@ -11,7 +11,7 @@ dowel_r = 22.3 / 2;
 filament_spool_r = 200 / 2;
 filament_spool_x = 68;
 
-// screw_r = 5.0 / 2;
+screw_hole_r = 5.0 / 2;
 
 // TODO able to mount a label
 
@@ -54,6 +54,8 @@ dowel_gripper_angle = atan2( filament_spool_offset_z, dowel_spacing_y / 2 );
 
 // this is the angle where the bottom of the bracket intersects with the dowel gripper
 bottom_bracket_gripper_intercept_angle = 25; // TODO would be great to calculate this too
+
+screw_hole_extra_z = screw_hole_r * 4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -235,8 +237,8 @@ module FilamentSpoolBracket()
         );
 
     // bottom edge
-    bottom_inner_intercept_y = -sin( bottom_bracket_gripper_intercept_angle ) * ( dowel_r );
-    bottom_inner_intercept_z = -cos( bottom_bracket_gripper_intercept_angle ) * ( dowel_r );
+    bottom_inner_intercept_y = -sin( bottom_bracket_gripper_intercept_angle ) * dowel_r;
+    bottom_inner_intercept_z = -cos( bottom_bracket_gripper_intercept_angle ) * dowel_r;
     bottom_outer_intercept_y = -sin( bottom_bracket_gripper_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
     bottom_outer_intercept_z = -cos( bottom_bracket_gripper_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
 
@@ -264,16 +266,55 @@ module FilamentSpoolBracket()
             ]
         );
 
-
-    // bracket_top_z
-
     // wall plate
+    difference()
+    {
+        translate([
+            0,
+            dowel_spacing_y + bracket_offset_y - bracket_back_plate_width,
+            -bracket_bottom_z - screw_hole_extra_z
+            ])
+            cube([
+                bracket_x,
+                bracket_back_plate_width,
+                bracket_top_z + bracket_bottom_z + screw_hole_extra_z * 2
+                ]);
 
-    // cut out the top screw
+        // cut out the top screw
+        translate([
+            bracket_x / 2,
+            dowel_spacing_y + bracket_offset_y,
+            bracket_top_z + screw_hole_extra_z / 4
+            ])
+            rotate([ 90, 0, 0 ])
+                screw_hole();
 
-    // cut out the bottom screw
+        // cut out the bottom screw
+        translate([
+            bracket_x / 2,
+            dowel_spacing_y + bracket_offset_y,
+            -bracket_bottom_z - screw_hole_extra_z / 4
+            ])
+            rotate([ 90, 0, 0 ])
+                screw_hole();
+    }
+
+    // hexagon cutouts
 
     // front face to mount a label
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module screw_hole()
+{
+    translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+        cylinder( r = screw_hole_r, h = bracket_back_plate_width );
+
+    translate([ 0, 0, bracket_back_plate_width / 2 ])
+        cylinder( r1 = screw_hole_r, r2 = screw_hole_r * 2, h = bracket_back_plate_width / 2 + DIFFERENCE_CLEARANCE );
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
