@@ -79,7 +79,13 @@ if( render_mode == "preview" )
 }
 else if( render_mode == "print-holder" )
 {
-    // TODO implement print-holder mode
+    translate([
+        bracket_bottom_z + screw_hole_extra_z,
+        dowel_r + bracket_dowel_gripper_r,
+        bracket_x
+        ])
+        rotate([ 0, 90, 0 ])
+            FilamentSpoolBracket();
 }
 else
 {
