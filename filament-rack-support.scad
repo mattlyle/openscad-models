@@ -1,5 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+include <modules/utils.scad>
+include <modules/pie-slice-prism.scad>
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
@@ -21,10 +24,19 @@ render_mode = "preview";
 bracket_x = 20;
 dowel_spacing_y = 135;
 
+bracket_dowel_grip_r = 3;
+
+dowel_gripper_angle_cutout = 120;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 $fn = $preview ? 32 : 128;
+
+// TODO figure out how to actually calculate these?!?!
+filament_spool_offset_z = 88;
+
+dowel_gripper_angle = 90 + atan2( filament_spool_offset_z, dowel_spacing_y / 2 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -36,8 +48,10 @@ if( render_mode == "preview" )
     translate([ 0, dowel_spacing_y, 0 ])
         DowelPreview();
 
-    translate([ 0, dowel_spacing_y / 2, 90 ])
+    translate([ 0, dowel_spacing_y / 2, filament_spool_offset_z ])
         FilamentSpoolPreview();
+
+    FilamentSpoolBracket();
 }
 else if( render_mode == "print-holder" )
 {
@@ -63,6 +77,70 @@ module FilamentSpoolPreview()
 {
     % rotate([ 0, 90, 0 ])
         cylinder( r = filament_spool_r, h = filament_spool_x );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module FilamentSpoolBracket()
+{
+    gripper_outer_r = dowel_r + bracket_dowel_grip_r;
+
+    // near gripper
+    translate([ -bracket_x, 0, 0 ])
+    {
+        rotate([ 0, 90, 0 ])
+        {
+            difference()
+            {
+                // outer cylinder
+                cylinder( r = gripper_outer_r, h = bracket_x );
+
+                // cut out the dowel
+                translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2);
+
+                // cut out the area to let the filamet slide past
+                rotate([
+                    -DIFFERENCE_CLEARANCE,
+                    0,
+                    dowel_gripper_angle - dowel_gripper_angle_cutout / 2
+                    ])
+                    PieSlicePrism(
+                        width = gripper_outer_r * 2, // doubled just to make sure the cut out doesn't clip
+                        height = bracket_x + DIFFERENCE_CLEARANCE * 2,
+                        angle = dowel_gripper_angle_cutout
+                        );
+            }
+        }
+
+        translate([ 0, dowel_spacing_y, 0 ])
+        {
+            rotate([ 0, 90, 0 ])
+            {
+                difference()
+                {
+                    // outer cylinder
+                    cylinder( r = gripper_outer_r, h = bracket_x );
+
+                    // cut out the dowel
+                    translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                        cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2);
+
+                    // cut out the area to let the filamet slide past
+                    rotate([
+                        -DIFFERENCE_CLEARANCE,
+                        0,
+                        dowel_gripper_angle - dowel_gripper_angle_cutout / 2 + 90
+                        ])
+                        PieSlicePrism(
+                            width = gripper_outer_r * 2, // doubled just to make sure the cut out doesn't clip
+                            height = bracket_x + DIFFERENCE_CLEARANCE * 2,
+                            angle = dowel_gripper_angle_cutout
+                            );
+                }
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
