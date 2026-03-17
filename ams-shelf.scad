@@ -1,0 +1,1046 @@
+include <modules/rounded-cube.scad>
+include <modules/triangular-prism.scad>
+include <modules/hexagons.scad>
+include <modules/utils.scad>
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// measurements
+
+wall_stud_width = 30; // approx
+
+wall_stud_ab_separation = 406;
+wall_stud_bc_separation = 419;
+
+ams_2_pro_bottom_ledge_x = 338; // note the front is actually 324
+ams_2_pro_bottom_ledge_y = 250;
+ams_2_pro_bottom_ledge_z = 11;
+
+ams_2_pro_foot_x = 36;
+ams_2_pro_foot_y = 19;
+ams_2_pro_foot_z = 2;
+ams_2_pro_foot_back_offset_y = 231; // distance to the back foot of the AMS
+
+ams_2_pro_x = 372;
+ams_2_pro_y = 278;
+ams_2_pro_body_z = 110; // this is above the ledge below it
+ams_2_pro_lid_z = 102;
+ams_2_pro_lid_r = 210 / 2;
+
+// these are referenced off the ledge!
+ams_pro_2_drying_port_offset_x = 40;
+ams_pro_2_drying_port_offset_y = 75;
+ams_pro_2_drying_port_r = 25 / 2;
+
+// the length in front of the AMS 2 Pro bottom edge to the front of the AMS
+ams_extra_front_y = 10;
+
+// the length behind the AMS 2 Pro bottom edge to the back of the AMS
+ams_extra_back_y = 25;
+
+// the length behind the AMS 2 Pro to the wall
+shelf_extra_y = 44;
+
+// dowel size including clearance!
+dowel_r = 9.6 / 2 + 0.3;
+
+shelf_screw_r = 4.7 / 2;
+shelf_screw_cone_r = 9.0 / 2;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// settings
+
+render_mode = "preview";
+// render_mode = "print-shelf-a";
+// render_mode = "print-shelf-b";
+// render_mode = "print-shelf-c";
+// render_mode = "print-spacer";
+// render_mode = "print-shelf-test";
+// render_mode = "print-shelf-test-mini";
+// render_mode = "print-spacer-test";
+
+shelf_extra_x = 60;
+
+// the width of the wall plate and top bracket
+shelf_wall_plate_x = 20;
+
+// the depth of the wall plate
+shelf_wall_plate_y = 10;
+
+// the height of the triangular bracket above the shelf
+shelf_top_bracket_z = 40;
+
+// the percent along the shelf top the top back bracket will extend
+shelf_top_bracket_y_percent = 0.4;
+
+// the percent along the shelf top the top front brace will extend
+shelf_top_brace_y_percent = 0.15;
+
+// the height of the triangular bracket under the shelf
+shelf_bottom_bracket_z = 100;
+
+// the percent along the shelf top the bracket will extend
+shelf_bottom_bracket_y_percent = 0.5;
+
+// the bottom backet is wider than the top bracket, so this is the full width of the bottom bracket
+shelf_bottom_bracket_full_x = 80;
+
+shelf_base_angle = -20;
+shelf_base_z = 8.6; // this is before the guide rails
+
+spacer_left_x = 153;
+spacer_right_x = 140; // this is different because once printed, it doesn't fit on the wall, so this fixes that
+spacer_back_cutout_r_percent = 0.3;
+spacer_tongue_groove_x = 4.0;
+spacer_tongue_groove_z = 3.0;
+spacer_tongue_groove_offset_near_y = 45;
+spacer_tongue_groove_clearance = 0.4;
+
+shelf_screw_holder_z = 13;
+
+shelf_front_ledge_second_tier_y = 7.5;
+shelf_front_ledge_second_tier_z = 10;
+
+// width (y) of the front ledge of the shelf
+shelf_front_ledge_y = 6;
+
+// width
+shelf_front_ledge_z = 9;
+
+dowel_front_offset_y = -20; // from the near bottom edge of the shelf
+dowel_front_offset_z = -1;
+dowel_front_support_ring_extra_z = 4.5; // this is the extra height of the ring below the dowel
+dowel_back_offset_y = -246;
+dowel_back_offset_z = -5;
+dowel_back_support_ring_extra_z = 5.0;
+dowel_support_ring_r = 3;
+
+bottom_bracket_hex_cutouts_r = 6;
+bottom_bracket_hex_cutouts_spacing = 2;
+bottom_bracket_edge_thickness = 8;
+
+drying_port_extra_r = 10;
+
+// preview_spacing_z = -12;
+preview_spacing_z = 0;
+preview_spacing_x = 8;
+// preview_spacing_x = 0;
+
+preview_colors = true;
+preview_black = [ 25 / 255, 25 / 255, 25 / 255 ];
+preview_blue = [ 30 / 255, 129 / 255, 176 / 255 ];
+preview_orange = [ 226 / 255, 135 / 255, 67 / 255 ];
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// calculations
+
+$fn = $preview ? 32 : 256;
+
+full_x = shelf_extra_x
+    + wall_stud_ab_separation
+    + wall_stud_bc_separation
+    + shelf_extra_x;
+echo( str( "Full X: ", full_x, " mm = ", full_x * 0.03937008, " inches" ) );
+
+wall_stud_a_center_offset_x = shelf_extra_x;
+wall_stud_b_center_offset_x = wall_stud_a_center_offset_x + wall_stud_ab_separation;
+wall_stud_c_center_offset_x = wall_stud_b_center_offset_x + wall_stud_bc_separation;
+
+wall_plate_z = shelf_screw_holder_z
+    + shelf_top_bracket_z
+    + shelf_base_z
+    + shelf_bottom_bracket_z
+    + shelf_screw_holder_z;
+
+bottom_bracket_offset_z = shelf_screw_holder_z;
+shelf_base_offset_z = bottom_bracket_offset_z + shelf_bottom_bracket_z;
+top_bracket_offset_z = shelf_base_offset_z + shelf_base_z;
+top_screw_holder_section_offset_z = top_bracket_offset_z + shelf_top_bracket_z;
+
+shelf_base_y = ams_2_pro_bottom_ledge_y
+    + ams_extra_front_y
+    + ams_extra_back_y
+    + shelf_extra_y;
+
+spacer_ab_offset_x = shelf_extra_x + ( wall_stud_ab_separation - spacer_left_x ) / 2;
+spacer_bc_offset_x = shelf_extra_x
+    + wall_stud_ab_separation
+    + ( wall_stud_bc_separation - spacer_right_x ) / 2;
+
+shelf_a_left_x = shelf_extra_x;
+shelf_a_right_x = ( wall_stud_ab_separation - spacer_left_x ) / 2;
+shelf_b_left_x = ( wall_stud_ab_separation - spacer_left_x ) / 2;
+shelf_b_right_x = ( wall_stud_bc_separation - spacer_right_x ) / 2;
+shelf_c_left_x = ( wall_stud_bc_separation - spacer_right_x ) / 2;
+shelf_c_right_x = shelf_extra_x;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
+
+if( render_mode == "preview" )
+{
+    WallPreview();
+
+    // shelf a
+    color( preview_colors ? preview_black : undef )
+        translate([
+            wall_stud_a_center_offset_x,
+            0,
+            0
+            ])
+            Shelf( true, shelf_a_left_x, shelf_a_right_x, false, true, false );
+
+    // spacer a-b
+    color( preview_colors ? preview_blue : undef )
+        translate([
+            spacer_ab_offset_x + preview_spacing_x,
+            0,
+            shelf_base_offset_z + preview_spacing_z
+            ])
+            ShelfSpacer( spacer_left_x );
+
+    // shelf b
+    color( preview_colors ? preview_orange : undef )
+        translate([
+            wall_stud_b_center_offset_x + preview_spacing_x * 2,
+            0,
+            0
+            ])
+            Shelf( true, shelf_b_left_x, shelf_b_right_x, true, true, true );
+
+    // spacer b-c
+    color( preview_colors ? preview_blue : undef )
+        translate([
+            spacer_bc_offset_x + preview_spacing_x * 3,
+            0,
+            shelf_base_offset_z + preview_spacing_z
+            ])
+            ShelfSpacer( spacer_right_x );
+
+    // shelf c
+    color( preview_colors ? preview_black : undef )
+        translate([
+            wall_stud_c_center_offset_x + preview_spacing_x * 4,
+            0,
+            0
+            ])
+            Shelf( true, shelf_c_left_x, shelf_c_right_x, true, false, true );
+
+    // left ams
+    translate([
+        shelf_extra_x + ( wall_stud_ab_separation - ams_2_pro_x ) / 2,
+        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2 - ams_2_pro_foot_y / 2,
+        shelf_base_z
+        ])
+        rotate([ -shelf_base_angle, 0, 0 ])
+            AMS2ProPreview();
+
+    // right ams
+    translate([
+        shelf_extra_x + wall_stud_ab_separation + ( wall_stud_bc_separation - ams_2_pro_x ) / 2,
+        -shelf_base_y + ams_extra_front_y + shelf_front_ledge_y * 2 - ams_2_pro_foot_y / 2,
+        shelf_base_z
+        ])
+        rotate([ -shelf_base_angle, 0, 0 ])
+            translate([ 0, 0, ams_2_pro_foot_z ])
+                AMS2ProPreview();
+}
+else if( render_mode == "print-shelf-a" )
+{
+    translate([ 0, 0, shelf_a_left_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( true, shelf_a_left_x, shelf_a_right_x, false, true, false );
+}
+else if( render_mode == "print-shelf-b" )
+{
+    translate([ 0, 0, shelf_b_left_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( true, shelf_b_left_x, shelf_b_right_x, true, true, true );
+}
+else if( render_mode == "print-shelf-c" )
+{
+    translate([ 0, 0, shelf_c_left_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( true, shelf_c_left_x, shelf_c_right_x, true, false, true );
+}
+else if( render_mode == "print-spacer-left" )
+{
+    rotate([ 0, -90, 0 ])
+        ShelfSpacer( spacer_left_x );
+}
+else if( render_mode == "print-spacer-right" )
+{
+    rotate([ 0, -90, 0 ])
+        ShelfSpacer( spacer_right_x );
+}
+else if( render_mode == "print-shelf-test" )
+{
+    side_x = shelf_bottom_bracket_full_x * 0.55;
+
+    translate([ 0, 0, side_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( true, side_x, side_x, true, true, true );
+}
+else if( render_mode == "print-shelf-test-mini" )
+{
+    side_x = 4.0;
+
+    translate([ 0, 0, side_x ])
+        rotate([ 0, -90, 0 ])
+            Shelf( false, side_x, side_x, false, false, false );
+}
+else if( render_mode == "print-spacer-test" )
+{
+    rotate([ 0, -90, 0 ])
+        ShelfSpacer( 30 );
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module Shelf( add_brackets, left_x, right_x, left_connection, right_connection, drying_port )
+{
+    total_x = left_x + right_x;
+    total_y = shelf_base_y * cos( shelf_base_angle );
+    total_z = wall_plate_z;
+
+    echo();
+    echo( str( "total x: ", total_x ) );
+    echo( str( "total y: ", total_y ) );
+    echo( str( "total z: ", total_z ) );
+
+    // wall plate
+    if( add_brackets )
+    {
+        difference()
+        {
+            translate([ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, 0 ])
+                cube([ shelf_wall_plate_x, shelf_wall_plate_y, wall_plate_z  ]);
+
+            // bottom screw hole shaft
+            translate([
+                0,
+                DIFFERENCE_CLEARANCE,
+                shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
+            
+            // bottom screw hole cone
+            translate([
+                0,
+                -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
+                shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
+
+            // top screw hole shaft
+            translate([
+                0,
+                DIFFERENCE_CLEARANCE,
+                top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
+
+            // top screw hole cone
+            translate([
+                0,
+                -shelf_wall_plate_y + shelf_screw_cone_r - DIFFERENCE_CLEARANCE,
+                top_screw_holder_section_offset_z + shelf_screw_holder_z / 2
+                ])
+                rotate([ 90, 0, 0 ])
+                    cylinder( r1 = 0, r2 = shelf_screw_cone_r, h = shelf_screw_cone_r );
+        }
+    }
+
+    // bottom back bracket
+    if( add_brackets )
+        _ShelfBottomBracket();
+
+    // horizontal shelf
+    translate([ -left_x, 0, shelf_base_offset_z ])
+        _ShelfBase(
+            left_x + right_x,
+            left_connection,
+            right_connection,
+            drying_port ? right_x + shelf_wall_plate_x : -1
+            );
+
+    // top back bracket
+    if( add_brackets )
+        _ShelfTopBracket();
+
+    // top front brace
+    if( add_brackets )
+        _ShelfTopFrontBrace();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfTopBracket()
+{
+    rotateAbout = [ 0, shelf_base_offset_z ];
+
+    rotatedTopFar_xy = RotatePointAboutPoint( // using y,z as x,y
+        [ 0, shelf_base_offset_z + shelf_base_z ],
+        rotateAbout,
+        -shelf_base_angle
+        );
+    rotatedTopNear_xy = RotatePointAboutPoint( // using y,z as x,y
+        [ -shelf_base_y, shelf_base_offset_z + shelf_base_z ],
+        rotateAbout,
+        -shelf_base_angle
+        );
+
+    // calculate the z where the shelf base meets the wall plate
+    top_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
+        rotatedTopFar_xy,
+        rotatedTopNear_xy
+        );
+    top_face_wall_intercept_z =
+        top_face_wall_slope_intercept[ 0 ] * -shelf_wall_plate_y
+        + top_face_wall_slope_intercept[ 1 ];
+
+    // calculate the point where the bracket meets the base
+    top_face_brace_intercept_y =
+        -shelf_top_bracket_y_percent * shelf_base_y * cos( shelf_base_angle )
+        + rotatedTopFar_xy.x;
+    top_face_brace_intercept_z =
+        shelf_top_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
+        + rotatedTopFar_xy.y;
+
+    points = [
+        // where the shelf top face meets the wall plate
+        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z ],
+
+        // the top of the bracket at the wall plate
+        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z + shelf_top_bracket_z ],
+
+        // where the top face meets the bracket
+        [ -shelf_wall_plate_x / 2, top_face_brace_intercept_y, top_face_brace_intercept_z ],
+
+        // backside
+        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z ],
+        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, top_face_wall_intercept_z + shelf_top_bracket_z ],
+        [ shelf_wall_plate_x / 2, top_face_brace_intercept_y, top_face_brace_intercept_z ],
+    ];
+
+    // for( point = points )
+    //     # translate( point )
+    //         sphere( r = 1 );
+
+    polyhedron(
+        points = points,
+        faces = [
+            [ 0, 1, 2 ],
+            [ 3, 5, 4 ],
+            [ 1, 4, 5, 2 ],
+            [ 0, 2, 5, 3 ],
+            [ 0, 3, 4, 1 ],
+        ]
+    );
+
+    // fill in the space under the bracket where the foot cutout removed
+    translate([ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ])
+        rotate([ -shelf_base_angle, 0, 0 ])
+            translate([
+                -DIFFERENCE_CLEARANCE,
+                -shelf_base_y
+                    + shelf_front_ledge_y
+                    + ams_2_pro_foot_back_offset_y,
+                shelf_base_z - ams_2_pro_foot_z
+                ])
+                cube([
+                    shelf_wall_plate_x + DIFFERENCE_CLEARANCE * 2,
+                    ams_2_pro_foot_y,
+                    ams_2_pro_foot_z + DIFFERENCE_CLEARANCE
+                    ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfBottomBracket()
+{
+    max_x = 400;
+
+    farBottom = [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ];
+
+    rotatedBottomNear_xy = RotatePointAboutPoint( // using y,z as x,y
+        [ -shelf_base_y, shelf_base_offset_z ],
+        [ farBottom.y, farBottom.z ],
+        -shelf_base_angle
+        );
+
+    // calculate the z where the shelf base meets the wall plate
+    bottom_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
+        [ farBottom.y, farBottom.z ],
+        rotatedBottomNear_xy
+        );
+    bottom_face_wall_intercept_z =
+        bottom_face_wall_slope_intercept[ 0 ] * -shelf_wall_plate_y
+        + bottom_face_wall_slope_intercept[ 1 ];
+
+    // calculate the z where the shelf base meets the bracket
+    bottom_face_brace_intercept_y =
+        -shelf_bottom_bracket_y_percent * shelf_base_y * cos( shelf_base_angle )
+        + farBottom.y;
+    bottom_face_brace_intercept_z =
+        shelf_bottom_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
+        + farBottom.z;
+        
+    bracket_points = [
+        // where the top face meets the bracket
+        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z ],
+
+        // where the bottom face meets the bracket
+        [ -shelf_bottom_bracket_full_x / 2, bottom_face_brace_intercept_y, bottom_face_brace_intercept_z ],
+
+        // where the bottom base meets the wall plate
+        [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_bracket_offset_z ],
+
+        // backside
+        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z ],
+        [ shelf_bottom_bracket_full_x / 2, bottom_face_brace_intercept_y, bottom_face_brace_intercept_z ],
+        [ shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_bracket_offset_z ],
+        ];
+
+    // for( point = bracket_points )
+    //     # translate( point )
+    //         sphere( r = 1 );
+
+    difference()
+    {
+        polyhedron(
+            points = bracket_points,
+            faces = [
+                [ 0, 1, 2 ],
+                [ 3, 5, 4 ],
+                [ 1, 4, 5, 2 ],
+                [ 0, 2, 5, 3 ],
+                [ 0, 3, 4, 1 ],
+                ]    
+            );
+
+        // remove the back dowel
+        translate([ -max_x, 0, shelf_base_offset_z ])
+            rotate([ -shelf_base_angle, 0, 0 ])
+                translate([ 0, -shelf_base_y - dowel_back_offset_y, dowel_back_offset_z ])
+                    rotate([ 0, 90, 0 ])
+                        cylinder( r = dowel_r, h = max_x * 2 );
+
+        bottom_bracket_hex_cutouts_spacing_x = bottom_bracket_hex_cutouts_spacing;
+        bottom_bracket_hex_cutouts_spacing_z = bottom_bracket_hex_cutouts_spacing * sqrt( 3 ) / 2;
+        translate([ max_x / 2, 0, bottom_bracket_offset_z ])
+        {
+            rotate([ 90, 0, -90 ])
+            {
+                for( row = [ 0 : 10 ] )
+                {
+                    for( col = [ 0 : 10 ] )
+                    {
+                        translate([
+                            CalculateHexagonOffsetX(
+                                row,
+                                col,
+                                bottom_bracket_hex_cutouts_r,
+                                bottom_bracket_hex_cutouts_spacing_x
+                                ),
+                            CalculateHexagonOffsetY(
+                                row,
+                                bottom_bracket_hex_cutouts_r,
+                                bottom_bracket_hex_cutouts_spacing_z
+                                ),
+                            0
+                            ])
+                            Hexagon( bottom_bracket_hex_cutouts_r, max_x );
+                    }
+                }
+            }
+        }
+    }
+
+    // bottom_bracket_edge_thickness
+    bottom_edge_points = [
+        [ bracket_points[ 2 ].x, bracket_points[ 2 ].y, bracket_points[ 2 ].z + bottom_bracket_edge_thickness ],
+        [ bracket_points[ 1 ].x, bracket_points[ 1 ].y, bracket_points[ 1 ].z + bottom_bracket_edge_thickness ],
+        bracket_points[ 1 ],
+        bracket_points[ 2 ],
+
+        [ bracket_points[ 5 ].x, bracket_points[ 5 ].y, bracket_points[ 5 ].z + bottom_bracket_edge_thickness ],
+        [ bracket_points[ 4 ].x, bracket_points[ 4 ].y, bracket_points[ 4 ].z + bottom_bracket_edge_thickness ],
+        bracket_points[ 4 ],
+        bracket_points[ 5 ],
+        ];
+
+    // for( point = bottom_edge_points )
+    //     # translate( point )
+    //         sphere( r = 1 );
+
+    polyhedron(
+        points = bottom_edge_points,
+        faces = [
+            [ 0, 4, 5, 1 ],
+            [ 0, 1, 2, 3 ],
+            [ 1, 5, 6, 2 ],
+            [ 4, 7, 6, 5 ],
+            [ 0, 3, 7, 4 ],
+            [ 2, 6, 7, 3 ],
+        ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfTopFrontBrace()
+{
+    translate([ shelf_wall_plate_x / 2, 0, shelf_base_offset_z ])
+    {
+        rotate([ shelf_base_angle, 0, 180 ])
+        {
+            // brace on top
+            translate([
+                0,
+                shelf_base_y + shelf_front_ledge_y - shelf_front_ledge_y / 2,
+                shelf_base_z
+                ])
+                rotate([ 90, 0, 0 ])
+                    TriangularPrism(
+                        shelf_wall_plate_x,
+                        shelf_front_ledge_z + shelf_front_ledge_second_tier_z,
+                        shelf_base_y * shelf_top_brace_y_percent + shelf_front_ledge_y
+                        );
+
+            // fill in the space under the brace
+            translate([
+                0,
+                shelf_base_y - shelf_front_ledge_y - ams_2_pro_foot_y,
+                shelf_base_z - ams_2_pro_foot_z
+                ])
+                cube([
+                    shelf_wall_plate_x,
+                    ams_2_pro_foot_y,
+                    ams_2_pro_foot_z
+                    ]);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfBase( x, left_connection, right_connection, drying_port_x )
+{
+    translate([ x, 0, 0 ])
+    {
+        rotate([ shelf_base_angle, 0, 180 ])
+        {
+            difference()
+            {
+                // main section
+                _ShelfBaseMainFace( x );
+
+                // remove the left groove
+                if( left_connection )
+                {
+                    translate([
+                        x
+                            - spacer_tongue_groove_x
+                            + spacer_tongue_groove_clearance
+                            + DIFFERENCE_CLEARANCE,
+                        -DIFFERENCE_CLEARANCE,
+                        ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                            - spacer_tongue_groove_clearance
+                        ])
+                        cube([
+                            spacer_tongue_groove_x - spacer_tongue_groove_clearance,
+                            shelf_base_y
+                                - spacer_tongue_groove_offset_near_y
+                                - spacer_tongue_groove_clearance,
+                            spacer_tongue_groove_z
+                                + spacer_tongue_groove_clearance * 2
+                            ]);
+                }
+
+                // remove the right grove
+                if( right_connection )
+                {
+                    translate([
+                        -DIFFERENCE_CLEARANCE,
+                        -DIFFERENCE_CLEARANCE,
+                        ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                            - spacer_tongue_groove_clearance
+                        ])
+                        cube([
+                            spacer_tongue_groove_x - spacer_tongue_groove_clearance,
+                            shelf_base_y
+                                - spacer_tongue_groove_offset_near_y
+                                - spacer_tongue_groove_clearance,
+                            spacer_tongue_groove_z
+                                + spacer_tongue_groove_clearance * 2
+                            ]);
+                }
+
+                if( drying_port_x >= 0 )
+                {
+                    translate([
+                        drying_port_x + ams_pro_2_drying_port_offset_x + ams_pro_2_drying_port_r,
+                        shelf_base_y - ams_pro_2_drying_port_offset_y - ams_pro_2_drying_port_r / 2,
+                        -DIFFERENCE_CLEARANCE
+                        ])
+                        cylinder(
+                            r = ams_pro_2_drying_port_r + drying_port_extra_r,
+                            h = shelf_base_z + DIFFERENCE_CLEARANCE * 2
+                            );
+                }
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ShelfSpacer( x )
+{
+    echo( str( "Spacer: ", x ) );
+
+    translate([ x, 0, 0 ])
+    {
+        rotate([ shelf_base_angle, 0, 180 ])
+        {
+            // main section
+            difference()
+            {
+                _ShelfBaseMainFace( x );
+
+                // remove the spacer back cutout
+                translate([ x / 2, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder(
+                        r = x * spacer_back_cutout_r_percent,
+                        h = shelf_base_z + DIFFERENCE_CLEARANCE * 2
+                        );
+            }
+
+            // tongue left
+            difference()
+            {
+                translate([
+                    x,
+                    0,
+                    ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                    ])
+                    cube([
+                        spacer_tongue_groove_x,
+                        shelf_base_y - spacer_tongue_groove_offset_near_y - 2,
+                        spacer_tongue_groove_z
+                        ]);
+
+                translate([
+                    x - DIFFERENCE_CLEARANCE,
+                    shelf_base_y + dowel_back_offset_y - dowel_r,
+                    0
+                    ])
+                    cube([
+                        spacer_tongue_groove_x + DIFFERENCE_CLEARANCE * 2,
+                        dowel_r * 2,
+                        dowel_r * 2
+                        ]);
+            }
+
+            // tongue right
+            difference()
+            {
+                translate([
+                    -spacer_tongue_groove_x,
+                    0,
+                    ( shelf_base_z - spacer_tongue_groove_z ) / 2
+                    ])
+                    cube([
+                        spacer_tongue_groove_x,
+                        shelf_base_y - spacer_tongue_groove_offset_near_y - 2,
+                        spacer_tongue_groove_z
+                        ]);
+
+                translate([
+                    -spacer_tongue_groove_x - DIFFERENCE_CLEARANCE,
+                    shelf_base_y + dowel_back_offset_y - dowel_r,
+                    0
+                    ])
+                    cube([
+                        spacer_tongue_groove_x + DIFFERENCE_CLEARANCE * 2,
+                        dowel_r * 2,
+                        dowel_r * 2
+                        ]);
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ShelfBaseMainFace( x )
+{
+    // bottom dowel support
+    dowel_front_support_under_ring_z = shelf_base_z
+        + dowel_front_offset_z
+        - dowel_r * 2
+        - dowel_support_ring_r
+        - dowel_front_support_ring_extra_z;
+    front_dowel_support_points = [
+        [ 0, shelf_base_y, 0 ],
+        [ 0, shelf_base_y + dowel_front_offset_y, dowel_front_support_under_ring_z ],
+        [ 0, shelf_base_y + dowel_front_offset_y * 2, 0 ],
+
+        [ x, shelf_base_y, 0 ],
+        [ x, shelf_base_y + dowel_front_offset_y, dowel_front_support_under_ring_z ],
+        [ x, shelf_base_y + dowel_front_offset_y * 2, 0 ],
+        ];
+    // for( point = front_dowel_support_points )
+    //     # translate( point )       
+    //         sphere( r = 1 );
+
+    dowel_back_support_under_ring_z = shelf_base_z
+        + dowel_back_offset_z
+        - dowel_r * 2
+        - dowel_support_ring_r
+        - dowel_back_support_ring_extra_z;
+    back_dowel_support_y = 30;
+    back_dowel_support_points = [
+        [ 0, shelf_base_y + dowel_back_offset_y + back_dowel_support_y, 0 ],
+        [ 0, shelf_base_y + dowel_back_offset_y, dowel_back_support_under_ring_z ],
+        [ 0, shelf_base_y + dowel_back_offset_y - back_dowel_support_y, 0 ],
+
+        [ x, shelf_base_y + dowel_back_offset_y + back_dowel_support_y, 0 ],
+        [ x, shelf_base_y + dowel_back_offset_y, dowel_back_support_under_ring_z ],
+        [ x, shelf_base_y + dowel_back_offset_y - back_dowel_support_y, 0 ],
+        ];
+
+    // for( point = back_dowel_support_points )
+    //     # translate( point )       
+    //         sphere( r = 1 );
+
+    // main face
+    difference()
+    {
+        union()
+        {
+            cube([ x, shelf_base_y, shelf_base_z ]);
+
+            // front dowel support ring
+            translate([ 0, shelf_base_y + dowel_front_offset_y, dowel_front_offset_z ])
+                rotate([ 0, 90, 0 ])
+                    cylinder( r = dowel_r + dowel_support_ring_r, h = x );
+
+            // front dowel bottom support
+            polyhedron(
+                points = front_dowel_support_points,
+                faces = [
+                    [ 0, 2, 1 ],
+                    [ 3, 4, 5 ],
+                    [ 0, 3, 5, 2 ],
+                    [ 0, 1, 4, 3 ],
+                    [ 1, 2, 5, 4 ],
+                    ]
+                );
+
+            // back dowel support ring
+            translate([ 0, shelf_base_y + dowel_back_offset_y, dowel_back_offset_z ])
+                rotate([ 0, 90, 0 ])
+                    cylinder( r = dowel_r + dowel_support_ring_r, h = x );
+
+            // back dowel bottom support
+            polyhedron(
+                points = back_dowel_support_points,
+                faces = [
+                    [ 0, 2, 1 ],
+                    [ 3, 4, 5 ],
+                    [ 0, 3, 5, 2 ],
+                    [ 0, 1, 4, 3 ],
+                    [ 1, 2, 5, 4 ],
+                    ]
+                );
+        }
+
+        // remove the front dowel
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y + dowel_front_offset_y,
+            dowel_front_offset_z
+            ])
+            rotate([ 0, 90, 0 ])
+                cylinder( r = dowel_r, h = x + DIFFERENCE_CLEARANCE * 2 );
+
+        // remove the back dowel
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y + dowel_back_offset_y,
+            dowel_back_offset_z
+            ])
+            rotate([ 0, 90, 0 ])
+                cylinder( r = dowel_r, h = x + DIFFERENCE_CLEARANCE * 2 );
+
+        // remove the front feet groove
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y - shelf_front_ledge_y - ams_2_pro_foot_y,
+            shelf_base_z - ams_2_pro_foot_z
+            ])
+            cube([
+                x + DIFFERENCE_CLEARANCE * 2,
+                ams_2_pro_foot_y,
+                ams_2_pro_foot_z + DIFFERENCE_CLEARANCE
+                ]);
+
+        // remove the rear feet groove
+        translate([
+            -DIFFERENCE_CLEARANCE,
+            shelf_base_y - shelf_front_ledge_y - ams_2_pro_foot_y - ams_2_pro_foot_back_offset_y,
+            shelf_base_z - ams_2_pro_foot_z
+            ])
+            cube([
+                x + DIFFERENCE_CLEARANCE * 2,
+                ams_2_pro_foot_y,
+                ams_2_pro_foot_z + DIFFERENCE_CLEARANCE
+                ]);
+    }
+
+    // front ledge
+    union()
+    {
+        // front ledge main block
+        translate([
+            0,
+            shelf_base_y - shelf_front_ledge_y,
+            shelf_base_z
+            ])
+            cube([
+                x,
+                shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
+                shelf_front_ledge_z
+                ]);
+
+        // second tier front ledge
+        translate([
+            0,
+            shelf_base_y - shelf_front_ledge_y + shelf_front_ledge_second_tier_y,
+            shelf_base_z + shelf_front_ledge_z
+            ])
+            cube([ x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z ]);
+        translate([
+            0,
+            shelf_base_y - shelf_front_ledge_y / 2 + shelf_front_ledge_second_tier_y,
+            shelf_base_z + shelf_front_ledge_z
+            ])
+            TriangularPrism( x, shelf_front_ledge_y / 2, shelf_front_ledge_second_tier_z );
+
+        // triangle under the second tier
+        translate([
+            0,
+            shelf_base_y,
+            shelf_base_z
+            ])
+            rotate([ -90, 0, 0 ])
+                TriangularPrism(
+                    x,
+                    shelf_base_z, // z
+                    shelf_front_ledge_second_tier_y // y
+                    );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module AMS2ProPreview()
+{
+    drying_port_preview_z = 50;
+
+    // ledge
+    % translate([ ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2, ams_extra_front_y, 0 ])
+        RoundedCubeAlt2(
+            x = ams_2_pro_bottom_ledge_x,
+            y = ams_2_pro_bottom_ledge_y,
+            z = ams_2_pro_bottom_ledge_z,
+            r = 10,
+            round_top = false,
+            round_bottom = false
+            );
+
+    // drying port
+    % translate([
+        ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2
+            + ams_2_pro_bottom_ledge_x
+            - ams_pro_2_drying_port_offset_x,
+        ams_extra_front_y
+            + ams_pro_2_drying_port_offset_y,
+        -drying_port_preview_z
+        ])
+        cylinder( r = ams_pro_2_drying_port_r, h = drying_port_preview_z );
+
+    // body
+    % translate([ 0, 0, ams_2_pro_bottom_ledge_z ])
+        RoundedCubeAlt2(
+            x = ams_2_pro_x,
+            y = ams_2_pro_y,
+            z = ams_2_pro_body_z,
+            r = 20,
+            round_top = false,
+            round_bottom = false
+            );
+
+    animate_angle = $t < 0.5
+        ? $t * 90 / 0.5
+        : ( 1.0 - $t ) * 90 / 0.5;
+
+    // lid
+    % translate([ 0, ams_2_pro_y - ams_extra_back_y, ams_2_pro_bottom_ledge_z + ams_2_pro_body_z ])
+    {
+        rotate([ -animate_angle, 0, 0 ])
+        {
+            translate([ 0, -ams_2_pro_lid_r, 0 ])
+            {
+                difference()
+                {
+                    rotate([ 0, 90, 0 ])
+                        cylinder( r = ams_2_pro_lid_r, h = ams_2_pro_x );
+
+                    translate([
+                        -DIFFERENCE_CLEARANCE,
+                        -ams_2_pro_lid_r - DIFFERENCE_CLEARANCE,
+                        -ams_2_pro_lid_r - DIFFERENCE_CLEARANCE
+                        ])
+                        cube([
+                            ams_2_pro_x + DIFFERENCE_CLEARANCE * 2,
+                            ams_2_pro_lid_r * 2 + DIFFERENCE_CLEARANCE * 2,
+                            ams_2_pro_lid_r + DIFFERENCE_CLEARANCE
+                            ]);
+                }
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module WallPreview()
+{
+    translate([ wall_stud_a_center_offset_x, 0, 0 ])
+        WallStudPreview();
+    translate([ wall_stud_b_center_offset_x, 0, 0 ])
+        WallStudPreview();
+    translate([ wall_stud_c_center_offset_x, 0, 0 ])
+        WallStudPreview();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module WallStudPreview()
+{
+    stud_y = 100;
+    stud_z = 1000;
+
+    % translate([ -wall_stud_width / 2, 0, -stud_z / 2 ])
+        cube([ wall_stud_width, stud_y, stud_z ]);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
