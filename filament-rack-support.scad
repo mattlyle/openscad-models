@@ -2,6 +2,7 @@
 
 include <modules/utils.scad>
 include <modules/pie-slice-prism.scad>
+include <modules/hexagons.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -39,6 +40,9 @@ bracket_top_z = 16;
 
 // distance from the dowel center point to where the bracket meets the wall (screw hole is still below)
 bracket_bottom_z = 80;
+
+hex_cutouts_r = 4;
+hex_cutouts_spacing = 1.5;
 
 preview_x = 1000;
 
@@ -305,9 +309,106 @@ module FilamentSpoolBracket()
                 screw_hole();
     }
 
-    // hexagon cutouts
+    // hexagons
+
+    // we do this by creating a polyhedron of the basic dimmentions, cut out the round sections, then cut out the hexagons
+
+    rear_dowel_inner_intercept_angle = 40;
+    rear_dowel_inner_intercept_y = dowel_spacing_y - sin( rear_dowel_inner_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
+    rear_dowel_inner_intercept_z = -cos( rear_dowel_inner_intercept_angle ) * ( dowel_r + bracket_dowel_gripper_r );
+
+    near_dowel_inner_intercept_angle = -40;
+    near_dowel_inner_intercept_y = -sin( near_dowel_inner_intercept_angle ) * dowel_r;
+    near_dowel_inner_intercept_z = -cos( near_dowel_inner_intercept_angle ) * dowel_r;
+
+    hexagon_body_points = [
+        [ 0, dowel_spacing_y + bracket_offset_y - bracket_back_plate_width, bracket_top_z - bracket_support_outer_edge_width ],
+        [ 0, top_inner_intercept_y, top_inner_intercept_z ],
+        [ 0, rear_dowel_inner_intercept_y, rear_dowel_inner_intercept_z ],
+        [ 0, near_dowel_inner_intercept_y, near_dowel_inner_intercept_z ],
+        [ 0, bottom_inner_intercept_y, bottom_inner_intercept_z ],
+        [ 0, dowel_spacing_y + bracket_offset_y - bracket_back_plate_width, -bracket_bottom_z + bracket_support_outer_edge_width ],
+
+        [ bracket_x, dowel_spacing_y + bracket_offset_y - bracket_back_plate_width, bracket_top_z - bracket_support_outer_edge_width ],
+        [ bracket_x, top_inner_intercept_y, top_inner_intercept_z ],
+        [ bracket_x, rear_dowel_inner_intercept_y, rear_dowel_inner_intercept_z ],
+        [ bracket_x, near_dowel_inner_intercept_y, near_dowel_inner_intercept_z ],
+        [ bracket_x, bottom_inner_intercept_y, bottom_inner_intercept_z ],
+        [ bracket_x, dowel_spacing_y + bracket_offset_y - bracket_back_plate_width, -bracket_bottom_z + bracket_support_outer_edge_width ],
+        ];
+    // for( point = hexagon_body_points )
+    //     translate( point )
+    //        # sphere( r = 1 );
+
+    difference()
+    {
+        polyhedron(
+            points = hexagon_body_points,
+            faces = [
+                [ 0, 6, 7, 1 ],
+                [ 1, 7, 8, 2 ],
+                [ 2, 8, 9, 3 ],
+                [ 3, 9, 10, 4 ],
+                [ 4, 10, 11, 5 ],
+                [ 6, 0, 5, 11 ],
+                [ 0, 1, 2, 3, 4, 5 ],
+                [ 11, 10, 9, 8, 7, 6 ]
+                ] );
+
+        // cut out the near dowel
+        rotate([ 0, 90, 0 ])
+            difference()
+                translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
+
+        // cut out the rear dowel
+        translate([ 0, dowel_spacing_y, 0 ])
+            rotate([ 0, 90, 0 ])
+                translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
+
+        // cut out the span
+        translate([ -DIFFERENCE_CLEARANCE, dowel_spacing_y / 2, filament_spool_offset_z ])
+            rotate([ -90 + dowel_gripper_angle, 0, 0 ])
+                rotate([ 0, 90, 0 ])
+                    PieSlicePrism(
+                        width = filament_spool_r + dowel_r + bracket_support_outer_edge_width,
+                        height = bracket_x + DIFFERENCE_CLEARANCE * 2,
+                        angle = span_angle
+                        );
+
+        // hexagon cutouts
+        translate([ bracket_x + DIFFERENCE_CLEARANCE, 0, bracket_top_z ])
+        {
+            rotate([ -90, 0, 90 ])
+            {
+                for( row = [ 0 : 16 ] )
+                {
+                    for( col = [ 0 : 16 ] )
+                    {
+                        translate([
+                            CalculateHexagonOffsetX(
+                                row,
+                                col,
+                                hex_cutouts_r,
+                                hex_cutouts_spacing
+                                ),
+                            CalculateHexagonOffsetY(
+                                row,
+                                hex_cutouts_r,
+                                hex_cutouts_spacing
+                                ),
+                            0
+                            ])
+                            Hexagon( hex_cutouts_r, bracket_x + DIFFERENCE_CLEARANCE * 2 );
+                    }
+                }
+            }
+        }
+    }
 
     // front face to mount a label
+    // TODO finish!
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
