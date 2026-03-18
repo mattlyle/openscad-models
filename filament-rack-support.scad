@@ -32,7 +32,7 @@ bracket_back_plate_width = 10;
 
 bracket_back_plate_screw_inset_depth = 3.0;
 
-dowel_gripper_angle_cutout = 135;
+dowel_gripper_angle_cutout = 130;
 
 // distance from the back dowel center to the wall
 bracket_offset_y = 40;
