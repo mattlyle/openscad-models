@@ -13,6 +13,7 @@ filament_spool_r = 200 / 2;
 filament_spool_x = 68;
 
 screw_hole_r = 5.0 / 2;
+screw_head_r = 8.0 / 2 + 1;
 
 // TODO able to mount a label
 
@@ -28,7 +29,10 @@ dowel_spacing_y = 135;
 bracket_dowel_gripper_r = 4.0;
 
 bracket_support_outer_edge_width = 6.0;
+
 bracket_back_plate_width = 10;
+
+bracket_back_plate_screw_inset_depth = 3.0;
 
 dowel_gripper_angle_cutout = 135;
 
@@ -418,10 +422,8 @@ module screw_hole()
     translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
         cylinder( r = screw_hole_r, h = bracket_back_plate_width );
 
-    translate([ 0, 0, bracket_back_plate_width / 2 ])
-        cylinder( r1 = screw_hole_r, r2 = screw_hole_r * 2, h = bracket_back_plate_width / 2 + DIFFERENCE_CLEARANCE );
+    translate([ 0, 0, bracket_back_plate_width -bracket_back_plate_screw_inset_depth ])
+        cylinder( r = screw_head_r, h = bracket_back_plate_screw_inset_depth + DIFFERENCE_CLEARANCE );
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
