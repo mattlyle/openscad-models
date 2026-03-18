@@ -15,8 +15,6 @@ filament_spool_x = 68;
 screw_hole_r = 5.0 / 2;
 screw_head_r = 8.0 / 2 + 1;
 
-// TODO able to mount a label
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -47,6 +45,10 @@ bracket_bottom_z = 80;
 
 hex_cutouts_r = 4;
 hex_cutouts_spacing = 1.5;
+
+front_label_angle = 170;
+label_y = 2.0;
+label_z = 25.0;
 
 preview_x = 1000;
 
@@ -411,8 +413,10 @@ module FilamentSpoolBracket()
         }
     }
 
-    // front face to mount a label
-    // TODO finish!
+    // label backing
+    translate([ 0, -dowel_r - bracket_dowel_gripper_r + label_y, 0 ])
+        rotate([ front_label_angle, 0, 0 ])
+            cube([ bracket_x, label_y, label_z ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
