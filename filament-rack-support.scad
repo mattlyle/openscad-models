@@ -3,6 +3,7 @@
 include <modules/utils.scad>
 include <modules/pie-slice-prism.scad>
 include <modules/hexagons.scad>
+include <modules/connectors.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -45,10 +46,6 @@ bracket_bottom_z = 80;
 
 hex_cutouts_r = 4;
 hex_cutouts_spacing = 1.5;
-
-front_label_angle = 155;
-label_y = 2.0;
-label_z = 30.0;
 
 preview_x = 1000;
 
@@ -413,10 +410,56 @@ module FilamentSpoolBracket()
         }
     }
 
-    // label backing
-    translate([ 0, -dowel_r - bracket_dowel_gripper_r + label_y, 0 ])
-        rotate([ front_label_angle, 0, 0 ])
-            cube([ bracket_x, label_y, label_z ]);
+    label_connector_cap_width = 2.0;
+    label_connector_collar_width = 2.0;
+    label_connector_cap_padding = 0.5;
+    label_neck_x = bracket_x - label_connector_cap_width * 2 - label_connector_cap_padding * 2;
+    label_neck_y = 2.0;
+    label_neck_z = 8.0;
+
+    label_x = 80;
+    label_y = 3.5;
+    label_z = 25;
+    label_connector_offset_z = 5;
+
+
+    translate([ 0, -100, label_connector_offset_z ])
+    {
+        #translate([ -10, 0, -10 ])
+            cube([ 40, 0.001, 40 ]);
+
+        translate([ 0, 0, 0 ])
+            SlideConnectorM(
+                label_neck_x,
+                label_neck_y,
+                label_neck_z,
+                label_connector_cap_width,
+                label_connector_cap_width,
+                label_connector_cap_width
+                );
+
+        union()
+        {
+            translate([ 0, -20, 0 ])
+            {
+                translate([ -( label_x - label_neck_x ) / 2, -label_neck_y - label_connector_cap_width - label_y, -label_connector_offset_z ])
+                    cube([ label_x, label_y, label_z ]);
+
+                SlideConnectorF(
+                    label_neck_x,
+                    label_neck_y,
+                    label_neck_z,
+                    label_connector_cap_width,
+                    label_connector_cap_width,
+                    label_connector_cap_width,
+                    label_connector_collar_width,
+                    label_connector_collar_width,
+                    label_connector_collar_width,
+                    label_connector_cap_padding
+                    );
+            }
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
