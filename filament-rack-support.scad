@@ -3,6 +3,7 @@
 include <modules/utils.scad>
 include <modules/pie-slice-prism.scad>
 include <modules/hexagons.scad>
+include <modules/rounded-cube.scad>
 include <modules/connectors.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,6 +22,7 @@ screw_head_r = 8.0 / 2 + 1;
 
 render_mode = "preview";
 // render_mode = "print-holder";
+// render_mode = "print-label";
 
 bracket_x = 20;
 dowel_spacing_y = 135;
@@ -49,6 +51,21 @@ hex_cutouts_spacing = 1.5;
 
 preview_x = 1000;
 
+label_connector_cap_width = 2.0;
+label_connector_collar_width = 2.0;
+label_connector_cap_padding = 0.5;
+label_neck_y = 8.0;
+label_angle = -8.0;
+label_neck_z = 8.0;
+label_neck_offset_y = 2.5;
+label_neck_offset_z = -4.0;
+
+label_x = 80;
+label_y = 3.5;
+label_z = 25;
+label_connector_offset_z = 5;
+label_corner_radius = 0.75;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -63,6 +80,8 @@ dowel_gripper_angle = atan2( filament_spool_offset_z, dowel_spacing_y / 2 );
 bottom_bracket_gripper_intercept_angle = 25; // TODO would be great to calculate this too
 
 screw_hole_extra_z = screw_hole_r * 4;
+
+label_neck_x = bracket_x - label_connector_cap_width * 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -83,6 +102,10 @@ if( render_mode == "preview" )
 
     translate([ -bracket_x, 0, 0 ])
         FilamentSpoolBracket();
+
+    translate([ -label_x / 2 + bracket_x + label_connector_cap_width + label_connector_cap_padding, -20, -label_connector_offset_z * 2 ])
+        rotate([ label_angle, 0, 0 ])
+            LabelHolder();
 }
 else if( render_mode == "print-holder" )
 {
@@ -93,6 +116,16 @@ else if( render_mode == "print-holder" )
         ])
         rotate([ 0, 90, 0 ])
             FilamentSpoolBracket();
+}
+else if( render_mode == "print-label" )
+{
+    translate([
+        ( label_x - label_neck_x ) / 2,
+        label_z,
+        label_neck_y + label_connector_cap_width + label_y
+        ])
+        rotate([ 90, 0, 0 ])
+            LabelHolder();
 }
 else
 {
@@ -197,8 +230,6 @@ module FilamentSpoolBracket()
                                 );
             }
         }
-
-// TODO these need to be at the end!
 
         // cut out the dowel
         rotate([ 0, 90, 0 ])
@@ -410,55 +441,22 @@ module FilamentSpoolBracket()
         }
     }
 
-    label_connector_cap_width = 2.0;
-    label_connector_collar_width = 2.0;
-    label_connector_cap_padding = 0.5;
-    label_neck_x = bracket_x - label_connector_cap_width * 2 - label_connector_cap_padding * 2;
-    label_neck_y = 2.0;
-    label_neck_z = 8.0;
-
-    label_x = 80;
-    label_y = 3.5;
-    label_z = 25;
-    label_connector_offset_z = 5;
-
-
-    translate([ 0, -100, label_connector_offset_z ])
+    translate([
+        0,
+        -dowel_r - bracket_dowel_gripper_r + label_neck_offset_y,
+        - label_neck_z / 2 + label_neck_offset_z
+        ])
     {
-        #translate([ -10, 0, -10 ])
-            cube([ 40, 0.001, 40 ]);
-
-        translate([ 0, 0, 0 ])
-            SlideConnectorM(
-                label_neck_x,
-                label_neck_y,
-                label_neck_z,
-                label_connector_cap_width,
-                label_connector_cap_width,
-                label_connector_cap_width
-                );
-
-        union()
-        {
-            translate([ 0, -20, 0 ])
-            {
-                translate([ -( label_x - label_neck_x ) / 2, -label_neck_y - label_connector_cap_width - label_y, -label_connector_offset_z ])
-                    cube([ label_x, label_y, label_z ]);
-
-                SlideConnectorF(
+        translate([ label_connector_cap_width, 0, 0 ])
+            rotate([ label_angle, 0, 0 ])
+                SlideConnectorM(
                     label_neck_x,
                     label_neck_y,
                     label_neck_z,
                     label_connector_cap_width,
                     label_connector_cap_width,
-                    label_connector_cap_width,
-                    label_connector_collar_width,
-                    label_connector_collar_width,
-                    label_connector_collar_width,
-                    label_connector_cap_padding
+                    label_connector_cap_width
                     );
-            }
-        }
     }
 }
 
@@ -471,6 +469,35 @@ module screw_hole()
 
     translate([ 0, 0, bracket_back_plate_width -bracket_back_plate_screw_inset_depth ])
         cylinder( r = screw_head_r, h = bracket_back_plate_screw_inset_depth + DIFFERENCE_CLEARANCE );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module LabelHolder()
+{
+    union()
+    {
+        translate([
+            -( label_x - label_neck_x ) / 2,
+            -label_neck_y - label_connector_cap_width - label_y,
+            0
+            ])
+            RoundedCubeAlt2( label_x, label_y, label_z, label_corner_radius );
+
+        translate([ 0, 0, label_connector_offset_z ])
+            SlideConnectorF(
+                label_neck_x,
+                label_neck_y,
+                label_neck_z,
+                label_connector_cap_width,
+                label_connector_cap_width,
+                label_connector_cap_width,
+                label_connector_collar_width,
+                label_connector_collar_width,
+                label_connector_collar_width,
+                label_connector_cap_padding
+                );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

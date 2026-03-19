@@ -47,6 +47,8 @@ module SlideConnectorM(
             // neck
             cube([ neck_x, neck_y, neck_z ]);
 
+            echo("cap=", cap_x * 2 + neck_x);
+
             // cap
             translate([ -cap_x, -cap_y, 0 ])
                 RoundedCubeAlt2( cap_x * 2 + neck_x, cap_y, cap_z + neck_z, 0.5, round_bottom = false );
