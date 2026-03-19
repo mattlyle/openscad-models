@@ -1,4 +1,5 @@
 include <triangular-prism.scad>
+include <rounded-cube.scad>
 include <utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,11 +40,6 @@ module SlideConnectorM(
     cap_z
     )
 {
-    echo( str( "neck_x = ", neck_x ) );
-    echo( str( "neck_y = ", neck_y ) );
-    echo( str( "neck_z = ", neck_z ) );
-
-
     translate([ 0, -neck_y, 0 ])
     {
         union()
@@ -53,7 +49,7 @@ module SlideConnectorM(
 
             // cap
             translate([ -cap_x, -cap_y, 0 ])
-                cube([ cap_x * 2 + neck_x, cap_y, cap_z + neck_z ]);
+                RoundedCubeAlt2( cap_x * 2 + neck_x, cap_y, cap_z + neck_z, 0.5, round_bottom = false );
         }
     }
 }
@@ -70,37 +66,38 @@ module SlideConnectorF(
     collar_x,
     collar_y,
     collar_z,
-    padding
+    clearance
     )
 {
-    // % SlideConnectorM(neck_x,neck_extra_y,neck_y,neck_z,cap_x,cap_y,cap_z);
-
     translate([ 0, -neck_y, 0 ])
     {
-        // cap cover
         difference()
         {
-            translate([ -cap_x - collar_x - padding, -cap_y, 0 ])
-                cube([
-                    neck_x + cap_x * 2 + collar_x * 2 + padding * 2,
-                    cap_y + padding + collar_y,
-                    neck_z + cap_z + padding + collar_z
-                    ]);
+            // cap cover
+            translate([ -cap_x - collar_x - clearance, -cap_y, 0 ])
+                RoundedCubeAlt2(
+                    x = neck_x + cap_x * 2 + collar_x * 2 + clearance * 2,
+                    y = cap_y + clearance + collar_y,
+                    z = neck_z + cap_z + clearance + collar_z,
+                    r = 0.5,
+                    round_bottom = false,
+                    round_front = false
+                    );
 
             // cut out the cap
-            translate([ -cap_x - padding, -cap_y - DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
+            translate([ -cap_x - clearance, -cap_y - DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
                 cube([
-                    cap_x * 2 + padding * 2 + neck_x,
-                    cap_y + padding + DIFFERENCE_CLEARANCE * 2,
-                    neck_z + padding + cap_z + DIFFERENCE_CLEARANCE
+                    cap_x * 2 + clearance * 2 + neck_x,
+                    cap_y + clearance + DIFFERENCE_CLEARANCE * 2,
+                    neck_z + clearance + cap_z + DIFFERENCE_CLEARANCE
                     ]);
 
             // cut out the neck
-            translate([ -padding, -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
+            translate([ -clearance, -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
                 cube([
-                    neck_x + padding * 2,
-                    padding + collar_y + DIFFERENCE_CLEARANCE * 2,
-                    neck_z + padding + DIFFERENCE_CLEARANCE
+                    neck_x + clearance * 2,
+                    clearance + collar_y + DIFFERENCE_CLEARANCE * 2,
+                    neck_z + clearance + DIFFERENCE_CLEARANCE
                     ]);
         }
     }
