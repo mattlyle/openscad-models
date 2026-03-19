@@ -32,7 +32,7 @@ bracket_back_plate_width = 10;
 
 bracket_back_plate_screw_inset_depth = 3.0;
 
-dowel_gripper_angle_cutout = 130;
+dowel_gripper_angle_cutout = 135;
 
 // distance from the back dowel center to the wall
 bracket_offset_y = 40;
@@ -46,9 +46,9 @@ bracket_bottom_z = 80;
 hex_cutouts_r = 4;
 hex_cutouts_spacing = 1.5;
 
-front_label_angle = 170;
+front_label_angle = 155;
 label_y = 2.0;
-label_z = 25.0;
+label_z = 30.0;
 
 preview_x = 1000;
 
