@@ -14,15 +14,17 @@ dowel_r = 22.3 / 2;
 filament_spool_r = 200 / 2;
 filament_spool_x = 68;
 
-screw_hole_r = 5.0 / 2;
+ScrewHole_r = 5.0 / 2;
 screw_head_r = 8.0 / 2 + 1;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 render_mode = "preview";
-// render_mode = "print-holder";
+// render_mode = "print-bracket-only";
+// render_mode = "print-bracket-with-label-mount";
 // render_mode = "print-label";
+// render_mode = "print-standalone-label-with-gripper";
 
 bracket_x = 20;
 dowel_spacing_y = 135;
@@ -69,7 +71,7 @@ label_corner_radius = 0.75;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
-$fn = $preview ? 64 : 256;
+$fn = $preview ? 128 : 256;
 
 // TODO figure out how to actually calculate these?!?!
 filament_spool_offset_z = 88.32;
@@ -79,9 +81,12 @@ dowel_gripper_angle = atan2( filament_spool_offset_z, dowel_spacing_y / 2 );
 // this is the angle where the bottom of the bracket intersects with the dowel gripper
 bottom_bracket_gripper_intercept_angle = 25; // TODO would be great to calculate this too
 
-screw_hole_extra_z = screw_hole_r * 4;
+ScrewHole_extra_z = ScrewHole_r * 4;
 
 label_neck_x = bracket_x - label_connector_cap_width * 2;
+
+gripper_outer_r = dowel_r + bracket_dowel_gripper_r;
+span_angle = 2 * ( 90 - dowel_gripper_angle );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -101,21 +106,35 @@ if( render_mode == "preview" )
         cube([ preview_x, 0.01, filament_spool_r * 4 ]);
 
     translate([ -bracket_x, 0, 0 ])
-        FilamentSpoolBracket();
+        FilamentSpoolBracket( true );
 
     translate([ -label_x / 2 + bracket_x + label_connector_cap_width + label_connector_cap_padding, -20, -label_connector_offset_z * 2 ])
         rotate([ label_angle, 0, 0 ])
             LabelHolder();
+
+    translate([ 150, 0, 0 ])
+    // translate([ -150, 0, 0 ])
+        StandaloneDowelLabelHolder();
 }
-else if( render_mode == "print-holder" )
+else if( render_mode == "print-bracket-only" )
 {
     translate([
-        bracket_bottom_z + screw_hole_extra_z,
+        bracket_bottom_z + ScrewHole_extra_z,
         dowel_r + bracket_dowel_gripper_r,
         bracket_x
         ])
         rotate([ 0, 90, 0 ])
-            FilamentSpoolBracket();
+            FilamentSpoolBracket( false );
+}
+else if( render_mode == "print-bracket-with-label-mount" )
+{
+    translate([
+        bracket_bottom_z + ScrewHole_extra_z,
+        dowel_r + bracket_dowel_gripper_r,
+        bracket_x
+        ])
+        rotate([ 0, 90, 0 ])
+            FilamentSpoolBracket( true );
 }
 else if( render_mode == "print-label" )
 {
@@ -126,6 +145,16 @@ else if( render_mode == "print-label" )
         ])
         rotate([ 90, 0, 0 ])
             LabelHolder();
+}
+else if( render_mode == "print-standalone-label-with-gripper" )
+{
+    translate([
+        ( label_x - label_neck_x ) / 2,
+        label_z,
+        label_neck_y + label_connector_cap_width + label_y * 2
+        ])
+        rotate([ 90 - label_angle, 0, 0 ])
+            StandaloneDowelLabelHolder();
 }
 else
 {
@@ -151,62 +180,28 @@ module FilamentSpoolPreview()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module FilamentSpoolBracket()
+module FilamentSpoolBracket( include_label_bracket )
 {
-    gripper_outer_r = dowel_r + bracket_dowel_gripper_r;
-
-    span_angle = 2 * ( 90 - dowel_gripper_angle );
-
-    difference()
+   difference()
     {
         union()
         {
             // near gripper
-            rotate([ 0, 90, 0 ])
-            {
-                difference()
-                {
-                    // outer cylinder
-                    cylinder( r = gripper_outer_r, h = bracket_x );
-
-                    // cut out the area to let the filamet slide past
-                    rotate([
-                        -DIFFERENCE_CLEARANCE,
-                        0,
-                        90 + dowel_gripper_angle - dowel_gripper_angle_cutout / 2
-                        ])
-                        PieSlicePrism(
-                            width = gripper_outer_r * 2, // doubled just to make sure the cut out doesn't clip
-                            height = bracket_x + DIFFERENCE_CLEARANCE * 2,
-                            angle = dowel_gripper_angle_cutout
-                            );
-                }
-            }
+            rotate([
+                90 + dowel_gripper_angle - dowel_gripper_angle_cutout / 2,
+                0,
+                0
+                ])
+                DowelGripper();
 
             // back gripper
             translate([ 0, dowel_spacing_y, 0 ])
-            {
-                rotate([ 0, 90, 0 ])
-                {
-                    difference()
-                    {
-                        // outer cylinder
-                        cylinder( r = gripper_outer_r, h = bracket_x );
-
-                        // cut out the area to let the filamet slide past
-                        rotate([
-                            -DIFFERENCE_CLEARANCE,
-                            0,
-                            -90 - dowel_gripper_angle - dowel_gripper_angle_cutout / 2
-                            ])
-                            PieSlicePrism(
-                                width = gripper_outer_r * 2, // doubled just to make sure the cut out doesn't clip
-                                height = bracket_x + DIFFERENCE_CLEARANCE * 2,
-                                angle = dowel_gripper_angle_cutout
-                                );
-                    }
-                }
-            }
+                rotate([
+                    -90 - dowel_gripper_angle - dowel_gripper_angle_cutout / 2,
+                    0,
+                    0
+                    ])
+                    DowelGripper();
 
             // span top
             difference()
@@ -228,20 +223,21 @@ module FilamentSpoolBracket()
                                 height = bracket_x + DIFFERENCE_CLEARANCE * 2,
                                 angle = span_angle + DIFFERENCE_CLEARANCE * 2
                                 );
+
+                // cut out the dowel
+                rotate([ 0, 90, 0 ])
+                    difference()
+                        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                            cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
+
+                // cut out the dowel
+                translate([ 0, dowel_spacing_y, 0 ])
+                    rotate([ 0, 90, 0 ])
+                        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                            cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
             }
         }
 
-        // cut out the dowel
-        rotate([ 0, 90, 0 ])
-            difference()
-                translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
-                    cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
-
-        // cut out the dowel
-        translate([ 0, dowel_spacing_y, 0 ])
-            rotate([ 0, 90, 0 ])
-                translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
-                    cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
     }
 
     // top edge
@@ -316,31 +312,31 @@ module FilamentSpoolBracket()
         translate([
             0,
             dowel_spacing_y + bracket_offset_y - bracket_back_plate_width,
-            -bracket_bottom_z - screw_hole_extra_z
+            -bracket_bottom_z - ScrewHole_extra_z
             ])
             cube([
                 bracket_x,
                 bracket_back_plate_width,
-                bracket_top_z + bracket_bottom_z + screw_hole_extra_z * 2
+                bracket_top_z + bracket_bottom_z + ScrewHole_extra_z * 2
                 ]);
 
         // cut out the top screw
         translate([
             bracket_x / 2,
             dowel_spacing_y + bracket_offset_y,
-            bracket_top_z + screw_hole_extra_z / 4
+            bracket_top_z + ScrewHole_extra_z / 4
             ])
             rotate([ 90, 0, 0 ])
-                screw_hole();
+                ScrewHole();
 
         // cut out the bottom screw
         translate([
             bracket_x / 2,
             dowel_spacing_y + bracket_offset_y,
-            -bracket_bottom_z - screw_hole_extra_z / 4
+            -bracket_bottom_z - ScrewHole_extra_z / 4
             ])
             rotate([ 90, 0, 0 ])
-                screw_hole();
+                ScrewHole();
     }
 
     // hexagons
@@ -441,31 +437,82 @@ module FilamentSpoolBracket()
         }
     }
 
-    translate([
-        0,
-        -dowel_r - bracket_dowel_gripper_r + label_neck_offset_y,
-        - label_neck_z / 2 + label_neck_offset_z
-        ])
+    if( include_label_bracket )
     {
-        translate([ label_connector_cap_width, 0, 0 ])
-            rotate([ label_angle, 0, 0 ])
-                SlideConnectorM(
-                    label_neck_x,
-                    label_neck_y,
-                    label_neck_z,
-                    label_connector_cap_width,
-                    label_connector_cap_width,
-                    label_connector_cap_width
-                    );
+        translate([
+            0,
+            -dowel_r - bracket_dowel_gripper_r + label_neck_offset_y,
+            - label_neck_z / 2 + label_neck_offset_z
+            ])
+        {
+            translate([ label_connector_cap_width, 0, 0 ])
+                rotate([ label_angle, 0, 0 ])
+                    SlideConnectorM(
+                        label_neck_x,
+                        label_neck_y,
+                        label_neck_z,
+                        label_connector_cap_width,
+                        label_connector_cap_width,
+                        label_connector_cap_width
+                        );
+        }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module screw_hole()
+module StandaloneDowelLabelHolder()
+{
+    // gripper
+    rotate([
+        90 + dowel_gripper_angle - dowel_gripper_angle_cutout / 2,
+        0,
+        0
+        ])
+        DowelGripper();
+
+    // label
+    translate([
+        -( label_x - label_neck_x ) / 2,
+        -dowel_r - bracket_dowel_gripper_r - label_y,
+        -label_z / 2
+        ])
+        rotate([ label_angle, 0, 0 ])
+            RoundedCubeAlt2( label_x, label_y, label_z, label_corner_radius );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module DowelGripper()
+{
+    rotate([ 0, 90, 0 ])
+    {
+        difference()
+        {
+            // outer cylinder
+            cylinder( r = gripper_outer_r, h = bracket_x );
+
+            // cut out the area to let the filamet slide past
+            translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                PieSlicePrism(
+                    width = gripper_outer_r * 2, // doubled just to make sure the cut out doesn't clip
+                    height = bracket_x + DIFFERENCE_CLEARANCE * 2,
+                    angle = dowel_gripper_angle_cutout
+                    );
+
+            difference()
+                translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder( r = dowel_r, h = bracket_x + DIFFERENCE_CLEARANCE * 2 );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ScrewHole()
 {
     translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
-        cylinder( r = screw_hole_r, h = bracket_back_plate_width );
+        cylinder( r = ScrewHole_r, h = bracket_back_plate_width );
 
     translate([ 0, 0, bracket_back_plate_width -bracket_back_plate_screw_inset_depth ])
         cylinder( r = screw_head_r, h = bracket_back_plate_screw_inset_depth + DIFFERENCE_CLEARANCE );
