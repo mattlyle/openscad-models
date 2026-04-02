@@ -154,6 +154,10 @@ else
 
 module RackPreview()
 {
+    bracket_no_holder_offset_x = -bracket_x;
+    bracket_with_holder_offset_x = 100;
+    holder_only_offset_x = 200;
+
     DowelPreview();
 
     translate([ 0, dowel_spacing_y, 0 ])
@@ -162,15 +166,20 @@ module RackPreview()
     translate([ 0, dowel_spacing_y / 2, filament_spool_offset_z ])
         FilamentSpoolPreview();
 
-    translate([ -bracket_x, 0, 0 ])
+    translate([ bracket_no_holder_offset_x, 0, 0 ])
+        FilamentSpoolBracket( false );
+
+    translate([ bracket_with_holder_offset_x, 0, 0 ])
         FilamentSpoolBracket( true );
 
-    translate([ -label_x / 2 + bracket_x + label_connector_cap_width + label_connector_cap_padding, -20, -label_connector_offset_z * 2 ])
+    translate([
+        bracket_with_holder_offset_x,
+        -20,
+        -label_connector_offset_z * 2 ])
         rotate([ label_angle, 0, 0 ])
             LabelHolder();
 
-    translate([ 150, 0, 0 ])
-    // translate([ -150, 0, 0 ])
+    translate([ holder_only_offset_x, 0, 0 ])
         StandaloneDowelLabelHolder();
 }
 
