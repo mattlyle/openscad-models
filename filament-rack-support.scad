@@ -83,7 +83,7 @@ dowel_gripper_angle = atan2( filament_spool_offset_z, dowel_spacing_y / 2 );
 // this is the angle where the bottom of the bracket intersects with the dowel gripper
 bottom_bracket_gripper_intercept_angle = 25; // TODO would be great to calculate this too
 
-ScrewHole_extra_z = ScrewHole_r * 4;
+screw_hole_extra_z = ScrewHole_r * 4;
 
 label_neck_x = bracket_x - label_connector_cap_width * 2;
 
@@ -117,7 +117,7 @@ else if( render_mode == "print-bracket-only" )
 else if( render_mode == "print-bracket-with-label-mount" )
 {
     translate([
-        bracket_bottom_z + ScrewHole_extra_z,
+        bracket_bottom_z + screw_hole_extra_z,
         dowel_r + bracket_dowel_gripper_r,
         bracket_x
         ])
@@ -333,19 +333,19 @@ module FilamentSpoolBracket( include_label_bracket )
         translate([
             0,
             dowel_spacing_y + bracket_offset_y - bracket_back_plate_width,
-            -bracket_bottom_z - ScrewHole_extra_z
+            -bracket_bottom_z - screw_hole_extra_z
             ])
             cube([
                 bracket_x,
                 bracket_back_plate_width,
-                bracket_top_z + bracket_bottom_z + ScrewHole_extra_z * 2
+                bracket_top_z + bracket_bottom_z + screw_hole_extra_z * 2
                 ]);
 
         // cut out the top screw
         translate([
             bracket_x / 2,
             dowel_spacing_y + bracket_offset_y,
-            bracket_top_z + ScrewHole_extra_z / 4
+            bracket_top_z + screw_hole_extra_z / 4
             ])
             rotate([ 90, 0, 0 ])
                 ScrewHole();
@@ -354,7 +354,7 @@ module FilamentSpoolBracket( include_label_bracket )
         translate([
             bracket_x / 2,
             dowel_spacing_y + bracket_offset_y,
-            -bracket_bottom_z - ScrewHole_extra_z / 4
+            -bracket_bottom_z - screw_hole_extra_z / 4
             ])
             rotate([ 90, 0, 0 ])
                 ScrewHole();
