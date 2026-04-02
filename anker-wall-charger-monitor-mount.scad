@@ -20,8 +20,7 @@ render_mode = "print-holder";
 
 cord_preview_length = 80;
 
-// lip_height = 2.0;
-lip_height = 12.0;
+lip_height = 2.0;
 holder_thickness = 2.0;
 padding = 0.8;
 
@@ -105,7 +104,7 @@ module WallChargerMonitorMount()
             holder_thickness + lip_height
             ])
             cube([
-                holder_thickness,
+                holder_thickness + DIFFERENCE_CLEARANCE,
                 anker_wall_charger_depth + padding * 2,
                 anker_wall_charger_height + padding * 2 - lip_height
                 ]);
@@ -117,7 +116,7 @@ module WallChargerMonitorMount()
             holder_thickness
             ])
             cube([
-                anker_wall_charger_width + padding * 2,
+                anker_wall_charger_width + padding * 2 + DIFFERENCE_CLEARANCE * 2,
                 anker_wall_charger_depth + padding * 2,
                 anker_wall_charger_height + padding * 2
                 ]);
