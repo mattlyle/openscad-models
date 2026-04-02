@@ -68,6 +68,8 @@ label_z = 25;
 label_connector_offset_z = 5;
 label_corner_radius = 0.75;
 
+rack_spacing_z = 260;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -93,28 +95,14 @@ span_angle = 2 * ( 90 - dowel_gripper_angle );
 
 if( render_mode == "preview" )
 {
-    DowelPreview();
-
-    translate([ 0, dowel_spacing_y, 0 ])
-        DowelPreview();
-
-    translate([ 0, dowel_spacing_y / 2, filament_spool_offset_z ])
-        FilamentSpoolPreview();
-
     // back wall preview
     % translate([ 0, dowel_spacing_y + bracket_offset_y, -filament_spool_r ])
         cube([ preview_x, 0.01, filament_spool_r * 4 ]);
 
-    translate([ -bracket_x, 0, 0 ])
-        FilamentSpoolBracket( true );
+    RackPreview();
 
-    translate([ -label_x / 2 + bracket_x + label_connector_cap_width + label_connector_cap_padding, -20, -label_connector_offset_z * 2 ])
-        rotate([ label_angle, 0, 0 ])
-            LabelHolder();
-
-    translate([ 150, 0, 0 ])
-    // translate([ -150, 0, 0 ])
-        StandaloneDowelLabelHolder();
+    translate([ 0, 0, rack_spacing_z ])
+        RackPreview();
 }
 else if( render_mode == "print-bracket-only" )
 {
@@ -161,6 +149,30 @@ else
     assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module RackPreview()
+{
+    DowelPreview();
+
+    translate([ 0, dowel_spacing_y, 0 ])
+        DowelPreview();
+
+    translate([ 0, dowel_spacing_y / 2, filament_spool_offset_z ])
+        FilamentSpoolPreview();
+
+    translate([ -bracket_x, 0, 0 ])
+        FilamentSpoolBracket( true );
+
+    translate([ -label_x / 2 + bracket_x + label_connector_cap_width + label_connector_cap_padding, -20, -label_connector_offset_z * 2 ])
+        rotate([ label_angle, 0, 0 ])
+            LabelHolder();
+
+    translate([ 150, 0, 0 ])
+    // translate([ -150, 0, 0 ])
+        StandaloneDowelLabelHolder();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
