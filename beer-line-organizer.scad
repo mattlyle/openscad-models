@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 include <modules/utils.scad>
+include <modules/rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -11,8 +12,8 @@ liquid_line_r = 11.8 / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print-holder";
+render_mode = "preview";
+// render_mode = "print-holder";
 
 holder_back_y = 3.0;
 holder_wraparound_y = 3.5;
@@ -31,6 +32,8 @@ cutouts = [
     ];
 
 separator_thickness = 2.0;
+
+corner_radius = 1.0;
 
 preview_line_length = 100.0;
 
@@ -89,7 +92,7 @@ module BeerLineHolder()
     difference()
     {
         translate([ 0, -holder_wraparound_y, 0 ])
-            cube([ holder_x, holder_y, holder_z ]);
+            RoundedCubeAlt2( holder_x, holder_y, holder_z, corner_radius, round_top = false, round_bottom = false );
 
         for( i = [ 0 : len( cutouts ) - 1 ] )
             translate([ offsets_x[ i ], 0, -preview_line_length / 3 ])
