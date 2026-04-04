@@ -2,6 +2,7 @@
 
 include <modules/utils.scad>
 include <modules/rounded-cube.scad>
+include <modules/pie-slice-prism.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -24,6 +25,9 @@ lip_height = 2.0;
 holder_thickness = 2.0;
 padding = 0.8;
 
+mount_pole_grip_thinkness = 1.8;
+gripper_cutout_angle = 125;
+
 corner_radius = 1.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +40,12 @@ $fn = $preview ? 128 : 256;
 
 if( render_mode == "preview" )
 {
-    MonitorMountPreview();
+    translate([
+        anker_wall_charger_width / 2,
+        anker_wall_charger_depth + holder_thickness * 2 + padding * 3 + monitor_mount_r,
+        0
+        ])
+        MonitorMountPreview();
 
     translate([ holder_thickness + padding, holder_thickness + padding, holder_thickness + padding ])
         WallChargerPreview();
@@ -57,7 +66,11 @@ else
 module WallChargerPreview()
 {
     // body
-    % cube([ anker_wall_charger_width, anker_wall_charger_depth, anker_wall_charger_height ]);
+    % cube([
+        anker_wall_charger_width,
+        anker_wall_charger_depth,
+        anker_wall_charger_height
+        ]);
 
     // input cord
     % translate([ anker_wall_charger_width, anker_wall_charger_depth / 2, anker_wall_charger_height / 2 ])
@@ -88,6 +101,7 @@ module MonitorMountPreview()
 
 module WallChargerMonitorMount()
 {
+    // holder
     difference()
     {
         RoundedCubeAlt2(
@@ -130,6 +144,69 @@ module WallChargerMonitorMount()
             rotate([ 0, 90, 0 ])
                 cylinder( r = anker_wall_charger_depth / 2 - holder_thickness, h = holder_thickness + DIFFERENCE_CLEARANCE * 2 );
     }
+
+    // mount grip
+    difference()
+    {
+        // gripper body
+        translate([
+            anker_wall_charger_width / 2,
+            anker_wall_charger_depth + holder_thickness * 2 + padding * 3 + monitor_mount_r,
+            0
+            ])
+            cylinder(
+                r = monitor_mount_r + mount_pole_grip_thinkness,
+                h = anker_wall_charger_height + holder_thickness * 2 + padding * 2
+                );
+
+        // remove the core
+        translate([
+            anker_wall_charger_width / 2,
+            anker_wall_charger_depth + holder_thickness * 2 + padding * 3 + monitor_mount_r,
+            -DIFFERENCE_CLEARANCE
+            ])
+            cylinder(
+                r = monitor_mount_r,
+                h = anker_wall_charger_height + holder_thickness * 2 + padding * 2 + DIFFERENCE_CLEARANCE * 2
+                );
+
+        // remove the gripper cutout
+        translate([
+            anker_wall_charger_width / 2,
+            anker_wall_charger_depth + holder_thickness * 2 + padding * 3 + monitor_mount_r,
+            -DIFFERENCE_CLEARANCE
+            ])
+            rotate([ 0, 0, 90 - gripper_cutout_angle / 2 ])
+                PieSlicePrism(
+                    width = monitor_mount_r + mount_pole_grip_thinkness + DIFFERENCE_CLEARANCE,
+                    height = anker_wall_charger_height + holder_thickness * 2 + padding * 2 + DIFFERENCE_CLEARANCE * 2,
+                    angle = gripper_cutout_angle
+                    );
+    }
+
+    points = [
+        [
+            anker_wall_charger_width / 2 + holder_thickness + padding - monitor_mount_r,
+            anker_wall_charger_depth + holder_thickness * 2 + padding * 2,
+            0
+            ],
+        [
+            anker_wall_charger_width / 2 + holder_thickness + padding,
+            anker_wall_charger_depth + holder_thickness * 2 + padding * 2 + monitor_mount_r,
+            0
+            ],
+        [
+            anker_wall_charger_width / 2 + holder_thickness + padding + monitor_mount_r,
+            anker_wall_charger_depth + holder_thickness * 2 + padding * 2,
+            0
+            ],
+        ];
+
+    for( point = points )
+    {
+        # translate( point )
+            sphere( r = 1 );
+   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
