@@ -6,19 +6,19 @@ include <modules/rounded-cube.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-gas_line_r = 15.3 / 2;
-liquid_line_r = 11.8 / 2;
+gas_line_r = 13.9 / 2;
+liquid_line_r = 11.9 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-render_mode = "preview";
-// render_mode = "print-holder";
+// render_mode = "preview";
+render_mode = "print-holder";
 
 holder_back_y = 3.0;
 holder_wraparound_y = 3.5;
 
-holder_z = 50;
+holder_z = 40;
 
 clearance = 0.4;
 
