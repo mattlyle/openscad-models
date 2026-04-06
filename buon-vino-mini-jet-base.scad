@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 include <modules/utils.scad>
-
+include <modules/rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -20,29 +20,25 @@ leg_z = 20;
 // render_mode = "preview";
 render_mode = "print-holder";
 
-leg_clearance_r = 2.0;
+leg_clearance_r = 1.0;
 
 pump_support_offset_x = 180;
 pump_support_size_x = 60;
-
 pump_support_offset_y = -66;
-pump_support_size_y = 110;
-
+pump_support_size_y = 111;
 pump_support_z = 20;
 
 filter_support_offset_x = 20;
-filter_support_size_x = 12;
-
+filter_support_size_x = 15;
 filter_support_offset_y = -35;
-filter_support_size_y = 75;
-
+filter_support_size_y = 77;
 filter_support_z = 38;
-filter_support_angle = 10;
+filter_support_angle = 5;
 
+base_extra = 8;
+base_rounding_r = 0.5;
 
-base_x = 0;
-base_y = 0;
-base_z = 0;
+base_z = 3;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -52,6 +48,12 @@ $fn = $preview ? 128 : 256;
 leg_a_coord = [ 0, 0, 0 ];
 leg_b_coord = [ leg_bc_x, leg_b_y, 0 ];
 leg_c_coord = [ leg_bc_x, leg_c_y, 0 ];
+
+base_offset_x = -leg_r - leg_clearance_r - base_extra;
+base_size_x = leg_bc_x + leg_r * 2 + leg_clearance_r * 2 + base_extra * 2;
+
+base_offset_y = leg_c_y - leg_r - leg_clearance_r - base_extra;
+base_size_y = leg_b_y - leg_c_y + leg_r * 2 + leg_clearance_r * 2 + base_extra * 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -92,43 +94,90 @@ module BuonVinoMiniJetBase()
     extra = 10;
     length_short = leg_r * 2 + ( leg_b_y - leg_c_y ) + extra;
     width = leg_r * 2 + extra;
-    z = 3;
 
     length_ab = sqrt( leg_bc_x * leg_bc_x + leg_b_y * leg_b_y ) + leg_r * 2 + extra;
     length_ac = sqrt( leg_bc_x * leg_bc_x + leg_c_y * leg_c_y ) + leg_r * 2 + extra;
     length_bc = leg_b_y - leg_c_y + leg_r * 2 + extra;
 
+    points = [
+        [
+            filter_support_offset_x,
+            filter_support_offset_y + filter_support_size_y / 2,
+            filter_support_z / 2
+            ],
+        [
+            pump_support_offset_x + pump_support_size_x,
+            pump_support_offset_y + pump_support_size_y / 2,
+            pump_support_z / 2
+            ],
+        [
+            base_offset_x + base_size_x,
+            base_offset_y + base_size_y,
+            base_z
+            ],
+        [
+            base_offset_x + base_size_x,
+            base_offset_y,
+            base_z
+            ],
+        [
+            base_offset_x,
+            base_offset_y,
+            base_z
+            ],
+        [
+            base_offset_x,
+            base_offset_y + base_size_y,
+            base_z
+            ],
+        ];
+
+    // for( point = points )
+    //     translate( point )
+    //         #sphere( r=1 );
+
     difference()
     {
         union()
         {
-            translate([ 0, 0, z ])
-            {
-                RotateFromPointAtoB( leg_a_coord, leg_b_coord )
-                    translate([ 0, -width / 2, -leg_r - extra / 2 ])
-                        cube([ z, width, length_ab ]);
+            // base bottom
+            translate([
+                base_offset_x - base_rounding_r / 2,
+                base_offset_y - base_rounding_r / 2,
+                0
+                ])
+                RoundedCubeAlt2(
+                    base_size_x + base_rounding_r,
+                    base_size_y + base_rounding_r,
+                    base_z,
+                    round_top = false,
+                    round_bottom = false,
+                    r = base_rounding_r
+                    );
 
-                RotateFromPointAtoB( leg_a_coord, leg_c_coord )
-                    translate([ 0, -width / 2, -leg_r - extra / 2 ])
-                        cube([ z, width, length_ac ]);
-
-                translate( leg_b_coord )
-                    RotateFromPointAtoB( leg_b_coord, leg_c_coord )
-                        translate([ 0, -width / 2, -leg_r - extra / 2 ])
-                            cube([ z, width, length_bc ]);
-            }
+            // sloped so liquid can drain off
+            polyhedron(
+                points = points,
+                faces = [
+                    [ 0, 5, 2, 1 ],
+                    [ 1, 2, 3 ],
+                    [ 0, 1, 3, 4 ],
+                    [ 0, 4, 5 ],
+                    [ 2, 5, 4, 3 ],
+                    ]);
         }
 
+        // remove the legs
         translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
         {
             translate( leg_a_coord )
-                cylinder( r = leg_r + leg_clearance_r, h = leg_z + DIFFERENCE_CLEARANCE * 2 );
+                cylinder( r = leg_r + leg_clearance_r, h = pump_support_z );
 
             translate( leg_b_coord )
-                cylinder( r = leg_r + leg_clearance_r, h = leg_z + DIFFERENCE_CLEARANCE * 2 );
+                cylinder( r = leg_r + leg_clearance_r, h = pump_support_z );
 
             translate( leg_c_coord )
-                cylinder( r = leg_r + leg_clearance_r, h = leg_z + DIFFERENCE_CLEARANCE * 2 );
+                cylinder( r = leg_r + leg_clearance_r, h = pump_support_z );
         }
     }
 
