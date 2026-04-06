@@ -2,6 +2,8 @@
 
 include <modules/utils.scad>
 include <modules/rounded-cube.scad>
+include <modules/rounded-cylinder.scad>
+include <modules/pie-slice-prism.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -14,11 +16,14 @@ leg_c_y = -54;
 
 leg_z = 20;
 
+pump_hose_r = 12.8 / 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print-holder";
+render_mode = "preview";
+// render_mode = "print-holder";
+// render_mode = "print-hose-support";
 
 leg_clearance_r = 1.0;
 
@@ -39,6 +44,14 @@ base_extra = 8;
 base_rounding_r = 0.5;
 
 base_z = 3;
+
+pump_hose_support_thickness = 2.4;
+pump_hose_support_x = 20;
+pump_hose_support_y = 15;
+pump_hose_support_front_z = 40;
+pump_hose_support_back_z = 15;
+pump_hose_support_gripper_angle = 60;
+pump_hose_support_rounding_r = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -63,27 +76,41 @@ if( render_mode == "preview" )
     PreviewBuonVino();
 
     BuonVinoMiniJetBase();
+
+    translate([ -100, 0, 0 ])
+    {
+        % translate([ 0, 0, -pump_hose_support_front_z / 2])
+            cylinder( r = pump_hose_r, h = pump_hose_support_front_z * 2 );
+
+        PumpHoseSupport();
+    }
 }
 else if( render_mode == "print-holder" )
 {
     BuonVinoMiniJetBase();
 }
+else if( render_mode == "print-hose-support" )
+{
+    translate([ 0, 0, pump_hose_support_front_z ])
+        rotate([ 180, 0, 0 ])
+            PumpHoseSupport();
+}
 else
 {
-    echo( str( "Invalid render mode: ", render_mode ) );
+    assert( false, str( "Invalid render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module PreviewBuonVino()
 {
-    translate( leg_a_coord )
+    # translate( leg_a_coord )
         cylinder( r = leg_r, h = leg_z );
 
-    translate( leg_b_coord )
+    # translate( leg_b_coord )
         cylinder( r = leg_r, h = leg_z );
 
-    translate( leg_c_coord )
+    # translate( leg_c_coord )
         cylinder( r = leg_r, h = leg_z );
 }
 
@@ -195,6 +222,75 @@ module BuonVinoMiniJetBase()
             rotate([ 0, filter_support_angle, 0 ])
                 cube([ filter_support_size_x + 10, filter_support_size_y + DIFFERENCE_CLEARANCE * 2, 10 ]);
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PumpHoseSupport()
+{
+    // gripper
+    difference()
+    {
+        RoundedCylinder(
+            r = pump_hose_r + pump_hose_support_thickness,
+            h = pump_hose_support_front_z,
+            rounding_r = pump_hose_support_rounding_r
+            );
+
+        // remove the core
+        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+            cylinder( r = pump_hose_r + DIFFERENCE_CLEARANCE, h = pump_hose_support_front_z + DIFFERENCE_CLEARANCE * 2 );
+
+        // remove the entrance
+        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+            rotate([ 0, 0, 270 - pump_hose_support_gripper_angle / 2 ])
+                PieSlicePrism(
+                    pump_hose_r + pump_hose_support_thickness + 1,
+                    pump_hose_support_front_z + DIFFERENCE_CLEARANCE * 2,
+                    pump_hose_support_gripper_angle
+                    );
+    }
+
+    // front
+    translate([
+        -pump_hose_support_x / 2,
+        pump_hose_r,
+        0
+        ])
+        RoundedCubeAlt2(
+            pump_hose_support_x,
+            pump_hose_support_thickness,
+            pump_hose_support_front_z,
+            pump_hose_support_rounding_r
+            );
+
+    // top
+    translate([
+        -pump_hose_support_x / 2,
+        pump_hose_r,
+        pump_hose_support_front_z - pump_hose_support_thickness
+        ])
+        RoundedCubeAlt2(
+            pump_hose_support_x,
+            pump_hose_support_y,
+            pump_hose_support_thickness,
+            pump_hose_support_rounding_r
+            );
+
+
+    // back
+    translate([
+        -pump_hose_support_x / 2,
+        pump_hose_r + pump_hose_support_y - pump_hose_support_thickness,
+        pump_hose_support_front_z - pump_hose_support_back_z
+        ])
+        RoundedCubeAlt2(
+            pump_hose_support_x,
+            pump_hose_support_thickness,
+            pump_hose_support_back_z,
+            pump_hose_support_rounding_r
+            );
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
