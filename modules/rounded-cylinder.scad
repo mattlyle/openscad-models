@@ -1,8 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module RoundedCylinder( h = 10.0, r = 5.0, rounding_r = 1.0, round_top = true, round_bottom = true, fn = $preview ? 32 : 64 )
+include <utils.scad>
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module RoundedCylinder(
+    h,
+    r,
+    rounding_r = 1.0,
+    round_top = true,
+    round_bottom = true
+    )
 {
-    // % cylinder( h = h, r = r, $fn = 64 );
 
     hull()
     {
@@ -11,12 +20,12 @@ module RoundedCylinder( h = 10.0, r = 5.0, rounding_r = 1.0, round_top = true, r
             translate([ 0, 0, h - rounding_r ])
                 rotate_extrude()
                     translate([ r - rounding_r, 0 ])
-                        circle( r = rounding_r, $fn = fn );
+                        circle( r = rounding_r );
         }
         else
         {
-            translate([ 0, 0, h - 0.01 ])
-                cylinder( r = r, h = 0.01, $fn = fn );
+            translate([ 0, 0, h - DIFFERENCE_CLEARANCE ])
+                cylinder( r = r, h = DIFFERENCE_CLEARANCE );
         }
 
         if( round_bottom )
@@ -24,11 +33,11 @@ module RoundedCylinder( h = 10.0, r = 5.0, rounding_r = 1.0, round_top = true, r
             translate([ 0, 0, rounding_r ])
                 rotate_extrude()
                     translate([ r - rounding_r, 0 ])
-                        circle( r = rounding_r, $fn = fn );
+                        circle( r = rounding_r );
         }
         else
         {
-            cylinder( r = r, h = 0.01, $fn = fn );
+            cylinder( r = r, h = DIFFERENCE_CLEARANCE );
         }
     }
 }
