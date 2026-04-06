@@ -8,7 +8,7 @@ include <modules/utils.scad>
 
 leg_r = 12 / 2;
 
-leg_bc_x = 259;
+leg_bc_x = 260;
 leg_b_y = 32;
 leg_c_y = -54;
 
@@ -19,6 +19,26 @@ leg_z = 20;
 
 // render_mode = "preview";
 render_mode = "print-holder";
+
+leg_clearance_r = 2.0;
+
+pump_support_offset_x = 180;
+pump_support_size_x = 60;
+
+pump_support_offset_y = -66;
+pump_support_size_y = 110;
+
+pump_support_z = 20;
+
+filter_support_offset_x = 20;
+filter_support_size_x = 12;
+
+filter_support_offset_y = -35;
+filter_support_size_y = 75;
+
+filter_support_z = 38;
+filter_support_angle = 10;
+
 
 base_x = 0;
 base_y = 0;
@@ -102,14 +122,29 @@ module BuonVinoMiniJetBase()
         translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
         {
             translate( leg_a_coord )
-                cylinder( r = leg_r, h = leg_z + DIFFERENCE_CLEARANCE * 2);
+                cylinder( r = leg_r + leg_clearance_r, h = leg_z + DIFFERENCE_CLEARANCE * 2 );
 
             translate( leg_b_coord )
-                cylinder( r = leg_r, h = leg_z + DIFFERENCE_CLEARANCE * 2);
+                cylinder( r = leg_r + leg_clearance_r, h = leg_z + DIFFERENCE_CLEARANCE * 2 );
 
             translate( leg_c_coord )
-                cylinder( r = leg_r, h = leg_z + DIFFERENCE_CLEARANCE * 2);
+                cylinder( r = leg_r + leg_clearance_r, h = leg_z + DIFFERENCE_CLEARANCE * 2 );
         }
+    }
+
+    // pump base
+    translate([ pump_support_offset_x, pump_support_offset_y, 0 ])
+        cube([ pump_support_size_x, pump_support_size_y, pump_support_z ]);
+
+    // filter base
+    difference()
+    {
+        translate([ filter_support_offset_x, filter_support_offset_y, 0 ])
+            cube([ filter_support_size_x, filter_support_size_y, filter_support_z ]);
+
+        translate([ filter_support_offset_x, filter_support_offset_y - DIFFERENCE_CLEARANCE, filter_support_z ])
+            rotate([ 0, filter_support_angle, 0 ])
+                cube([ filter_support_size_x + 10, filter_support_size_y + DIFFERENCE_CLEARANCE * 2, 10 ]);
     }
 }
 
