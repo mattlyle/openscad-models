@@ -31,16 +31,16 @@ pump_support_offset_x = 180;
 pump_support_size_x = 60;
 pump_support_offset_y = -66;
 pump_support_size_y = 111;
-pump_support_z = 20;
+pump_support_z = 22;
 
 filter_support_offset_x = 20;
 filter_support_size_x = 15;
 filter_support_offset_y = -35;
 filter_support_size_y = 77;
-filter_support_z = 38;
+filter_support_z = 40;
 filter_support_angle = 5;
 
-base_extra = 8;
+base_extra = 20;
 base_rounding_r = 0.5;
 
 base_z = 3;
