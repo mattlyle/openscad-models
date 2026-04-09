@@ -50,7 +50,7 @@ pump_hose_support_x = 20;
 pump_hose_support_y = 15;
 pump_hose_support_front_z = 40;
 pump_hose_support_back_z = 15;
-pump_hose_support_gripper_angle = 60;
+pump_hose_support_gripper_angle = 125;
 pump_hose_support_rounding_r = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
