@@ -33,7 +33,7 @@ overhand_slant_y_percent = 0.5;
 
 holder_connector_row_setups = [ [ 10, 9 ], [ 3, 2 ] ];
 
-rounding_r = 0.5;
+rounding_r = 0.7;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
