@@ -14,6 +14,10 @@ office_desk_powerstrip_z = 26.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
+// TODO: top rounded edge not printing well... probably too much of an overhang for the printer to handle? maybe just straight 45 degree angle without rounding would print better?
+// TODO: sides are too high... a power brick would not sit flat
+// TODO: maybe fix the overhangs in the corners?  but hard to print and likely not worth it since just under the desk
+
 render_mode = "preview";
 // render_mode = "print";
 
