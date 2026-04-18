@@ -10,7 +10,7 @@ multiboard_wall_width = 2.0;
 multiboard_screw_hole_radius = 3.0;
 multiboard_cell_corner_width = 14.0;
 multiboard_cell_height = 6.5;
-multiboard_corner_rounding_r = 1.0;
+default_multiboard_corner_rounding_r = 1.0;
 
 multiboard_connector_back_connector_clearance = 0.05;
 multiboard_connector_back_z = 6.5;
@@ -93,7 +93,7 @@ function MultiboardConnectorBackAltXOffset( size_x ) = ( size_x - floor( size_x 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBackAlt( size_x, size_y )
+module MultiboardConnectorBackAlt( size_x, size_y, rounding_r = default_multiboard_corner_rounding_r )
 {
     grid_cells_x = floor( size_x / multiboard_cell_size );
     grid_cells_y = floor( size_y / multiboard_cell_size );
@@ -109,7 +109,7 @@ module MultiboardConnectorBackAlt( size_x, size_y )
             size_x,
             size_y,
             multiboard_connector_back_z,
-            r = multiboard_corner_rounding_r,
+            r = rounding_r,
             round_top = false );
 
         // translate([ 0, 0, multiboard_connector_back_z ])
@@ -132,7 +132,7 @@ module MultiboardConnectorBackAlt( size_x, size_y )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
+module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup, rounding_r = default_multiboard_corner_rounding_r )
 {
     grid_cells_x = floor( size_x / multiboard_cell_size );
     grid_cells_y = floor( size_y / multiboard_cell_size );
@@ -170,7 +170,7 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
             size_x,
             size_y,
             multiboard_connector_back_z,
-            r = multiboard_corner_rounding_r,
+            r = rounding_r,
             round_top = false );
 
         // remove the cutouts

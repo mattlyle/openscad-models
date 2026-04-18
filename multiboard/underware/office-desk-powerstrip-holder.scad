@@ -79,7 +79,7 @@ else
 module OfficeDeskPowerStripHolder()
 {
     // back
-    MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups );
+    MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups, rounding_r );
 
     // left wall
     translate([ 0, 0, holder_z_offset ])
