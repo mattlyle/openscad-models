@@ -4,6 +4,7 @@ include <../../modules/utils.scad>
 include <../../modules/multiboard.scad>
 include <../../modules/rounded-cube.scad>
 include <../../modules/triangular-prism.scad>
+include <../../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -17,8 +18,8 @@ cord_r = 18.0 / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-render_mode = "preview";
-// render_mode = "print";
+// render_mode = "preview";
+render_mode = "print";
 
 wall_width = 2.2;
 wall_clearance = 0.2;
@@ -37,6 +38,12 @@ overhang_side_slant_y = 10;
 holder_connector_row_setups = [ [ 10, 9 ], [ 3, 2 ] ];
 
 rounding_r = 0.7;
+
+text_lines = [ "Office Desk", "Power Strip Holder" ];
+text_depth = 0.2;
+text_font_size = 20;
+text_font = "Liberation Sans:style=bold";
+text_fixed_line_spacing = 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -81,8 +88,26 @@ else
 
 module OfficeDeskPowerStripHolder()
 {
+    total_text_height = CalculateMultilineTextLabelTotalX( text_lines, text_font_size, text_font, text_fixed_line_spacing );
+
     // back
-    MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups, rounding_r );
+    difference()
+    {
+        MultiboardConnectorBackAlt2( holder_x, holder_y, holder_connector_row_setups, rounding_r );
+
+        translate([ holder_x / 2 + total_text_height / 2, 0, holder_z_offset - text_depth ])
+            rotate([ 0, 0, 90 ])
+                MultilineTextLabel(
+                    text_lines = text_lines,
+                    centered_in_area_x = holder_y,
+                    centered_in_area_y = -1,
+                    fixed_line_spacing = text_fixed_line_spacing,
+                    depth = text_depth + DIFFERENCE_CLEARANCE,
+                    font_size = text_font_size,
+                    font = text_font,
+                    color = undef
+                    );
+    }
 
     // left wall
     translate([ 0, 0, holder_z_offset ])
