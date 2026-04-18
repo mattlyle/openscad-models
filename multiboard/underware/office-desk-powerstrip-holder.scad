@@ -29,7 +29,7 @@ bottom_overhang_y = 50;
 top_overhang_x = 15;
 top_overhang_y = 40;
 
-holder_connector_row_setups = [ [ 2, 1 ] ];
+holder_connector_row_setups = [ [ 10, 9 ], [ 3, 2 ] ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
