@@ -52,6 +52,9 @@ function _GetListOfLineHeights( text_lines, font_size, font ) =
             textmetrics( text = line, size = font_size, font = font ).size[ 1 ]
         ];
 
+function CalculateMultilineTextLabelTotalX( text_lines, font_size, font, fixed_line_spacing ) =
+    sumList( _GetListOfLineHeights( text_lines, font_size, font ) ) + fixed_line_spacing * ( len( text_lines ) + 1 );
+
 module MultilineTextLabel(
     text_lines,
     centered_in_area_x,
