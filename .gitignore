@@ -1,5 +1,5 @@
 .idea/
-
+.worktrees/
 _renders/
 
 test.scad
