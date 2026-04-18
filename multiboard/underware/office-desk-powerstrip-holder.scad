@@ -18,8 +18,8 @@ cord_r = 18.0 / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print";
 
 wall_width = 2.2;
 wall_clearance = 0.2;
