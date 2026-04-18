@@ -24,10 +24,10 @@ bottom_ledge_z = 3;
 top_ledge_z = 1.5;
 
 bottom_overhang_x = 25;
-bottom_overhang_y = 50;
+bottom_overhang_y = 60;
 
 top_overhang_x = 15;
-top_overhang_y = 40;
+top_overhang_y = 50;
 
 overhand_slant_y_percent = 0.5;
 
