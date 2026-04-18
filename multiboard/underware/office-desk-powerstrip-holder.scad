@@ -93,13 +93,13 @@ module OfficeDeskPowerStripHolder()
         RoundedCubeAlt2( wall_width, holder_y, holder_wall_z, r = rounding_r, round_bottom = false, round_top = true );
 
     // bottom
-    // translate([ 0, 0, holder_z_offset ])
-    //     RoundedCubeAlt2( holder_x, wall_width, bottom_ledge_z, r = rounding_r, round_bottom = false, round_top = true );
+    translate([ 0, 0, holder_z_offset ])
+        RoundedCubeAlt2( holder_x, wall_width, bottom_ledge_z, r = rounding_r, round_bottom = false, round_top = true );
 
     // top
-    // translate([ holder_x - rounding_r, holder_y, holder_z_offset ])
-    //     rotate([ 180, 180, 0 ])
-    //         TriangularPrism( holder_x - rounding_r * 2, wall_width, top_ledge_z );
+    translate([ holder_x - rounding_r, holder_y, holder_z_offset ])
+        rotate([ 180, 180, 0 ])
+            TriangularPrism( holder_x - rounding_r * 2, wall_width, top_ledge_z );
 
     // overhangs
     translate([ 0, 0, holder_z_offset ])
