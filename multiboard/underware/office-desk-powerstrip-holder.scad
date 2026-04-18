@@ -12,6 +12,8 @@ office_desk_powerstrip_x = 102.3;
 office_desk_powerstrip_y = 266.0;
 office_desk_powerstrip_z = 26.3;
 
+cord_r = 18.0 / 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -24,7 +26,6 @@ render_mode = "preview";
 wall_width = 2.2;
 wall_clearance = 0.2;
 
-bottom_ledge_z = 3;
 top_ledge_z = 1.5;
 
 bottom_overhang_x = 25;
@@ -52,6 +53,8 @@ holder_wall_z = office_desk_powerstrip_z / 2;
 holder_z_offset = multiboard_connector_back_z;
 
 holder_overhang_offset_z = office_desk_powerstrip_z + wall_clearance;
+
+cord_cutout_r = cord_r + wall_clearance;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -93,8 +96,15 @@ module OfficeDeskPowerStripHolder()
         RoundedCubeAlt2( wall_width, holder_y, holder_wall_z, r = rounding_r, round_bottom = false, round_top = true );
 
     // bottom
-    translate([ 0, 0, holder_z_offset ])
-        RoundedCubeAlt2( holder_x, wall_width, bottom_ledge_z, r = rounding_r, round_bottom = false, round_top = true );
+    difference()
+    {
+        translate([ 0, 0, holder_z_offset ])
+            RoundedCubeAlt2( holder_x, wall_width, holder_wall_z, r = rounding_r, round_bottom = false, round_top = true );
+
+        translate([ holder_x / 2, -DIFFERENCE_CLEARANCE, holder_z_offset + office_desk_powerstrip_z / 2 ])
+            rotate([ -90, 0, 0 ])
+                cylinder( r = cord_cutout_r, h = wall_width + DIFFERENCE_CLEARANCE * 2 );
+    }
 
     // top
     translate([ holder_x - rounding_r, holder_y, holder_z_offset ])
