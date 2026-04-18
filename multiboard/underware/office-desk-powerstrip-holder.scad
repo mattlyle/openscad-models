@@ -17,9 +17,6 @@ cord_r = 18.0 / 2;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// TODO: maybe fix the overhangs in the corners?  but hard to print and likely not worth it since just under the desk
-// TODO: better bottom so I don't put it in backwards
-
 render_mode = "preview";
 // render_mode = "print";
 
