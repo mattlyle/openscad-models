@@ -3,6 +3,7 @@
 include <../../modules/utils.scad>
 include <../../modules/multiboard.scad>
 include <../../modules/rounded-cube.scad>
+include <../../modules/triangular-prism.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -14,7 +15,6 @@ office_desk_powerstrip_z = 26.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// TODO: top rounded edge not printing well... probably too much of an overhang for the printer to handle? maybe just straight 45 degree angle without rounding would print better?
 // TODO: sides are too high... a power brick would not sit flat
 // TODO: maybe fix the overhangs in the corners?  but hard to print and likely not worth it since just under the desk
 
@@ -94,8 +94,9 @@ module OfficeDeskPowerStripHolder()
         RoundedCubeAlt2( holder_x, wall_width, bottom_ledge_z, r = rounding_r, round_bottom = false, round_top = true );
 
     // top
-    translate([ 0, holder_y - wall_width, holder_z_offset ])
-        RoundedCubeAlt2( holder_x, wall_width, top_ledge_z, r = rounding_r, round_bottom = false, round_top = true );
+    translate([ holder_x - rounding_r, holder_y, holder_z_offset ])
+        rotate([ 180, 180, 0 ])
+            TriangularPrism( holder_x - rounding_r * 2, wall_width, top_ledge_z );
 
     // bottom-left overhang
     translate([ 0, 0, holder_z_offset + holder_z - wall_width ])
