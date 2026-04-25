@@ -22,7 +22,7 @@ cradle_riser_x = 10;
 cradle_riser_extra_y = 10;
 cradle_riser_extra_z = 10;
 
-cradle_clearance_r = 0.75;
+cradle_clearance_r = 0.3;
 
 cradle_rounding_r = 0.7;
 
