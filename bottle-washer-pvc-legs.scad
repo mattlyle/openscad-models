@@ -9,8 +9,8 @@ include <modules/utils.scad>
 pvc_r = 26.7 / 2;
 
 manifold_x = 570;
-manifold_spacing_ab_y = 120;
-manifold_spacing_bc_y = 120;
+manifold_spacing_ab_y = 105;
+manifold_spacing_bc_y = 105;
 manifold_z = 280;
 manifold_copper_tube_r = 6.5 / 2;
 manifold_copper_tube_a_z = 165;
