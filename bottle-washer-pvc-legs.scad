@@ -12,6 +12,11 @@ manifold_x = 570;
 manifold_spacing_ab_y = 120;
 manifold_spacing_bc_y = 120;
 manifold_z = 280;
+manifold_copper_tube_r = 6.5 / 2;
+manifold_copper_tube_a_z = 165;
+manifold_copper_tube_bc_z = 215;
+manifold_copper_tube_offset_x = 105;
+manifold_copper_tube_spacing_x = 115;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -55,19 +60,13 @@ if( render_mode == "preview" )
 {
     PVCCradle();
 
-    translate([ 100, 0, 0 ])
+    translate([ 150, 0, 0 ])
+        LegBracket();
+
+    translate([ 250, 0, 0 ])
     {
-        ManifoldPreview();
-
-        translate([ manifold_x, 0, 0 ])
-            LegPreviews();
-
-        translate([ manifold_x + pvc_r * 2, 0, 0 ])
-            LegBracket();
+        ManifoldPreview( false );
     }
-
-    // translate([ 200, 0, 0 ])
-    //     BuildHolderFramework();
 }
 else if( render_mode == "print-cradle" )
 {
@@ -123,44 +122,71 @@ module PVCCradle()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ManifoldPreview()
+module ManifoldPreview( use_z_preview = true )
 {
-    sphere(r=1);
+    preview_z = use_z_preview ? manifold_z : 0;
 
     // manifold a
-    % translate([ 0, manifold_spacing_ab_y + manifold_spacing_bc_y, manifold_z ])
+    % translate([ 0, manifold_spacing_ab_y + manifold_spacing_bc_y, preview_z ])
         rotate([ 0, 90, 0 ])
             cylinder( r = pvc_r, h = manifold_x );
 
     // manifold a
-    % translate([ 0, manifold_spacing_bc_y, manifold_z ])
+    % translate([ 0, manifold_spacing_bc_y, preview_z ])
         rotate([ 0, 90, 0 ])
             cylinder( r = pvc_r, h = manifold_x );
 
     // manifold c
-    % translate([ 0, 0, manifold_z ])
+    % translate([ 0, 0, preview_z ])
         rotate([ 0, 90, 0 ])
             cylinder( r = pvc_r, h = manifold_x );
 
     // left a-b
-    % translate([ 0, manifold_spacing_bc_y, manifold_z ])
+    % translate([ 0, manifold_spacing_bc_y, preview_z ])
         rotate([ -90, 0, 0 ])
             cylinder( r = pvc_r, h = manifold_spacing_bc_y );
 
     // left b-c
-    % translate([ 0, 0, manifold_z ])
+    % translate([ 0, 0, preview_z ])
         rotate([ -90, 0, 0 ])
             cylinder( r = pvc_r, h = manifold_spacing_bc_y );
 
     // right a-b
-    % translate([ manifold_x, manifold_spacing_bc_y, manifold_z ])
+    % translate([ manifold_x, manifold_spacing_bc_y, preview_z ])
         rotate([ -90, 0, 0 ])
             cylinder( r = pvc_r, h = manifold_spacing_bc_y );
 
     // right b-c
-    % translate([ manifold_x, 0, manifold_z ])
+    % translate([ manifold_x, 0, preview_z ])
         rotate([ -90, 0, 0 ])
             cylinder( r = pvc_r, h = manifold_spacing_bc_y );
+
+    // copper tubes
+    for( i = [ 0 : 3 ] )
+    {
+        // manifold a
+        % translate([
+            manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
+            manifold_spacing_ab_y + manifold_spacing_bc_y,
+            preview_z + pvc_r
+            ])
+            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_a_z );
+
+        // manifold b
+        % translate([
+            manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
+            manifold_spacing_bc_y,
+            preview_z + pvc_r
+            ])
+            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_bc_z );
+
+        % translate([
+            manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
+            0,
+            preview_z + pvc_r
+            ])
+            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_bc_z );
+    }
 }
 
 
@@ -174,7 +200,6 @@ module LegPreviews()
 
     % translate([ 0, manifold_spacing_bc_y / 2, 0 ])
         cylinder( r= pvc_r, h = manifold_z );
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
