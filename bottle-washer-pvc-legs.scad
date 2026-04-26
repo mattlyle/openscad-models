@@ -35,7 +35,7 @@ cradle_rounding_r = 0.7;
 
 leg_bracket_wall_r = 3;
 leg_bracket_z = 25;
-leg_bracket_bottom_clearance_r = 0.2;
+leg_bracket_bottom_clearance_r = 0.1;
 leg_bracket_top_clearance_r = 0.1;
 leg_bracket_joiner_z = 4; // the height between the bottom leg bracket and the top manifold bracket
 leg_bracket_top_z_percent = 0.75; // the percentage of the manifold bracket to wrap around
