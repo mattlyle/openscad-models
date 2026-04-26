@@ -78,8 +78,8 @@ bottle_holder_support_structure_wall_z = 100;
 bottle_holder_support_structure_leg_z = 40;
 bottle_holder_support_structure_grid_xy = 7;
 bottle_holder_support_structure_grid_z = 5;
-bottle_holder_support_structure_hexagons_r = 10;
-bottle_holder_support_structure_hexagons_spacing = 2;
+bottle_holder_support_structure_hexagons_r = 5;
+bottle_holder_support_structure_hexagons_spacing = 1.2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
