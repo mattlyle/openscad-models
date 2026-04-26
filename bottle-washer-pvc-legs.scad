@@ -9,8 +9,7 @@ include <modules/utils.scad>
 pvc_r = 26.7 / 2;
 
 manifold_x = 570;
-manifold_spacing_ab_y = 105;
-manifold_spacing_bc_y = 105;
+manifold_spacing_y = 105;
 manifold_z = 280;
 manifold_copper_tube_r = 6.5 / 2;
 manifold_copper_tube_a_z = 165;
@@ -72,6 +71,12 @@ leg_bracket_top_z_percent = 0.75; // the percentage of the manifold bracket to w
 
 bottle_manifold_spacing_z = 20; // this is the vertical spacing off the manifold we want the bottle to sit
 
+bottle_holder_support_structure_leg_extra_y = 4;
+bottle_holder_support_structure_leg_clearance_r = 0.5;
+bottle_holder_support_structure_leg_z = 140;
+bottle_holder_support_structure_grid_xy = 7;
+bottle_holder_support_structure_grid_z = 5;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -79,6 +84,22 @@ $fn = $preview ? 64 : 128;
 
 cradle_riser_y = cradle_riser_extra_y + pvc_r * 2 + cradle_clearance_r * 2;
 cradle_riser_z = cradle_riser_extra_z + pvc_r;
+
+bottle_holder_support_structure_leg_y = pvc_r * 2 + bottle_holder_support_structure_leg_extra_y;
+
+bottle_holder_support_structure_grid_x = manifold_copper_tube_spacing_x;
+bottle_holder_support_structure_grid_y = manifold_spacing_y;
+
+bottle_holder_support_structure_x = bottle_holder_support_structure_grid_x * 2;
+bottle_holder_support_structure_y = bottle_holder_support_structure_grid_y * 3;
+echo( str( ">>> Support Structure X: ", bottle_holder_support_structure_x ) );
+echo( str( ">>> Support Structure Y: ", bottle_holder_support_structure_y ) );
+assert( bottle_holder_support_structure_x <= 320, "Bottle holder support structure X is too wide to fit on a 320mm print bed" );
+assert( bottle_holder_support_structure_y <= 320, "Bottle holder support structure Y is too deep to fit on a 320mm print bed" );
+
+bottle_holder_support_structure_z = bottle_holder_support_structure_leg_z + bottle_holder_support_structure_grid_z;
+
+bottle_holder_support_structure_leg_x = bottle_holder_support_structure_grid_xy;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -105,7 +126,16 @@ if( render_mode == "preview" )
     translate([ 250, 0, 0 ])
     {
         ManifoldPreview( false );
+
+        translate([ manifold_copper_tube_offset_x - bottle_holder_support_structure_grid_x / 2, 0, 0 ])
+            BottleHolderSupportStructure();
+
+        translate([ manifold_copper_tube_offset_x + bottle_holder_support_structure_grid_x * 1.5 + 0.75, 0, 0 ])
+            BottleHolderSupportStructure();
     }
+
+    translate([ -250, 0, 0 ])
+        BottleHolderSupportStructure();
 }
 else if( render_mode == "print-cradle" )
 {
@@ -114,6 +144,12 @@ else if( render_mode == "print-cradle" )
 else if( render_mode == "print-leg-bracket" )
 {
     LegBracket();
+}
+else if( render_mode == "print-bottle-holder-support-structure" )
+{
+    translate([ bottle_holder_support_structure_x, bottle_holder_support_structure_grid_y / 2, bottle_holder_support_structure_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructure();
 }
 else
 {
@@ -166,12 +202,12 @@ module ManifoldPreview( use_z_preview = true )
     preview_z = use_z_preview ? manifold_z : 0;
 
     // manifold a
-    % translate([ 0, manifold_spacing_ab_y + manifold_spacing_bc_y, preview_z ])
+    % translate([ 0, manifold_spacing_y * 2, preview_z ])
         rotate([ 0, 90, 0 ])
             cylinder( r = pvc_r, h = manifold_x );
 
     // manifold a
-    % translate([ 0, manifold_spacing_bc_y, preview_z ])
+    % translate([ 0, manifold_spacing_y, preview_z ])
         rotate([ 0, 90, 0 ])
             cylinder( r = pvc_r, h = manifold_x );
 
@@ -181,24 +217,24 @@ module ManifoldPreview( use_z_preview = true )
             cylinder( r = pvc_r, h = manifold_x );
 
     // left a-b
-    % translate([ 0, manifold_spacing_bc_y, preview_z ])
+    % translate([ 0, manifold_spacing_y, preview_z ])
         rotate([ -90, 0, 0 ])
-            cylinder( r = pvc_r, h = manifold_spacing_bc_y );
+        cylinder( r = pvc_r, h = manifold_spacing_y );
 
     // left b-c
     % translate([ 0, 0, preview_z ])
         rotate([ -90, 0, 0 ])
-            cylinder( r = pvc_r, h = manifold_spacing_bc_y );
+            cylinder( r = pvc_r, h = manifold_spacing_y );
 
     // right a-b
-    % translate([ manifold_x, manifold_spacing_bc_y, preview_z ])
+    % translate([ manifold_x, manifold_spacing_y, preview_z ])
         rotate([ -90, 0, 0 ])
-            cylinder( r = pvc_r, h = manifold_spacing_bc_y );
+            cylinder( r = pvc_r, h = manifold_spacing_y );
 
     // right b-c
     % translate([ manifold_x, 0, preview_z ])
         rotate([ -90, 0, 0 ])
-            cylinder( r = pvc_r, h = manifold_spacing_bc_y );
+            cylinder( r = pvc_r, h = manifold_spacing_y );
 
     // copper tubes
     for( i = [ 0 : 3 ] )
@@ -206,7 +242,7 @@ module ManifoldPreview( use_z_preview = true )
         // manifold a
         % translate([
             manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
-            manifold_spacing_ab_y + manifold_spacing_bc_y,
+            manifold_spacing_y * 2,
             preview_z + pvc_r
             ])
             cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_a_z );
@@ -214,7 +250,7 @@ module ManifoldPreview( use_z_preview = true )
         // manifold b
         % translate([
             manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
-            manifold_spacing_bc_y,
+            manifold_spacing_y,
             preview_z + pvc_r
             ])
             cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_bc_z );
@@ -234,7 +270,7 @@ module ManifoldPreview( use_z_preview = true )
         // manifold a
         % translate([
             manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
-            manifold_spacing_ab_y + manifold_spacing_bc_y,
+            manifold_spacing_y * 2,
             preview_z + pvc_r + bottle_manifold_spacing_z
             ])
             BottlePreview( jar_small_sizes, false );
@@ -242,7 +278,7 @@ module ManifoldPreview( use_z_preview = true )
         // manifold b
         % translate([
             manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
-            manifold_spacing_bc_y,
+            manifold_spacing_y,
             preview_z + pvc_r + bottle_manifold_spacing_z
             ])
             BottlePreview( jar_medium_sizes, false );
@@ -262,11 +298,11 @@ module ManifoldPreview( use_z_preview = true )
 module LegPreviews()
 {
     // far leg
-    % translate([ 0, manifold_spacing_bc_y + manifold_spacing_ab_y / 2, 0 ])
-        cylinder( r= pvc_r, h = manifold_z );
+    % translate([ 0, manifold_spacing_y * 3 / 2, 0 ])
+        cylinder( r = pvc_r, h = manifold_z );
 
-    % translate([ 0, manifold_spacing_bc_y / 2, 0 ])
-        cylinder( r= pvc_r, h = manifold_z );
+    % translate([ 0, manifold_spacing_y / 2, 0 ])
+        cylinder( r = pvc_r, h = manifold_z );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,7 +351,77 @@ module LegBracket()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module BottleHolderSupportStructure()
+{
+
+    for( i = [ 0 : 2 ] )
+    {
+        // left leg
+        translate([ 0, bottle_holder_support_structure_grid_y * i, 0 ])
+            _BottleHolderSupportStructureLeg( false );
+
+        // middle leg
+        translate([ bottle_holder_support_structure_grid_x - bottle_holder_support_structure_leg_x, bottle_holder_support_structure_grid_y * i, 0 ])
+            _BottleHolderSupportStructureLeg( true );
+
+        // right leg
+        translate([ bottle_holder_support_structure_grid_x * 2 - bottle_holder_support_structure_leg_x, bottle_holder_support_structure_grid_y * i, 0 ])
+            _BottleHolderSupportStructureLeg( false );
+    }
+
+    for( x_i = [ 0 : 1 ] )
+        for( y_i = [ 0 : 2 ] )
+            translate([
+                x_i * bottle_holder_support_structure_grid_x,
+                y_i * bottle_holder_support_structure_grid_y - bottle_holder_support_structure_grid_y / 2,
+                bottle_holder_support_structure_leg_z
+                ])
+                difference()
+                {
+                    cube([
+                        bottle_holder_support_structure_grid_x,
+                        bottle_holder_support_structure_grid_y,
+                        bottle_holder_support_structure_grid_z
+                        ]);
+
+                    translate([
+                        bottle_holder_support_structure_grid_xy,
+                        bottle_holder_support_structure_grid_xy,
+                        -DIFFERENCE_CLEARANCE
+                        ])
+                        cube([
+                            bottle_holder_support_structure_grid_x - bottle_holder_support_structure_grid_xy * 2,
+                            bottle_holder_support_structure_grid_y - bottle_holder_support_structure_grid_xy * 2,
+                            bottle_holder_support_structure_grid_z + DIFFERENCE_CLEARANCE * 2
+                            ]);
+                }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _BottleHolderSupportStructureLeg( is_center )
+{
+    leg_x = is_center
+        ? bottle_holder_support_structure_grid_xy * 2
+        : bottle_holder_support_structure_grid_xy;
+
+    difference()
+    {
+        translate([ 0, -bottle_holder_support_structure_leg_y / 2, 0 ])
+            cube([
+                leg_x,
+                bottle_holder_support_structure_leg_y,
+                bottle_holder_support_structure_leg_z
+                ]);
+
+        translate([ -DIFFERENCE_CLEARANCE, 0, 0 ])
+            rotate([ 0, 90, 0 ])
+                cylinder(
+                    r = pvc_r + bottle_holder_support_structure_leg_clearance_r,
+                    h = leg_x + DIFFERENCE_CLEARANCE * 2
+                    );
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
