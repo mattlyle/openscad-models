@@ -376,25 +376,7 @@ module BottleHolderSupportStructure()
                 y_i * bottle_holder_support_structure_grid_y - bottle_holder_support_structure_grid_y / 2,
                 bottle_holder_support_structure_leg_z
                 ])
-                difference()
-                {
-                    cube([
-                        bottle_holder_support_structure_grid_x,
-                        bottle_holder_support_structure_grid_y,
-                        bottle_holder_support_structure_grid_z
-                        ]);
-
-                    translate([
-                        bottle_holder_support_structure_grid_xy,
-                        bottle_holder_support_structure_grid_xy,
-                        -DIFFERENCE_CLEARANCE
-                        ])
-                        cube([
-                            bottle_holder_support_structure_grid_x - bottle_holder_support_structure_grid_xy * 2,
-                            bottle_holder_support_structure_grid_y - bottle_holder_support_structure_grid_xy * 2,
-                            bottle_holder_support_structure_grid_z + DIFFERENCE_CLEARANCE * 2
-                            ]);
-                }
+                _BottleHolderSupportStructureCell();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,6 +406,30 @@ module _BottleHolderSupportStructureLeg( is_center )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _BottleHolderSupportStructureCell()
+{
+    // grid cell frame
+    difference()
+    {
+        cube([
+            bottle_holder_support_structure_grid_x,
+            bottle_holder_support_structure_grid_y,
+            bottle_holder_support_structure_grid_z
+            ]);
+
+        translate([
+            bottle_holder_support_structure_grid_xy,
+            bottle_holder_support_structure_grid_xy,
+            -DIFFERENCE_CLEARANCE
+            ])
+            cube([
+                bottle_holder_support_structure_grid_x - bottle_holder_support_structure_grid_xy * 2,
+                bottle_holder_support_structure_grid_y - bottle_holder_support_structure_grid_xy * 2,
+                bottle_holder_support_structure_grid_z + DIFFERENCE_CLEARANCE * 2
+                ]);
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
