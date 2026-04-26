@@ -1,4 +1,6 @@
-use <../../3rd-party/MCAD/regular_shapes.scad>
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+include <utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -25,7 +27,59 @@ function CalculateHexagonOffsetY( row, r, spacing ) =
 
 module Hexagon( r, z )
 {
-    hexagon_prism( radius = CalculateHexagonR( r ), height = z );
+    cylinder( r = CalculateHexagonR( r ), h = z, $fn = 6 );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module HexagonCube(
+    x,
+    y,
+    z,
+    r,
+    spacing = 1,
+    left_edge = 0,
+    right_edge = 0,
+    top_edge = 0,
+    bottom_edge = 0
+    )
+{
+    union()
+    {
+        difference()
+        {
+            cube([ x, y, z ]);
+
+            for ( row = [ -1 : y / ( r + spacing ) ] )
+                for ( col = [ -1 : x / ( r + spacing ) / 2 ] )
+                    translate( [
+                        CalculateHexagonOffsetX( row, col, r, spacing ),
+                        CalculateHexagonOffsetY( row, r, spacing ),
+                        -DIFFERENCE_CLEARANCE
+                        ] )
+                        Hexagon( r, z + DIFFERENCE_CLEARANCE * 2 );
+        }
+
+        // add left edge
+        if( left_edge > 0 )
+            translate([ 0, 0, 0 ])
+                cube([ left_edge, y, z ]);
+
+        // add right edge
+        if( right_edge > 0 )
+            translate([ x - right_edge, 0, 0 ])
+                cube([ right_edge, y, z ]);
+
+        // add bottom edge
+        if( bottom_edge > 0 )
+            translate([ 0, 0, 0 ])
+                cube([ x, bottom_edge, z ]);
+
+        // add top edge
+        if( top_edge > 0 )
+            translate([ 0, y - top_edge, 0 ])
+                cube([ x, top_edge, z ]);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
