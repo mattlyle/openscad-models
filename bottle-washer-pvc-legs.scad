@@ -18,6 +18,31 @@ manifold_copper_tube_bc_z = 215;
 manifold_copper_tube_offset_x = 105;
 manifold_copper_tube_spacing_x = 115;
 
+jar_small_sizes = [ // coords are [ r, z ]
+    [ 73.7 / 2, 0 ],
+    [ 73.7 / 2, 110 ],
+    [ 43.6 / 2, 130 ],
+    [ 28.0 / 2, 190 ],
+    [ 28.0 / 2, 220 ],
+    ];
+
+jar_medium_sizes = [ // coords are [ r, z ]
+    [ 86.8 / 2, 0 ],
+    [ 86.8 / 2, 185 ],
+    [ 61.0 / 2, 210 ],
+    [ 53.5 / 2, 230 ],
+    [ 29.6 / 2, 250 ],
+    [ 29.6 / 2, 295 ],
+    ];
+
+jar_large_sizes = [ // coords are [ r, z ]
+    [ 92.3 / 2, 0 ],
+    [ 92.3 / 2, 140 ],
+    [ 56.0 / 2, 170 ],
+    [ 27.4 / 2, 250 ],
+    [ 27.4 / 2, 280  ],
+    ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -45,6 +70,8 @@ leg_bracket_top_clearance_r = 0.1;
 leg_bracket_joiner_z = 4; // the height between the bottom leg bracket and the top manifold bracket
 leg_bracket_top_z_percent = 0.75; // the percentage of the manifold bracket to wrap around
 
+bottle_manifold_spacing_z = 20; // this is the vertical spacing off the manifold we want the bottle to sit
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -52,6 +79,18 @@ $fn = $preview ? 64 : 128;
 
 cradle_riser_y = cradle_riser_extra_y + pvc_r * 2 + cradle_clearance_r * 2;
 cradle_riser_z = cradle_riser_extra_z + pvc_r;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// functions
+
+function GenerateBottlePolygonPoints( measurements ) = [
+    [ 0, 0 ],
+    for( i = [ 0 : len( measurements ) - 1 ] )
+        [ measurements[ i ][ 0 ], measurements[ i ][ 1 ] ],
+    [ 0, measurements[ len( measurements ) - 1 ][ 1 ] ]
+    ];
+
+function GetBottleHeight( measurements ) = measurements[ len( measurements ) - 1 ][ 1 ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -180,6 +219,7 @@ module ManifoldPreview( use_z_preview = true )
             ])
             cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_bc_z );
 
+        // manifold c
         % translate([
             manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
             0,
@@ -187,8 +227,35 @@ module ManifoldPreview( use_z_preview = true )
             ])
             cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_bc_z );
     }
-}
 
+    // bottles
+    for( i = [ 0 : 3 ] )
+    {
+        // manifold a
+        % translate([
+            manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
+            manifold_spacing_ab_y + manifold_spacing_bc_y,
+            preview_z + pvc_r + bottle_manifold_spacing_z
+            ])
+            BottlePreview( jar_small_sizes, false );
+
+        // manifold b
+        % translate([
+            manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
+            manifold_spacing_bc_y,
+            preview_z + pvc_r + bottle_manifold_spacing_z
+            ])
+            BottlePreview( jar_medium_sizes, false );
+
+        // manifold c
+        % translate([
+            manifold_copper_tube_offset_x + i * manifold_copper_tube_spacing_x,
+            0,
+            preview_z + pvc_r + bottle_manifold_spacing_z
+            ])
+            BottlePreview( jar_large_sizes, false );
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -200,6 +267,16 @@ module LegPreviews()
 
     % translate([ 0, manifold_spacing_bc_y / 2, 0 ])
         cylinder( r= pvc_r, h = manifold_z );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BottlePreview( measurements, inverted = true )
+{
+    translate([ 0, 0, inverted ? 0 : GetBottleHeight( measurements ) ])
+        rotate([ inverted ? 0 : 180, 0, 0 ])
+            rotate_extrude()
+                polygon( points = GenerateBottlePolygonPoints( measurements ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
