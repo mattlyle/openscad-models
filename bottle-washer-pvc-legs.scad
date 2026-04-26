@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 include <modules/rounded-cube.scad>
+include <modules/hexagons.scad>
 include <modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +49,7 @@ jar_large_sizes = [ // coords are [ r, z ]
 render_mode = "preview";
 // render_mode = "print-cradle";
 // render_mode = "print-leg-bracket";
-// render_mode = "print-bottle-holder-framework";
+// render_mode = "print-bottle-holder-support-structure";
 // render_mode = "print-bottle-holder-inset-small";
 // render_mode = "print-bottle-holder-inset-medium";
 // render_mode = "print-bottle-holder-inset-large";
@@ -73,9 +74,12 @@ bottle_manifold_spacing_z = 20; // this is the vertical spacing off the manifold
 
 bottle_holder_support_structure_leg_extra_y = 4;
 bottle_holder_support_structure_leg_clearance_r = 0.5;
-bottle_holder_support_structure_leg_z = 140;
+bottle_holder_support_structure_wall_z = 100;
+bottle_holder_support_structure_leg_z = 40;
 bottle_holder_support_structure_grid_xy = 7;
 bottle_holder_support_structure_grid_z = 5;
+bottle_holder_support_structure_hexagons_r = 10;
+bottle_holder_support_structure_hexagons_spacing = 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -97,7 +101,7 @@ echo( str( ">>> Support Structure Y: ", bottle_holder_support_structure_y ) );
 assert( bottle_holder_support_structure_x <= 320, "Bottle holder support structure X is too wide to fit on a 320mm print bed" );
 assert( bottle_holder_support_structure_y <= 320, "Bottle holder support structure Y is too deep to fit on a 320mm print bed" );
 
-bottle_holder_support_structure_z = bottle_holder_support_structure_leg_z + bottle_holder_support_structure_grid_z;
+bottle_holder_support_structure_z = bottle_holder_support_structure_leg_z + bottle_holder_support_structure_wall_z + bottle_holder_support_structure_grid_z;
 
 bottle_holder_support_structure_leg_x = bottle_holder_support_structure_grid_xy;
 
@@ -369,12 +373,103 @@ module BottleHolderSupportStructure()
             _BottleHolderSupportStructureLeg( false );
     }
 
+    // near wall
+    translate([
+        0,
+        -bottle_holder_support_structure_grid_y / 2 + bottle_holder_support_structure_grid_xy,
+        bottle_holder_support_structure_leg_z
+        ])
+        rotate([ 90, 0, 0 ])
+            HexagonCube(
+                bottle_holder_support_structure_x,
+                bottle_holder_support_structure_wall_z,
+                bottle_holder_support_structure_grid_xy,
+                bottle_holder_support_structure_hexagons_r,
+                spacing = bottle_holder_support_structure_hexagons_spacing,
+                left_edge = bottle_holder_support_structure_grid_xy,
+                right_edge = bottle_holder_support_structure_grid_xy,
+                bottom_edge = bottle_holder_support_structure_grid_xy,
+                );
+
+    // far wall
+    translate([
+        0,
+        bottle_holder_support_structure_grid_y * 2 + bottle_holder_support_structure_grid_y / 2,
+        bottle_holder_support_structure_leg_z
+        ])
+        rotate([ 90, 0, 0 ])
+            HexagonCube(
+                bottle_holder_support_structure_x,
+                bottle_holder_support_structure_wall_z,
+                bottle_holder_support_structure_grid_xy,
+                bottle_holder_support_structure_hexagons_r,
+                spacing = bottle_holder_support_structure_hexagons_spacing,
+                left_edge = bottle_holder_support_structure_grid_xy,
+                right_edge = bottle_holder_support_structure_grid_xy,
+                bottom_edge = bottle_holder_support_structure_grid_xy
+                );
+
+    // left wall
+    translate([
+        0,
+        -bottle_holder_support_structure_grid_y / 2,
+        bottle_holder_support_structure_leg_z
+        ])
+        rotate([ 90, 0, 90 ])
+            HexagonCube(
+                bottle_holder_support_structure_y,
+                bottle_holder_support_structure_wall_z,
+                bottle_holder_support_structure_grid_xy,
+                bottle_holder_support_structure_hexagons_r,
+                spacing = bottle_holder_support_structure_hexagons_spacing,
+                left_edge = bottle_holder_support_structure_grid_xy,
+                right_edge = bottle_holder_support_structure_grid_xy,
+                bottom_edge = bottle_holder_support_structure_grid_xy
+                );
+
+    // center wall
+    translate([
+        bottle_holder_support_structure_grid_x - bottle_holder_support_structure_grid_xy,
+        -bottle_holder_support_structure_grid_y / 2,
+        bottle_holder_support_structure_leg_z
+        ])
+        rotate([ 90, 0, 90 ])
+            HexagonCube(
+                bottle_holder_support_structure_y,
+                bottle_holder_support_structure_wall_z,
+                bottle_holder_support_structure_grid_xy * 2,
+                bottle_holder_support_structure_hexagons_r,
+                spacing = bottle_holder_support_structure_hexagons_spacing,
+                left_edge = bottle_holder_support_structure_grid_xy,
+                right_edge = bottle_holder_support_structure_grid_xy,
+                bottom_edge = bottle_holder_support_structure_grid_xy
+                );
+
+    // right wall
+    translate([
+        bottle_holder_support_structure_grid_x * 2 - bottle_holder_support_structure_grid_xy,
+        -bottle_holder_support_structure_grid_y / 2,
+        bottle_holder_support_structure_leg_z
+        ])
+        rotate([ 90, 0, 90 ])
+            HexagonCube(
+                bottle_holder_support_structure_y,
+                bottle_holder_support_structure_wall_z,
+                bottle_holder_support_structure_grid_xy,
+                bottle_holder_support_structure_hexagons_r,
+                spacing = bottle_holder_support_structure_hexagons_spacing,
+                left_edge = bottle_holder_support_structure_grid_xy,
+                right_edge = bottle_holder_support_structure_grid_xy,
+                bottom_edge = bottle_holder_support_structure_grid_xy
+                );
+
+    // cells
     for( x_i = [ 0 : 1 ] )
         for( y_i = [ 0 : 2 ] )
             translate([
                 x_i * bottle_holder_support_structure_grid_x,
                 y_i * bottle_holder_support_structure_grid_y - bottle_holder_support_structure_grid_y / 2,
-                bottle_holder_support_structure_leg_z
+                bottle_holder_support_structure_z - bottle_holder_support_structure_grid_z
                 ])
                 _BottleHolderSupportStructureCell();
 }
