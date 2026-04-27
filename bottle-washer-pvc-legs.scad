@@ -88,6 +88,7 @@ bottle_holder_support_structure_hexagons_spacing = 1.2;
 bottle_holder_support_structure_insert_top_clearance_xy = 0.5;
 bottle_holder_support_structure_insert_bottom_clearance_xy = 0.3;
 bottle_holder_support_structure_insert_cutout_scale_factor = 1.04;
+bottle_holder_support_structure_insert_min_throat_r = 55 / 2; // this to to allow the swing caps to pass through
 
 // [ cone_top_r, cone_bottom_r, cone_z ]
 bottle_holder_support_structure_insert_cone_small_config = [ 40, 25, 19 ];
@@ -644,6 +645,17 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, show_previ
                 1.0
                 ])
                 BottlePreview( measurements, false );
+
+        // cut out the min throat to make sure the swing caps can fit through
+        #translate([
+            insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            -cone_z - bottle_holder_support_structure_grid_z - DIFFERENCE_CLEARANCE
+            ])
+            cylinder(
+                r = bottle_holder_support_structure_insert_min_throat_r,
+                h = cone_z + bottle_holder_support_structure_grid_z * 2 + DIFFERENCE_CLEARANCE * 2
+                );
     }
 
     if( show_preview )
