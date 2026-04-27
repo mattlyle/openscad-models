@@ -46,13 +46,17 @@ jar_large_sizes = [ // coords are [ r, z ]
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
+// TODO: the manifolds are in the opposite order in the preview... small in near and large is far
+// TODO: manifold copper tubes are wrong, short are on C
+// TODO: fix the support leg cutouts
+
 render_mode = "preview";
 // render_mode = "print-cradle";
 // render_mode = "print-leg-bracket";
 // render_mode = "print-bottle-holder-support-structure";
-// render_mode = "print-bottle-holder-inset-small";
-// render_mode = "print-bottle-holder-inset-medium";
-// render_mode = "print-bottle-holder-inset-large";
+// render_mode = "print-bottle-holder-insert-small";
+// render_mode = "print-bottle-holder-insert-medium";
+// render_mode = "print-bottle-holder-insert-large";
 
 cradle_base_x = 60;
 cradle_base_y = 60;
@@ -80,6 +84,17 @@ bottle_holder_support_structure_grid_xy = 7;
 bottle_holder_support_structure_grid_z = 5;
 bottle_holder_support_structure_hexagons_r = 5;
 bottle_holder_support_structure_hexagons_spacing = 1.2;
+
+bottle_holder_support_structure_insert_top_clearance_xy = 0.5;
+bottle_holder_support_structure_insert_bottom_clearance_xy = 0.3;
+bottle_holder_support_structure_insert_cutout_scale_factor = 1.04;
+
+// [ cone_top_r, cone_bottom_r, cone_z ]
+bottle_holder_support_structure_insert_cone_small_config = [ 40, 25, 19 ];
+bottle_holder_support_structure_insert_cone_medium_config = [ 45, 33, 30 ];
+bottle_holder_support_structure_insert_cone_large_config = [ 35, 28, 15 ];
+
+bottle_holder_support_structure_insert_preview_offset_z = 6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -138,8 +153,34 @@ if( render_mode == "preview" )
             BottleHolderSupportStructure();
     }
 
-    translate([ -250, 0, 0 ])
+    translate([ 900, 0, 0 ])
+    {
         BottleHolderSupportStructure();
+
+        // manifold A
+        translate([
+            0,
+            bottle_holder_support_structure_grid_y * 3 / 2,
+            bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
+            ])
+            BottleHolderSupportStructureInsert( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config );
+
+        // manifold B
+        translate([
+            bottle_holder_support_structure_grid_x,
+            bottle_holder_support_structure_grid_y / 2,
+            bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
+            ])
+            BottleHolderSupportStructureInsert( jar_medium_sizes, bottle_holder_support_structure_insert_cone_medium_config );
+
+        // manifold C
+        translate([
+            0,
+            -bottle_holder_support_structure_grid_y / 2,
+            bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
+            ])
+            BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config );
+    }
 }
 else if( render_mode == "print-cradle" )
 {
@@ -154,6 +195,24 @@ else if( render_mode == "print-bottle-holder-support-structure" )
     translate([ bottle_holder_support_structure_x, bottle_holder_support_structure_grid_y / 2, bottle_holder_support_structure_z ])
         rotate([ 0, 180, 0 ])
             BottleHolderSupportStructure();
+}
+else if( render_mode == "print-bottle-holder-insert-small" )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsert( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, false );
+}
+else if( render_mode == "print-bottle-holder-insert-medium" )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsert( jar_medium_sizes, bottle_holder_support_structure_insert_cone_medium_config, false );
+}
+else if( render_mode == "print-bottle-holder-insert-large" )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, false );
 }
 else
 {
@@ -528,6 +587,72 @@ module _BottleHolderSupportStructureCell()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+module BottleHolderSupportStructureInsert( measurements, cone_config, show_preview = true )
+{
+    cone_top_r = cone_config[ 0 ];
+    cone_bottom_r = cone_config[ 1 ];
+    cone_z = cone_config[ 2 ];
+
+    insert_x = bottle_holder_support_structure_grid_x - bottle_holder_support_structure_insert_top_clearance_xy * 2;
+    insert_y = bottle_holder_support_structure_grid_y - bottle_holder_support_structure_insert_top_clearance_xy * 2;
+
+    difference()
+    {
+        union()
+        {
+            // top outer cube
+            cube([
+                insert_x,
+                insert_y,
+                bottle_holder_support_structure_grid_z
+                ]);
+
+            // bottom inner cube
+            translate([
+                bottle_holder_support_structure_grid_xy + bottle_holder_support_structure_insert_bottom_clearance_xy,
+                bottle_holder_support_structure_grid_xy + bottle_holder_support_structure_insert_bottom_clearance_xy,
+                -bottle_holder_support_structure_grid_z
+                ])
+                cube([
+                    bottle_holder_support_structure_grid_x - bottle_holder_support_structure_grid_xy * 2 - bottle_holder_support_structure_insert_bottom_clearance_xy * 2,
+                    bottle_holder_support_structure_grid_y - bottle_holder_support_structure_grid_xy * 2 - bottle_holder_support_structure_insert_bottom_clearance_xy * 2,
+                    bottle_holder_support_structure_grid_z
+                    ]);
+
+            // lower support cone
+            translate([
+                insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+                insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+                -cone_z - bottle_holder_support_structure_grid_z
+                ])
+                cylinder(
+                    r1 = cone_bottom_r,
+                    r2 = cone_top_r,
+                    h = cone_z
+                    );
+        }
+
+        // cut out the bottle shape
+        translate([
+            insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            -bottle_holder_support_structure_z + pvc_r + bottle_manifold_spacing_z
+            ])
+            scale([
+                bottle_holder_support_structure_insert_cutout_scale_factor,
+                bottle_holder_support_structure_insert_cutout_scale_factor,
+                1.0
+                ])
+                BottlePreview( measurements, false );
+    }
+
+    if( show_preview )
+        % translate([
+            insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            -bottle_holder_support_structure_z + pvc_r + bottle_manifold_spacing_z
+            ])
+            BottlePreview( measurements, false );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
