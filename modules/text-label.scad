@@ -1,16 +1,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function GetTextMetrics( text_string, font_size, font ) = textmetrics( text = text_string, size = font_size, font = font );
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module TextLabel(
     text_string,
     depth = 0.5,
     font_size,
     font = "Liberation Sans",
-    color = undef
+    color = undef,
+    halign = "left",
+    valign = "baseline"
     )
 {
     color( color )
         linear_extrude( depth )
-            text( text_string, size = font_size, font = font );
+            text( text_string, size = font_size, font = font, halign = halign, valign = valign );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
