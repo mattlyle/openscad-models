@@ -425,7 +425,7 @@ module LegBracket()
 module BottleHolderSupportStructure()
 {
 
-    for( i = [ 0 : 2 ] )
+    for( i = [ 0 : 2 : 2 ] )
     {
         // left leg
         translate([ 0, bottle_holder_support_structure_grid_y * i, 0 ])
