@@ -55,6 +55,7 @@ render_mode = "preview";
 // render_mode = "print-cradle";
 // render_mode = "print-leg-bracket";
 // render_mode = "print-bottle-holder-support-structure";
+// render_mode = "print-bottle-holder-support-structure-leg-test";
 // render_mode = "print-bottle-holder-insert-small";
 // render_mode = "print-bottle-holder-insert-medium";
 // render_mode = "print-bottle-holder-insert-large";
@@ -78,7 +79,7 @@ leg_bracket_top_z_percent = 0.75; // the percentage of the manifold bracket to w
 bottle_manifold_spacing_z = 20; // this is the vertical spacing off the manifold we want the bottle to sit
 
 bottle_holder_support_structure_leg_extra_y = 4;
-bottle_holder_support_structure_leg_clearance_r = 0.5;
+bottle_holder_support_structure_leg_scale_y = 1.2;
 bottle_holder_support_structure_wall_z = 100;
 bottle_holder_support_structure_leg_z = 40;
 bottle_holder_support_structure_grid_xy = 7;
@@ -221,6 +222,29 @@ else if( render_mode == "print-bottle-holder-insert-large" )
     translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
         rotate([ 0, 180, 0 ])
             BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, [ "Large", "Blue" ], false );
+}
+else if( render_mode == "print-bottle-holder-support-structure-leg-test" )
+{
+    translate([ 0, 0, -bottle_holder_support_structure_wall_z - bottle_holder_support_structure_grid_z + bottle_holder_support_structure_grid_xy ])
+    {
+        difference()
+        {
+            translate([ bottle_holder_support_structure_x, bottle_holder_support_structure_grid_y / 2, bottle_holder_support_structure_z ])
+                rotate([ 0, 180, 0 ])
+                    BottleHolderSupportStructure();
+
+            translate([
+                -DIFFERENCE_CLEARANCE,
+                -DIFFERENCE_CLEARANCE,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cube([
+                    bottle_holder_support_structure_x + DIFFERENCE_CLEARANCE * 2,
+                    bottle_holder_support_structure_y + DIFFERENCE_CLEARANCE * 2,
+                    bottle_holder_support_structure_z - bottle_holder_support_structure_leg_z - bottle_holder_support_structure_grid_xy + DIFFERENCE_CLEARANCE * 2
+                ]);
+        }
+    }
 }
 else
 {
@@ -560,8 +584,9 @@ module _BottleHolderSupportStructureLeg( is_center )
 
         translate([ -DIFFERENCE_CLEARANCE, 0, 0 ])
             rotate([ 0, 90, 0 ])
+                scale([ 1.0, bottle_holder_support_structure_leg_scale_y, 1.0 ])
                 cylinder(
-                    r = pvc_r + bottle_holder_support_structure_leg_clearance_r,
+                    r = pvc_r,
                     h = leg_x + DIFFERENCE_CLEARANCE * 2
                     );
     }
