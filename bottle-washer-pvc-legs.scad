@@ -11,7 +11,7 @@ include <modules/utils.scad>
 pvc_r = 26.7 / 2;
 
 manifold_x = 570;
-manifold_spacing_y = 105;
+manifold_spacing_y = 106.6;
 manifold_z = 280;
 manifold_copper_tube_r = 6.5 / 2;
 manifold_copper_tube_a_z = 165;
@@ -50,6 +50,7 @@ jar_large_sizes = [ // coords are [ r, z ]
 // TODO: the manifolds are in the opposite order in the preview... small in near and large is far
 // TODO: manifold copper tubes are wrong, short are on C
 // TODO: fix the support leg cutouts
+// TODO: move the position of the legs to be properly centered on the manifonld without changing the grid size
 
 render_mode = "preview";
 // render_mode = "print-cradle";
