@@ -14,8 +14,8 @@ manifold_x = 570;
 manifold_spacing_y = 105;
 manifold_z = 280;
 manifold_copper_tube_r = 6.5 / 2;
-manifold_copper_tube_a_z = 165;
-manifold_copper_tube_bc_z = 215;
+manifold_copper_tube_ab_z = 215;
+manifold_copper_tube_c_z = 165;
 manifold_copper_tube_offset_x = 105;
 manifold_copper_tube_spacing_x = 115;
 manifold_leg_spacing_y = 224;
@@ -49,7 +49,6 @@ jar_large_sizes = [ // coords are [ r, z ]
 // settings
 
 // TODO: the manifolds are in the opposite order in the preview... small in near and large is far
-// TODO: manifold copper tubes are wrong, short are on C
 
 render_mode = "preview";
 // render_mode = "print-cradle";
@@ -385,7 +384,7 @@ module ManifoldPreview( use_z_preview = true )
             manifold_spacing_y * 2,
             preview_z + pvc_r
             ])
-            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_a_z );
+            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_ab_z );
 
         // manifold b
         % translate([
@@ -393,7 +392,7 @@ module ManifoldPreview( use_z_preview = true )
             manifold_spacing_y,
             preview_z + pvc_r
             ])
-            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_bc_z );
+            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_ab_z );
 
         // manifold c
         % translate([
@@ -401,7 +400,7 @@ module ManifoldPreview( use_z_preview = true )
             0,
             preview_z + pvc_r
             ])
-            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_bc_z );
+            cylinder( r = manifold_copper_tube_r, h = manifold_copper_tube_c_z );
     }
 
     // bottles
