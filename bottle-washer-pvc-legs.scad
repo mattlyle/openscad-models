@@ -48,8 +48,6 @@ jar_large_sizes = [ // coords are [ r, z ]
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// TODO: the manifolds are in the opposite order in the preview... small in near and large is far
-
 render_mode = "preview";
 // render_mode = "print-cradle";
 // render_mode = "print-leg-bracket";
@@ -183,7 +181,7 @@ if( render_mode == "preview" )
             bottle_holder_support_structure_grid_y * 3 / 2,
             bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
             ])
-            BottleHolderSupportStructureInsert( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, bottle_holder_support_structure_insert_label_lines_small );
+            BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, bottle_holder_support_structure_insert_label_lines_large );
 
         // manifold B
         translate([
@@ -199,7 +197,7 @@ if( render_mode == "preview" )
             -bottle_holder_support_structure_grid_y / 2,
             bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
             ])
-            BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, bottle_holder_support_structure_insert_label_lines_large );
+            BottleHolderSupportStructureInsert( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, bottle_holder_support_structure_insert_label_lines_small );
     }
 }
 else if( render_mode == "print-cradle" )
@@ -412,7 +410,7 @@ module ManifoldPreview( use_z_preview = true )
             manifold_spacing_y * 2,
             preview_z + pvc_r + bottle_manifold_spacing_z
             ])
-            BottlePreview( jar_small_sizes, false );
+            BottlePreview( jar_large_sizes, false );
 
         // manifold b
         % translate([
@@ -428,7 +426,7 @@ module ManifoldPreview( use_z_preview = true )
             0,
             preview_z + pvc_r + bottle_manifold_spacing_z
             ])
-            BottlePreview( jar_large_sizes, false );
+            BottlePreview( jar_small_sizes, false );
     }
 }
 
@@ -803,7 +801,6 @@ module BottleHolderSupportStructureInsertText( label_lines )
             color = undef,
             halign = "right"
             );
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
