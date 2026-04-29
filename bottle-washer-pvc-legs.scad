@@ -11,13 +11,14 @@ include <modules/utils.scad>
 pvc_r = 26.7 / 2;
 
 manifold_x = 570;
-manifold_spacing_y = 106.6;
+manifold_spacing_y = 105;
 manifold_z = 280;
 manifold_copper_tube_r = 6.5 / 2;
 manifold_copper_tube_a_z = 165;
 manifold_copper_tube_bc_z = 215;
 manifold_copper_tube_offset_x = 105;
 manifold_copper_tube_spacing_x = 115;
+manifold_leg_spacing_y = 220;
 
 jar_small_sizes = [ // coords are [ r, z ]
     [ 73.7 / 2, 0 ],
@@ -80,7 +81,7 @@ leg_bracket_top_z_percent = 0.75; // the percentage of the manifold bracket to w
 bottle_manifold_spacing_z = 20; // this is the vertical spacing off the manifold we want the bottle to sit
 
 bottle_holder_support_structure_leg_extra_y = 4;
-bottle_holder_support_structure_leg_scale_y = 1.2;
+bottle_holder_support_structure_leg_scale_y = 1.1;
 bottle_holder_support_structure_wall_z = 100;
 bottle_holder_support_structure_leg_z = 40;
 bottle_holder_support_structure_grid_xy = 7;
@@ -449,19 +450,18 @@ module LegBracket()
 
 module BottleHolderSupportStructure()
 {
-
-    for( i = [ 0 : 2 : 2 ] )
+    for( y = [ 0 , manifold_leg_spacing_y ] )
     {
         // left leg
-        translate([ 0, bottle_holder_support_structure_grid_y * i, 0 ])
+        translate([ 0, y, 0 ])
             _BottleHolderSupportStructureLeg( false );
 
         // middle leg
-        translate([ bottle_holder_support_structure_grid_x - bottle_holder_support_structure_leg_x, bottle_holder_support_structure_grid_y * i, 0 ])
+        translate([ bottle_holder_support_structure_grid_x - bottle_holder_support_structure_leg_x, y, 0 ])
             _BottleHolderSupportStructureLeg( true );
 
         // right leg
-        translate([ bottle_holder_support_structure_grid_x * 2 - bottle_holder_support_structure_leg_x, bottle_holder_support_structure_grid_y * i, 0 ])
+        translate([ bottle_holder_support_structure_grid_x * 2 - bottle_holder_support_structure_leg_x, y, 0 ])
             _BottleHolderSupportStructureLeg( false );
     }
 
