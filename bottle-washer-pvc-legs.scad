@@ -765,8 +765,8 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, label_line
 
     if( show_preview )
         % translate([
-            insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
-            insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            bottle_holder_support_structure_insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            bottle_holder_support_structure_insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
             -bottle_holder_support_structure_z + pvc_r + bottle_manifold_spacing_z
             ])
             BottlePreview( measurements, false );
