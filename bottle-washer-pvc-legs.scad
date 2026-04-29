@@ -57,8 +57,11 @@ render_mode = "preview";
 // render_mode = "print-bottle-holder-support-structure";
 // render_mode = "print-bottle-holder-support-structure-leg-test";
 // render_mode = "print-bottle-holder-insert-small";
+// render_mode = "print-bottle-holder-insert-small-text";
 // render_mode = "print-bottle-holder-insert-medium";
+// render_mode = "print-bottle-holder-insert-medium-text";
 // render_mode = "print-bottle-holder-insert-large";
+// render_mode = "print-bottle-holder-insert-large-text";
 
 cradle_base_x = 60;
 cradle_base_y = 60;
@@ -89,7 +92,7 @@ bottle_holder_support_structure_hexagons_spacing = 1.2;
 
 bottle_holder_support_structure_insert_top_clearance_xy = 0.4;
 bottle_holder_support_structure_insert_bottom_clearance_xy = 0.2;
-bottle_holder_support_structure_insert_cutout_scale_factor = 1.04;
+bottle_holder_support_structure_insert_cutout_scale_factor = 1.02;
 bottle_holder_support_structure_insert_min_throat_r = 55 / 2; // this to to allow the swing caps to pass through
 
 // [ cone_top_r, cone_bottom_r, cone_z ]
@@ -102,6 +105,9 @@ bottle_holder_support_structure_insert_label_font = "Liberation Sans:style=bold"
 bottle_holder_support_structure_insert_label_font_size = 6;
 bottle_holder_support_structure_insert_label_offset_x = 2;
 bottle_holder_support_structure_insert_label_offset_y = 2.5;
+bottle_holder_support_structure_insert_label_lines_small = [ "Small", "Clear" ];
+bottle_holder_support_structure_insert_label_lines_medium = [ "Medium", "Brown" ];
+bottle_holder_support_structure_insert_label_lines_large = [ "Large", "Blue" ];
 
 bottle_holder_support_structure_insert_preview_offset_z = 6;
 
@@ -127,9 +133,13 @@ assert( bottle_holder_support_structure_y <= 320, "Bottle holder support structu
 
 bottle_holder_support_structure_z = bottle_holder_support_structure_leg_z + bottle_holder_support_structure_wall_z + bottle_holder_support_structure_grid_z;
 
+bottle_holder_support_structure_insert_x = bottle_holder_support_structure_grid_x - bottle_holder_support_structure_insert_top_clearance_xy * 2;
+bottle_holder_support_structure_insert_y = bottle_holder_support_structure_grid_y - bottle_holder_support_structure_insert_top_clearance_xy * 2;
+
 bottle_holder_support_structure_leg_x = bottle_holder_support_structure_grid_xy;
 bottle_holder_support_structure_leg_near_y = ( manifold_spacing_y * 2 - manifold_leg_spacing_y ) / 2;
 bottle_holder_support_structure_leg_far_y = bottle_holder_support_structure_leg_near_y + manifold_leg_spacing_y;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -174,7 +184,7 @@ if( render_mode == "preview" )
             bottle_holder_support_structure_grid_y * 3 / 2,
             bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
             ])
-            BottleHolderSupportStructureInsert( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, [ "Small", "Clear" ] );
+            BottleHolderSupportStructureInsert( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, bottle_holder_support_structure_insert_label_lines_small );
 
         // manifold B
         translate([
@@ -182,7 +192,7 @@ if( render_mode == "preview" )
             bottle_holder_support_structure_grid_y / 2,
             bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
             ])
-            BottleHolderSupportStructureInsert( jar_medium_sizes, bottle_holder_support_structure_insert_cone_medium_config, [ "Medium", "Brown" ] );
+            BottleHolderSupportStructureInsert( jar_medium_sizes, bottle_holder_support_structure_insert_cone_medium_config, bottle_holder_support_structure_insert_label_lines_medium );
 
         // manifold C
         translate([
@@ -190,7 +200,7 @@ if( render_mode == "preview" )
             -bottle_holder_support_structure_grid_y / 2,
             bottle_holder_support_structure_z + bottle_holder_support_structure_insert_preview_offset_z
             ])
-            BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, [ "Large", "Blue" ] );
+            BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, bottle_holder_support_structure_insert_label_lines_large );
     }
 }
 else if( render_mode == "print-cradle" )
@@ -211,19 +221,52 @@ else if( render_mode == "print-bottle-holder-insert-small" )
 {
     translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
         rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsert( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, [ "Small", "Clear" ], false );
+            BottleHolderSupportStructureInsert(
+                jar_small_sizes,
+                bottle_holder_support_structure_insert_cone_small_config,
+                bottle_holder_support_structure_insert_label_lines_small,
+                false
+                );
+}
+else if( render_mode == "print-bottle-holder-insert-small-text" )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsertText( bottle_holder_support_structure_insert_label_lines_small );
 }
 else if( render_mode == "print-bottle-holder-insert-medium" )
 {
     translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
         rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsert( jar_medium_sizes, bottle_holder_support_structure_insert_cone_medium_config, [ "Medium", "Brown" ], false );
+            BottleHolderSupportStructureInsert(
+                jar_medium_sizes,
+                bottle_holder_support_structure_insert_cone_medium_config,
+                bottle_holder_support_structure_insert_label_lines_medium,
+                false
+                );
+}
+else if( render_mode == "print-bottle-holder-insert-medium-text" )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsertText( bottle_holder_support_structure_insert_label_lines_medium );
 }
 else if( render_mode == "print-bottle-holder-insert-large" )
 {
     translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
         rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsert( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, [ "Large", "Blue" ], false );
+            BottleHolderSupportStructureInsert(
+                jar_large_sizes,
+                bottle_holder_support_structure_insert_cone_large_config,
+                bottle_holder_support_structure_insert_label_lines_large,
+                false
+                );
+}
+else if( render_mode == "print-bottle-holder-insert-large-text" )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsertText( bottle_holder_support_structure_insert_label_lines_large );
 }
 else if( render_mode == "print-bottle-holder-support-structure-leg-test" )
 {
@@ -630,17 +673,14 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, label_line
     cone_bottom_r = cone_config[ 1 ];
     cone_z = cone_config[ 2 ];
 
-    insert_x = bottle_holder_support_structure_grid_x - bottle_holder_support_structure_insert_top_clearance_xy * 2;
-    insert_y = bottle_holder_support_structure_grid_y - bottle_holder_support_structure_insert_top_clearance_xy * 2;
-
     difference()
     {
         union()
         {
             // top outer cube
             cube([
-                insert_x,
-                insert_y,
+                bottle_holder_support_structure_insert_x,
+                bottle_holder_support_structure_insert_y,
                 bottle_holder_support_structure_grid_z
                 ]);
 
@@ -658,8 +698,8 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, label_line
 
             // lower support cone
             translate([
-                insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
-                insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+                bottle_holder_support_structure_insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+                bottle_holder_support_structure_insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
                 -cone_z - bottle_holder_support_structure_grid_z
                 ])
                 cylinder(
@@ -671,8 +711,8 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, label_line
 
         // cut out the bottle shape
         translate([
-            insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
-            insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            bottle_holder_support_structure_insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            bottle_holder_support_structure_insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
             -bottle_holder_support_structure_z + pvc_r + bottle_manifold_spacing_z
             ])
             scale([
@@ -684,8 +724,8 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, label_line
 
         // cut out the min throat to make sure the swing caps can fit through
         translate([
-            insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
-            insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            bottle_holder_support_structure_insert_x / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
+            bottle_holder_support_structure_insert_y / 2 + bottle_holder_support_structure_insert_top_clearance_xy,
             -cone_z - bottle_holder_support_structure_grid_z - DIFFERENCE_CLEARANCE
             ])
             cylinder(
@@ -709,7 +749,7 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, label_line
 
         // right label
         translate([
-            insert_x - bottle_holder_support_structure_insert_label_offset_x,
+            bottle_holder_support_structure_insert_x - bottle_holder_support_structure_insert_label_offset_x,
             bottle_holder_support_structure_insert_label_offset_y,
             bottle_holder_support_structure_grid_z - bottle_holder_support_structure_insert_label_depth,
             ])
@@ -730,6 +770,41 @@ module BottleHolderSupportStructureInsert( measurements, cone_config, label_line
             -bottle_holder_support_structure_z + pvc_r + bottle_manifold_spacing_z
             ])
             BottlePreview( measurements, false );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module BottleHolderSupportStructureInsertText( label_lines )
+{
+    // left label
+    translate([
+        bottle_holder_support_structure_insert_label_offset_x,
+        bottle_holder_support_structure_insert_label_offset_y,
+        bottle_holder_support_structure_grid_z - bottle_holder_support_structure_insert_label_depth,
+        ])
+        TextLabel(
+            label_lines[ 0 ],
+            depth = bottle_holder_support_structure_insert_label_depth + DIFFERENCE_CLEARANCE,
+            bottle_holder_support_structure_insert_label_font_size,
+            bottle_holder_support_structure_insert_label_font,
+            color = undef
+            );
+
+    // right label
+    translate([
+        bottle_holder_support_structure_insert_x - bottle_holder_support_structure_insert_label_offset_x,
+        bottle_holder_support_structure_insert_label_offset_y,
+        bottle_holder_support_structure_grid_z - bottle_holder_support_structure_insert_label_depth,
+        ])
+        TextLabel(
+            label_lines[ 1 ],
+            depth = bottle_holder_support_structure_insert_label_depth + DIFFERENCE_CLEARANCE,
+            bottle_holder_support_structure_insert_label_font_size,
+            bottle_holder_support_structure_insert_label_font,
+            color = undef,
+            halign = "right"
+            );
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
