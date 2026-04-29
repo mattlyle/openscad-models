@@ -50,8 +50,6 @@ jar_large_sizes = [ // coords are [ r, z ]
 
 // TODO: the manifolds are in the opposite order in the preview... small in near and large is far
 // TODO: manifold copper tubes are wrong, short are on C
-// TODO: fix the support leg cutouts
-// TODO: move the position of the legs to be properly centered on the manifonld without changing the grid size
 
 render_mode = "preview";
 // render_mode = "print-cradle";
@@ -130,6 +128,8 @@ assert( bottle_holder_support_structure_y <= 320, "Bottle holder support structu
 bottle_holder_support_structure_z = bottle_holder_support_structure_leg_z + bottle_holder_support_structure_wall_z + bottle_holder_support_structure_grid_z;
 
 bottle_holder_support_structure_leg_x = bottle_holder_support_structure_grid_xy;
+bottle_holder_support_structure_leg_near_y = ( manifold_spacing_y * 2 - manifold_leg_spacing_y ) / 2;
+bottle_holder_support_structure_leg_far_y = bottle_holder_support_structure_leg_near_y + manifold_leg_spacing_y;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -450,7 +450,7 @@ module LegBracket()
 
 module BottleHolderSupportStructure()
 {
-    for( y = [ 0 , manifold_leg_spacing_y ] )
+    for( y = [ bottle_holder_support_structure_leg_near_y, bottle_holder_support_structure_leg_far_y ] )
     {
         // left leg
         translate([ 0, y, 0 ])
