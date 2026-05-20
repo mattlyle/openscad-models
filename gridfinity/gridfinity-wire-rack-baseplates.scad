@@ -6,23 +6,23 @@ include <../modules/utils.scad>
 // measurements
 
 wire_diameter = 3.2;
-wire_spacing = 23.0;        // center-to-center spacing between wires
+wire_spacing = 23.0 - wire_diameter;        // center-to-center spacing between wires
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // only choose one
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print";
 
-cells_x = 5;
+cells_x = 6;
 cells_y = 1;
 
 // how many cells to the left this tile is offset from the start of the shelf,
 // so wire cutouts stay aligned when placing multiple tiles side by side
 offset_cells_x = 0;
 
-wire_cutout_extra = 0.4;        // extra clearance around wire in cutout slot
+wire_cutout_extra = 0.1;        // extra clearance around wire in cutout slot
 wire_floor_extra = 0.25;        // material thickness left below the wire
 
 // the offset for the first wire
@@ -67,6 +67,11 @@ if( render_mode == "preview" )
     WirePreviews();
 
     WireRackGridfinityBaseplate();
+
+    # translate([ first_wire_offset_x - wire_diameter / 2, -10, 0 ])
+        cube([ 23.0, 5, 2 ]);
+    # translate([ first_wire_offset_x - wire_diameter / 2, -15, 0 ])
+        cube([ 42.8, 5, 2 ]);
 }
 else if( render_mode == "print" )
 {
