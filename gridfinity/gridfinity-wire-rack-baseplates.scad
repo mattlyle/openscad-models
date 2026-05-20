@@ -6,7 +6,7 @@ include <../modules/utils.scad>
 // measurements
 
 wire_diameter = 3.2;
-wire_spacing = 23.0 - wire_diameter;
+wire_spacing = 23.1 - wire_diameter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -26,7 +26,7 @@ wire_cutout_extra = 0.1;        // extra clearance around wire in cutout slot
 wire_floor_extra = 0.25;        // material thickness left below the wire
 
 // the offset for the first wire
-first_wire_offset_x = -10;
+first_wire_offset_x = -12;
 
 rounding_r = 4;
 
