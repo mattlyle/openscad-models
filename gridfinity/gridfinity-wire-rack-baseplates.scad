@@ -58,7 +58,8 @@ base_height = cutout_diagonal + wire_floor_extra;
 num_wires = ceil( ( total_size_x + offset_size_x ) / wire_spacing ) + 1;
 
 // how far the wire previews extend past the tile edges in Y
-wire_preview_extend = 10;
+wire_preview_extend_bottom = 40;
+wire_preview_extend_top = 10;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -73,10 +74,18 @@ if( render_mode == "preview" )
 
     WireRackGridfinityBaseplate();
 
-    # translate([ first_wire_offset_x - wire_diameter / 2, -10, 0 ])
-        cube([ 23.0, 5, 2 ]);
-    # translate([ first_wire_offset_x - wire_diameter / 2, -15, 0 ])
-        cube([ 42.8, 5, 2 ]);
+    # translate([ CalculateWireX( 1 ) - wire_diameter / 2, -10, 0 ])
+        cube([ 23.0, 4.5, 2 ]);
+    # translate([ CalculateWireX( 1 ) - wire_diameter / 2, -15, 0 ])
+        cube([ 42.8, 4.5, 2 ]);
+    # translate([ CalculateWireX( 1 ) - wire_diameter / 2, -20, 0 ])
+        cube([ 62.7, 4.5, 2 ]);
+    # translate([ CalculateWireX( 1 ) - wire_diameter / 2, -25, 0 ])
+        cube([ 82.7, 4.5, 2 ]);
+    # translate([ CalculateWireX( 1 ) - wire_diameter / 2, -30, 0 ])
+        cube([ 102.6, 4.5, 2 ]);
+    # translate([ CalculateWireX( 1 ) - wire_diameter / 2, -35, 0 ])
+        cube([ 122.8, 4.5, 2 ]);
 }
 else if( render_mode == "print" )
 {
@@ -142,7 +151,7 @@ module WirePreviews()
     {
         % translate([
             CalculateWireX( wire_n ),
-            -wire_preview_extend,
+            -wire_preview_extend_bottom,
             0
             ])
             rotate([
@@ -151,7 +160,7 @@ module WirePreviews()
                 0
                 ])
                 cylinder(
-                    h = total_size_y + wire_preview_extend * 2,
+                    h = total_size_y + wire_preview_extend_top + wire_preview_extend_bottom,
                     r = wire_diameter / 2
                     );
     }
