@@ -38,6 +38,9 @@ $fn = $preview ? 16 : 64;
 total_size_x = gf_pitch * cells_x;
 total_size_y = gf_pitch * cells_y;
 
+echo( str( "total size x: ", total_size_x ) );
+echo( str( "total size y: ", total_size_y ) );
+
 // x distance from origin to where this tile's base starts
 offset_size_x = gf_pitch * offset_cells_x;
 
@@ -50,7 +53,7 @@ cutout_diagonal = sqrt( ( cutout_side / 2 ) * ( cutout_side / 2 ) * 2 );
 base_height = cutout_diagonal + wire_floor_extra;
 
 // enough wires to cover both the offset area and this tile
-num_wires = ceil( ( total_size_x + offset_size_x ) / wire_spacing );
+num_wires = ceil( ( total_size_x + offset_size_x ) / wire_spacing ) + 1;
 
 // how far the wire previews extend past the tile edges in Y
 wire_preview_extend = 10;
