@@ -6,7 +6,7 @@ include <../modules/utils.scad>
 // measurements
 
 wire_diameter = 3.2;
-wire_spacing = 23.0 - wire_diameter;        // center-to-center spacing between wires
+wire_spacing = 23.0 - wire_diameter;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -29,6 +29,8 @@ wire_floor_extra = 0.25;        // material thickness left below the wire
 first_wire_offset_x = -10;
 
 rounding_r = 4;
+
+wire_cutout_multiplier = 1.75;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculated
@@ -105,21 +107,25 @@ module WireRackGridfinityBaseplate()
         // cut a diamond-profile slot for each wire by rotating a square 45 degrees
         for( wire_n = [ -1 : 1 : num_wires ] )
         {
-            translate([
-                CalculateWireX( wire_n ) - cutout_diagonal,
+             translate([
+                CalculateWireX( wire_n ),
                 -DIFFERENCE_CLEARANCE,
                 0
                 ])
                 rotate([
+                    -90,
                     0,
-                    45,
                     0
                     ])
-                    cube([
-                        cutout_side,
-                        total_size_y + DIFFERENCE_CLEARANCE * 2,
-                        cutout_side
-                        ]);
+                    scale([
+                        wire_cutout_multiplier,
+                        1.0,
+                        1.0
+                        ])
+                        cylinder(
+                            h = total_size_y + DIFFERENCE_CLEARANCE * 2,
+                            r = wire_diameter / 2
+                            );
         }
     }
 
