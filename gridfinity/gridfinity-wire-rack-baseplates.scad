@@ -61,6 +61,20 @@ num_wires = ceil( ( total_size_x + offset_size_x ) / wire_spacing ) + 1;
 wire_preview_extend_bottom = 40;
 wire_preview_extend_top = 10;
 
+magnet_offset_xy =
+    gf_cupbase_upper_taper_height
+    + gf_cupbase_lower_taper_height
+    + gf_cupbase_magnet_position
+    + 0.25;
+
+grid_cell_wall_thickness =
+    gf_cupbase_upper_taper_height
+    + gf_cupbase_lower_taper_height;
+
+magnet_cupbase_xy =
+    gf_cupbase_magnet_position * 2
+    + 1.11;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function CalculateWireX( wire_n ) = 
@@ -101,40 +115,101 @@ else
 // the gridfinity baseplate that sits on top of the wire-rack base layer
 module WireRackGridfinityBaseplate()
 {
-    difference()
-    {
-        translate([ offset_size_x, 0, 0 ])
-            RoundedCubeAlt2(
-                total_size_x,
-                total_size_y,
-                base_height,
-                rounding_r,
-                round_top = false,
-                round_bottom = false,
-                );
+    cutout_height = base_height + DIFFERENCE_CLEARANCE * 2;
 
-        // cut a diamond-profile slot for each wire by rotating a square 45 degrees
-        for( wire_n = [ -1 : 1 : num_wires ] )
+    render()
+    {
+        difference()
         {
-             translate([
-                CalculateWireX( wire_n ),
-                -DIFFERENCE_CLEARANCE,
-                0
-                ])
-                rotate([
-                    -90,
-                    0,
+            translate([ offset_size_x, 0, 0 ])
+                RoundedCubeAlt2(
+                    total_size_x,
+                    total_size_y,
+                    base_height,
+                    rounding_r,
+                    round_top = false,
+                    round_bottom = false,
+                    );
+
+            // cut a diamond-profile slot for each wire by rotating a square 45 degrees
+            for( wire_n = [ -1 : 1 : num_wires ] )
+            {
+                translate([
+                    CalculateWireX( wire_n ),
+                    -DIFFERENCE_CLEARANCE,
                     0
                     ])
-                    scale([
-                        wire_cutout_multiplier,
-                        1.0,
-                        1.0
+                    rotate([
+                        -90,
+                        0,
+                        0
                         ])
-                        cylinder(
-                            h = total_size_y + DIFFERENCE_CLEARANCE * 2,
-                            r = wire_diameter / 2
-                            );
+                        scale([
+                            wire_cutout_multiplier,
+                            1.0,
+                            1.0
+                            ])
+                            cylinder(
+                                h = total_size_y + DIFFERENCE_CLEARANCE * 2,
+                                r = wire_diameter / 2
+                                );
+
+                // cut out the center of each grid cell
+                for( i = [ 0 : cells_x - 1 ] )
+                {
+                    translate([ i * gf_pitch, 0, 0 ])
+                    {
+                        difference()
+                        {
+                            translate([
+                                grid_cell_wall_thickness,
+                                grid_cell_wall_thickness,
+                                0
+                                ])
+                                cube([
+                                    gf_pitch - grid_cell_wall_thickness * 2,
+                                    gf_pitch - grid_cell_wall_thickness * 2,
+                                    cutout_height
+                                    ]);
+
+                            // bottom left
+                            translate([
+                                -DIFFERENCE_CLEARANCE,
+                                -DIFFERENCE_CLEARANCE,
+                                -DIFFERENCE_CLEARANCE
+                                ])
+                                MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+
+                            // bottom right
+                            translate([
+                                gf_pitch + DIFFERENCE_CLEARANCE,
+                                -DIFFERENCE_CLEARANCE,
+                                -DIFFERENCE_CLEARANCE
+                                ])
+                                rotate([ 0, 0, 90 ])
+                                    MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+
+                            // top left
+                            translate([
+                                -DIFFERENCE_CLEARANCE,
+                                gf_pitch + DIFFERENCE_CLEARANCE,
+                                -DIFFERENCE_CLEARANCE
+                                ])
+                                rotate([ 0, 0, -90 ])
+                                    MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+
+                            // top right
+                            translate([
+                                gf_pitch + DIFFERENCE_CLEARANCE,
+                                gf_pitch + DIFFERENCE_CLEARANCE,
+                                -DIFFERENCE_CLEARANCE
+                                ])
+                                rotate([ 0, 0, 180 ])
+                                    MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -163,6 +238,59 @@ module WirePreviews()
                     h = total_size_y + wire_preview_extend_top + wire_preview_extend_bottom,
                     r = wire_diameter / 2
                     );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module MagnetCupBase( h = gf_magnet_thickness )
+{
+    // magnet location
+    // # translate([ magnet_offset_xy, magnet_offset_xy, 0 ])
+    //     cylinder( r = gf_magnet_diameter / 2, h = h );
+
+    render()
+    {
+        union()
+        {
+            // vertical part
+            translate([ grid_cell_wall_thickness, grid_cell_wall_thickness, 0 ])
+                cube([ magnet_offset_xy - grid_cell_wall_thickness, magnet_cupbase_xy, h ]);
+
+            // horizontal part
+            translate([ grid_cell_wall_thickness, grid_cell_wall_thickness, 0 ])
+                cube([ magnet_cupbase_xy, magnet_offset_xy - grid_cell_wall_thickness, h ]);
+
+            difference()
+            {
+                translate([ magnet_offset_xy, magnet_offset_xy, 0 ])
+                    cylinder( r = magnet_cupbase_xy - magnet_offset_xy + grid_cell_wall_thickness, h = h );
+
+                // remove the vertical part
+                translate([
+                    0,
+                    0,
+                    - DIFFERENCE_CLEARANCE
+                    ])
+                    cube([
+                        magnet_offset_xy,
+                        magnet_cupbase_xy + grid_cell_wall_thickness,
+                        h + DIFFERENCE_CLEARANCE*2
+                        ]);
+
+                // remove the horizontal part
+                translate([
+                    0,
+                    0,
+                    - DIFFERENCE_CLEARANCE
+                    ])
+                    cube([
+                        magnet_cupbase_xy + grid_cell_wall_thickness,
+                        magnet_offset_xy,
+                        h + DIFFERENCE_CLEARANCE*2
+                        ]);
+            }
+        }
     }
 }
 
