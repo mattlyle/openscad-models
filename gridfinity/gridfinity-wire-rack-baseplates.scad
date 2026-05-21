@@ -157,55 +157,58 @@ module WireRackGridfinityBaseplate()
                 // cut out the center of each grid cell
                 for( i = [ 0 : cells_x - 1 ] )
                 {
-                    translate([ i * gf_pitch, 0, 0 ])
+                    for( j = [ 0 : cells_y - 1 ] )
                     {
-                        difference()
+                        translate([ i * gf_pitch, j * gf_pitch, 0 ])
                         {
-                            translate([
-                                grid_cell_wall_thickness,
-                                grid_cell_wall_thickness,
-                                0
-                                ])
-                                cube([
-                                    gf_pitch - grid_cell_wall_thickness * 2,
-                                    gf_pitch - grid_cell_wall_thickness * 2,
-                                    cutout_height
-                                    ]);
+                            difference()
+                            {
+                                translate([
+                                    grid_cell_wall_thickness,
+                                    grid_cell_wall_thickness,
+                                    0
+                                    ])
+                                    cube([
+                                        gf_pitch - grid_cell_wall_thickness * 2,
+                                        gf_pitch - grid_cell_wall_thickness * 2,
+                                        cutout_height
+                                        ]);
 
-                            // bottom left
-                            translate([
-                                -DIFFERENCE_CLEARANCE,
-                                -DIFFERENCE_CLEARANCE,
-                                -DIFFERENCE_CLEARANCE
-                                ])
-                                MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
-
-                            // bottom right
-                            translate([
-                                gf_pitch + DIFFERENCE_CLEARANCE,
-                                -DIFFERENCE_CLEARANCE,
-                                -DIFFERENCE_CLEARANCE
-                                ])
-                                rotate([ 0, 0, 90 ])
+                                // bottom left
+                                translate([
+                                    -DIFFERENCE_CLEARANCE,
+                                    -DIFFERENCE_CLEARANCE,
+                                    -DIFFERENCE_CLEARANCE
+                                    ])
                                     MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
 
-                            // top left
-                            translate([
-                                -DIFFERENCE_CLEARANCE,
-                                gf_pitch + DIFFERENCE_CLEARANCE,
-                                -DIFFERENCE_CLEARANCE
-                                ])
-                                rotate([ 0, 0, -90 ])
-                                    MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+                                // bottom right
+                                translate([
+                                    gf_pitch + DIFFERENCE_CLEARANCE,
+                                    -DIFFERENCE_CLEARANCE,
+                                    -DIFFERENCE_CLEARANCE
+                                    ])
+                                    rotate([ 0, 0, 90 ])
+                                        MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
 
-                            // top right
-                            translate([
-                                gf_pitch + DIFFERENCE_CLEARANCE,
-                                gf_pitch + DIFFERENCE_CLEARANCE,
-                                -DIFFERENCE_CLEARANCE
-                                ])
-                                rotate([ 0, 0, 180 ])
-                                    MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+                                // top left
+                                translate([
+                                    -DIFFERENCE_CLEARANCE,
+                                    gf_pitch + DIFFERENCE_CLEARANCE,
+                                    -DIFFERENCE_CLEARANCE
+                                    ])
+                                    rotate([ 0, 0, -90 ])
+                                        MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+
+                                // top right
+                                translate([
+                                    gf_pitch + DIFFERENCE_CLEARANCE,
+                                    gf_pitch + DIFFERENCE_CLEARANCE,
+                                    -DIFFERENCE_CLEARANCE
+                                    ])
+                                    rotate([ 0, 0, 180 ])
+                                        MagnetCupBase( cutout_height + DIFFERENCE_CLEARANCE * 2 );
+                            }
                         }
                     }
                 }
@@ -246,7 +249,7 @@ module WirePreviews()
 module MagnetCupBase( h = gf_magnet_thickness )
 {
     // magnet location
-    // # translate([ magnet_offset_xy, magnet_offset_xy, 0 ])
+    // # translate([ magnet_offset_xy, magnet_offset_xy, 4 ])
     //     cylinder( r = gf_magnet_diameter / 2, h = h );
 
     render()
