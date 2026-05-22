@@ -69,9 +69,9 @@ if ( render_mode == "preview" )
 }
 else if ( render_mode == "print" )
 {
-    JvscamBin();
+    color("white") JvscamBin();
 
-    JvscamBinText();
+    color("blue") JvscamBinText();
 }
 else
 {
@@ -199,7 +199,7 @@ module JvscamBinText()
             depth = label_depth,
             font_size = label_font_size,
             font = label_font,
-            color = [ 0, 0, 0 ]
+            color = undef
             );
 }
 
