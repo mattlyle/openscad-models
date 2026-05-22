@@ -17,8 +17,7 @@ air_duster_top_y = 60.0;
 // settings
 
 render_mode = "preview";
-// render_mode = "print-bin";
-// render_mode = "print-text";
+// render_mode = "print";
 
 cells_x = 2;
 cells_y = 3;
@@ -60,7 +59,6 @@ air_duster_cutout_y =
 if ( render_mode == "preview" )
 {
     JvscamBin();
-    JvscamBinText();
 
     %translate([
         air_duster_cutout_x,
@@ -69,12 +67,10 @@ if ( render_mode == "preview" )
         ])
         JvscamPreview( false );
 }
-else if ( render_mode == "print-bin" )
+else if ( render_mode == "print" )
 {
     JvscamBin();
-}
-else if ( render_mode == "print-text" )
-{
+
     JvscamBinText();
 }
 else
