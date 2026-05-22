@@ -85,44 +85,81 @@ else
 
 module JvscamBin()
 {
-    difference()
+    union()
     {
-        GridfinityBase(
-            cells_x,
-            cells_y,
-            bin_floor_z + bin_base_z,
-            round_top = false,
-            center = false
-            );
+        difference()
+        {
+            GridfinityBase(
+                cells_x,
+                cells_y,
+                bin_floor_z + bin_base_z,
+                round_top = false,
+                center = false
+                );
 
-        // base_x - air_duster_wall_width - calculateOffsetToCenter( air_duster_top_x, air_duster_base_x )
+            // cut out the air duster base
+            translate([
+                air_duster_cutout_x,
+                air_duster_cutout_y,
+                base_offset_z
+                ])
+                JvscamPreview( true );
 
-        // cut out the air duster base
+            // cut out the left side bin
+            translate([
+                air_duster_wall_width,
+                air_duster_wall_width,
+                base_offset_z
+                ])
+                RoundedCubeAlt2(
+                    air_duster_cutout_x - air_duster_wall_width * 2 - air_duster_holder_padding,
+                    base_y - air_duster_wall_width * 2,
+                    bin_base_z + DIFFERENCE_CLEARANCE,
+                    r = GRIDFINITY_ROUNDING_R,
+                    round_top = false,
+                    round_bottom = false
+                    );
+        
+            // cut out the top bin
+            translate([
+                air_duster_wall_width,
+                air_duster_wall_width + air_duster_top_y,
+                base_offset_z
+                ])
+                RoundedCubeAlt2(
+                    base_x - air_duster_wall_width * 2,
+                    base_y - air_duster_top_y - air_duster_wall_width * 2,
+                    bin_base_z + DIFFERENCE_CLEARANCE,
+                    r = GRIDFINITY_ROUNDING_R,
+                    round_top = false,
+                    round_bottom = false
+                    );
+
+            // cut out the inside corner so we can round it
+            translate([
+                air_duster_cutout_x - air_duster_wall_width - air_duster_holder_padding - DIFFERENCE_CLEARANCE,
+                air_duster_wall_width + air_duster_top_y - GRIDFINITY_ROUNDING_R,
+                base_offset_z
+                ])
+                cube([
+                    GRIDFINITY_ROUNDING_R + DIFFERENCE_CLEARANCE,
+                    GRIDFINITY_ROUNDING_R + DIFFERENCE_CLEARANCE,
+                    bin_base_z + DIFFERENCE_CLEARANCE
+                    ]);
+
+        }
+
+        // round the inside corner
         translate([
-            air_duster_cutout_x,
-            air_duster_cutout_y,
+            air_duster_cutout_x - air_duster_wall_width - air_duster_holder_padding + GRIDFINITY_ROUNDING_R,
+            air_duster_wall_width + air_duster_top_y - GRIDFINITY_ROUNDING_R,
             base_offset_z
             ])
-            JvscamPreview( true );
+            cylinder(
+                r = GRIDFINITY_ROUNDING_R,
+                h = bin_base_z
+                );
     }
-
-    // cut out the side bin
-    // #translate([
-    //     air_duster_wall_width,
-    //     air_duster_wall_width,
-    //     base_offset_z + bin_base_z ])
-    //     RoundedCubeAlt2(
-    //         10,
-    //         10,
-    //         bin_base_z + DIFFERENCE_CLEARANCE,
-    //         r = GRIDFINITY_ROUNDING_R,
-    //         round_top = false,
-    //         round_bottom = false
-    //         );
-
-    // cut out the top bin
-
-    // cut out the air duster handle
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
