@@ -25,8 +25,9 @@ cells_y = 3;
 
 top_z = 10.0;
 
+label_text_lines = [ "JVSCAM", "AIR", "DUSTER" ];
 label_font = "Georgia:style=Bold";
-label_font_size = 14;
+label_font_size = 12;
 label_depth = 0.4;
 
 bin_base_z = 30.0;
@@ -147,6 +148,13 @@ module JvscamBin()
                     bin_base_z + DIFFERENCE_CLEARANCE
                     ]);
 
+            // cut out the text
+            translate([
+                0,
+                0,
+                DIFFERENCE_CLEARANCE
+                ])
+                JvscamBinText();
         }
 
         // round the inside corner
@@ -166,6 +174,37 @@ module JvscamBin()
 
 module JvscamBinText()
 {
+    text_area_offset_x = air_duster_wall_width;
+    text_area_offset_y = air_duster_wall_width + air_duster_top_y;
+
+    text_area_size_x = base_x - air_duster_wall_width * 2;
+    text_area_size_y = base_y - air_duster_top_y - air_duster_wall_width * 2;
+
+    // #translate([
+    //     text_area_offset_x,
+    //     text_area_offset_y,
+    //     base_offset_z
+    //     ])
+    //     cube([
+    //         text_area_size_x,
+    //         text_area_size_y,
+    //         0.01
+    //         ]);
+
+    translate([
+        text_area_offset_x,
+        text_area_offset_y,
+        base_offset_z - label_depth
+        ])
+        MultilineTextLabel(
+            text_lines = label_text_lines,
+            centered_in_area_x = text_area_size_x,
+            centered_in_area_y = text_area_size_y,
+            depth = label_depth,
+            font_size = label_font_size,
+            font = label_font,
+            color = [ 0, 0, 0 ]
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
