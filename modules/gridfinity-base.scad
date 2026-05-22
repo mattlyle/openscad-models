@@ -1,5 +1,6 @@
 use <../../3rd-party/gridfinity-rebuilt-openscad/src/core/gridfinity-rebuilt-utility.scad>
 use <../../3rd-party/gridfinity-rebuilt-openscad/src/core/gridfinity-rebuilt-holes.scad>
+include <../../3rd-party/gridfinity-rebuilt-openscad/src/core/base.scad>
 
 use <rounded-cube.scad>
 
