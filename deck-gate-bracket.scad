@@ -18,7 +18,7 @@ render_mode = "print";
 
 bracket_z = 30.0;
 
-bracket_thickness = 3.0;
+bracket_thickness = 3.6;
 
 post_preview_z = 100;
 
@@ -28,7 +28,7 @@ flange_width = 12.0;
 
 preview_separation = 1.0;
 
-screw_hole_clearance = 0.2;
+screw_hole_clearance = 0.3;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -39,17 +39,29 @@ $fn = $preview ? 32 : 128;
 
 if( render_mode == "preview" )
 {
+    // single
     translate([ flange_width, 0, 0 ])
     {
-        DeckGatePostPreview();
+        DeckGatePostPreview( true );
 
         DeckGateBracket( true, true );
 
         translate([ 0, preview_separation, 0 ])
             DeckGateBracket( true, false );
     }
+
+    // combined
+    translate([ 100, 0, 0 ])
+    {
+        DeckGatePostPreview( false );
+
+        DeckGateBracket( false, true );
+
+        translate([ 0, preview_separation, 0 ])
+            DeckGateBracket( false, false );
+    }
 }
-else if( render_mode == "print" )
+else if( render_mode == "print-single" )
 {
     translate([ flange_width, 0, 0 ])
     {
@@ -58,6 +70,20 @@ else if( render_mode == "print" )
         translate([ 0, preview_separation, 0 ])
             DeckGateBracket( true, false );
     }
+}
+else if( render_mode == "print-combined" )
+{
+    translate([ flange_width, 0, 0 ])
+    {
+        DeckGateBracket( false, true );
+
+        translate([ 0, preview_separation, 0 ])
+            DeckGateBracket( false, false );
+    }
+}
+else
+{
+    assert( false, "Invalid render mode: ", render_mode );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +91,7 @@ else if( render_mode == "print" )
 module DeckGateBracket( is_single = true, is_front = true )
 {
     bracket_x = bar_x + bar_clearance * 2 + bracket_thickness * 2;
-    bracket_y = bar_single_y + bar_clearance * 2 + bracket_thickness * 2;
+    bracket_y = ( is_single ? bar_single_y : bar_combined_y ) + bar_clearance * 2 + bracket_thickness * 2;
 
     difference()
     {
@@ -122,7 +148,7 @@ module DeckGateBracket( is_single = true, is_front = true )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGatePostPreview( single = true )
+module DeckGatePostPreview( is_single = true )
 {
     % translate([
         bracket_thickness + bar_clearance,
@@ -131,7 +157,7 @@ module DeckGatePostPreview( single = true )
         ])
         cube([
             bar_x,
-            single ? bar_single_y : bar_combined_y,
+            is_single ? bar_single_y : bar_combined_y,
             post_preview_z
             ]);
 }
