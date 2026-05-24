@@ -6,15 +6,20 @@ include <modules/utils.scad>
 
 bar_x = 39.0;
 bar_single_y = 39.0;
-bar_combined_y = 47.0;
+bar_combined_y = 48.5;
 
 screw_hole_r = 3.86 / 2;
+screw_washer_r = 8.9 / 2;
+
+nut_r = 7.0 / 2;
+nut_h = 3.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // render_mode = "preview";
-render_mode = "print";
+// render_mode = "print-single";
+render_mode = "print-combined";
 
 bracket_z = 30.0;
 
@@ -25,10 +30,13 @@ post_preview_z = 100;
 bar_clearance = 0.3;
 
 flange_width = 12.0;
+flange_shroud_extra = 3.4;
 
-preview_separation = 1.0;
+preview_separation = 10.0;
 
 screw_hole_clearance = 0.3;
+
+washer_nut_clearance = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -129,21 +137,23 @@ module DeckGateBracket( is_single = true, is_front = true )
                 ]);
     }
 
+    front_bracket_offset = -bracket_thickness - flange_shroud_extra;
+
     // left flange
     translate([
         -flange_width,
-        bracket_y / 2 + ( is_front ? -bracket_thickness : 0 ),
+        bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
         0
         ])
-        DeckGateBracketFlange( true );
+        DeckGateBracketFlange( true, is_front );
 
     // right flange
     translate([
         bracket_x,
-        bracket_y / 2 + ( is_front ? -bracket_thickness : 0 ),
+        bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
         0
         ])
-        DeckGateBracketFlange( false );
+        DeckGateBracketFlange( false, is_front );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,13 +174,13 @@ module DeckGatePostPreview( is_single = true )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGateBracketFlange( is_left = true )
+module DeckGateBracketFlange( is_left = true, is_front = true )
 {
     difference()
     {
         RoundedCubeAlt2(
             flange_width,
-            bracket_thickness,
+            bracket_thickness + flange_shroud_extra,
             bracket_z,
             r = 1.0,
             round_top = false,
@@ -188,10 +198,40 @@ module DeckGateBracketFlange( is_left = true )
             bracket_z / 2
             ])
             rotate([ -90, 0, 0 ])
-            cylinder(
-                r = screw_hole_r + screw_hole_clearance,
-                h = bracket_thickness + DIFFERENCE_CLEARANCE * 2
-                );
+                cylinder(
+                    r = screw_hole_r + screw_hole_clearance,
+                    h = bracket_thickness + flange_shroud_extra + DIFFERENCE_CLEARANCE * 2
+                    );
+
+        if( is_front )
+        {
+            // washer shroud cutout
+            translate([
+                flange_width / 2,
+                -DIFFERENCE_CLEARANCE,
+                bracket_z / 2
+                ])
+                rotate([ -90, 0, 0 ])
+                    cylinder(
+                        r = screw_washer_r + washer_nut_clearance,
+                        h = flange_shroud_extra + DIFFERENCE_CLEARANCE
+                        );
+        }
+        else
+        {
+            // nut shroud cutout
+            translate([
+                flange_width / 2,
+                bracket_thickness + DIFFERENCE_CLEARANCE,
+                bracket_z / 2
+                ])
+                rotate([ -90, 0, 0 ])
+                    cylinder(
+                        r = nut_r + washer_nut_clearance,
+                        h = flange_shroud_extra + DIFFERENCE_CLEARANCE,
+                        $fn = 6
+                        );
+        }
     }
 }
 
