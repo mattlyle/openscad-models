@@ -30,13 +30,14 @@ post_preview_z = 100;
 bar_clearance = 0.3;
 
 flange_width = 12.0;
-flange_shroud_extra = 3.4;
+flange_shroud_extra = 4.0;
 
 preview_separation = 10.0;
 
 screw_hole_clearance = 0.3;
 
-washer_nut_clearance = 0.5;
+washer_clearance = 0.5;
+screw_nut_clearance = 0.7;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -213,7 +214,7 @@ module DeckGateBracketFlange( is_left = true, is_front = true )
                 ])
                 rotate([ -90, 0, 0 ])
                     cylinder(
-                        r = screw_washer_r + washer_nut_clearance,
+                        r = screw_washer_r + washer_clearance,
                         h = flange_shroud_extra + DIFFERENCE_CLEARANCE
                         );
         }
@@ -227,7 +228,7 @@ module DeckGateBracketFlange( is_left = true, is_front = true )
                 ])
                 rotate([ -90, 0, 0 ])
                     cylinder(
-                        r = nut_r + washer_nut_clearance,
+                        r = nut_r + screw_nut_clearance,
                         h = flange_shroud_extra + DIFFERENCE_CLEARANCE,
                         $fn = 6
                         );
