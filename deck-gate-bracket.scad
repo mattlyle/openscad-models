@@ -19,14 +19,14 @@ gate_screw_r = 4 / 2;
 
 gate_mount_screw_r = 5.05 / 2;
 gate_mount_screw_nut_h = 5.0;
-gate_mount_screw_nut_washer_r = 10.0 / 2;
+gate_mount_screw_nut_r = 7.8 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 // render_mode = "preview";
-// render_mode = "print-single";
-render_mode = "print-combined";
+render_mode = "print-single";
+// render_mode = "print-combined";
 
 bracket_z = 75.0;
 
@@ -285,11 +285,12 @@ module DeckGateBracketFlangeScrewHole( is_front = true )
 
 module DeckGateBracketMountScrewHole()
 {
-    // washer/nut
+    // nut
     rotate([ 90, 0, 0 ])
         cylinder(
-            r = gate_mount_screw_nut_washer_r + washer_clearance,
-            h = gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE
+            r = gate_mount_screw_nut_r + screw_nut_clearance,
+            h = gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
+            $fn = 6
             );
 
     // screw hole
