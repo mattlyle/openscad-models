@@ -17,7 +17,7 @@ nut_h = 3.0;
 gate_screw_separation_z = 51.0;
 gate_screw_r = 4 / 2;
 
-gate_mount_screw_r = 4.9 / 2;
+gate_mount_screw_r = 5.05 / 2;
 gate_mount_screw_nut_h = 5.0;
 gate_mount_screw_nut_washer_r = 10.0 / 2;
 
@@ -293,7 +293,7 @@ module DeckGateBracketMountScrewHole()
             );
 
     // screw hole
-    translate([ 0, -gate_mount_screw_nut_h - bracket_thickness, 0 ])
+    translate([ 0, -gate_mount_screw_nut_h - bracket_thickness - DIFFERENCE_CLEARANCE, 0 ])
         rotate([ -90, 0, 0 ])
             cylinder(
                 r = gate_screw_r + screw_hole_clearance,
