@@ -46,6 +46,8 @@ screw_hole_clearance = 0.3;
 washer_clearance = 0.4;
 screw_nut_clearance = 0.7;
 
+back_side_reduction_z = 10.0;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -60,8 +62,10 @@ if( render_mode == "preview" )
     {
         DeckGatePostPreview( true );
 
+        // front
         DeckGateBracket( true, true );
 
+        // back
         translate([ 0, preview_separation, 0 ])
             DeckGateBracket( true, false );
     }
@@ -71,8 +75,10 @@ if( render_mode == "preview" )
     {
         DeckGatePostPreview( false );
 
+        // front
         DeckGateBracket( false, true );
 
+        // back
         translate([ 0, preview_separation, 0 ])
             DeckGateBracket( false, false );
     }
@@ -81,9 +87,11 @@ else if( render_mode == "print-single" )
 {
     translate([ flange_width, 0, 0 ])
     {
+        // front
         DeckGateBracket( true, true );
 
-        translate([ 0, preview_separation, 0 ])
+        // back
+        translate([ 0, preview_separation, -back_side_reduction_z ])
             DeckGateBracket( true, false );
     }
 }
@@ -91,9 +99,11 @@ else if( render_mode == "print-combined" )
 {
     translate([ flange_width, 0, 0 ])
     {
+        // front
         DeckGateBracket( false, true );
 
-        translate([ 0, preview_separation, 0 ])
+        // back
+        translate([ 0, preview_separation, -back_side_reduction_z ])
             DeckGateBracket( false, false );
     }
 }
@@ -114,17 +124,38 @@ module DeckGateBracket( is_single = true, is_front = true )
         + gate_mount_screw_nut_h
         + bracket_thickness * 2;
 
+    front_bracket_offset = -bracket_thickness - flange_shroud_extra;
+
     difference()
     {
-        translate([ 0, 0, 0 ])
-            RoundedCubeAlt2(
-                bracket_x,
-                bracket_y,
-                bracket_z,
-                r = bracket_thickness,
-                round_top = false,
-                round_bottom = false
-                );
+        union()
+        {
+            translate([ 0, 0, 0 ])
+                RoundedCubeAlt2(
+                    bracket_x,
+                    bracket_y,
+                    bracket_z,
+                    r = bracket_thickness,
+                    round_top = false,
+                    round_bottom = false
+                    );
+
+            // left flange
+            translate([
+                -flange_width + DIFFERENCE_CLEARANCE * 2,
+                bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
+                0
+                ])
+                DeckGateBracketFlange( true, is_front );
+
+            // right flange
+            translate([
+                bracket_x - DIFFERENCE_CLEARANCE * 2,
+                bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
+                0
+                ])
+                DeckGateBracketFlange( false, is_front );
+        }
 
         // cut out the post
         translate([
@@ -168,25 +199,33 @@ module DeckGateBracket( is_single = true, is_front = true )
                 ])
                 DeckGateBracketMountScrewHole();
         }
+        else
+        {
+            // chop off the bottom
+            translate([
+                -flange_width - DIFFERENCE_CLEARANCE,
+                bracket_y / 2 - DIFFERENCE_CLEARANCE,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cube([
+                    bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                    bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
+                    back_side_reduction_z + DIFFERENCE_CLEARANCE
+                    ]);
+
+            // chop off the top
+            translate([
+                -flange_width - DIFFERENCE_CLEARANCE,
+                bracket_y / 2 - DIFFERENCE_CLEARANCE,
+                bracket_z - back_side_reduction_z
+                ])
+                cube([
+                    bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                    bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
+                    back_side_reduction_z + DIFFERENCE_CLEARANCE
+                    ]);
+        }
     }
-
-    front_bracket_offset = -bracket_thickness - flange_shroud_extra;
-
-    // left flange
-    translate([
-        -flange_width + DIFFERENCE_CLEARANCE * 2,
-        bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
-        0
-        ])
-        DeckGateBracketFlange( true, is_front );
-
-    // right flange
-    translate([
-        bracket_x - DIFFERENCE_CLEARANCE * 2,
-        bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
-        0
-        ])
-        DeckGateBracketFlange( false, is_front );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
