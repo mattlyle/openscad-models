@@ -174,7 +174,7 @@ module DeckGateBracket( is_single = true, is_front = true )
 
     // left flange
     translate([
-        -flange_width,
+        -flange_width + DIFFERENCE_CLEARANCE * 2,
         bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
         0
         ])
@@ -182,7 +182,7 @@ module DeckGateBracket( is_single = true, is_front = true )
 
     // right flange
     translate([
-        bracket_x,
+        bracket_x - DIFFERENCE_CLEARANCE * 2,
         bracket_y / 2 + ( is_front ? front_bracket_offset : 0 ),
         0
         ])
