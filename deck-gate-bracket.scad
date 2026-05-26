@@ -15,11 +15,11 @@ nut_r = 7.0 / 2;
 nut_h = 3.0;
 
 gate_screw_separation_z = 51.0;
-gate_screw_r = 4 / 2;
+gate_screw_r = 4.8 / 2;
 
-gate_mount_screw_r = 5.05 / 2;
+gate_mount_screw_r = 5.2 / 2;
 gate_mount_screw_nut_h = 5.0;
-gate_mount_screw_nut_r = 7.8 / 2;
+gate_mount_screw_nut_r = 8.1 / 2; // measured as 7.8 but not fitting?!
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
