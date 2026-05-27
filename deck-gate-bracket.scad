@@ -1,8 +1,11 @@
 include <modules/rounded-cube.scad>
+include <modules/pie-slice-prism.scad>
 include <modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
+
+// TODO: roll these into the module as M4 and M5
 
 bar_x = 39.0;
 bar_single_y = 39.0;
@@ -14,10 +17,12 @@ screw_washer_r = 8.9 / 2;
 nut_r = 7.0 / 2;
 nut_h = 3.0;
 
-gate_screw_separation_z = 51.0;
-gate_screw_r = 4.8 / 2;
+gate_screw_separation_latch_side_z = 51.0;
+gate_screw_separation_hinge_side_z = 19.5;
 
-gate_mount_screw_r = 5.2 / 2;
+gate_screw_r = 4.8 / 2; // M4
+
+gate_mount_screw_r = 5.2 / 2; // M5
 gate_mount_screw_nut_h = 5.0;
 gate_mount_screw_nut_r = 8.1 / 2; // measured as 7.8 but not fitting?!
 
@@ -25,8 +30,8 @@ gate_mount_screw_nut_r = 8.1 / 2; // measured as 7.8 but not fitting?!
 // settings
 
 // render_mode = "preview";
-render_mode = "print-single";
-// render_mode = "print-combined";
+// render_mode = "print-single";
+render_mode = "print-combined";
 
 bracket_z = 75.0;
 
@@ -48,10 +53,15 @@ screw_nut_clearance = 0.7;
 
 back_side_reduction_z = 10.0;
 
+hinge_side_angle = 30;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 $fn = $preview ? 32 : 128;
+
+bracket_x = bar_x + bar_clearance * 2
+    + bracket_thickness * 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,9 +126,6 @@ else
 
 module DeckGateBracket( is_single = true, is_front = true )
 {
-    bracket_x = bar_x + bar_clearance * 2
-        + bracket_thickness * 2;
-
     bracket_y = ( is_single ? bar_single_y : bar_combined_y )
         + bar_clearance * 2
         + gate_mount_screw_nut_h
@@ -137,7 +144,8 @@ module DeckGateBracket( is_single = true, is_front = true )
                     bracket_z,
                     r = bracket_thickness,
                     round_top = false,
-                    round_bottom = false
+                    round_bottom = false,
+                    round_front = is_single
                     );
 
             // left flange
@@ -155,6 +163,17 @@ module DeckGateBracket( is_single = true, is_front = true )
                 0
                 ])
                 DeckGateBracketFlange( false, is_front );
+
+            if( is_front && !is_single )
+            {
+                // hinge_side_angle
+                rotate([ 0, 0, -hinge_side_angle ])
+                    PieSlicePrism(
+                        bracket_x,
+                        bracket_z,
+                        hinge_side_angle
+                        );
+            }
         }
 
         // cut out the post
@@ -183,21 +202,35 @@ module DeckGateBracket( is_single = true, is_front = true )
 
         if( is_front )
         {
-            // top gate screw hole
-            translate([
-                bracket_x / 2,
-                bracket_thickness + gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
-                bracket_z - ( bracket_z - gate_screw_separation_z ) / 2
-                ])
-                DeckGateBracketMountScrewHole();
+            if( is_single )
+            {
+                // top gate screw hole
+                translate([
+                    bracket_x / 2,
+                    bracket_thickness + gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
+                    bracket_z - ( bracket_z - gate_screw_separation_latch_side_z ) / 2
+                    ])
+                    DeckGateBracketMountLatchSideScrewHole();
 
-            // bottom gate screw hole
-            translate([
-                bracket_x / 2,
-                bracket_thickness + gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
-                ( bracket_z - gate_screw_separation_z ) / 2
-                ])
-                DeckGateBracketMountScrewHole();
+                // bottom gate screw hole
+                translate([
+                    bracket_x / 2,
+                    bracket_thickness + gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
+                    ( bracket_z - gate_screw_separation_latch_side_z ) / 2
+                    ])
+                    DeckGateBracketMountLatchSideScrewHole();
+            }
+            else
+            {
+                rotate([ 0, 0, -hinge_side_angle ])
+                {
+                    // top
+                    DeckGateBracketMountHingeSideScrewHole( false );
+
+                    // bottom
+                    DeckGateBracketMountHingeSideScrewHole( true );
+                }
+            }
         }
         else
         {
@@ -322,7 +355,7 @@ module DeckGateBracketFlangeScrewHole( is_front = true )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGateBracketMountScrewHole()
+module DeckGateBracketMountLatchSideScrewHole()
 {
     // nut
     rotate([ 90, 0, 0 ])
@@ -339,6 +372,45 @@ module DeckGateBracketMountScrewHole()
                 r = gate_screw_r + screw_hole_clearance,
                 h = bracket_thickness + DIFFERENCE_CLEARANCE
                 );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module DeckGateBracketMountHingeSideScrewHole( is_top )
+{
+    hex_cutout = 26;
+
+    hole_z = is_top
+        ? gate_screw_separation_hinge_side_z
+        : ( bracket_z - gate_screw_separation_hinge_side_z );
+
+    translate([ 0, 0, hole_z ])
+    {
+        rotate([ -90, 0, 0 ])
+        {
+            // screw hole
+            translate([
+                bracket_x / 2,
+                0, // Y and Z swapped because of rotation
+                -DIFFERENCE_CLEARANCE
+                ])
+                cylinder(
+                    r = screw_hole_r + screw_hole_clearance,
+                    h = bracket_thickness + DIFFERENCE_CLEARANCE * 2
+                    );
+
+            translate([
+                bracket_x / 2,
+                0,
+                bracket_thickness - DIFFERENCE_CLEARANCE
+                ])
+                cylinder(
+                    r = nut_r + screw_nut_clearance,
+                    h = hex_cutout,
+                    $fn = 6
+                    );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
