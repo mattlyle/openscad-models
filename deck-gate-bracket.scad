@@ -381,8 +381,8 @@ module DeckGateBracketMountHingeSideScrewHole( is_top )
     hex_cutout = 26;
 
     hole_z = is_top
-        ? gate_screw_separation_hinge_side_z
-        : ( bracket_z - gate_screw_separation_hinge_side_z );
+        ? ( bracket_z / 2 - gate_screw_separation_hinge_side_z / 2 )
+        : ( bracket_z / 2 + gate_screw_separation_hinge_side_z / 2 );
 
     translate([ 0, 0, hole_z ])
     {
