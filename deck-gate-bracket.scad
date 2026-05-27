@@ -405,7 +405,7 @@ module DeckGateBracketMountHingeSideScrewHole( is_top )
                 bracket_thickness - DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
-                    r = nut_r + screw_nut_clearance,
+                    r = nut_r + screw_nut_clearance * 2,
                     h = hex_cutout,
                     $fn = 6
                     );
