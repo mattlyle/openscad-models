@@ -167,12 +167,13 @@ module DeckGateBracket( is_single = true, is_front = true )
             if( is_front && !is_single )
             {
                 // hinge_side_angle
-                rotate([ 0, 0, -hinge_side_angle ])
-                    PieSlicePrism(
-                        bracket_x,
-                        bracket_z,
-                        hinge_side_angle
-                        );
+                translate([ bracket_x, 0, 0 ])
+                    rotate([ 0, 0, 180 ])
+                        PieSlicePrism(
+                            bracket_x,
+                            bracket_z,
+                            hinge_side_angle
+                            );
             }
         }
 
@@ -222,14 +223,17 @@ module DeckGateBracket( is_single = true, is_front = true )
             }
             else
             {
-                rotate([ 0, 0, -hinge_side_angle ])
-                {
-                    // top
-                    DeckGateBracketMountHingeSideScrewHole( false );
+                // hinge side screw holes
+                translate([ bracket_x, 0, 0 ])
+                    rotate([ 0, 0, hinge_side_angle ])
+                        translate([ -bracket_x / 2, 0, 0 ])
+                        {
+                            // top
+                            DeckGateBracketMountHingeSideScrewHole( false );
 
-                    // bottom
-                    DeckGateBracketMountHingeSideScrewHole( true );
-                }
+                            // bottom
+                            DeckGateBracketMountHingeSideScrewHole( true );
+                        }
             }
         }
         else
@@ -378,7 +382,7 @@ module DeckGateBracketMountLatchSideScrewHole()
 
 module DeckGateBracketMountHingeSideScrewHole( is_top )
 {
-    hex_cutout = 26;
+    hex_cutout = 26; // I don't know how to calculate this, it's just big enough to fit the nut
 
     hole_z = is_top
         ? ( bracket_z / 2 - gate_screw_separation_hinge_side_z / 2 )
@@ -390,8 +394,8 @@ module DeckGateBracketMountHingeSideScrewHole( is_top )
         {
             // screw hole
             translate([
-                bracket_x / 2,
-                0, // Y and Z swapped because of rotation
+                0,
+                0,
                 -DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
@@ -400,7 +404,7 @@ module DeckGateBracketMountHingeSideScrewHole( is_top )
                     );
 
             translate([
-                bracket_x / 2,
+                0,
                 0,
                 bracket_thickness - DIFFERENCE_CLEARANCE
                 ])
