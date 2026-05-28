@@ -53,6 +53,8 @@ screw_nut_clearance = 0.7;
 
 back_side_reduction_z = 10.0;
 
+latch_screw_opening_percent = 0.28;
+
 hinge_side_angle = 30;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,21 +207,15 @@ module DeckGateBracket( is_single = true, is_front = true )
         {
             if( is_single )
             {
-                // top gate screw hole
-                translate([
-                    bracket_x / 2,
-                    bracket_thickness + gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
-                    bracket_z - ( bracket_z - gate_screw_separation_latch_side_z ) / 2
-                    ])
-                    DeckGateBracketMountLatchSideScrewHole();
+                // latch_screw_opening_percent
+                bottom_percent = ( 0.5 - latch_screw_opening_percent ) / 2;
+                top_percent = latch_screw_opening_percent + ( 0.5 - latch_screw_opening_percent ) / 2;
 
-                // bottom gate screw hole
-                translate([
-                    bracket_x / 2,
-                    bracket_thickness + gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
-                    ( bracket_z - gate_screw_separation_latch_side_z ) / 2
-                    ])
-                    DeckGateBracketMountLatchSideScrewHole();
+                // top
+                DeckGateBracketMountLatchSideScrewWindow( true );
+
+                // bottom
+                DeckGateBracketMountLatchSideScrewWindow( false );
             }
             else
             {
@@ -359,23 +355,71 @@ module DeckGateBracketFlangeScrewHole( is_front = true )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGateBracketMountLatchSideScrewHole()
+module DeckGateBracketMountLatchSideScrewWindow( is_top )
 {
-    // nut
-    rotate([ 90, 0, 0 ])
-        cylinder(
-            r = gate_mount_screw_nut_r + screw_nut_clearance,
-            h = gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE,
-            $fn = 6
-            );
+    bottom_percent = ( 0.5 - latch_screw_opening_percent ) / 2
+        + ( is_top ? 0.5 : 0 );
+    top_percent = latch_screw_opening_percent
+        + ( 0.5 - latch_screw_opening_percent ) / 2
+        + ( is_top ? 0.5 : 0 );
 
     // screw hole
-    translate([ 0, -gate_mount_screw_nut_h - bracket_thickness - DIFFERENCE_CLEARANCE, 0 ])
-        rotate([ -90, 0, 0 ])
-            cylinder(
-                r = gate_screw_r + screw_hole_clearance,
-                h = bracket_thickness + DIFFERENCE_CLEARANCE
-                );
+    hull()
+    {
+        // top
+        translate([
+            bracket_x / 2,
+            -DIFFERENCE_CLEARANCE,
+            top_percent * bracket_z
+            ])
+            rotate([ -90, 0, 0 ])
+                cylinder(
+                    r = gate_screw_r + screw_hole_clearance,
+                    h = bracket_thickness + DIFFERENCE_CLEARANCE
+                    );
+
+        // bottom
+        translate([
+            bracket_x / 2,
+            -DIFFERENCE_CLEARANCE,
+            bottom_percent * bracket_z
+            ])
+            rotate([ -90, 0, 0 ])
+                cylinder(
+                    r = gate_screw_r + screw_hole_clearance,
+                    h = bracket_thickness + DIFFERENCE_CLEARANCE
+                    );
+    }
+
+    // nut
+    hull()
+    {
+        // top
+        translate([
+            bracket_x / 2,
+            bracket_thickness - DIFFERENCE_CLEARANCE,
+            top_percent * bracket_z
+            ])
+            rotate([ -90, 0, 0 ])
+                cylinder(
+                    r = gate_mount_screw_nut_r + screw_nut_clearance,
+                    h = gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE * 2,
+                    $fn = 6
+                    );
+
+        // bottom
+        translate([
+            bracket_x / 2,
+            bracket_thickness - DIFFERENCE_CLEARANCE,
+            bottom_percent * bracket_z
+            ])
+            rotate([ -90, 0, 0 ])
+                cylinder(
+                    r = gate_mount_screw_nut_r + screw_nut_clearance,
+                    h = gate_mount_screw_nut_h + DIFFERENCE_CLEARANCE * 2,
+                    $fn = 6
+                    );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
