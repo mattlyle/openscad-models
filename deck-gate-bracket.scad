@@ -7,9 +7,15 @@ include <modules/utils.scad>
 
 // TODO: roll these into the module as M4 and M5
 
+// TODO: latch side really needs to be split into two versions... a top-latch and bottom-latch
+// TODO: top latch side needs to be extended up 1cm+
+// TODO: bottom latch side needs to be extended down and possibly have a cutout to wrap around the horizontal bar
+// TODO: somehow we need to stamp the version number into this and other models
+// TODO: for the latch side window cutouts, the back side is too big
+
 bar_x = 39.0;
-bar_single_y = 39.0;
-bar_combined_y = 48.5;
+bar_latch_side_y = 39.0;
+bar_spool_side_y = 48.5;
 
 screw_hole_r = 3.86 / 2;
 screw_washer_r = 8.9 / 2;
@@ -29,9 +35,9 @@ gate_mount_screw_nut_r = 8.1 / 2; // measured as 7.8 but not fitting?!
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-// render_mode = "print-single";
-render_mode = "print-combined";
+render_mode = "preview";
+// render_mode = "print-latch-side";
+// render_mode = "print-spool-side";
 
 bracket_z = 75.0;
 
@@ -69,7 +75,7 @@ bracket_x = bar_x + bar_clearance * 2
 
 if( render_mode == "preview" )
 {
-    // single
+    // latch-side
     translate([ flange_width, 0, 0 ])
     {
         DeckGatePostPreview( true );
@@ -82,7 +88,7 @@ if( render_mode == "preview" )
             DeckGateBracket( true, false );
     }
 
-    // combined
+    // spool side
     translate([ 100, 0, 0 ])
     {
         DeckGatePostPreview( false );
@@ -95,7 +101,7 @@ if( render_mode == "preview" )
             DeckGateBracket( false, false );
     }
 }
-else if( render_mode == "print-single" )
+else if( render_mode == "print-latch-side" )
 {
     translate([ flange_width, 0, 0 ])
     {
@@ -107,7 +113,7 @@ else if( render_mode == "print-single" )
             DeckGateBracket( true, false );
     }
 }
-else if( render_mode == "print-combined" )
+else if( render_mode == "print-spool-side" )
 {
     translate([ flange_width, 0, 0 ])
     {
@@ -126,9 +132,9 @@ else
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGateBracket( is_single = true, is_front = true )
+module DeckGateBracket( is_latch_side = true, is_front = true )
 {
-    bracket_y = ( is_single ? bar_single_y : bar_combined_y )
+    bracket_y = ( is_latch_side ? bar_latch_side_y : bar_spool_side_y )
         + bar_clearance * 2
         + gate_mount_screw_nut_h
         + bracket_thickness * 2;
@@ -147,7 +153,7 @@ module DeckGateBracket( is_single = true, is_front = true )
                     r = bracket_thickness,
                     round_top = false,
                     round_bottom = false,
-                    round_front = is_single
+                    round_front = is_latch_side
                     );
 
             // left flange
@@ -166,7 +172,7 @@ module DeckGateBracket( is_single = true, is_front = true )
                 ])
                 DeckGateBracketFlange( false, is_front );
 
-            if( is_front && !is_single )
+            if( is_front && !is_latch_side )
             {
                 // hinge_side_angle
                 translate([ bracket_x, 0, 0 ])
@@ -187,7 +193,7 @@ module DeckGateBracket( is_single = true, is_front = true )
             ])
             cube([
                 bar_x + bar_clearance * 2,
-                ( is_single ? bar_single_y : bar_combined_y ) + bar_clearance * 2,
+                ( is_latch_side ? bar_latch_side_y : bar_spool_side_y ) + bar_clearance * 2,
                 bracket_z + DIFFERENCE_CLEARANCE * 2
                 ]);
 
@@ -205,7 +211,7 @@ module DeckGateBracket( is_single = true, is_front = true )
 
         if( is_front )
         {
-            if( is_single )
+            if( is_latch_side )
             {
                 // latch_screw_opening_percent
                 bottom_percent = ( 0.5 - latch_screw_opening_percent ) / 2;
@@ -263,7 +269,7 @@ module DeckGateBracket( is_single = true, is_front = true )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGatePostPreview( is_single = true )
+module DeckGatePostPreview( is_latch_side = true )
 {
     % translate([
         bracket_thickness + bar_clearance,
@@ -272,7 +278,7 @@ module DeckGatePostPreview( is_single = true )
         ])
         cube([
             bar_x,
-            is_single ? bar_single_y : bar_combined_y,
+            is_latch_side ? bar_latch_side_y : bar_spool_side_y,
             post_preview_z
             ]);
 }
