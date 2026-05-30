@@ -24,7 +24,7 @@ nut_r = 7.0 / 2;
 nut_h = 3.0;
 
 gate_screw_separation_latch_side_z = 51.0;
-gate_screw_separation_hinge_side_z = 19.5;
+gate_screw_separation_spool_side_z = 19.5;
 
 gate_screw_r = 4.8 / 2; // M4
 
@@ -62,7 +62,7 @@ back_side_reduction_z = 10.0;
 
 latch_screw_opening_percent = 0.28;
 
-hinge_side_angle = 30;
+spool_side_angle = 30;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -177,13 +177,13 @@ module DeckGateBracket( is_latch_side = true, is_front = true )
 
             if( is_front && !is_latch_side )
             {
-                // hinge_side_angle
+                // spool_side_angle
                 translate([ bracket_x, 0, 0 ])
                     rotate([ 0, 0, 180 ])
                         PieSlicePrism(
                             bracket_x,
                             bracket_z,
-                            hinge_side_angle
+                            spool_side_angle
                             );
             }
         }
@@ -228,16 +228,16 @@ module DeckGateBracket( is_latch_side = true, is_front = true )
             }
             else
             {
-                // hinge side screw holes
+                // spool side screw holes
                 translate([ bracket_x, 0, 0 ])
-                    rotate([ 0, 0, hinge_side_angle ])
+                    rotate([ 0, 0, spool_side_angle ])
                         translate([ -bracket_x / 2, 0, 0 ])
                         {
                             // top
-                            DeckGateBracketMountHingeSideScrewHole( false );
+                            DeckGateBracketMountSpoolSideScrewHole( false );
 
                             // bottom
-                            DeckGateBracketMountHingeSideScrewHole( true );
+                            DeckGateBracketMountSpoolSideScrewHole( true );
                         }
             }
         }
@@ -433,13 +433,13 @@ module DeckGateBracketMountLatchSideScrewWindow( is_top )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGateBracketMountHingeSideScrewHole( is_top )
+module DeckGateBracketMountSpoolSideScrewHole( is_top )
 {
     hex_cutout = 26; // I don't know how to calculate this, it's just big enough to fit the nut
 
     hole_z = is_top
-        ? ( bracket_z / 2 - gate_screw_separation_hinge_side_z / 2 )
-        : ( bracket_z / 2 + gate_screw_separation_hinge_side_z / 2 );
+        ? ( bracket_z / 2 - gate_screw_separation_spool_side_z / 2 )
+        : ( bracket_z / 2 + gate_screw_separation_spool_side_z / 2 );
 
     translate([ 0, 0, hole_z ])
     {
