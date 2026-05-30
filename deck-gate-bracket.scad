@@ -78,7 +78,8 @@ if( render_mode == "preview" )
     // latch-side
     translate([ flange_width, 0, 0 ])
     {
-        DeckGatePostPreview( true );
+        translate([ bar_clearance, 0, 0 ])
+            DeckGatePostPreview( true );
 
         // front
         DeckGateBracket( true, true );
@@ -91,7 +92,8 @@ if( render_mode == "preview" )
     // spool side
     translate([ 100, 0, 0 ])
     {
-        DeckGatePostPreview( false );
+        translate([ bar_clearance, 0, 0 ])
+            DeckGatePostPreview( false );
 
         // front
         DeckGateBracket( false, true );
