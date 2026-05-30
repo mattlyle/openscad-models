@@ -43,7 +43,8 @@ bracket_z = 75.0;
 
 bracket_thickness = 3.6;
 
-post_preview_z = 100;
+post_preview_z = 180;
+post_preview_offset_z = -40;
 
 bar_clearance = 0.2;
 
@@ -276,7 +277,7 @@ module DeckGatePostPreview( is_latch_side = true )
     % translate([
         bracket_thickness + bar_clearance,
         bracket_thickness + bar_clearance,
-        -( post_preview_z - bracket_z ) / 2
+        post_preview_offset_z
         ])
         cube([
             bar_x,
