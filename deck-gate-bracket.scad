@@ -49,10 +49,6 @@ bracket_latch_side_bottom_front_extra_z = 40.0;
 flange_screw_hole_top_percent_z    = 0.7;
 flange_screw_hole_bottom_percent_z = 0.3;
 
-flange_hole_offset_z_latch_top    = 0;
-flange_hole_offset_z_latch_bottom = 0;
-flange_hole_offset_z_spool        = 0;
-
 bracket_thickness = 3.6;
 
 post_preview_z = 180;
@@ -101,13 +97,6 @@ function BarY( mode ) =
     IsLatchSide( mode )
         ? bar_latch_side_y
         : bar_spool_side_y;
-
-function FlangeHoleOffsetZ( mode, is_front ) =
-    mode == MODE_LATCH_SIDE_TOP
-        ? flange_hole_offset_z_latch_top
-        : mode == MODE_LATCH_SIDE_BOTTOM
-            ? ( is_front ? flange_hole_offset_z_latch_bottom + bracket_latch_side_bottom_front_extra_z : flange_hole_offset_z_latch_bottom )
-            : flange_hole_offset_z_spool;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -356,6 +345,10 @@ module DeckGateBracketFlange( is_left, mode, is_front )
     flange_screw_hole_top_z = bracket_back_z * flange_screw_hole_top_percent_z;
     flange_screw_hole_bottom_z = bracket_back_z * flange_screw_hole_bottom_percent_z;
 
+    flange_offset_z = mode == MODE_LATCH_SIDE_BOTTOM && is_front
+        ? bracket_latch_side_bottom_front_extra_z
+        : 0;
+
     difference()
     {
         RoundedCubeAlt2(
@@ -372,11 +365,11 @@ module DeckGateBracketFlange( is_left, mode, is_front )
             );
 
         // top screw hole
-        translate([ 0, 0, flange_screw_hole_top_z + FlangeHoleOffsetZ( mode, is_front ) ])
+        translate([ 0, 0, flange_screw_hole_top_z + flange_offset_z ])
             DeckGateBracketFlangeScrewHole( is_front );
 
         // bottom screw hole
-        translate([ 0, 0, flange_screw_hole_bottom_z + FlangeHoleOffsetZ( mode, is_front ) ])
+        translate([ 0, 0, flange_screw_hole_bottom_z + flange_offset_z ])
             DeckGateBracketFlangeScrewHole( is_front );
     }
 }
