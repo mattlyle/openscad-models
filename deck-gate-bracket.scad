@@ -6,10 +6,7 @@ include <modules/utils.scad>
 // measurements
 
 // TODO: roll these into the module as M4 and M5
-// TODO: top latch side needs to be extended up 1cm+
-// TODO: bottom latch side needs to be extended down and possibly have a cutout to wrap around the horizontal bar
 // TODO: somehow we need to stamp the version number into this and other models
-// TODO: for the latch side window cutouts, the back side is too big
 
 bar_x = 39.0;
 bar_latch_side_y = 39.0;
@@ -42,12 +39,12 @@ MODE_LATCH_SIDE_TOP    = "LatchSideTop";
 MODE_LATCH_SIDE_BOTTOM = "LatchSideBottom";
 MODE_SPOOL_SIDE        = "SpoolSide";
 
-bracket_latch_side_top_z    = 90.0;
-bracket_latch_side_bottom_z = 110.0;
-bracket_spool_side_z        = 75.0;
+bracket_latch_side_top_back_z    = 75.0;
+bracket_latch_side_bottom_back_z = 75.0;
+bracket_spool_side_z             = 75.0;
 
-// bracket_latch_side_top_front_extra_z = 15.0;
-// bracket_latch_side_bottom_front_extra_z = 35.0;
+bracket_latch_side_top_front_extra_z = 15.0;
+bracket_latch_side_bottom_front_extra_z = 40.0;
 
 flange_screw_hole_top_percent_z    = 0.7;
 flange_screw_hole_bottom_percent_z = 0.3;
@@ -93,11 +90,11 @@ bracket_x = bar_x + bar_clearance * 2
 
 function IsLatchSide( mode ) = mode == MODE_LATCH_SIDE_TOP || mode == MODE_LATCH_SIDE_BOTTOM;
 
-function BracketZ( mode ) =
+function BracketZ( mode, is_front ) =
     mode == MODE_LATCH_SIDE_TOP
-        ? bracket_latch_side_top_z
+        ? ( is_front ? ( bracket_latch_side_top_back_z + bracket_latch_side_top_front_extra_z ) : bracket_latch_side_top_back_z )
         : mode == MODE_LATCH_SIDE_BOTTOM
-            ? bracket_latch_side_bottom_z
+            ? ( is_front ? ( bracket_latch_side_bottom_back_z + bracket_latch_side_bottom_front_extra_z ) : bracket_latch_side_bottom_back_z )
             : bracket_spool_side_z;
 
 function BarY( mode ) =
@@ -105,11 +102,11 @@ function BarY( mode ) =
         ? bar_latch_side_y
         : bar_spool_side_y;
 
-function FlangeHoleOffsetZ( mode ) =
+function FlangeHoleOffsetZ( mode, is_front ) =
     mode == MODE_LATCH_SIDE_TOP
         ? flange_hole_offset_z_latch_top
         : mode == MODE_LATCH_SIDE_BOTTOM
-            ? ( flange_hole_offset_z_latch_bottom + 0 )
+            ? ( is_front ? flange_hole_offset_z_latch_bottom + bracket_latch_side_bottom_front_extra_z : flange_hole_offset_z_latch_bottom )
             : flange_hole_offset_z_spool;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,7 +134,8 @@ if( render_mode == "preview" )
             DeckGatePostPreview( MODE_LATCH_SIDE_BOTTOM );
 
         // front
-        DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, true );
+        translate([ 0, 0, -bracket_latch_side_bottom_front_extra_z ])
+            DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, true );
 
         // back
         translate([ 0, preview_separation, 0 ])
@@ -203,7 +201,7 @@ else
 
 module DeckGateBracket( mode, is_front = true )
 {
-    bracket_z = BracketZ( mode );
+    bracket_z = BracketZ( mode, is_front );
 
     bracket_y = BarY( mode )
         + bar_clearance * 2
@@ -352,7 +350,11 @@ module DeckGatePostPreview( mode )
 
 module DeckGateBracketFlange( is_left, mode, is_front )
 {
-    bracket_z = BracketZ( mode );
+    bracket_z = BracketZ( mode, is_front );
+
+    bracket_back_z = BracketZ( mode, false );
+    flange_screw_hole_top_z = bracket_back_z * flange_screw_hole_top_percent_z;
+    flange_screw_hole_bottom_z = bracket_back_z * flange_screw_hole_bottom_percent_z;
 
     difference()
     {
@@ -370,11 +372,11 @@ module DeckGateBracketFlange( is_left, mode, is_front )
             );
 
         // top screw hole
-        translate([ 0, 0, flange_screw_hole_top_z + FlangeHoleOffsetZ( mode ) ])
+        translate([ 0, 0, flange_screw_hole_top_z + FlangeHoleOffsetZ( mode, is_front ) ])
             DeckGateBracketFlangeScrewHole( is_front );
 
         // bottom screw hole
-        translate([ 0, 0, flange_screw_hole_bottom_z + FlangeHoleOffsetZ( mode ) ])
+        translate([ 0, 0, flange_screw_hole_bottom_z + FlangeHoleOffsetZ( mode, is_front ) ])
             DeckGateBracketFlangeScrewHole( is_front );
     }
 }
@@ -432,9 +434,7 @@ module DeckGateBracketMountLatchSideScrewWindow( mode, is_top )
 {
     assert( mode == MODE_LATCH_SIDE_TOP || mode == MODE_LATCH_SIDE_BOTTOM, str( "invalid mode: ", mode ) );
 
-    bracket_z = BracketZ( mode );
-
-    // latch_screw_window_separation_z
+    bracket_z = BracketZ( mode, true );
 
     // if the mode is top, then anchor to top, else anchor to bottom
 
@@ -445,8 +445,6 @@ module DeckGateBracketMountLatchSideScrewWindow( mode, is_top )
     bottom_window_offset_z = mode == MODE_LATCH_SIDE_TOP
         ? top_window_offset_z - latch_screw_window_separation_z - latch_screw_window_z
         : latch_screw_window_separation_z;
-
-    // latch_screw_window_z
 
     if( is_top )
     {
@@ -459,7 +457,6 @@ module DeckGateBracketMountLatchSideScrewWindow( mode, is_top )
     }
     else
     {
-        echo("bottom");
         translate([
             bracket_x / 2,
             -DIFFERENCE_CLEARANCE,
@@ -488,7 +485,7 @@ module _DeckGateBracketMountLatchSideScrewWindowHelper()
             rotate([ -90, 0, 0 ])
                 cylinder(
                     r = window_screw_hole_r,
-                    h = bracket_thickness + DIFFERENCE_CLEARANCE
+                    h = bracket_thickness + DIFFERENCE_CLEARANCE * 2
                     );
 
         // bottom
@@ -500,7 +497,7 @@ module _DeckGateBracketMountLatchSideScrewWindowHelper()
             rotate([ -90, 0, 0 ])
                 cylinder(
                     r = window_screw_hole_r,
-                    h = bracket_thickness + DIFFERENCE_CLEARANCE
+                    h = bracket_thickness + DIFFERENCE_CLEARANCE * 2
                     );
     }
 
@@ -510,7 +507,7 @@ module _DeckGateBracketMountLatchSideScrewWindowHelper()
         // top
         translate([
             0,
-            bracket_thickness - DIFFERENCE_CLEARANCE,
+            bracket_thickness,
             latch_screw_window_z
             ])
             rotate([ -90, 0, 0 ])
@@ -523,7 +520,7 @@ module _DeckGateBracketMountLatchSideScrewWindowHelper()
         // bottom
         translate([
             0,
-            bracket_thickness - DIFFERENCE_CLEARANCE,
+            bracket_thickness,
             0
             ])
             rotate([ -90, 0, 0 ])
@@ -539,7 +536,7 @@ module _DeckGateBracketMountLatchSideScrewWindowHelper()
 
 module DeckGateBracketMountSpoolSideScrewHole( mode, is_top )
 {
-    bracket_z = BracketZ( mode );
+    bracket_z = BracketZ( mode, true );
 
     hex_cutout = 26; // I don't know how to calculate this, it's just big enough to fit the nut
 
