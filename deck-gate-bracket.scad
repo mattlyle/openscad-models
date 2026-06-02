@@ -44,7 +44,7 @@ bracket_latch_side_bottom_back_z = 75.0;
 bracket_spool_side_z             = 75.0;
 
 bracket_latch_side_top_front_extra_z = 15.0;
-bracket_latch_side_bottom_front_extra_z = 40.0;
+bracket_latch_side_bottom_front_extra_z = 60.0;
 
 flange_screw_hole_top_percent_z    = 0.7;
 flange_screw_hole_bottom_percent_z = 0.3;
@@ -339,7 +339,7 @@ module DeckGatePostPreview( mode )
 
 module DeckGateBracketFlange( is_left, mode, is_front )
 {
-    bracket_z = BracketZ( mode, is_front );
+    // bracket_z = BracketZ( mode, is_front );
 
     bracket_back_z = BracketZ( mode, false );
     flange_screw_hole_top_z = bracket_back_z * flange_screw_hole_top_percent_z;
@@ -351,18 +351,19 @@ module DeckGateBracketFlange( is_left, mode, is_front )
 
     difference()
     {
-        RoundedCubeAlt2(
-            flange_width,
-            bracket_thickness + flange_shroud_extra,
-            bracket_z,
-            r = 1.0,
-            round_top = false,
-            round_bottom = false,
-            round_left = is_left,
-            round_right = !is_left,
-            round_front = true,
-            round_back = true
-            );
+        translate([ 0, 0, flange_offset_z ])
+            RoundedCubeAlt2(
+                flange_width,
+                bracket_thickness + flange_shroud_extra,
+                bracket_back_z,
+                r = 1.0,
+                round_top = false,
+                round_bottom = false,
+                round_left = is_left,
+                round_right = !is_left,
+                round_front = true,
+                round_back = true
+                );
 
         // top screw hole
         translate([ 0, 0, flange_screw_hole_top_z + flange_offset_z ])
