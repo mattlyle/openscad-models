@@ -83,6 +83,11 @@ preview_text_font_size = 10;
 preview_text_font = "Liberation Sans";
 preview_text_color = "white";
 
+// version_tag = "v17";
+// version_tag_depth = 0.4;
+// version_tag_font_size = 4;
+// version_tag_font = "Liberation Sans";
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -110,6 +115,14 @@ function BarY( mode ) =
     IsLatchSide( mode )
         ? bar_latch_side_y
         : bar_spool_side_y;
+
+// function GenerateLabelText( mode ) =
+//     str( mode == MODE_LATCH_SIDE_TOP
+//         ? "latch-top"
+//         : mode == MODE_LATCH_SIDE_BOTTOM
+//             ? "latch-bottom"
+//             : "spool"
+//         , "-", version_tag );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -234,7 +247,7 @@ else
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module DeckGateBracket( mode, is_front = true )
+module DeckGateBracket( mode, is_front )
 {
     bracket_z = BracketZ( mode, is_front );
 
@@ -244,6 +257,25 @@ module DeckGateBracket( mode, is_front = true )
         + bracket_thickness * 2;
 
     front_bracket_offset_y = -bracket_thickness - flange_shroud_extra;
+
+    // label_text = GenerateLabelText( mode );
+    // label_offset_x = 0;//is_front ? front_bracket_offset_y : 0;
+
+    // label_offset_y = mode == MODE_LATCH_SIDE_TOP
+    //     ? front_face_y
+    //     : mode == MODE_LATCH_SIDE_BOTTOM
+    //         ? 100
+    //         : 100;
+
+    // translate([ bracket_x - bracket_thickness, label_offset_y, label_offset_x ])
+    //     rotate([ 0, -90, 0 ])
+    //         TextLabel(
+    //             label_text,
+    //             depth = version_tag_depth,
+    //             font_size = version_tag_font_size,
+    //             font = version_tag_font,
+    //             color = "red"
+    //             );
 
     difference()
     {
