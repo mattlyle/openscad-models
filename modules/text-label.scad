@@ -7,7 +7,7 @@ function GetTextMetrics( text_string, font_size, font ) = textmetrics( text = te
 module TextLabel(
     text_string,
     depth = 0.5,
-    font_size,
+    font_size = 12,
     font = "Liberation Sans",
     color = undef,
     halign = "left",

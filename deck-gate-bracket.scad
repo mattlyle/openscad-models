@@ -1,5 +1,6 @@
 include <modules/rounded-cube.scad>
 include <modules/pie-slice-prism.scad>
+include <modules/text-label.scad>
 include <modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +78,11 @@ latch_horizontal_bar_cutout_z = 30;
 
 spool_side_angle = 30;
 
+preview_text_depth = 0.01;
+preview_text_font_size = 10;
+preview_text_font = "Liberation Sans";
+preview_text_color = "white";
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -121,6 +127,17 @@ if( render_mode == "preview" )
         // back
         translate([ 0, preview_separation, 0 ])
             DeckGateBracket( MODE_LATCH_SIDE_TOP, false );
+
+        translate([ 0, -75, 0 ])
+            MultilineTextLabel(
+                [ "Latch Side", "Top" ],
+                centered_in_area_x = bracket_x,
+                fixed_line_spacing = preview_text_font_size / 2,
+                depth = preview_text_depth,
+                font_size = preview_text_font_size,
+                font = preview_text_font,
+                color = preview_text_color
+                );
     }
 
     // latch-side bottom
@@ -136,6 +153,17 @@ if( render_mode == "preview" )
         // back
         translate([ 0, preview_separation, 0 ])
             DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, false );
+
+        translate([ 0, -75, 0 ])
+            MultilineTextLabel(
+                [ "Latch Side", "Bottom" ],
+                centered_in_area_x = bracket_x,
+                fixed_line_spacing = preview_text_font_size / 2,
+                depth = preview_text_depth,
+                font_size = preview_text_font_size,
+                font = preview_text_font,
+                color = preview_text_color
+                );
     }
 
     // spool side
@@ -150,6 +178,17 @@ if( render_mode == "preview" )
         // back
         translate([ 0, preview_separation, 0 ])
             DeckGateBracket( MODE_SPOOL_SIDE, false );
+
+        translate([ 0, -75, 0 ])
+            MultilineTextLabel(
+                [ "Spool Side", "(Both)" ],
+                centered_in_area_x = bracket_x,
+                fixed_line_spacing = preview_text_font_size / 2,
+                depth = preview_text_depth,
+                font_size = preview_text_font_size,
+                font = preview_text_font,
+                color = preview_text_color
+                );
     }
 }
 else if( render_mode == "print-latch-side-top" )
