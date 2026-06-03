@@ -71,6 +71,10 @@ back_side_reduction_z = 10.0;
 latch_screw_window_z = 25.0;
 latch_screw_window_separation_z = 10.0;
 
+latch_horizontal_bar_cutout_offset_top_z = 75;
+latch_horizontal_bar_cutout_offset_bottom_z = 30;
+latch_horizontal_bar_cutout_z = 30;
+
 spool_side_angle = 30;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,6 +84,9 @@ $fn = $preview ? 32 : 128;
 
 bracket_x = bar_x + bar_clearance * 2
     + bracket_thickness * 2;
+
+front_face_y = bracket_thickness + gate_mount_screw_nut_h;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -244,7 +251,7 @@ module DeckGateBracket( mode, is_front = true )
         // cut out the post
         translate([
             bracket_thickness + bar_clearance,
-            bracket_thickness + gate_mount_screw_nut_h,
+            front_face_y,
             -DIFFERENCE_CLEARANCE
             ])
             cube([
@@ -274,6 +281,21 @@ module DeckGateBracket( mode, is_front = true )
 
                 // bottom window
                 DeckGateBracketMountLatchSideScrewWindow( mode, false );
+
+                // cut out the sides for the horizontal bars
+                assert( mode == MODE_LATCH_SIDE_TOP || mode == MODE_LATCH_SIDE_BOTTOM, str( "Unexpected mode: ", mode ) );
+                translate([
+                    -flange_width - DIFFERENCE_CLEARANCE,
+                    front_face_y - DIFFERENCE_CLEARANCE,
+                    ( mode == MODE_LATCH_SIDE_TOP
+                        ? latch_horizontal_bar_cutout_offset_top_z
+                        : latch_horizontal_bar_cutout_offset_bottom_z ) - DIFFERENCE_CLEARANCE
+                    ])
+                    cube([
+                        bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                        bracket_y,
+                        latch_horizontal_bar_cutout_z
+                    ]);
             }
             else
             {
@@ -325,7 +347,7 @@ module DeckGatePostPreview( mode )
 {
     % translate([
         bracket_thickness + bar_clearance,
-        bracket_thickness + gate_mount_screw_nut_h + bar_clearance,
+        front_face_y + bar_clearance,
         post_preview_offset_z
         ])
         cube([
