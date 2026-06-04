@@ -24,7 +24,6 @@ screw_washer_r = 8.9 / 2;
 nut_r = 7.0 / 2;
 nut_h = 3.0;
 
-gate_screw_separation_latch_side_z = 51.0;
 gate_screw_separation_spool_side_z = 19.5;
 
 gate_screw_r = 4.8 / 2; // M4
@@ -32,6 +31,18 @@ gate_screw_r = 4.8 / 2; // M4
 gate_mount_screw_r = 5.2 / 2; // M5
 gate_mount_screw_nut_h = 5.0;
 gate_mount_screw_nut_r = 8.1 / 2; // measured as 7.8 but not fitting?!
+
+latch_z = 70.8;
+latch_main_x = 17.0;
+latch_pyramid_x = 13.6;
+latch_total_x = 47.9;
+latch_bend_y = 23.0;
+latch_bend_z = 40.6;
+latch_y = 5.3;
+latch_screw_separation_z = 51.0;
+latch_base_flange_x = 3.5;
+latch_base_flange_y = 18.8;
+latch_holes_offset_x = 11.1;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -64,6 +75,9 @@ horizontal_post_weld_preview_size = 6;
 rear_post_preview_y = 60;
 rear_post_weld_preview_size = 6;
 rear_post_angle = -35;
+latch_preview_y = -20;
+latch_preview_top_z = 50;
+latch_preview_bottom_z = 20;
 
 bar_clearance = 0.2;
 
@@ -82,9 +96,9 @@ back_side_reduction_z = 10.0;
 latch_screw_window_z = 25.0;
 latch_screw_window_separation_z = 10.0;
 
-latch_horizontal_bar_cutout_offset_top_z = 75;
-latch_horizontal_bar_cutout_offset_bottom_z = 30;
-latch_horizontal_bar_cutout_z = 30;
+// latch_horizontal_bar_cutout_offset_top_z = 75;
+// latch_horizontal_bar_cutout_offset_bottom_z = 30;
+// latch_horizontal_bar_cutout_z = 30;
 
 spool_side_angle = 30;
 
@@ -140,15 +154,24 @@ if( render_mode == "preview" )
     // latch-side top
     translate([ flange_width, 0, 0 ])
     {
+        // post preview
         translate([ bar_clearance, 0, 0 ])
             DeckGatePostPreview( MODE_LATCH_SIDE_TOP );
 
+        // latch preview
+        translate([
+            vertical_post_x / 2 - latch_holes_offset_x / 2,
+            latch_preview_y,
+            latch_preview_top_z
+            ])
+            DeckGateLatchPreview();
+
         // front
-        // DeckGateBracket( MODE_LATCH_SIDE_TOP, true );
+        DeckGateBracket( MODE_LATCH_SIDE_TOP, true );
 
         // back
-        // translate([ 0, preview_separation, 0 ])
-        //     DeckGateBracket( MODE_LATCH_SIDE_TOP, false );
+        translate([ 0, preview_separation, 0 ])
+            DeckGateBracket( MODE_LATCH_SIDE_TOP, false );
 
         translate([ 0, -75, 0 ])
             MultilineTextLabel(
@@ -165,16 +188,25 @@ if( render_mode == "preview" )
     // latch-side bottom
     translate([ 200, 0, 0 ])
     {
+        // post preview
         translate([ bar_clearance, 0, 0 ])
             DeckGatePostPreview( MODE_LATCH_SIDE_BOTTOM );
 
+        // latch preview
+        translate([
+            vertical_post_x / 2 - latch_holes_offset_x / 2,
+            latch_preview_y,
+            latch_preview_bottom_z
+            ])
+            DeckGateLatchPreview();
+
         // front
-        // translate([ 0, 0, -bracket_latch_side_bottom_front_extra_z ])
-        //     DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, true );
+        translate([ 0, 0, -bracket_latch_side_bottom_front_extra_z ])
+            DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, true );
 
         // back
-        // translate([ 0, preview_separation, 0 ])
-        //     DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, false );
+        translate([ 0, preview_separation, 0 ])
+            DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, false );
 
         translate([ 0, -75, 0 ])
             MultilineTextLabel(
@@ -363,19 +395,19 @@ module DeckGateBracket( mode, is_front )
                 DeckGateBracketMountLatchSideScrewWindow( mode, false );
 
                 // cut out the sides for the horizontal bars
-                assert( mode == MODE_LATCH_SIDE_TOP || mode == MODE_LATCH_SIDE_BOTTOM, str( "Unexpected mode: ", mode ) );
-                translate([
-                    -flange_width - DIFFERENCE_CLEARANCE,
-                    front_face_y - DIFFERENCE_CLEARANCE,
-                    ( mode == MODE_LATCH_SIDE_TOP
-                        ? latch_horizontal_bar_cutout_offset_top_z
-                        : latch_horizontal_bar_cutout_offset_bottom_z ) - DIFFERENCE_CLEARANCE
-                    ])
-                    cube([
-                        bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
-                        bracket_y,
-                        latch_horizontal_bar_cutout_z
-                    ]);
+                // assert( mode == MODE_LATCH_SIDE_TOP || mode == MODE_LATCH_SIDE_BOTTOM, str( "Unexpected mode: ", mode ) );
+                // translate([
+                //     -flange_width - DIFFERENCE_CLEARANCE,
+                //     front_face_y - DIFFERENCE_CLEARANCE,
+                //     ( mode == MODE_LATCH_SIDE_TOP
+                //         ? latch_horizontal_bar_cutout_offset_top_z
+                //         : latch_horizontal_bar_cutout_offset_bottom_z ) - DIFFERENCE_CLEARANCE
+                //     ])
+                //     cube([
+                //         bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                //         bracket_y,
+                //         latch_horizontal_bar_cutout_z
+                //     ]);
             }
             else
             {
@@ -457,7 +489,7 @@ module DeckGatePostPreview( mode )
                 );
 
     // left horizontal post
-    %translate([
+    % translate([
         bracket_thickness + bar_clearance - horizontal_post_preview_x,
         front_face_y
             + bar_clearance
@@ -471,7 +503,7 @@ module DeckGatePostPreview( mode )
             ]);
 
     // back slanted weld
-    %translate([
+    % translate([
         bracket_thickness
             + bar_clearance
             + vertical_post_x / 2
@@ -492,7 +524,7 @@ module DeckGatePostPreview( mode )
                 );
 
     // back slanted post
-    %translate([
+    % translate([
         bracket_thickness
             + bar_clearance
             + vertical_post_x / 2
@@ -511,7 +543,86 @@ module DeckGatePostPreview( mode )
                 rear_post_preview_y,
                 rear_post_z
                 ]);
+}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module DeckGateLatchPreview()
+{
+    // flat main
+    # difference()
+    {
+        translate([ 0, 0, 0 ])
+            cube([
+                latch_main_x,
+                latch_y,
+                latch_z
+                ]);
+
+        // cut out the bottom screw holes
+        translate([
+            latch_holes_offset_x,
+            -DIFFERENCE_CLEARANCE,
+            ( latch_z - latch_screw_separation_z ) / 2
+            ])
+            rotate([ -90, 0, 0 ])
+                cylinder( r = gate_mount_screw_r, h = latch_y + DIFFERENCE_CLEARANCE * 2 );
+
+        // cut out the top screw holes
+        translate([
+            latch_holes_offset_x,
+            -DIFFERENCE_CLEARANCE,
+            latch_z - ( latch_z - latch_screw_separation_z ) / 2
+            ])
+            rotate([ -90, 0, 0 ])
+                cylinder( r = gate_mount_screw_r, h = latch_y + DIFFERENCE_CLEARANCE * 2 );
+    }
+
+    // base flange
+    # translate([
+        0,
+        -latch_base_flange_y + latch_y,
+        0
+        ])
+        cube([
+            latch_base_flange_x,
+            latch_base_flange_y - latch_y,
+            latch_z
+            ]);
+
+    // pyramid
+    # translate([
+        latch_main_x,
+        0,
+        latch_z
+        ])
+        rotate([ 0, 90, 0 ])
+            FlattenedPyramid(
+                latch_z,
+                latch_y,
+                latch_bend_z,
+                latch_y,
+                latch_pyramid_x
+                );
+
+    // arc (just fake it with a rounded cube)
+    # translate([
+        latch_main_x + latch_pyramid_x,
+        -latch_bend_y + latch_y,
+        ( latch_z - latch_bend_z ) / 2
+        ])
+            RoundedCubeAlt2(
+                latch_total_x - latch_main_x - latch_pyramid_x,
+                latch_bend_y,
+                latch_bend_z,
+                r = 10.0,
+                round_top = false,
+                round_bottom = false,
+                round_left = false,
+                round_right = true,
+                round_front = true,
+                round_back = true
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
