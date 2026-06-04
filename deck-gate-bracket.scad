@@ -1,5 +1,6 @@
 include <modules/rounded-cube.scad>
 include <modules/pie-slice-prism.scad>
+include <modules/flattened-pyramid.scad>
 include <modules/text-label.scad>
 include <modules/utils.scad>
 
@@ -9,9 +10,11 @@ include <modules/utils.scad>
 // TODO: roll these into the module as M4 and M5
 // TODO: somehow we need to stamp the version number into this and other models
 
-bar_x = 39.0;
-bar_latch_side_y = 39.0;
-bar_spool_side_y = 48.5;
+vertical_post_x = 39.0;
+vertical_post_latch_side_y = 39.0;
+vertical_post_spool_side_y = 48.5;
+horizontal_post_y = 14.0;
+horizontal_post_z = 14.0;
 
 screw_hole_r = 3.86 / 2;
 screw_washer_r = 8.9 / 2;
@@ -52,8 +55,10 @@ flange_screw_hole_bottom_percent_z = 0.3;
 
 bracket_thickness = 3.6;
 
-post_preview_z = 180;
-post_preview_offset_z = -40;
+vertical_post_preview_below_z = 90;
+vertical_post_preview_above_z = 80;
+horizontal_post_preview_x = 60;
+horizontal_post_weld_preview_size = 6;
 
 bar_clearance = 0.2;
 
@@ -93,11 +98,10 @@ preview_text_color = "white";
 
 $fn = $preview ? 32 : 128;
 
-bracket_x = bar_x + bar_clearance * 2
+bracket_x = vertical_post_x + bar_clearance * 2
     + bracket_thickness * 2;
 
 front_face_y = bracket_thickness + gate_mount_screw_nut_h;
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
@@ -113,8 +117,8 @@ function BracketZ( mode, is_front ) =
 
 function BarY( mode ) =
     IsLatchSide( mode )
-        ? bar_latch_side_y
-        : bar_spool_side_y;
+        ? vertical_post_latch_side_y
+        : vertical_post_spool_side_y;
 
 // function GenerateLabelText( mode ) =
 //     str( mode == MODE_LATCH_SIDE_TOP
@@ -135,11 +139,11 @@ if( render_mode == "preview" )
             DeckGatePostPreview( MODE_LATCH_SIDE_TOP );
 
         // front
-        DeckGateBracket( MODE_LATCH_SIDE_TOP, true );
+        // DeckGateBracket( MODE_LATCH_SIDE_TOP, true );
 
         // back
-        translate([ 0, preview_separation, 0 ])
-            DeckGateBracket( MODE_LATCH_SIDE_TOP, false );
+        // translate([ 0, preview_separation, 0 ])
+        //     DeckGateBracket( MODE_LATCH_SIDE_TOP, false );
 
         translate([ 0, -75, 0 ])
             MultilineTextLabel(
@@ -154,18 +158,18 @@ if( render_mode == "preview" )
     }
 
     // latch-side bottom
-    translate([ 100, 0, 0 ])
+    translate([ 200, 0, 0 ])
     {
         translate([ bar_clearance, 0, 0 ])
             DeckGatePostPreview( MODE_LATCH_SIDE_BOTTOM );
 
         // front
-        translate([ 0, 0, -bracket_latch_side_bottom_front_extra_z ])
-            DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, true );
+        // translate([ 0, 0, -bracket_latch_side_bottom_front_extra_z ])
+        //     DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, true );
 
         // back
-        translate([ 0, preview_separation, 0 ])
-            DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, false );
+        // translate([ 0, preview_separation, 0 ])
+        //     DeckGateBracket( MODE_LATCH_SIDE_BOTTOM, false );
 
         translate([ 0, -75, 0 ])
             MultilineTextLabel(
@@ -180,17 +184,17 @@ if( render_mode == "preview" )
     }
 
     // spool side
-    translate([ 200, 0, 0 ])
+    translate([ 400, 0, 0 ])
     {
         translate([ bar_clearance, 0, 0 ])
             DeckGatePostPreview( MODE_SPOOL_SIDE );
 
         // front
-        DeckGateBracket( MODE_SPOOL_SIDE, true );
+        // DeckGateBracket( MODE_SPOOL_SIDE, true );
 
         // back
-        translate([ 0, preview_separation, 0 ])
-            DeckGateBracket( MODE_SPOOL_SIDE, false );
+        // translate([ 0, preview_separation, 0 ])
+        //     DeckGateBracket( MODE_SPOOL_SIDE, false );
 
         translate([ 0, -75, 0 ])
             MultilineTextLabel(
@@ -326,7 +330,7 @@ module DeckGateBracket( mode, is_front )
             -DIFFERENCE_CLEARANCE
             ])
             cube([
-                bar_x + bar_clearance * 2,
+                vertical_post_x + bar_clearance * 2,
                 BarY( mode ) + bar_clearance * 2,
                 bracket_z + DIFFERENCE_CLEARANCE * 2
                 ]);
@@ -416,24 +420,59 @@ module DeckGateBracket( mode, is_front )
 
 module DeckGatePostPreview( mode )
 {
+    bracket_y = BarY( mode );
+
+    // vertical post
     % translate([
         bracket_thickness + bar_clearance,
         front_face_y + bar_clearance,
-        post_preview_offset_z
+        0
         ])
         cube([
-            bar_x,
+            vertical_post_x,
             BarY( mode ),
-            post_preview_z
+            vertical_post_preview_below_z + horizontal_post_z + vertical_post_preview_above_z
             ]);
+
+    // horizontal_post_weld_preview_size
+    %translate([
+        bracket_thickness + bar_clearance,
+        front_face_y
+            + bar_clearance
+            + ( bracket_y - horizontal_post_y - horizontal_post_weld_preview_size * 2 ) / 2,
+        vertical_post_preview_below_z - horizontal_post_weld_preview_size
+        ])
+        rotate([ 0, -90, 0 ])
+            FlattenedPyramid(
+                horizontal_post_y + horizontal_post_weld_preview_size * 2,
+                horizontal_post_y + horizontal_post_weld_preview_size * 2,
+                horizontal_post_z,
+                horizontal_post_y,
+                horizontal_post_weld_preview_size
+                );
+
+    // left horizontal post
+    %translate([
+        bracket_thickness + bar_clearance - horizontal_post_preview_x,
+        front_face_y
+            + bar_clearance
+            + ( bracket_y - horizontal_post_y ) / 2,
+        vertical_post_preview_below_z
+        ])
+        cube([
+            horizontal_post_preview_x - horizontal_post_weld_preview_size,
+            horizontal_post_y,
+            horizontal_post_z
+            ]);
+
+    // back slanted
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module DeckGateBracketFlange( is_left, mode, is_front )
 {
-    // bracket_z = BracketZ( mode, is_front );
-
     bracket_back_z = BracketZ( mode, false );
     flange_screw_hole_top_z = bracket_back_z * flange_screw_hole_top_percent_z;
     flange_screw_hole_bottom_z = bracket_back_z * flange_screw_hole_bottom_percent_z;
