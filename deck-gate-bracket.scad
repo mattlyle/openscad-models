@@ -15,6 +15,8 @@ vertical_post_latch_side_y = 39.0;
 vertical_post_spool_side_y = 48.5;
 horizontal_post_y = 14.0;
 horizontal_post_z = 14.0;
+rear_post_x = 14.0;
+rear_post_z = 14.0;
 
 screw_hole_r = 3.86 / 2;
 screw_washer_r = 8.9 / 2;
@@ -59,6 +61,9 @@ vertical_post_preview_below_z = 90;
 vertical_post_preview_above_z = 80;
 horizontal_post_preview_x = 60;
 horizontal_post_weld_preview_size = 6;
+rear_post_preview_y = 60;
+rear_post_weld_preview_size = 6;
+rear_post_angle = -35;
 
 bar_clearance = 0.2;
 
@@ -430,11 +435,11 @@ module DeckGatePostPreview( mode )
         ])
         cube([
             vertical_post_x,
-            BarY( mode ),
+            bracket_y,
             vertical_post_preview_below_z + horizontal_post_z + vertical_post_preview_above_z
             ]);
 
-    // horizontal_post_weld_preview_size
+    // left horizontal weld
     %translate([
         bracket_thickness + bar_clearance,
         front_face_y
@@ -465,7 +470,47 @@ module DeckGatePostPreview( mode )
             horizontal_post_z
             ]);
 
-    // back slanted
+    // back slanted weld
+    %translate([
+        bracket_thickness
+            + bar_clearance
+            + vertical_post_x / 2
+            - ( horizontal_post_y + horizontal_post_weld_preview_size * 2 ) / 2,
+        front_face_y + bar_clearance + bracket_y,
+        vertical_post_preview_below_z
+            - horizontal_post_weld_preview_size
+            + horizontal_post_y
+            + horizontal_post_weld_preview_size * 2
+        ])
+        rotate([ -90, 0, 0 ])
+            FlattenedPyramid(
+                horizontal_post_y + horizontal_post_weld_preview_size * 2,
+                horizontal_post_y + horizontal_post_weld_preview_size * 2,
+                horizontal_post_z,
+                horizontal_post_y,
+                horizontal_post_weld_preview_size
+                );
+
+    // back slanted post
+    %translate([
+        bracket_thickness
+            + bar_clearance
+            + vertical_post_x / 2
+            - rear_post_x / 2,
+        front_face_y + bar_clearance + bracket_y + horizontal_post_weld_preview_size,
+        vertical_post_preview_below_z
+        ])
+        multmatrix([
+            [ 1, 0, 0, 0 ],
+            [ 0, 1, 0, 0 ],
+            [ 0, tan( rear_post_angle ), 1, 0 ],
+            [ 0, 0, 0, 1 ]
+            ])
+            cube([
+                rear_post_x,
+                rear_post_preview_y,
+                rear_post_z
+                ]);
 
 }
 
