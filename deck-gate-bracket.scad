@@ -59,7 +59,7 @@ MODE_LATCH_SIDE_BOTTOM = "LatchSideBottom";
 MODE_SPOOL_SIDE        = "SpoolSide";
 
 bracket_latch_side_top_back_z    = 95.0;
-bracket_latch_side_bottom_back_z = 125.0;
+bracket_latch_side_bottom_back_z = 120.0;
 bracket_spool_side_z             = 75.0;
 
 flange_screw_hole_top_percent_z    = 0.7;
@@ -90,15 +90,17 @@ screw_hole_clearance = 0.3;
 washer_clearance = 0.4;
 screw_nut_clearance = 0.7;
 
-spool_side_back_side_reduction_z = 10.0;
+spool_back_cutouts = [ 10, 10 ];
 
 latch_screw_window_separation_z = 10.0;
 
 latch_top_offset_z = 40;
-latch_bottom_offset_z = 15;
+latch_bottom_offset_z = 20;
 latch_horizontal_bar_cutout_offset_top_z = 40;
 latch_horizontal_bar_cutout_offset_bottom_z = 65;
 latch_horizontal_bar_cutout_z = 35;
+latch_lower_back_cutouts_top = [ 0, 0 ];
+latch_lower_back_cutouts_bottom = [ 15, 15 ];
 latch_window_offsets_top = [ 0, 0 ];
 latch_window_offsets_bottom = [ 30, 0 ];
 
@@ -306,6 +308,14 @@ module DeckGateBracket( mode, is_front )
         + gate_mount_screw_nut_h
         + bracket_thickness * 2;
 
+    back_side_reduction_top_z = mode == MODE_LATCH_SIDE_TOP
+        ? latch_lower_back_cutouts_top[ 0 ]
+        : latch_lower_back_cutouts_bottom[ 0 ];
+
+    back_side_reduction_bottom_z = mode == MODE_LATCH_SIDE_TOP
+        ? latch_lower_back_cutouts_top[ 1 ]
+        : latch_lower_back_cutouts_bottom[ 1 ];
+
     front_bracket_offset_y = -bracket_thickness - flange_shroud_extra;
 
     // label_text = GenerateLabelText( mode );
@@ -436,13 +446,15 @@ module DeckGateBracket( mode, is_front )
         {
             if( IsLatchSide( mode ) )
             {
+                 latch_horizontal_bar_cutout_offset_z = mode == MODE_LATCH_SIDE_TOP
+                        ? latch_horizontal_bar_cutout_offset_top_z
+                        : latch_horizontal_bar_cutout_offset_bottom_z;
+
                 // cut out the sides for the horizontal bars
                 translate([
                     -flange_width - DIFFERENCE_CLEARANCE,
                     front_face_y - DIFFERENCE_CLEARANCE,
-                    mode == MODE_LATCH_SIDE_TOP
-                        ? latch_horizontal_bar_cutout_offset_top_z
-                        : latch_horizontal_bar_cutout_offset_bottom_z
+                    latch_horizontal_bar_cutout_offset_z
                     ])
                     cube([
                         bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
@@ -450,32 +462,59 @@ module DeckGateBracket( mode, is_front )
                         latch_horizontal_bar_cutout_z
                         ]);
 
+                // chop off the bottom
+                if( back_side_reduction_bottom_z > 0 )
+                    translate([
+                        -flange_width - DIFFERENCE_CLEARANCE,
+                        bracket_y / 2 - DIFFERENCE_CLEARANCE,
+                        -DIFFERENCE_CLEARANCE
+                        ])
+                        cube([
+                            bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                            bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
+                            back_side_reduction_bottom_z + DIFFERENCE_CLEARANCE
+                            ]);
+
+                // chop off the bottom
+                if( back_side_reduction_top_z > 0 )
+                    translate([
+                        -flange_width - DIFFERENCE_CLEARANCE,
+                        bracket_y / 2 - DIFFERENCE_CLEARANCE,
+                        latch_horizontal_bar_cutout_offset_z - back_side_reduction_top_z + DIFFERENCE_CLEARANCE
+                        ])
+                        cube([
+                            bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                            bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
+                            back_side_reduction_top_z + DIFFERENCE_CLEARANCE
+                            ]);
             }
             else
             {
                 // chop off the bottom
-                translate([
-                    -flange_width - DIFFERENCE_CLEARANCE,
-                    bracket_y / 2 - DIFFERENCE_CLEARANCE,
-                    -DIFFERENCE_CLEARANCE
-                    ])
-                    cube([
-                        bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
-                        bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
-                        spool_side_back_side_reduction_z + DIFFERENCE_CLEARANCE
-                        ]);
+                if( spool_back_cutouts[ 1 ] > 0 )
+                    translate([
+                        -flange_width - DIFFERENCE_CLEARANCE,
+                        bracket_y / 2 - DIFFERENCE_CLEARANCE,
+                        -DIFFERENCE_CLEARANCE
+                        ])
+                        cube([
+                            bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                            bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
+                            spool_back_cutouts[ 1 ] + DIFFERENCE_CLEARANCE
+                            ]);
 
                 // chop off the top
-                translate([
-                    -flange_width - DIFFERENCE_CLEARANCE,
-                    bracket_y / 2 - DIFFERENCE_CLEARANCE,
-                    bracket_z - spool_side_back_side_reduction_z
-                    ])
-                    cube([
-                        bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
-                        bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
-                        spool_side_back_side_reduction_z + DIFFERENCE_CLEARANCE
-                        ]);
+                if( spool_back_cutouts[ 0 ] > 0 )
+                    translate([
+                        -flange_width - DIFFERENCE_CLEARANCE,
+                        bracket_y / 2 - DIFFERENCE_CLEARANCE,
+                        bracket_z - spool_back_cutouts[ 0 ]
+                        ])
+                        cube([
+                            bracket_x + flange_width * 2 + DIFFERENCE_CLEARANCE * 2,
+                            bracket_y / 2 + DIFFERENCE_CLEARANCE * 2,
+                            spool_back_cutouts[ 0 ] + DIFFERENCE_CLEARANCE
+                            ]);
             }
         }
     }
@@ -771,7 +810,7 @@ module DeckGateBracketMountLatchSideScrewWindow( mode, is_top_window )
         ? latch_window_offsets_top[ 1 ]
         : latch_window_offsets_bottom[ 1 ];
 
-    echo( str( mode, " ==> ", offset_top, " / ", offset_bottom ) );
+    // echo( str( mode, " ==> ", offset_top, " / ", offset_bottom ) );
 
     bracket_z = BracketZ( mode, true )
         - offset_top
