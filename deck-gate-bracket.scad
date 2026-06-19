@@ -12,6 +12,8 @@ include <modules/utils.scad>
 
 // TODO: really should be able to have separate module calls for the bracket back above/below the cut
 
+// TODO: The screw window sizes don't make sense... they should be calculated off the spacing of the actual latch spacing
+
 vertical_post_x = 39.0;
 vertical_post_latch_side_y = 39.0;
 vertical_post_spool_side_y = 48.5;
@@ -59,7 +61,7 @@ MODE_LATCH_SIDE_BOTTOM = "LatchSideBottom";
 MODE_SPOOL_SIDE        = "SpoolSide";
 
 bracket_latch_side_top_back_z    = 95.0;
-bracket_latch_side_bottom_back_z = 120.0;
+bracket_latch_side_bottom_back_z = 105.0;
 bracket_spool_side_z             = 75.0;
 
 flange_screw_hole_top_percent_z    = 0.7;
@@ -76,7 +78,7 @@ rear_post_weld_preview_size = 6;
 rear_post_angle = -35;
 latch_preview_y = -20;
 latch_preview_top_z = 50;
-latch_preview_bottom_z = 20;
+latch_preview_bottom_z = 25;
 
 bar_clearance = 0.2;
 
@@ -92,12 +94,12 @@ screw_nut_clearance = 0.7;
 
 spool_back_cutouts = [ 10, 10 ];
 
-latch_screw_window_separation_z = 10.0;
+latch_screw_window_separation_z = 8.0;
 
 latch_top_offset_z = 40;
-latch_bottom_offset_z = 20;
+latch_bottom_offset_z = 30;
 latch_horizontal_bar_cutout_offset_top_z = 40;
-latch_horizontal_bar_cutout_offset_bottom_z = 65;
+latch_horizontal_bar_cutout_offset_bottom_z = 50;
 latch_horizontal_bar_cutout_z = 35;
 latch_lower_back_cutouts_top = [ 0, 0 ];
 latch_lower_back_cutouts_bottom = [ 15, 15 ];
