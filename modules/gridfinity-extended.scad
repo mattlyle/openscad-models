@@ -14,7 +14,7 @@ module GridfinityBaseplate( grid_cells_x, grid_cells_y )
         num_x = grid_cells_x,
         num_y = grid_cells_y,
         oversizeMethod = "fill",
-        magnetSize = [ 6.3, 2.0 ],
+        magnetSize = [ 6.4, 2.0 ],
         magnetZOffset = 0.4
         );
 }
