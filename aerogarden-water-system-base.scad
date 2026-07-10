@@ -4,10 +4,10 @@ include <modules/utils.scad>;
 // measurements
 
 cup_bottom_r = 67.0 / 2;
-cup_top_r = 95.9 / 2; // with lip 104.9.0 / 2;
+cup_top_r = 97.7 / 2; // with lip 104.9.0 / 2;
 cup_z = 173;
 
-cup_hole_offset_z = 17.8;
+cup_hole_offset_z = 19;
 cup_hole_r = 6.4 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
