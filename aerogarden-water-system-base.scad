@@ -7,7 +7,7 @@ cup_bottom_r = 67.0 / 2;
 cup_top_r = 97.7 / 2; // with lip 104.9.0 / 2;
 cup_z = 180.1 - 3.1; // remove the lip
 
-cup_hole_offset_z = 19;
+cup_hole_offset_z = 20.5;
 cup_hole_r = 6.4 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@ render_mode = "preview";
 // render_mode = "print";
 
 wall_width = 2.0;
-cup_clearance = 0.4;
+cup_clearance = 1.0;
 
 cup_hole_extra_r = 2.0;
 
