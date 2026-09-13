@@ -1,4 +1,4 @@
-include <modules/utils.scad>
+include <../modules/utils.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -15,6 +15,8 @@ multiboard_cell_size = 25.0;
 // hole_r = 4.2 / 2; // screw diameter
 
 hole_r = 3.2 / 2 + 0.5; // pilot drill hole diameter
+
+quad_center_r = 5.4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -34,6 +36,7 @@ strut_bottom_height = 1.4;
 
 num_mid_struts = 2;
 
+top_struct_offset_y = 12;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -49,7 +52,16 @@ jig_y_on_center = board_size_y * multiboard_cell_size;
 if( render_mode == "preview" )
 {
     MultiboardDrillJig();
+
+    translate([ 0, -100, 0 ])
+        rotate([ 0, 0, 45 ])
+            MultiboardCombinedQuadSnap();
+
+    #translate([ 125, 275, 18 ])
+        rotate([ 180, 0, 0 ])
+            import( file = "../assets/multiboard - 10x2 MU - Mounting Template.stl" );
 }
+
 else if( render_mode == "print" )
 {
     translate([ corner_r, corner_r, 0 ])
@@ -64,8 +76,7 @@ else
 
 module MultiboardDrillJig()
 {
-    // corners
-
+    // bottom left corner
     translate([
         0,
         0,
@@ -73,29 +84,31 @@ module MultiboardDrillJig()
         ])
         _MultiboardDrillJigCorner();
 
-    translate([
-        jig_x_on_center,
-        0,
-        0
-        ])
-        _MultiboardDrillJigCorner();
-
-    translate([
-        0,
-        jig_y_on_center,
-        0
-        ])
-        _MultiboardDrillJigCorner();
-
+    // bottom right corner
     translate([
         jig_x_on_center,
-        jig_y_on_center,
+        0,
         0
         ])
         _MultiboardDrillJigCorner();
 
-    // edge struts
+    // top left corner
+    // translate([
+    //     0,
+    //     jig_y_on_center,
+    //     0
+    //     ])
+    //     _MultiboardDrillJigCorner();
 
+    // top right corner
+    // translate([
+    //     jig_x_on_center,
+    //     jig_y_on_center,
+    //     0
+    //     ])
+    //     _MultiboardDrillJigCorner();
+
+    // bottom edge strut
     translate([
         0,
         0,
@@ -103,29 +116,42 @@ module MultiboardDrillJig()
         ])
         _MultiboardDrillJigStrut( jig_x_on_center, true );
 
+    // right edge strut
     translate([
         jig_x_on_center,
         0,
         0
         ])
         rotate([ 0, 0, 90 ])
-            _MultiboardDrillJigStrut( jig_y_on_center, true );
+            _MultiboardDrillJigStrut(
+                jig_y_on_center
+                - top_struct_offset_y
+                + strut_bottom_width / 2,
+                true
+                );
 
+    // left edge strut
     translate([
         0,
         0,
         0
         ])
         rotate([ 0, 0, 90 ])
-            _MultiboardDrillJigStrut( jig_y_on_center, true );
+            _MultiboardDrillJigStrut(
+                jig_y_on_center
+                - top_struct_offset_y
+                + strut_bottom_width / 2,
+            true
+            );
 
+    // top strut
     translate([
         0,
-        jig_y_on_center,
+        jig_y_on_center - top_struct_offset_y,
         0
         ])
         rotate([ 0, 0, 0 ])
-            _MultiboardDrillJigStrut( jig_x_on_center, true );
+            _MultiboardDrillJigStrut( jig_x_on_center, false );
 
     // mid horizontal and vertical stuts
     for( i = [ 1 : num_mid_struts ] )
@@ -148,7 +174,7 @@ module MultiboardDrillJig()
             0
             ])
             rotate([ 0, 0, 90 ])
-                _MultiboardDrillJigStrut( jig_y_on_center, false );
+                _MultiboardDrillJigStrut( jig_y_on_center - top_struct_offset_y, false );
     }
 
     // diagonal strust
@@ -173,6 +199,16 @@ module MultiboardDrillJig()
     //     rotate([ 0, 0, -cross_strut_angle ])
     //         translate([ 0, 0, 0 ])
     //             _MultiboardDrillJigStrut( cross_strut_length, true );
+
+    // left
+    translate([ 0, jig_y_on_center, 0 ])
+        rotate([ 0, 0, 45 ])
+            MultiboardCombinedQuadSnapCorner();
+
+    // right
+    translate([ jig_x_on_center, jig_y_on_center, 0 ])
+        rotate([ 0, 0, 45 ])
+            MultiboardCombinedQuadSnapCorner();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -243,6 +279,80 @@ module _MultiboardDrillJigStrut( length, adjust_length = true )
             jig_z
             ]);
 
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module MultiboardCombinedQuadSnapCorner()
+{
+    render()
+    {
+        difference()
+        {
+            MultiboardCombinedQuadSnap();
+
+            // remove the bottom
+            rotate([ 0, 0, -45 ])
+                translate([ -40, -40, -DIFFERENCE_CLEARANCE ])
+                    cube([ 80, 40, 14 ]);
+
+            // remove the inside
+            translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                cylinder(
+                    r = quad_center_r,
+                    h = 10
+                    );
+        }
+
+        // add the center back
+        difference()
+        {
+            // replacement center
+            // cylinder(
+            //     r = quad_center_r + DIFFERENCE_CLEARANCE,
+            //     h = strut_bottom_height
+            //     );
+            rotate([ 0, 0, -45 ])
+                translate([
+                    -top_struct_offset_y,
+                    -top_struct_offset_y,
+                    0
+                    ])
+                    cube([
+                        top_struct_offset_y * 2,
+                        top_struct_offset_y + quad_center_r,
+                        strut_bottom_height
+                        ]);
+
+        //     // remove the drill hole
+            translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                cylinder(
+                    r = hole_r,
+                    h = strut_bottom_height + DIFFERENCE_CLEARANCE * 2
+                    );
+        }
+
+    }
+    
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+module MultiboardCombinedQuadSnap()
+{
+    union()
+    {
+        // bottom
+        translate([ 0, 0, 4.67 ])
+            rotate([ 0, -90, 0 ])
+                import( file = "../assets/6.25 mm - Quad Offset Snaps (DS Part A) - Part 1.stl" );
+
+        // top
+        translate([ 0, 0, 4.70 ])
+            rotate([ 0, 90, 90 ])
+                import( file = "../assets/6.25 mm - Quad Offset Snaps (DS Part A) - Part 2.stl" );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
