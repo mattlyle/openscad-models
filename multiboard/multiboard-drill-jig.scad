@@ -14,22 +14,24 @@ multiboard_cell_size = 25.0;
 // hole_r = 5.5 / 2; // multiboard hole size
 // hole_r = 4.2 / 2; // screw diameter
 
-hole_r = 3.2 / 2 + 0.5; // pilot drill hole diameter
+// hole_r = 3.2 / 2 + 0.5; // pilot drill hole
+hole_r = 6.4 / 2 + 0.5; // main drill bit
 
 quad_center_r = 5.4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print";
 
 board_size_x = 10;
 board_size_y = 10;
 
 jig_z = 12;
 
-corner_r = 10;
+// corner_r = 10;
+corner_edge_length = 20;
 
 strut_bottom_width = 6;
 strut_bottom_height = 1.4;
@@ -37,6 +39,13 @@ strut_bottom_height = 1.4;
 num_mid_struts = 2;
 
 top_struct_offset_y = 12;
+
+vacuum_adapter_depth = 10.0;
+vacuum_adapter_r1 = 31.1 / 2;
+vacuum_adapter_r2 = 31.5 / 2;
+vacuum_adapter_wall_width = 1.4;
+vacuum_adapter_clearance = 0.15;
+vacuum_adapter_chute_depth = 30;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -230,17 +239,53 @@ module _MultiboardDrillJigCorner()
 
     difference()
     {
-        cylinder(
-            r = corner_r,
-            h = jig_z
-            );
+        // corner cube
+        translate([
+            -corner_edge_length / 2,
+            -corner_edge_length / 2,
+            0
+            ])
+            cube([
+                corner_edge_length,
+                corner_edge_length,
+                jig_z
+                ]);
 
+        // cut out the drill hole
         translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
             cylinder(
                 r = hole_r,
                 h = jig_z * 2 + DIFFERENCE_CLEARANCE * 2
                 );
     }
+
+    // vacuum adapter
+    translate([ 0, 0, vacuum_adapter_r2 + vacuum_adapter_clearance + vacuum_adapter_wall_width ])
+    {
+        difference()
+        {
+            // outside
+            translate([ 0, -50, 0 ])
+                rotate([ 90, 0, 0 ])
+                    cylinder(
+                        r1 = vacuum_adapter_r1 + vacuum_adapter_clearance + vacuum_adapter_wall_width,
+                        r2 = vacuum_adapter_r2 + vacuum_adapter_clearance + vacuum_adapter_wall_width,
+                        h = vacuum_adapter_depth
+                        );
+
+            // remove inside
+            translate([ 0, -50 + DIFFERENCE_CLEARANCE, 0 ])
+                rotate([ 90, 0, 0 ])
+                    cylinder(
+                        r1 = vacuum_adapter_r1 + vacuum_adapter_clearance,
+                        r2 = vacuum_adapter_r2 + vacuum_adapter_clearance,
+                        h = vacuum_adapter_depth + DIFFERENCE_CLEARANCE * 2
+                        );
+        }
+    }
+
+    // vacuum adapter chute
+    // vacuum_adapter_chute_depth
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +323,6 @@ module _MultiboardDrillJigStrut( length, adjust_length = true )
             strut_bottom_height,
             jig_z
             ]);
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
