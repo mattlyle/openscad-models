@@ -70,10 +70,13 @@ if( render_mode == "preview" )
         rotate([ 180, 0, 0 ])
             import( file = "../assets/multiboard - 10x2 MU - Mounting Template.stl" );
 }
-
 else if( render_mode == "print" )
 {
     MultiboardDrillJig();
+}
+else if( render_mode == "print-corner" )
+{
+    _MultiboardDrillJigCorner();
 }
 else
 {
@@ -184,18 +187,18 @@ module MultiboardDrillJig()
 
 module _MultiboardDrillJigCorner()
 {
-    // if( render_mode == "preview" )
-    // {
-    //     # translate([
-    //         0,
-    //         0,
-    //         -jig_z / 2
-    //         ])
-    //         cylinder(
-    //             r = hole_r,
-    //             h = jig_z * 2
-    //             );
-    // }
+    if( render_mode == "preview" )
+    {
+        # translate([
+            0,
+            0,
+            -jig_z / 2
+            ])
+            cylinder(
+                r = hole_r,
+                h = jig_z * 2
+                );
+    }
 
     difference()
     {
