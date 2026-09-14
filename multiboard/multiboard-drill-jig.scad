@@ -46,6 +46,8 @@ vacuum_adapter_wall_width = 1.4;
 vacuum_adapter_clearance = 0.15;
 vacuum_adapter_chute_depth = 38;
 vacuum_adapter_drill_cutout_z = 6;
+vacuum_adapter_top_notch_edge_length = 0.8;
+vacuum_adapter_top_notch_edge_scale = 2.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -236,7 +238,15 @@ module _MultiboardDrillJigCorner()
         translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
             cylinder(
                 r = hole_r,
-                h = jig_z * 2 + DIFFERENCE_CLEARANCE * 2
+                h = jig_z + DIFFERENCE_CLEARANCE * 2
+                );
+
+        // expand the bottom so vacuum has more room to pull air through
+        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+            cylinder(
+                r1 = hole_r + vacuum_adapter_wall_width,
+                r2 = hole_r,
+                h = vacuum_adapter_drill_cutout_z
                 );
 
         // cut out the inner chute
@@ -256,6 +266,20 @@ module _MultiboardDrillJigCorner()
                     r2 = vacuum_adapter_r2 + vacuum_adapter_clearance,
                     h = vacuum_adapter_depth + DIFFERENCE_CLEARANCE * 2
                     );
+
+        // top notch because vertical circles don't print well
+        translate([
+            -sqrt( 2 * vacuum_adapter_top_notch_edge_length * vacuum_adapter_top_notch_edge_length ) / 2 * vacuum_adapter_top_notch_edge_scale,
+            -vacuum_adapter_chute_depth - vacuum_adapter_depth - DIFFERENCE_CLEARANCE,
+            vacuum_adapter_r2 * 2 + vacuum_adapter_clearance + vacuum_adapter_wall_width
+            ])
+            scale([ vacuum_adapter_top_notch_edge_scale, 1, 1 ])
+                rotate([ 0, 45, 0 ])
+                    cube([
+                        vacuum_adapter_top_notch_edge_length,
+                        vacuum_adapter_depth,
+                        vacuum_adapter_top_notch_edge_length
+                        ]);
     }
 }
 
