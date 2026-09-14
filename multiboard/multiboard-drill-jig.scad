@@ -101,22 +101,6 @@ module MultiboardDrillJig()
         ])
         _MultiboardDrillJigCorner();
 
-    // top left corner
-    // translate([
-    //     0,
-    //     jig_y_on_center,
-    //     0
-    //     ])
-    //     _MultiboardDrillJigCorner();
-
-    // top right corner
-    // translate([
-    //     jig_x_on_center,
-    //     jig_y_on_center,
-    //     0
-    //     ])
-    //     _MultiboardDrillJigCorner();
-
     // bottom edge strut
     translate([
         0,
@@ -185,29 +169,6 @@ module MultiboardDrillJig()
             rotate([ 0, 0, 90 ])
                 _MultiboardDrillJigStrut( jig_y_on_center - top_struct_offset_y, false );
     }
-
-    // diagonal strust
-
-    // cross_strut_angle = atan( board_size_y / board_size_x );
-    // cross_strut_length = sqrt( jig_x_on_center * jig_x_on_center + jig_y_on_center * jig_y_on_center );
-
-    // translate([
-    //     0,
-    //     0,
-    //     0
-    //     ])
-    //     rotate([ 0, 0, cross_strut_angle ])
-    //         translate([ 0, 0, 0 ])
-    //             _MultiboardDrillJigStrut( cross_strut_length, true );
-
-    // translate([
-    //     0,
-    //     jig_y_on_center,
-    //     0
-    //     ])
-    //     rotate([ 0, 0, -cross_strut_angle ])
-    //         translate([ 0, 0, 0 ])
-    //             _MultiboardDrillJigStrut( cross_strut_length, true );
 
     // left
     translate([ 0, jig_y_on_center, 0 ])
