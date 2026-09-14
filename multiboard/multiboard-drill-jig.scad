@@ -44,7 +44,7 @@ vacuum_adapter_r1 = 31.1 / 2;
 vacuum_adapter_r2 = 31.5 / 2;
 vacuum_adapter_wall_width = 1.4;
 vacuum_adapter_clearance = 0.15;
-vacuum_adapter_chute_depth = 45;
+vacuum_adapter_chute_depth = 38;
 vacuum_adapter_drill_cutout_z = 6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,8 +73,7 @@ if( render_mode == "preview" )
 
 else if( render_mode == "print" )
 {
-    translate([ corner_r, corner_r, 0 ])
-        MultiboardDrillJig();
+    MultiboardDrillJig();
 }
 else
 {
