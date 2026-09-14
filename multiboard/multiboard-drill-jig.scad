@@ -157,7 +157,7 @@ module MultiboardDrillJig()
     for( i = [ 1 : num_mid_struts ] )
     {
         location_percent = i / ( num_mid_struts + 1 );
-        echo( location_percent );
+        // echo( location_percent );
 
         // horizontal
         translate([
@@ -308,10 +308,6 @@ module MultiboardCombinedQuadSnapCorner()
         difference()
         {
             // replacement center
-            // cylinder(
-            //     r = quad_center_r + DIFFERENCE_CLEARANCE,
-            //     h = strut_bottom_height
-            //     );
             rotate([ 0, 0, -45 ])
                 translate([
                     -top_struct_offset_y,
@@ -324,20 +320,17 @@ module MultiboardCombinedQuadSnapCorner()
                         strut_bottom_height
                         ]);
 
-        //     // remove the drill hole
+            // remove the drill hole
             translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
                 cylinder(
                     r = hole_r,
                     h = strut_bottom_height + DIFFERENCE_CLEARANCE * 2
                     );
         }
-
     }
-    
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 module MultiboardCombinedQuadSnap()
 {
