@@ -16,7 +16,7 @@ multiboard_cell_size = 25.0;
 // hole_r = 4.2 / 2; // screw diameter
 
 // hole_r = 3.2 / 2 + 0.5; // pilot drill hole
-hole_r = 6.4 / 2 + 0.5; // main drill bit
+hole_r = 6.35 / 2 + 0.35; // main drill bit
 
 quad_center_r = 5.4;
 
@@ -51,6 +51,10 @@ vacuum_adapter_top_notch_edge_length = 0.8;
 vacuum_adapter_top_notch_edge_scale = 2.0;
 vacuum_adapter_rounding_r = 1.0;
 vacuum_adapter_extra_width = 0.8;
+vacuum_adapter_air_inlet_r = 2.2;
+vacuum_adapter_air_inlet_offset_z = 1.0;
+vacuum_adapter_air_inlet_z_angle = 30;
+vacuum_adapter_air_inlet_x_angle = 10;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -291,6 +295,17 @@ module _MultiboardDrillJigCorner()
                         vacuum_adapter_depth,
                         vacuum_adapter_top_notch_edge_length
                         ]);
+
+        // left air inlet
+        translate([ 0, 0, vacuum_adapter_air_inlet_r + vacuum_adapter_air_inlet_offset_z ])
+            rotate([ -90 + vacuum_adapter_air_inlet_x_angle, 0, vacuum_adapter_air_inlet_z_angle ])
+                cylinder( r = vacuum_adapter_air_inlet_r, h = corner_edge_length );
+
+        // right air inlet
+        translate([ 0, 0, vacuum_adapter_air_inlet_r + vacuum_adapter_air_inlet_offset_z ])
+            rotate([ -90 + vacuum_adapter_air_inlet_x_angle, 0, -vacuum_adapter_air_inlet_z_angle ])
+                cylinder( r = vacuum_adapter_air_inlet_r, h = corner_edge_length );
+
     }
 }
 
