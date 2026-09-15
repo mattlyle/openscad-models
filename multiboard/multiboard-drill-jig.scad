@@ -50,7 +50,7 @@ vacuum_adapter_drill_cutout_z = 6;
 vacuum_adapter_top_notch_edge_length = 0.8;
 vacuum_adapter_top_notch_edge_scale = 2.0;
 vacuum_adapter_rounding_r = 1.0;
-vacuum_adapter_extra_width = 0.8;
+vacuum_adapter_extra_width = 0.5;
 vacuum_adapter_air_inlet_r = 2.2;
 vacuum_adapter_air_inlet_offset_z = 1.0;
 vacuum_adapter_air_inlet_z_angle = 30;
@@ -123,29 +123,33 @@ module MultiboardDrillJig()
     // right edge strut
     translate([
         jig_x_on_center,
-        0,
+        corner_edge_length / 2,
         0
         ])
         rotate([ 0, 0, 90 ])
             _MultiboardDrillJigStrut(
                 jig_y_on_center
-                - top_struct_offset_y
-                + strut_bottom_width / 2,
-                true
+                - top_struct_offset_y / 2
+                + strut_bottom_width / 2
+                + strut_bottom_height / 2
+                - corner_edge_length,
+                false
                 );
 
     // left edge strut
     translate([
         0,
-        0,
+        corner_edge_length / 2,
         0
         ])
         rotate([ 0, 0, 90 ])
             _MultiboardDrillJigStrut(
                 jig_y_on_center
-                - top_struct_offset_y
-                + strut_bottom_width / 2,
-            true
+                - top_struct_offset_y / 2
+                + strut_bottom_width / 2
+                + strut_bottom_height / 2
+                - corner_edge_length,
+            false
             );
 
     // top strut
@@ -259,7 +263,7 @@ module _MultiboardDrillJigCorner()
         // expand the bottom so vacuum has more room to pull air through
         translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
             cylinder(
-                r1 = hole_r + vacuum_adapter_wall_width,
+                r1 = hole_r + vacuum_adapter_extra_width,
                 r2 = hole_r,
                 h = vacuum_adapter_drill_cutout_z
                 );
