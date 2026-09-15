@@ -1,4 +1,5 @@
 include <../modules/utils.scad>
+include <../modules/rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -28,7 +29,7 @@ render_mode = "preview";
 board_size_x = 10;
 board_size_y = 10;
 
-jig_z = 14;
+jig_z = 22;
 
 corner_edge_length = 20;
 
@@ -39,15 +40,17 @@ num_mid_struts = 2;
 
 top_struct_offset_y = 12;
 
-vacuum_adapter_depth = 10.0;
+vacuum_adapter_depth = 12.0;
 vacuum_adapter_r1 = 31.1 / 2;
 vacuum_adapter_r2 = 31.5 / 2;
 vacuum_adapter_wall_width = 1.4;
-vacuum_adapter_clearance = 0.15;
-vacuum_adapter_chute_depth = 38;
+vacuum_adapter_clearance = 0.08;
+vacuum_adapter_chute_depth = 30;
 vacuum_adapter_drill_cutout_z = 6;
 vacuum_adapter_top_notch_edge_length = 0.8;
 vacuum_adapter_top_notch_edge_scale = 2.0;
+vacuum_adapter_rounding_r = 1.0;
+vacuum_adapter_extra_width = 0.8;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -212,11 +215,15 @@ module _MultiboardDrillJigCorner()
                 -corner_edge_length / 2,
                 0
                 ])
-                cube([
+                RoundedCubeAlt2(
                     corner_edge_length,
                     corner_edge_length,
-                    jig_z
-                    ]);
+                    jig_z,
+                    r = vacuum_adapter_rounding_r,
+                    round_bottom = false,
+                    round_top = true,
+                    round_front = false
+                    );
 
             // chute outside
             _VacuumAdapterChuteOutside();
@@ -227,11 +234,15 @@ module _MultiboardDrillJigCorner()
                 -vacuum_adapter_chute_depth - vacuum_adapter_depth,
                 0
                 ])
-                cube([
+                RoundedCubeAlt2(
                     ( vacuum_adapter_r2 + vacuum_adapter_clearance + vacuum_adapter_wall_width ) * 2,
                     vacuum_adapter_depth,
-                    ( vacuum_adapter_r2 + vacuum_adapter_clearance + vacuum_adapter_wall_width ) * 2
-                    ]);
+                    ( vacuum_adapter_r2 + vacuum_adapter_clearance + vacuum_adapter_wall_width ) * 2,
+                    r = vacuum_adapter_rounding_r,
+                    round_bottom = false,
+                    round_top = true,
+                    round_back = false,
+                    );
         }
 
         // cut out the drill hole
@@ -287,35 +298,47 @@ module _MultiboardDrillJigCorner()
 
 module _VacuumAdapterChuteOutside()
 {
+    hull()
+    {
+        _VacuumAdapterChuteOutsidePoint( true, true, true );
+        _VacuumAdapterChuteOutsidePoint( true, true, false );
+        _VacuumAdapterChuteOutsidePoint( false, true, false );
+        _VacuumAdapterChuteOutsidePoint( false, true, true );
+
+        _VacuumAdapterChuteOutsidePoint( true, false, true );
+        _VacuumAdapterChuteOutsidePoint( true, false, false );
+        _VacuumAdapterChuteOutsidePoint( false, false, false );
+        _VacuumAdapterChuteOutsidePoint( false, false, true );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _VacuumAdapterChuteOutsidePoint( is_near, is_left, is_bottom )
+{
     small_edge = corner_edge_length / 2;
     big_edge = vacuum_adapter_r2 + vacuum_adapter_clearance + vacuum_adapter_wall_width;
 
-    points = [
-        [ -small_edge, -small_edge, 0 ],
-        [ -small_edge, -small_edge, jig_z ],
-        [ small_edge, -small_edge, jig_z ],
-        [ small_edge, -small_edge, 0 ],
+    r = is_bottom
+        ? 0.01
+        : vacuum_adapter_rounding_r;
 
-        [ -big_edge, -vacuum_adapter_chute_depth, 0 ],
-        [ -big_edge, -vacuum_adapter_chute_depth, big_edge * 2 ],
-        [ big_edge, -vacuum_adapter_chute_depth, big_edge * 2 ],
-        [ big_edge, -vacuum_adapter_chute_depth, 0 ],
-        ];
+    x = is_near
+        ? ( is_left ? -small_edge : -big_edge ) + r
+        : ( is_left ? small_edge : big_edge ) - r;
 
-    faces = [
-        [ 0, 3, 2, 1 ],
-        [ 4, 5, 6, 7 ],
-        [ 0, 1, 5, 4 ],
-        [ 1, 2, 6, 5 ],
-        [ 2, 3, 7, 6 ],
-        [ 0, 4, 7, 3 ]
-    ];
+    y = is_left
+        ? -small_edge
+        : -vacuum_adapter_chute_depth;
+    
+    z = is_bottom
+        ? r
+        : ( is_left ? jig_z : big_edge * 2 ) - r;
+    
+    // TODO: we should remove the left or right side of the sphere appropriately
 
-    // for( point = points )
-    //     #translate( point )
-    //         sphere( r = 1 );
-
-    polyhedron( points = points, faces = faces );
+    translate([ x, y, z ])
+        sphere( r = r );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
