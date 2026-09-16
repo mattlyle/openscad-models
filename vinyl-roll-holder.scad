@@ -1,5 +1,5 @@
 
-use <../3rd-party/MCAD/regular_shapes.scad>
+use <MCAD/regular_shapes.scad>
 
 use <modules/triangular-prism.scad>
 use <modules/trapezoidal-prism.scad>

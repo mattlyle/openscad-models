@@ -1,4 +1,3 @@
-use <../../3rd-party/MCAD/regular_shapes.scad>
 
 include <../modules/multiboard.scad>
 include <../modules/triangular-prism.scad>

@@ -1,5 +1,5 @@
 // include <../3rd-party/BOSL2/std.scad>
-use <../3rd-party/MCAD/regular_shapes.scad>
+use <MCAD/regular_shapes.scad>
 
 include <modules/utils.scad>
 include <modules/screw-connectors.scad>
