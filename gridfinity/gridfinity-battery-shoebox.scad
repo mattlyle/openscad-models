@@ -1,4 +1,4 @@
-use <../modules/gridfinity-extended-with-snug-fit.scad>
+include <../modules/gridfinity-extended.scad>
 
 shoebox_demo_thickness = 0.01;
 
