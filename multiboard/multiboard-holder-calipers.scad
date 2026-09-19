@@ -231,7 +231,7 @@ module CaliperBoxHolder(
         translate([ svg_offset_vector[ 0 ], svg_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             scale( svg_scale_size_vector )
                 rotate([ 0, 0, svg_offset_rotation_z ])
-                    SVG( "../../assets/calipers-svgrepo-com.svg" );
+                    SVG( "../assets/calipers-svgrepo-com.svg" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

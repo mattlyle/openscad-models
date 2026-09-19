@@ -42,7 +42,7 @@ odroid_n2plus_cutout_offset_percent_x = 0.60;
 preview_offset_x = 1.0;
 
 text_lines = [ "Home", "Assistant" ];
-svg_path = "../assets/Home_Assistant_logo_simple.svg";
+svg_path = "../assets/home-assistant.svg";
 decoration_depth = 0.4;
 
 manual_svg_offset_x = -40;
