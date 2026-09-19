@@ -25,8 +25,8 @@ orange_ratchet_screwdriver_case_sloped_corner_size = 10.0;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
+// render_mode = "print-text";
 
 cells_x = 3;
 cells_y = 2;
@@ -57,16 +57,34 @@ offset_z = 7.0 + orange_ratchet_screwdriver_case_clearance;
 
 if( render_mode == "preview" )
 {
+    OrangeRatchetScrewDriverPreview();
+    OrangeRatchetScrewDriverHolder();
+    OrangeRatchetScrewDriverTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    OrangeRatchetScrewDriverHolder();
+}
+else if( render_mode == "print-text" )
+{
+    OrangeRatchetScrewDriverTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module OrangeRatchetScrewDriverPreview()
+{
     translate([ offset_x, offset_y, offset_z + orange_ratchet_screwdriver_case_clearance ])
         OrangeRatchetScrewDriver( false );
 }
 
-if( render_mode == "preview" || render_mode == "bin-only" )
-{
-    OrangeRatchetScrewDriverHolder();
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "text-only" )
+module OrangeRatchetScrewDriverTextLabel()
 {
     text_area_x = base_x;
     text_area_y = ( base_y - orange_ratchet_screwdriver_case_y - orange_ratchet_screwdriver_case_clearance * 2 ) / 2;

@@ -30,8 +30,7 @@ multimeter_probe_handle_length = 19.0;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
 
 cup_x = 3; // in grid cells
 cup_y = 2; // in grid cells
@@ -67,9 +66,17 @@ offset_z = base_z + multimeter_back_sides_width + 0.4;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+if( render_mode == "preview" )
 {
     MultimeterHolder();
+}
+else if( render_mode == "print-bin" )
+{
+    MultimeterHolder();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 // if( render_mode == "preview" )

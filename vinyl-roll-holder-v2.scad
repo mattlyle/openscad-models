@@ -24,15 +24,15 @@ cube_z = 295;
 // settings
 
 // only choose one
-render_mode = "debug-preview";
+render_mode = "preview";
 
-// render_mode = "render-face-0-for-printing";
-// render_mode = "render-face-1-for-printing";
-// render_mode = "render-face-2-for-printing";
-// render_mode = "render-face-3-for-printing";
+// render_mode = "print-face-0";
+// render_mode = "print-face-1";
+// render_mode = "print-face-2";
+// render_mode = "print-face-3";
 
-// render_mode = "render-base-0-for-printing";
-// render_mode = "render-base-1-for-printing";
+// render_mode = "print-base-0";
+// render_mode = "print-base-1";
 
 selected_roll_radius = small_roll_radius;
 
@@ -131,7 +131,7 @@ function GetHexGroup( row, col ) =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "debug-preview" )
+if( render_mode == "preview" )
 {
     translate([ CalculateHexagonXOffset( 0, 0 ), cube_y - roll_length, CalculateHexagonZOffset( 0 ) ])
         RollPreview();
@@ -249,43 +249,43 @@ if( render_mode == "debug-preview" )
         }
     }
 }
-else if( render_mode == "render-face-0-for-printing" )
+else if( render_mode == "print-face-0" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 0 );
 }
-else if( render_mode == "render-face-1-for-printing" )
+else if( render_mode == "print-face-1" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 1 );
 }
-else if( render_mode == "render-face-2-for-printing" )
+else if( render_mode == "print-face-2" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 2 );
 }
-else if( render_mode == "render-face-3-for-printing" )
+else if( render_mode == "print-face-3" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 3 );
 }
-else if( render_mode == "render-base-0-for-printing" )
+else if( render_mode == "print-base-0" )
 {
     translate([ 0, 0, wall_width_single_z ])
         HolderBase( 0 );
 }
-else if( render_mode == "render-base-1-for-printing" )
+else if( render_mode == "print-base-1" )
 {
     translate([ 0, 0, wall_width_single_z ])
         HolderBase( 1 );
 }
 else
 {
-    echo( "Unknown render mode: ", render_mode );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

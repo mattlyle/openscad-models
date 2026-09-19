@@ -24,8 +24,8 @@ x_acto_knife_z = 14.7;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
+// render_mode = "print-text";
 
 cells_x = 3;
 cells_y = 4;
@@ -62,7 +62,27 @@ x_offset_4 = UpdateCutoutXOffset( x_offset_3, retractable_knife_spec );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+if( render_mode == "preview" )
+{
+    UtilityKnivesHolder();
+    UtilityKnivesTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    UtilityKnivesHolder();
+}
+else if( render_mode == "print-text" )
+{
+    UtilityKnivesTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module UtilityKnivesHolder()
 {
     render()
     {
@@ -87,7 +107,9 @@ if( render_mode == "preview" || render_mode == "bin-only" )
     }
 }
 
-if( render_mode == "preview" || render_mode == "text-only" )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module UtilityKnivesTextLabel()
 {
     text_area_offset_x = x_offset_0 + x_acto_knife_x + clearance;
     text_area_x = x_offset_2 - text_area_offset_x - clearance;

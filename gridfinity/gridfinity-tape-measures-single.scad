@@ -17,6 +17,11 @@ silver_malco_12ft_clip_z_offset = 9.5;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
+// only choose one
+render_mode = "preview";
+// render_mode = "print-bin";
+// render_mode = "print-text";
+
 show_previews = false;
 
 cells_x = 1;
@@ -51,17 +56,34 @@ silver_malco_12ft_holder_offset_x = ( base_x - silver_malco_12ft_holder_x ) / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// base
-GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
-
-// text
-translate([ text_offset_x, text_offset_y, holder_z ])
-    linear_extrude( 0.5 )
-        text( "Silver Malco", size = 5.1 );
-
-// silver malco 12ft
-translate([ silver_malco_12ft_holder_offset_x, holder_offset_y, holder_z ])
+if( render_mode == "preview" )
 {
+    SilverMalcoHolder();
+    SilverMalcoTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    SilverMalcoHolder();
+}
+else if( render_mode == "print-text" )
+{
+    SilverMalcoTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SilverMalcoHolder()
+{
+    // base
+    GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
+
+    // silver malco 12ft
+    translate([ silver_malco_12ft_holder_offset_x, holder_offset_y, holder_z ])
+    {
     union()
     {
         // near wall
@@ -88,11 +110,21 @@ translate([ silver_malco_12ft_holder_offset_x, holder_offset_y, holder_z ])
             cube([ lip_thickness, silver_malco_12ft_holder_y, lip_height ]);
     }
 
-    if( show_previews )
+    if( render_mode == "preview" && show_previews )
     {
         translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
-            red_craftsman_8m_26ft_tape_measure();
+            silver_malco_12ft_tape_measure();
     }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SilverMalcoTextLabel()
+{
+    translate([ text_offset_x, text_offset_y, holder_z ])
+        linear_extrude( 0.5 )
+            text( "Silver Malco", size = 5.1 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

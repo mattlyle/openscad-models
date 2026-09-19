@@ -60,6 +60,10 @@ else if( render_mode == "print" )
         rotate([ 90, 0, 0 ])
             CricutPowerAdapterHolder();
 }
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

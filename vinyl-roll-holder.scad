@@ -44,10 +44,10 @@ num_rows = 7;
 // num_rows = 3;
 
 // only choose one
-render_mode = "simple-preview";
-// render_mode = "full-preview";
-// render_mode = "render-holder";
-// render_mode = "render-base";
+render_mode = "preview";
+// render_mode = "preview-full";
+// render_mode = "print-holder";
+// render_mode = "print-base";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -62,7 +62,7 @@ max_rolls_odd = floor( ( build_volume_size - CalculateXOffset( roll_radius, 1, 0
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "simple-preview" )
+if( render_mode == "preview" )
 {
     PrinterBuildPlatePreview();
 
@@ -74,7 +74,7 @@ if( render_mode == "simple-preview" )
         VinylRollHolderBase( roll_radius, build_volume_size, holder_base_spacing_y );
 }
 
-if( render_mode == "full-preview" )
+else if( render_mode == "preview-full" )
 {
     CubeShelfPreview();
 
@@ -86,15 +86,19 @@ if( render_mode == "full-preview" )
         VinylRollHolderBase( roll_radius, build_volume_size, holder_base_spacing_y );
 }
 
-if( render_mode == "render-holder" )
+else if( render_mode == "print-holder" )
 {
     VinylRollHolder( roll_radius, build_volume_size, num_rows );
 }
 
-if( render_mode == "render-base" )
+else if( render_mode == "print-base" )
 {
     translate([ 0, holder_base_side_width, holder_base_floor_z ])
         VinylRollHolderBase( roll_radius, build_volume_size, holder_base_spacing_y );
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,7 +283,7 @@ module _VinylRollHolderHexagon( roll_radius )
     outer_radius = CalculateFaceSideLength( roll_radius );
     inner_radius = CalculateFaceSideLength( roll_radius - holder_ring_thickness );
 
-    if( render_mode == "full-preview" )
+    if( render_mode == "preview-full" )
     {
         % translate([ 0, 0, -roll_length + holder_base_side_width + holder_ring_depth ])
             cylinder( h = roll_length, r = roll_radius, $fn = 48 );

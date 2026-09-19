@@ -63,6 +63,10 @@ else if( render_mode == "print-support" )
 {
     TomatoStakeSupport();
 }
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

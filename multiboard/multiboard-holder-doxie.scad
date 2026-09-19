@@ -48,12 +48,15 @@ if( render_mode == "preview" )
             DoxiePreview();
     }
 }
-
-if( render_mode == "print-holder" )
+else if( render_mode == "print-holder" )
 {
     translate([ 0, size_z + multiboard_connector_back_z, 0 ])
         rotate([ 90, 0, 0 ])
             DoxieMultiboardHolder();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -23,9 +23,10 @@ pliers_handle_z_large = 69.8;
 // settings
 
 // only choose one
-// render_mode = "preview";
-render_mode = "only-holder";
-// render_mode = "text-only";
+// only choose one
+render_mode = "preview";
+// render_mode = "print-holder";
+// render_mode = "print-text";
 
 handle_clearance = 2;
 

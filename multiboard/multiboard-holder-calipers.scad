@@ -10,8 +10,8 @@ include <../modules/svg.scad>
 
 // only choose one
 render_mode = "preview";
-// render_mode = "original-bin-only";
-// render_mode = "larger-bin-only";
+// render_mode = "print-bin-original";
+// render_mode = "print-bin-larger";
 
 caliper_box_holder_thickness = 1.5;
 
@@ -83,16 +83,40 @@ larger_caliper_box_holder_size_vector = [ larger_caliper_box_holder_size_x, larg
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// draw a sample multiboard tile
 if( render_mode == "preview" )
+{
+    MultiboardTilePreview();
+    OriginalCaliperBoxHolder();
+    LargerCaliperBoxHolder();
+    CaliperBoxesPreview();
+}
+else if( render_mode == "print-bin-original" )
+{
+    OriginalCaliperBoxHolder();
+}
+else if( render_mode == "print-bin-larger" )
+{
+    LargerCaliperBoxHolder();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// draw a sample multiboard tile
+module MultiboardTilePreview()
 {
     translate([ 0, 0, -multiboard_cell_height ])
         color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
             MultiboardMockUpTile( 12, 4 );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 // draw the original holder
-if( render_mode == "preview" || render_mode == "original-bin-only" )
+module OriginalCaliperBoxHolder()
 {
     translate( render_mode == "preview" ? [ ( original_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - original_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
         CaliperBoxHolder(
@@ -106,8 +130,10 @@ if( render_mode == "preview" || render_mode == "original-bin-only" )
             original_caliper_box_holder_svg_scale_vector );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 // draw the larger holder
-if( render_mode == "preview" || render_mode == "larger-bin-only" )
+module LargerCaliperBoxHolder()
 {
     translate( render_mode == "preview" ? [ ( larger_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - larger_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
         CaliperBoxHolder(
@@ -121,8 +147,10 @@ if( render_mode == "preview" || render_mode == "larger-bin-only" )
             larger_caliper_box_holder_svg_scale_vector );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 // draw a preview of the boxes inside
-if( render_mode == "preview" )
+module CaliperBoxesPreview()
 {
     // original
     translate([ ( original_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - original_caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])

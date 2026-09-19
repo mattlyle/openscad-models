@@ -29,8 +29,8 @@ angle_calipers_y = 35.3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print-bin";
+render_mode = "preview";
+// render_mode = "print-bin";
 // render_mode = "print-text";
 
 cells_x = 2;
@@ -96,6 +96,8 @@ base_offset_z = GRIDFINITY_BASE_Z + top_min_z;
 
 if ( render_mode == "preview" )
 {
+    RulerBin();
+    RulerBinTextLabel( false );
 }
 else if ( render_mode == "print-bin" )
 {
@@ -107,7 +109,7 @@ else if ( render_mode == "print-text" )
 }
 else
 {
-    echo( str( "Unknown render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

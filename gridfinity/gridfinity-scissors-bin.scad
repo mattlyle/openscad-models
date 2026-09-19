@@ -13,8 +13,8 @@ scissors_z = 82;
 // settings
 
 // only choose one
-// render_mode = "preview";
-render_mode = "print-bin";
+render_mode = "preview";
+// render_mode = "print-bin";
 
 cells_x = 1;
 cells_y = 5;
@@ -57,9 +57,23 @@ offsets_x = [
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ScissorsBin();
-
 if( render_mode == "preview" )
+{
+    ScissorsBin();
+    ScissorsPreview();
+}
+else if( render_mode == "print-bin" )
+{
+    ScissorsBin();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ScissorsPreview()
 {
     % translate([-10,0,0]) // show it off to the side a little
         translate([ offsets_x[ 0 ], wall_width, item_angle_offset_z + offset_z])

@@ -19,9 +19,10 @@ screw_driver_handle_flare_length = 15.0;
 // settings
 
 // only choose one
-// render_mode = "preview";
-render_mode = "bin-only";
-// render_mode = "text-only";
+render_mode = "preview";
+// render_mode = "print-bin";
+// NOTE: the print-text branch below is disabled - its CenteredTextLabel() call uses
+//       stale positional arguments from an older signature and needs re-laying out.
 
 cup_x = 3; // in grid cells
 cup_y = 4; // in grid cells
@@ -54,7 +55,22 @@ screw_driver_full_length = screw_driver_shaft_length + screw_driver_handle_lengt
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+if( render_mode == "preview" )
+{
+    SmallScrewDriverBinHolder();
+}
+else if( render_mode == "print-bin" )
+{
+    SmallScrewDriverBinHolder();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SmallScrewDriverBinHolder()
 {
     // base
     gridfinity_cup(
@@ -120,7 +136,7 @@ if( render_mode == "preview" || render_mode == "bin-only" )
     }
 }
 
-// if( render_mode == "preview" || render_mode == "text-only" )
+// if( render_mode == "preview" || render_mode == "print-text" )
 // {
 //     translate([ 0, holder_y - holder_y / 3, holder_z ])
 //         CenteredTextLabel( "Small Screwdriver Set", 5, holder_x, holder_y / 3 );

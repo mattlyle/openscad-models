@@ -31,8 +31,8 @@ hairbrush_clearance = 1.25;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
+// render_mode = "print-text";
 
 corner_rounding_radius = 3.7;
 holder_clearance = 0.15;
@@ -61,18 +61,36 @@ echo( "cells_y", cells_y );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+if( render_mode == "preview" )
+{
+    HairbrushHolder();
+    HairbrushPreview();
+    HairbrushTextLabel();
+}
+else if( render_mode == "print-bin" )
 {
     HairbrushHolder();
 }
+else if( render_mode == "print-text" )
+{
+    HairbrushTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
-if( render_mode == "preview" )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module HairbrushPreview()
 {
     translate([ base_x / 2, ( base_y - hairbrush_y ) / 2, base_z + hairbrush_z / 2 + hairbrush_clearance * 2 ])
         Hairbrush();
 }
 
-if( render_mode == "preview" || render_mode == "text-only" )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module HairbrushTextLabel()
 {
     text_area_width = hairbrush_handle_y + ( holder_y - hairbrush_y ) / 2 - hairbrush_clearance;
     text_area_height = ( holder_x - hairbrush_handle_x * 1.5 + hairbrush_clearance * 2 ) / 2;

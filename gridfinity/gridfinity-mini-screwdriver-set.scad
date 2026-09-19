@@ -117,7 +117,7 @@ else if ( render_mode == "print-text" )
 }
 else
 {
-    echo( str( "Unknown render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

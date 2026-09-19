@@ -15,8 +15,8 @@ small_screwdriver_radius = 4.1 / 2;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
+// render_mode = "print-text";
 
 cells_x = 3;
 cells_y = 1;
@@ -60,52 +60,67 @@ offset_z = GRIDFINITY_BASE_Z + GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-PenPencilSharpieHolder();
+if( render_mode == "preview" )
+{
+    PenPencilSharpieHolder();
+    PenPencilSharpieTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    PenPencilSharpieHolder();
+}
+else if( render_mode == "print-text" )
+{
+    PenPencilSharpieTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module PenPencilSharpieHolder()
 {
-    if( render_mode == "preview" || render_mode == "bin-only" )
+    difference()
     {
-        difference()
+        GridfinityBase(
+            cells_x,
+            cells_y,
+            top_z,
+            round_top = true,
+            center = false,
+            magnets = GRIDFINITY_BASE_MAGNETS_ALL
+            );
+
+        for( i = [ 0 : len( cutout_rows ) - 1 ] )
         {
-            GridfinityBase(
-                cells_x,
-                cells_y,
-                top_z,
-                round_top = true,
-                center = false,
-                magnets = GRIDFINITY_BASE_MAGNETS_ALL
-                );
-
-            for( i = [ 0 : len( cutout_rows ) - 1 ] )
+            row = cutout_rows[ i ];
+            for( j = [ 0 : len( row ) - 1 ] )
             {
-                row = cutout_rows[ i ];
-                for( j = [ 0 : len( row ) - 1 ] )
-                {
-                    offset_x = base_x / ( len( row ) + 1 ) * ( j + 1 );
+                offset_x = base_x / ( len( row ) + 1 ) * ( j + 1 );
 
-                    // the main shaft
-                    translate([ offset_x, offset_y[ i ], offset_z + pointed_tip_length ])
-                        cylinder( h = holder_z - offset_z - pointed_tip_length, r = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
+                // the main shaft
+                translate([ offset_x, offset_y[ i ], offset_z + pointed_tip_length ])
+                    cylinder( h = holder_z - offset_z - pointed_tip_length, r = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
 
-                    // pointed base
-                    translate([ offset_x, offset_y[ i ], offset_z ])
-                        cylinder( h = pointed_tip_length, r1 = pen_pencil_sharpie_clearance, r2 = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
-                }
+                // pointed base
+                translate([ offset_x, offset_y[ i ], offset_z ])
+                    cylinder( h = pointed_tip_length, r1 = pen_pencil_sharpie_clearance, r2 = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
             }
         }
     }
+}
 
-    if( render_mode == "preview" || render_mode == "text-only" )
-    {
-        // #translate([ 0, text_area_offset_y, holder_z ])
-        //     cube([ base_x, text_area_y, 0.1 ]);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        translate([ 0, text_area_offset_y, holder_z ])
-            CenteredTextLabel( "Pens and Pencils?!", base_x, text_area_y, 7, "Georgia:style=Bold" );
-    }
+module PenPencilSharpieTextLabel()
+{
+    // #translate([ 0, text_area_offset_y, holder_z ])
+    //     cube([ base_x, text_area_y, 0.1 ]);
+
+    translate([ 0, text_area_offset_y, holder_z ])
+        CenteredTextLabel( "Pens and Pencils?!", base_x, text_area_y, 7, "Georgia:style=Bold" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

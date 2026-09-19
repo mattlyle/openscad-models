@@ -28,10 +28,10 @@ tweezers_3_xy = 8.6;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "bin-1-only";
-// render_mode = "text-1-only";
-// render_mode = "bin-2-only";
-// render_mode = "text-2-only";
+// render_mode = "print-bin-1";
+// render_mode = "print-text-1";
+// render_mode = "print-bin-2";
+// render_mode = "print-text-2";
 
 // TODO: The NARZ text should be bold
 
@@ -66,12 +66,26 @@ bin_2_item_sizes = [ tweezers_3_xy, tweezers_3_xy ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "bin-1-only" || render_mode == "text-1-only" )
+if( render_mode == "preview" )
+{
     TweezersBin();
 
-if( render_mode == "preview" || render_mode == "bin-2-only" || render_mode == "text-2-only" )
     translate([ 50, 0, 0 ])
         TweezersBin2();
+}
+else if( render_mode == "print-bin-1" || render_mode == "print-text-1" )
+{
+    TweezersBin();
+}
+else if( render_mode == "print-bin-2" || render_mode == "print-text-2" )
+{
+    translate([ 50, 0, 0 ])
+        TweezersBin2();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -98,7 +112,7 @@ module TweezersBin()
     //     rotate([ 0, 0, 180 ])
     //         cube([ base_x, text_area_y, 0.1 ]);
 
-    if( render_mode == "preview" || render_mode == "bin-1-only" )
+    if( render_mode == "preview" || render_mode == "print-bin-1" )
     {
         render()
         {
@@ -121,7 +135,7 @@ module TweezersBin()
         }
     }
 
-    if( render_mode == "preview" || render_mode == "text-1-only" )
+    if( render_mode == "preview" || render_mode == "print-text-1" )
     {
         color([ 0.9, 0.9, 0 ])
         {
@@ -149,7 +163,7 @@ module TweezersBin2()
         calculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 1 ),
     ];
 
-    if( render_mode == "preview" || render_mode == "bin-2-only")
+    if( render_mode == "preview" || render_mode == "print-bin-2")
     {
         render()
         {
@@ -169,7 +183,7 @@ module TweezersBin2()
         }
     }
 
-    if( render_mode == "preview" || render_mode == "text-2-only" )
+    if( render_mode == "preview" || render_mode == "print-text-2" )
     {
         offset_y = offsets_y[ 0 ] + bin_2_item_sizes[ 0 ];
         text_area_y = offsets_y[ 1 ] - offset_y;

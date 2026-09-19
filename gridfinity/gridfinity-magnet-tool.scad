@@ -31,14 +31,14 @@ jig2_clearance = 0.1;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "tool-top";
-// render_mode = "tool-bottom";
-// render_mode = "jig-bottom";
-// render_mode = "jig-top-base";
-// render_mode = "jig-top-bin";
-// render_mode = "jig2"; // for baseplates
-// render_mode = "jig3";
-// render_mode = "jig4"; // for multiboard shelves using gridfinity-extended
+// render_mode = "print-tool-top";
+// render_mode = "print-tool-bottom";
+// render_mode = "print-jig-bottom";
+// render_mode = "print-jig-top-base";
+// render_mode = "print-jig-top-bin";
+// render_mode = "print-jig-2"; // for baseplates
+// render_mode = "print-jig-3";
+// render_mode = "print-jig-4"; // for multiboard shelves using gridfinity-extended
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -86,33 +86,35 @@ if( render_mode == "preview" )
     translate([ 220, 0, 0 ])
         GridfinityMagnetJig4();
 }
-else if( render_mode == "tool-top" )
+else if( render_mode == "print-tool-top" )
 {
     translate([ 0, 0, tool_length ])
         rotate([ 180, 0, 0 ])
             GridfinityMagnetToolHalf();
 }
-else if( render_mode == "tool-bottom" )
+else if( render_mode == "print-tool-bottom" )
 {
     GridfinityMagnetToolHalf();
 }
-else if( render_mode == "jig-bottom" || render_mode == "jig-top-base" )
+else if( render_mode == "print-jig-bottom" || render_mode == "print-jig-top-base" )
 {
     GridfinityMagnetJig( "BASE" );
 }
-else if( render_mode == "jig-bottom" || render_mode == "jig-top-bin" )
+// NOTE: "print-jig-bottom" is already handled by the branch above, so it never
+//       reached this test. Left as top-bin only to preserve existing output.
+else if( render_mode == "print-jig-top-bin" )
 {
     GridfinityMagnetJig( "BIN" );
 }
-else if( render_mode == "jig2" )
+else if( render_mode == "print-jig-2" )
 {
     GridfinityMagnetJig2();
 }
-else if( render_mode == "jig3" )
+else if( render_mode == "print-jig-3" )
 {
     GridfinityMagnetJig3();
 }
-else if( render_mode == "jig4" )
+else if( render_mode == "print-jig-4" )
 {
     GridfinityMagnetJig4();
 }
@@ -156,12 +158,12 @@ module GridfinityMagnetJig( label_text )
     }
 
     // base
-    if( render_mode == "preview" || render_mode == "jig-bottom" )
+    if( render_mode == "preview" || render_mode == "print-jig-bottom" )
     {
         RoundedCube([ bin_size, bin_size, jig_height ], r = 4);
     }
 
-    if( render_mode == "preview" || render_mode == "jig-top-base" || render_mode == "jig-top-bin" )
+    if( render_mode == "preview" || render_mode == "print-jig-top-base" || render_mode == "print-jig-top-bin" )
     {
         // lower-left peg
         translate([ magnet_corner_offset, magnet_corner_offset, jig_height ])

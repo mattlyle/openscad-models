@@ -122,6 +122,10 @@ else if( render_mode == "print-text" )
 {
     MiniSolderingIronStand();
 }
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
