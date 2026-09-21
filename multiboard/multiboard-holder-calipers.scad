@@ -196,11 +196,11 @@ module CaliperBoxHolder(
                         corner_rounding_r * 3,
                         r = corner_rounding_r
                         );
-                
+
                 // cut off the bottom
                 translate([ 0, 0, multiboard_connector_back_z - corner_rounding_r * 2 ])
                     cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r ]);
-                
+
                 // cut off the top
                 translate([ 0, 0, multiboard_connector_back_z ])
                     cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r ]);

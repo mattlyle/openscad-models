@@ -44,7 +44,7 @@ base_y = CalculateGridfinitySize( cells_y );
 
 base_offset_z = GRIDFINITY_BASE_Z + bin_floor_z;
 
-air_duster_cutout_x = 
+air_duster_cutout_x =
     base_x
     - air_duster_wall_width
     - air_duster_top_xz
@@ -117,7 +117,7 @@ module JvscamBin()
                     round_top = false,
                     round_bottom = false
                     );
-        
+
             // cut out the top bin
             translate([
                 air_duster_wall_width,

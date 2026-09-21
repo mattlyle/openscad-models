@@ -64,7 +64,7 @@ screwdriver_holder_r = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_to
 // bits holder
 screwdriver_bits_base_x = screwdriver_bits_holder_x + screwdriver_bits_base_lip_thickness * 2 + screwdriver_bits_base_extra_x;
 screwdriver_bits_base_y = screwdriver_bits_holder_y * cos( screwdriver_bits_base_angle );
-screwdriver_bits_base_z = screwdriver_bits_holder_y * sin( screwdriver_bits_base_angle );;
+screwdriver_bits_base_z = screwdriver_bits_holder_y * sin( screwdriver_bits_base_angle );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models

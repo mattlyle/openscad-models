@@ -104,7 +104,7 @@ bottle_holder_support_structure_insert_cone_medium_config = [ 45, 33, 30 ];
 bottle_holder_support_structure_insert_cone_large_config = [ 35, 28, 15 ];
 
 bottle_holder_support_structure_insert_label_depth = 0.4;
-bottle_holder_support_structure_insert_label_font = "Liberation Sans:style=bold";;
+bottle_holder_support_structure_insert_label_font = "Liberation Sans:style=bold";
 bottle_holder_support_structure_insert_label_font_size = 6;
 bottle_holder_support_structure_insert_label_offset_x = 2;
 bottle_holder_support_structure_insert_label_offset_y = 2.5;

@@ -328,7 +328,7 @@ module Shelf( add_brackets, left_x, right_x, left_connection, right_connection, 
                 ])
                 rotate([ 90, 0, 0 ])
                     cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
-            
+
             // bottom screw hole cone
             translate([
                 0,
@@ -492,7 +492,7 @@ module _ShelfBottomBracket()
     bottom_face_brace_intercept_z =
         shelf_bottom_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
         + far_bottom.z;
-        
+
     bracket_points = [
         // where the top face meets the bracket
         [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z ],
@@ -523,7 +523,7 @@ module _ShelfBottomBracket()
                 [ 1, 4, 5, 2 ],
                 [ 0, 2, 5, 3 ],
                 [ 0, 3, 4, 1 ],
-                ]    
+                ]
             );
 
         // remove the back dowel
@@ -798,7 +798,7 @@ module _ShelfBaseMainFace( x )
         [ x, shelf_base_y + dowel_front_offset_y * 2, 0 ],
         ];
     // for( point = front_dowel_support_points )
-    //     # translate( point )       
+    //     # translate( point )
     //         sphere( r = 1 );
 
     dowel_back_support_under_ring_z = shelf_base_z
@@ -818,7 +818,7 @@ module _ShelfBaseMainFace( x )
         ];
 
     // for( point = back_dowel_support_points )
-    //     # translate( point )       
+    //     # translate( point )
     //         sphere( r = 1 );
 
     // main face

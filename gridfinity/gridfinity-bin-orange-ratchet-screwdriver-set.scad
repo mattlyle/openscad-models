@@ -173,17 +173,17 @@ module OrangeRatchetScrewDriver( add_clearance )
                 translate([ orange_ratchet_screwdriver_case_hinge_x, orange_ratchet_screwdriver_case_y, 0 ])
                     rotate([ 0, 0, -90 ])
                         TriangularPrism( orange_ratchet_screwdriver_case_y, orange_ratchet_screwdriver_case_sloped_corner_size, orange_ratchet_screwdriver_case_sloped_corner_size );
-                
+
                 // bottom right
                 translate([ orange_ratchet_screwdriver_case_hinge_x + orange_ratchet_screwdriver_case_x + clearance_to_add * 2, 0, 0 ])
                     rotate([ 0, 0, 90 ])
                         TriangularPrism( orange_ratchet_screwdriver_case_y, orange_ratchet_screwdriver_case_sloped_corner_size, orange_ratchet_screwdriver_case_sloped_corner_size );
-                
+
                 // top right
                 translate([ orange_ratchet_screwdriver_case_hinge_x + orange_ratchet_screwdriver_case_x + clearance_to_add * 2, 0, orange_ratchet_screwdriver_case_z ])
                     rotate([ -90, 0, 90 ])
                         TriangularPrism( orange_ratchet_screwdriver_case_y, orange_ratchet_screwdriver_case_sloped_corner_size, orange_ratchet_screwdriver_case_sloped_corner_size );
-                
+
                 // top left
                 translate([ orange_ratchet_screwdriver_case_hinge_x, orange_ratchet_screwdriver_case_y, orange_ratchet_screwdriver_case_z ])
                     rotate([ -90, 0, -90 ])
@@ -191,7 +191,7 @@ module OrangeRatchetScrewDriver( add_clearance )
             }
         }
     }
-    
+
     // hinge
     color([ 1.0, 0.4, 0.4 ])
         translate([ 0, orange_ratchet_screwdriver_case_hinge_y_offset, orange_ratchet_screwdriver_case_hinge_z_offset ])

@@ -716,7 +716,7 @@ module DeckGateBracketFlange( is_left, mode, is_front )
         : mode == MODE_LATCH_SIDE_BOTTOM
             ? above_cutout_latch_side_z + ( bracket_back_z - above_cutout_latch_side_z ) / 2
             : bracket_back_z * flange_screw_hole_top_percent_z;
-    
+
     flange_screw_hole_bottom_z =  mode == MODE_LATCH_SIDE_TOP
         ? below_cutout_latch_side_z / 2
         : mode == MODE_LATCH_SIDE_BOTTOM
@@ -727,7 +727,7 @@ module DeckGateBracketFlange( is_left, mode, is_front )
     // # translate([0,0,below_cutout_latch_side_z]) sphere(r=1);
     // # translate([0,0,above_cutout_latch_side_z]) sphere(r=1);
     // # translate([0,0,bracket_back_z]) sphere(r=1);
- 
+
     difference()
     {
         RoundedCube(

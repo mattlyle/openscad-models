@@ -131,7 +131,7 @@ module MultimeterHolder()
                 cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_r + multimeter_probe_clearance, $fn = 24 );
             translate([ multimeter_probe_offset_x, multimeter_probe_1_offset_y, holder_z - multimeter_probe_handle_length - multimeter_probe_tip_length ])
                 cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_r + multimeter_probe_clearance, $fn = 24 );
-            
+
             // remove the probe 2
             translate([ multimeter_probe_offset_x, multimeter_probe_2_offset_y, holder_z - multimeter_probe_handle_length ])
                 cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_r + multimeter_probe_clearance, $fn = 24 );

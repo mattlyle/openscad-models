@@ -194,7 +194,7 @@ module _VinylRollHolderBase( roll_r, max_width, insert_on_front )
 
     end_cap_x = R * cos( 60 );
     end_cap_y = r;
-    
+
     // before first hexagon
     translate([ 0, holder_base_side_width + holder_base_clearance, 0 ])
         rotate([ 0, 0, -90 ])

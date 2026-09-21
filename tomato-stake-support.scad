@@ -96,7 +96,7 @@ module TomatoStakeSupport()
             / ( num_vertical_supports + 1 )
             * support_length
             - back_support_size / 2;
-        
+
         translate([ support_x, support_depth / 2, 0 ])
             cube([ back_support_size, back_support_size, support_width ]);
     }

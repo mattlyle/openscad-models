@@ -235,7 +235,7 @@ module _MiniScrewdriverHolderCradle()
     back_wall_front_y = -wall_width;
     back_wall_back_y = 0;
     top_support_front_y = back_wall_front_y - cradle_support_y;
-    
+
     back_wall_bottom_z = 0;
     back_wall_top_left_z = cradle_left_z;
     back_wall_top_right_z = cradle_right_z;
@@ -277,11 +277,11 @@ module _MiniScrewdriverHolderCradle()
         // remove the labels
         MiniScrewdriverHolderCradleBaseText( true );
     }
-    
+
     // bottom wall
     translate([ back_wall_left_x, top_support_front_y, back_wall_bottom_z ])
         cube([ cradle_x, cradle_support_y, wall_width ]);
-    
+
     // bottom support bar
     difference()
     {
@@ -307,7 +307,7 @@ module _MiniScrewdriverHolderCradle()
                     );
         }
     }
-    
+
     // top support bar
     top_support_bar_points = [
         [ back_wall_left_x, back_wall_front_y, back_wall_top_left_z ], // 0 - top left

@@ -137,7 +137,7 @@ module WyzeCamV3Mount()
                 round_top = true,
                 round_bottom = true
                 );
-        
+
         translate([ mount_base_x / 2, mount_base_y + DIFFERENCE_CLEARANCE, mount_base_z ])
             rotate([ 90, 0, 0 ])
                 cylinder( h = wall_width + DIFFERENCE_CLEARANCE * 2, r = back_cutout_r );

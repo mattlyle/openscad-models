@@ -356,11 +356,11 @@ module PliersHolderHorizontalBridgeUpperSupport( support_span_length )
             {
                 rotate([ 45, 0, 0 ])
                     RoundedCube( ring_wall_width, support_edge_length, support_edge_length );
-                    
+
                 // remove the bottom
                 translate([ 0, -support_span_length / 2, 0 ])
                     cube([ ring_wall_width, support_span_length / 2, support_span_length ]);
-                
+
                 // remove the side
                 translate([ 0, -support_span_length / 2, 0 ])
                     cube([ ring_wall_width, support_span_length, support_span_length / 2 ]);
@@ -405,11 +405,11 @@ module PliersHolderHorizontalBridgeLowerSupport( support_span_length )
             {
                 rotate([ 45, 0, 0 ])
                     RoundedCube( ring_wall_width, support_edge_length, support_edge_length );
-                    
+
                 // remove the top
                 translate([ 0, 0, 0 ])
                     cube([ ring_wall_width, support_span_length / 2, support_span_length ]);
-                
+
                 // remove the side
                 translate([ 0, -support_span_length / 2, 0 ])
                     cube([ ring_wall_width, support_span_length, support_span_length / 2 ]);
