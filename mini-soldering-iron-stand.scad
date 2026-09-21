@@ -32,6 +32,10 @@ mini_soldering_iron_cord_r = 5.3 / 2;
 render_mode = "preview";
 // render_mode = "print-base";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+base_color = "white";
+label_color = "black";
 
 label_font = "Liberation Sans:style=Bold";
 label_font_size = 4;
@@ -103,6 +107,8 @@ support_stand_front_z = support_stand_rear_z + support_stand_front_offset;
 
 pegs_offset_x = front_tower_x + 22; // TODO: should be calculated to find the center
 
+function HeadedInsertPegX( i ) = pegs_offset_x + i * ( peg_r * 2 + peg_spacing_x );
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -115,6 +121,7 @@ if( render_mode == "preview" )
             MiniSolderingIronPreview();
 
     MiniSolderingIronStand();
+    MiniSolderingIronStandTextLabels();
 }
 else if( render_mode == "print-base" )
 {
@@ -122,7 +129,14 @@ else if( render_mode == "print-base" )
 }
 else if( render_mode == "print-text" )
 {
-    MiniSolderingIronStand();
+    MiniSolderingIronStandTextLabels();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( base_color )
+        MiniSolderingIronStand();
+    color( label_color )
+        MiniSolderingIronStandTextLabels();
 }
 else
 {
@@ -133,45 +147,42 @@ else
 
 module MiniSolderingIronStand()
 {
-    if( render_mode == "preview" || render_mode == "print-base" )
+    render()
     {
-        render()
+        difference()
         {
-            difference()
-            {
-                RoundedCube( base_x, base_y, base_z, r = 1.0, round_top = false );
+            RoundedCube( base_x, base_y, base_z, r = 1.0, round_top = false );
 
-                translate([ front_cutout_edge_size, front_cutout_edge_size, 0 ])
-                    cube([ front_tower_x - front_cutout_edge_size * 2, base_y - front_cutout_edge_size * 2, base_z ]);
-            }
+            translate([ front_cutout_edge_size, front_cutout_edge_size, 0 ])
+                cube([ front_tower_x - front_cutout_edge_size * 2, base_y - front_cutout_edge_size * 2, base_z ]);
         }
-
-        // base edges
-        translate([ 0, 0, 0])
-            RoundedCube( base_x, base_edge_width, base_edge_z, r = 1.0 );
-        translate([ base_x - base_edge_width, 0, 0])
-            RoundedCube( base_edge_width, base_y, base_edge_z, r = 1.0 );
-        translate([ 0, base_y - base_edge_width, 0])
-            RoundedCube( base_x, base_edge_width, base_edge_z, r = 1.0 );
-        translate([ 0, 0, 0])
-            RoundedCube( base_edge_width, base_y, base_edge_z, r = 1.0 );
-
-        // front tower
-        translate([ front_tower_x, 0, 0 ])
-            _MiniSolderingIronStandTower( support_stand_front_z );
-        translate([ front_tower_x, 0, 0 ])
-            translate([ 0, base_y / 2, support_stand_front_z + base_z + cradle_tower_overlap ])
-                _MiniSolderingIronStandFrontCradle();
-
-        // rear tower
-        translate([ rear_tower_x, 0, 0 ])
-            _MiniSolderingIronStandTower( support_stand_rear_z );
-        translate([ rear_tower_x, 0, 0 ])
-            translate([ 0, base_y / 2, support_stand_rear_z + base_z + cradle_tower_overlap ])
-                _MiniSolderingIronStandRearCradle();
-
-        _MiniSolderingIronStandTipPegs();
     }
+
+    // base edges
+    translate([ 0, 0, 0])
+        RoundedCube( base_x, base_edge_width, base_edge_z, r = 1.0 );
+    translate([ base_x - base_edge_width, 0, 0])
+        RoundedCube( base_edge_width, base_y, base_edge_z, r = 1.0 );
+    translate([ 0, base_y - base_edge_width, 0])
+        RoundedCube( base_x, base_edge_width, base_edge_z, r = 1.0 );
+    translate([ 0, 0, 0])
+        RoundedCube( base_edge_width, base_y, base_edge_z, r = 1.0 );
+
+    // front tower
+    translate([ front_tower_x, 0, 0 ])
+        _MiniSolderingIronStandTower( support_stand_front_z );
+    translate([ front_tower_x, 0, 0 ])
+        translate([ 0, base_y / 2, support_stand_front_z + base_z + cradle_tower_overlap ])
+            _MiniSolderingIronStandFrontCradle();
+
+    // rear tower
+    translate([ rear_tower_x, 0, 0 ])
+        _MiniSolderingIronStandTower( support_stand_rear_z );
+    translate([ rear_tower_x, 0, 0 ])
+        translate([ 0, base_y / 2, support_stand_rear_z + base_z + cradle_tower_overlap ])
+            _MiniSolderingIronStandRearCradle();
+
+    _MiniSolderingIronStandTipPegs();
 
     _MiniSolderingIronStandHeadedInsertPegs();
 }
@@ -259,28 +270,29 @@ module _MiniSolderingIronStandTower( z )
 
 module _MiniSolderingIronStandHeadedInsertPegs()
 {
+    for( i = [ 0 : len( heated_insert_labels ) - 1 ] )
+    {
+        translate([ HeadedInsertPegX( i ), pegs_offset_y, base_z ])
+            cylinder( h = heated_insert_peg_z, r = peg_r );
+
+        // %translate([ HeadedInsertPegX( i ), pegs_offset_y, base_z ])
+        //     cylinder( h = 1, r = 9.5/2 );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// a label under each heated insert peg
+module MiniSolderingIronStandTextLabels()
+{
     text_area_x = peg_spacing_x + peg_r * 2;
 
     for( i = [ 0 : len( heated_insert_labels ) - 1 ] )
     {
-        peg_x = pegs_offset_x + i * ( peg_r * 2 + peg_spacing_x );
+        text_area_offset_x = HeadedInsertPegX( i ) - peg_spacing_x / 2 - peg_r;
 
-        if( render_mode == "preview" || render_mode == "print-base" )
-        {
-            translate([ peg_x, pegs_offset_y, base_z ])
-                cylinder( h = heated_insert_peg_z, r = peg_r );
-
-            // %translate([ peg_x, pegs_offset_y, base_z ])
-            //     cylinder( h = 1, r = 9.5/2 );
-        }
-
-        text_area_offset_x = peg_x - peg_spacing_x / 2 - peg_r;
-
-        if( render_mode == "preview" || render_mode == "print-text" )
-        {
-            translate([ text_area_offset_x, peg_text_offset_y, base_z ])
-                CenteredTextLabel( heated_insert_labels[ i ], text_area_x, -1, font_size = label_font_size, font = label_font );
-        }
+        translate([ text_area_offset_x, peg_text_offset_y, base_z ])
+            CenteredTextLabel( heated_insert_labels[ i ], text_area_x, -1, font_size = label_font_size, font = label_font );
     }
 }
 
