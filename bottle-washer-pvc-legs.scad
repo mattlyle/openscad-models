@@ -59,6 +59,12 @@ render_mode = "preview";
 // render_mode = "print-bottle-holder-insert-medium-text";
 // render_mode = "print-bottle-holder-insert-large";
 // render_mode = "print-bottle-holder-insert-large-text";
+// render_mode = "print-3mf-insert-small";
+// render_mode = "print-3mf-insert-medium";
+// render_mode = "print-3mf-insert-large";
+
+insert_color = "white";
+label_color = "black";
 
 cradle_base_x = 60;
 cradle_base_y = 60;
@@ -215,54 +221,27 @@ else if( render_mode == "print-bottle-holder-support-structure" )
 }
 else if( render_mode == "print-bottle-holder-insert-small" )
 {
-    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
-        rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsert(
-                jar_small_sizes,
-                bottle_holder_support_structure_insert_cone_small_config,
-                bottle_holder_support_structure_insert_label_lines_small,
-                false
-                );
+    BottleHolderInsertForPrint( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, bottle_holder_support_structure_insert_label_lines_small );
 }
 else if( render_mode == "print-bottle-holder-insert-small-text" )
 {
-    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
-        rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsertText( bottle_holder_support_structure_insert_label_lines_small );
+    BottleHolderInsertTextForPrint( bottle_holder_support_structure_insert_label_lines_small );
 }
 else if( render_mode == "print-bottle-holder-insert-medium" )
 {
-    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
-        rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsert(
-                jar_medium_sizes,
-                bottle_holder_support_structure_insert_cone_medium_config,
-                bottle_holder_support_structure_insert_label_lines_medium,
-                false
-                );
+    BottleHolderInsertForPrint( jar_medium_sizes, bottle_holder_support_structure_insert_cone_medium_config, bottle_holder_support_structure_insert_label_lines_medium );
 }
 else if( render_mode == "print-bottle-holder-insert-medium-text" )
 {
-    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
-        rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsertText( bottle_holder_support_structure_insert_label_lines_medium );
+    BottleHolderInsertTextForPrint( bottle_holder_support_structure_insert_label_lines_medium );
 }
 else if( render_mode == "print-bottle-holder-insert-large" )
 {
-    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
-        rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsert(
-                jar_large_sizes,
-                bottle_holder_support_structure_insert_cone_large_config,
-                bottle_holder_support_structure_insert_label_lines_large,
-                false
-                );
+    BottleHolderInsertForPrint( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, bottle_holder_support_structure_insert_label_lines_large );
 }
 else if( render_mode == "print-bottle-holder-insert-large-text" )
 {
-    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
-        rotate([ 0, 180, 0 ])
-            BottleHolderSupportStructureInsertText( bottle_holder_support_structure_insert_label_lines_large );
+    BottleHolderInsertTextForPrint( bottle_holder_support_structure_insert_label_lines_large );
 }
 else if( render_mode == "print-bottle-holder-support-structure-leg-test" )
 {
@@ -287,9 +266,50 @@ else if( render_mode == "print-bottle-holder-support-structure-leg-test" )
         }
     }
 }
+else if( render_mode == "print-3mf-insert-small" )
+{
+    color( insert_color )
+        BottleHolderInsertForPrint( jar_small_sizes, bottle_holder_support_structure_insert_cone_small_config, bottle_holder_support_structure_insert_label_lines_small );
+    color( label_color )
+        BottleHolderInsertTextForPrint( bottle_holder_support_structure_insert_label_lines_small );
+}
+else if( render_mode == "print-3mf-insert-medium" )
+{
+    color( insert_color )
+        BottleHolderInsertForPrint( jar_medium_sizes, bottle_holder_support_structure_insert_cone_medium_config, bottle_holder_support_structure_insert_label_lines_medium );
+    color( label_color )
+        BottleHolderInsertTextForPrint( bottle_holder_support_structure_insert_label_lines_medium );
+}
+else if( render_mode == "print-3mf-insert-large" )
+{
+    color( insert_color )
+        BottleHolderInsertForPrint( jar_large_sizes, bottle_holder_support_structure_insert_cone_large_config, bottle_holder_support_structure_insert_label_lines_large );
+    color( label_color )
+        BottleHolderInsertTextForPrint( bottle_holder_support_structure_insert_label_lines_large );
+}
 else
 {
     assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// an insert, flipped upside down into its print orientation
+module BottleHolderInsertForPrint( jar_sizes, cone_config, label_lines )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsert( jar_sizes, cone_config, label_lines, false );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// an insert's label, in the same print orientation as BottleHolderInsertForPrint()
+module BottleHolderInsertTextForPrint( label_lines )
+{
+    translate([ bottle_holder_support_structure_grid_x, 0, bottle_holder_support_structure_grid_z ])
+        rotate([ 0, 180, 0 ])
+            BottleHolderSupportStructureInsertText( label_lines );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
