@@ -18,6 +18,10 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
+label_text = "Cricut Tools";
+label_font = "Liberation Sans:style=Bold";
+label_font_size = 7;
+
 cells_x = 2;
 cells_y = 2;
 
@@ -102,7 +106,7 @@ render()
 module CricutToolsTextLabel()
 {
     translate([ text_area_offset + 12, text_area_offset + 22, holder_z ])
-        TextLabel( "Cricut Tools", font_size = 7, font = "Liberation Sans:style=Bold" );
+        TextLabel( label_text, font_size = label_font_size, font = label_font );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

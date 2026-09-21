@@ -32,6 +32,10 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
+blue_black_mileseey_laser_label_text = "Mileseey Laser";
+red_craftsman_8m26ft_label_text = "Craftsman 26ft";
+label_font_size = 6;
+
 show_previews = false;
 
 cells_x = 3;
@@ -177,11 +181,11 @@ module TapeMeasuresTextLabels()
     blue_black_mileseey_laser_holder_offset_x_fake_center = 3.0;
     translate([ blue_black_mileseey_laser_holder_offset_x + blue_black_mileseey_laser_holder_offset_x_fake_center, text_offset_y, holder_z ])
         linear_extrude( 0.5 )
-            text( "Mileseey Laser", size = 6 );
+            text( blue_black_mileseey_laser_label_text, size = label_font_size );
 
     translate([ red_craftsman_8m26ft_holder_offset_x, text_offset_y, holder_z ])
         linear_extrude( 0.5 )
-            text( "Craftsman 26ft", size = 6 );
+            text( red_craftsman_8m26ft_label_text, size = label_font_size );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

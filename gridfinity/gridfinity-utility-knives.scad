@@ -27,6 +27,11 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
+label_text_line_1 = "Utility";
+label_text_line_2 = "Knives";
+label_font = "Georgia:style=Bold";
+label_font_size = 6;
+
 cells_x = 3;
 cells_y = 4;
 
@@ -121,9 +126,9 @@ module UtilityKnivesTextLabel()
     //     cube([ text_area_x, text_area_y, 0.5 ]);
 
     translate([ text_area_offset_x, 17, holder_z ])
-        CenteredTextLabel( "Utility", centered_in_area_x = text_area_x, centered_in_area_y = -1, font_size = 6, font = "Georgia:style=Bold"  );
+        CenteredTextLabel( label_text_line_1, centered_in_area_x = text_area_x, centered_in_area_y = -1, font_size = label_font_size, font = label_font );
     translate([ text_area_offset_x, 8, holder_z ])
-        CenteredTextLabel( "Knives", font_size = 6, font = "Georgia:style=Bold", centered_in_area_x = text_area_x, centered_in_area_y = -1 );
+        CenteredTextLabel( label_text_line_2, centered_in_area_x = text_area_x, centered_in_area_y = -1, font_size = label_font_size, font = label_font );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

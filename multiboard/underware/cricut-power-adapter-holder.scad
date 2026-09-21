@@ -22,6 +22,10 @@ wall_clearance = 0.75;
 render_mode = "preview";
 // render_mode = "print";
 
+label_lines = [ "Cricut", "Power", "Adapter" ];
+label_font = "Liberation Sans:style=Bold";
+label_font_size = 16;
+
 lip_z = 3.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,13 +99,13 @@ module CricutPowerAdapterHolder()
     // text label
     translate([ 48, holder_y, holder_z_offset + holder_z ])
         rotate([ 0, 0, -90 ])
-            CenteredTextLabel( "Cricut", holder_y, -1, font_size = 16, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( label_lines[ 0 ], holder_y, -1, font_size = label_font_size, font = label_font );
     translate([ 28, holder_y, holder_z_offset + holder_z ])
         rotate([ 0, 0, -90 ])
-            CenteredTextLabel( "Power", holder_y, -1, font_size = 16, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( label_lines[ 1 ], holder_y, -1, font_size = label_font_size, font = label_font );
     translate([ 8, holder_y, holder_z_offset + holder_z ])
         rotate([ 0, 0, -90 ])
-            CenteredTextLabel( "Adapter", holder_y, -1, font_size = 16, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( label_lines[ 2 ], holder_y, -1, font_size = label_font_size, font = label_font );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

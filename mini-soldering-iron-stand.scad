@@ -34,6 +34,9 @@ render_mode = "preview";
 // render_mode = "print-base";
 // render_mode = "print-text";
 
+label_font = "Liberation Sans:style=Bold";
+label_font_size = 4;
+
 base_x = 240.0;
 base_y = 90.0;
 base_z = 3.5;
@@ -278,7 +281,7 @@ module _MiniSolderingIronStandHeadedInsertPegs()
         if( render_mode == "preview" || render_mode == "print-text" )
         {
             translate([ text_area_offset_x, peg_text_offset_y, base_z ])
-                CenteredTextLabel( heated_insert_labels[ i ], text_area_x, -1, font_size = 4, font = "Liberation Sans:style=Bold" );
+                CenteredTextLabel( heated_insert_labels[ i ], text_area_x, -1, font_size = label_font_size, font = label_font );
         }
     }
 }

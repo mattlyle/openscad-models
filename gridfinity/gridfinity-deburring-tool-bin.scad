@@ -18,6 +18,10 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
+label_text = "DEBURRING TOOL";
+label_font = "Liberation Sans:style=Bold";
+label_font_size = 4;
+
 cells_x = 2;
 cells_y = 1;
 
@@ -107,7 +111,7 @@ module DeburringToolBin()
     if( render_mode == "preview" || render_mode == "print-text" )
     {
         translate([ 0, text_area_offset_y, holder_z ])
-            CenteredTextLabel( "DEBURRING TOOL", base_x, text_area_y, font_size = 4, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( label_text, base_x, text_area_y, font_size = label_font_size, font = label_font );
     }
 }
 

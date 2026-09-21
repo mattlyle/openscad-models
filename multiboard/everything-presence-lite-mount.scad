@@ -27,6 +27,10 @@ difference_overlap = 0.01;
 render_mode = "preview";
 // render_mode = "print";
 
+label_text = "Everything Presence Lite";
+label_font = "Liberation Sans:style=Bold";
+label_font_size = 3.5;
+
 holder_extra_x = 6;
 holder_extra_y = 5;
 
@@ -115,7 +119,7 @@ module EverythingPresenceLiteHolder()
     // text label
     text_area_offset_y = holder_y - holder_extra_y + 1.2;
     translate([ 0, text_area_offset_y, holder_z_offset ])
-        CenteredTextLabel( "Everything Presence Lite", holder_x, -1, font_size = 3.5, font = "Liberation Sans:style=Bold" );
+        CenteredTextLabel( label_text, holder_x, -1, font_size = label_font_size, font = label_font );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -44,6 +44,9 @@ render_mode = "preview";
 // render_mode = "print-jig-3";
 // render_mode = "print-jig-4"; // for multiboard shelves using gridfinity-extended
 
+label_font = "Georgia:style=Bold";
+label_font_size = 8;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -190,7 +193,7 @@ module GridfinityMagnetJig( label_text )
 
         // text
         translate([ 0, magnet_corner_offset + magnet_radius, jig_height ])
-            CenteredTextLabel( label_text, font_size = 8, font = "Georgia:style=Bold", bin_size, bin_size - ( magnet_corner_offset + magnet_radius ) * 2 );
+            CenteredTextLabel( label_text, font_size = label_font_size, font = label_font, bin_size, bin_size - ( magnet_corner_offset + magnet_radius ) * 2 );
     }
 }
 

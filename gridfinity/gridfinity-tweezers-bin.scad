@@ -33,6 +33,11 @@ render_mode = "preview";
 // render_mode = "print-bin-2";
 // render_mode = "print-text-2";
 
+bin_1_label_text = "Tweezers";
+bin_2_label_text = "NARZ";
+bin_2_label_font = "Georgia:style=Bold";
+label_font_size = 5;
+
 // TODO: The NARZ text should be bold
 
 cells_x = 1;
@@ -140,11 +145,11 @@ module TweezersBin()
         color([ 0.9, 0.9, 0 ])
         {
             translate([ 0, bin_1_text_area_offset_y, holder_z ])
-                CenteredTextLabel( "Tweezers", centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = 5 );
+                CenteredTextLabel( bin_1_label_text, centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = label_font_size );
 
             translate([ base_x, base_y - bin_1_text_area_offset_y, holder_z ])
                 rotate([ 0, 0, 180 ])
-                    CenteredTextLabel( "Tweezers", centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = 5 );
+                    CenteredTextLabel( bin_1_label_text, centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = label_font_size );
         }
     }
 }
@@ -193,7 +198,7 @@ module TweezersBin2()
 
         color([ 0.1, 0.1, 0.1 ])
             translate([ 0, offset_y, holder_z ])
-                CenteredTextLabel( "NARZ", font = "Georgia:style=Bold", centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = 5 );
+                CenteredTextLabel( bin_2_label_text, font = bin_2_label_font, centered_in_area_x = base_x, centered_in_area_y = text_area_y, font_size = label_font_size );
     }
 }
 

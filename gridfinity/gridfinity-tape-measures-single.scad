@@ -22,6 +22,9 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
+label_text = "Silver Malco";
+label_font_size = 5.1;
+
 show_previews = false;
 
 cells_x = 1;
@@ -124,7 +127,7 @@ module SilverMalcoTextLabel()
 {
     translate([ text_offset_x, text_offset_y, holder_z ])
         linear_extrude( 0.5 )
-            text( "Silver Malco", size = 5.1 );
+            text( label_text, size = label_font_size );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

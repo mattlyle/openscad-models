@@ -13,6 +13,10 @@ render_mode = "preview";
 // render_mode = "print-bin-original";
 // render_mode = "print-bin-larger";
 
+label_text_line_1 = "Digital";
+label_text_line_2 = "Calipers";
+label_font = "Verdana:style=Bold";
+
 caliper_box_holder_thickness = 1.5;
 
 corner_rounding_radius = 1.0;
@@ -221,11 +225,11 @@ module CaliperBoxHolder(
     color([ 0, 0, 0 ])
         translate([ text_label_1_offset_vector[ 0 ], text_label_1_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             linear_extrude( 0.5 )
-                text( "Digital", size = text_label_font_size, font = "Verdana:style=Bold" ); // TODO: swap with module
+                text( label_text_line_1, size = text_label_font_size, font = label_font ); // TODO: swap with module
     color([ 0, 0, 0 ])
         translate([ text_label_2_offset_vector[ 0 ], text_label_2_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             linear_extrude( 0.5 )
-                text( "Calipers", size = text_label_font_size, font = "Verdana:style=Bold" ); // TODO: swap with module
+                text( label_text_line_2, size = text_label_font_size, font = label_font ); // TODO: swap with module
 
     color([ 0, 0, 0 ])
         translate([ svg_offset_vector[ 0 ], svg_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
