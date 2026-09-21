@@ -498,7 +498,7 @@ module StandaloneDowelLabelHolder()
         -label_z / 2
         ])
         rotate([ label_angle, 0, 0 ])
-            RoundedCubeAlt2( label_x, label_y, label_z, label_corner_r );
+            RoundedCube( label_x, label_y, label_z, label_corner_r );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -549,7 +549,7 @@ module LabelHolder()
             -label_neck_y - label_connector_cap_width - label_y,
             0
             ])
-            RoundedCubeAlt2( label_x, label_y, label_z, label_corner_r );
+            RoundedCube( label_x, label_y, label_z, label_corner_r );
 
         translate([ 0, 0, label_connector_offset_z ])
             SlideConnectorF(

@@ -284,16 +284,16 @@ module GateFootClip( for_left_foot )
             union()
             {
                 // top
-                RoundedCubeAlt2( clip_x, clip_y, clip_bottom_z, r = clip_rounding_r );
+                RoundedCube( clip_x, clip_y, clip_bottom_z, r = clip_rounding_r );
 
                 // cleat side
                 translate([ 0, 0, clip_bottom_z - clip_rounding_r * 2 ])
-                    RoundedCubeAlt2( clip_x, clip_overlap_y, clip_overlap_z, r = clip_rounding_r );
+                    RoundedCube( clip_x, clip_overlap_y, clip_overlap_z, r = clip_rounding_r );
 
                 // back side
                 translate([ 0, clip_y - clip_overlap_y, clip_bottom_z - clip_pinch_distance_y - clip_rounding_r ])
                     rotate([ clip_pinch_angle, 0, 0 ])
-                        RoundedCubeAlt2( clip_x, clip_overlap_y, clip_overlap_z, r = clip_rounding_r );
+                        RoundedCube( clip_x, clip_overlap_y, clip_overlap_z, r = clip_rounding_r );
             }
 
             // remove the post area

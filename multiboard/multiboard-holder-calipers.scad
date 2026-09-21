@@ -191,9 +191,10 @@ module CaliperBoxHolder(
             {
                 translate([ 0, 0, multiboard_connector_back_z - corner_rounding_r * 2 ])
                     RoundedCube(
-                        size = [ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r * 3 ],
-                        r = corner_rounding_r,
-                        fn = 36
+                        holder_size_vector[ 0 ],
+                        holder_size_vector[ 1 ],
+                        corner_rounding_r * 3,
+                        r = corner_rounding_r
                         );
                 
                 // cut off the bottom
@@ -209,9 +210,10 @@ module CaliperBoxHolder(
             {
                 // start with a rounded box
                 RoundedCube(
-                    size = [ holder_size_vector[ 0 ], holder_size_vector[ 1 ], holder_size_vector[ 2 ] ],
-                    r = corner_rounding_r,
-                    fn = 36
+                    holder_size_vector[ 0 ],
+                    holder_size_vector[ 1 ],
+                    holder_size_vector[ 2 ],
+                    r = corner_rounding_r
                     );
 
                 // remove the back

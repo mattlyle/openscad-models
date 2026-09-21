@@ -84,7 +84,7 @@ module CricutPowerAdapterHolder()
         difference()
         {
             translate([ 0, 0, holder_z_offset ])
-                RoundedCubeAlt2( x = holder_x, y = holder_y, z = holder_z, round_bottom = false );
+                RoundedCube( x = holder_x, y = holder_y, z = holder_z, round_bottom = false );
 
             translate([ wall_width + wall_clearance, wall_width, holder_z_offset ])
                 cube([ holder_inside_x, holder_y, holder_inside_z ]);

@@ -162,7 +162,7 @@ module MiniScrewdriverSetHolder()
     difference()
     {
         translate([ 0, 0, base_offset_z ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 x = base_x,
                 y = base_y,
                 z = base_wall_z,
@@ -174,7 +174,7 @@ module MiniScrewdriverSetHolder()
                 );
 
         translate([ wall_width, -GRIDFINITY_ROUNDING_R, base_offset_z - DIFFERENCE_CLEARANCE ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 x = base_x - wall_width * 2,
                 y = base_y - wall_width + GRIDFINITY_ROUNDING_R,
                 z = base_wall_z + DIFFERENCE_CLEARANCE * 2,

@@ -74,7 +74,7 @@ module DoxieMultiboardHolder()
         difference()
         {
             translate([ 0, 0, multiboard_connector_back_z ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     x = size_x,
                     y = size_y,
                     z = size_z,

@@ -139,7 +139,7 @@ module MiniSolderingIronStand()
         {
             difference()
             {
-                RoundedCubeAlt2( base_x, base_y, base_z, r = 1.0, round_top = false );
+                RoundedCube( base_x, base_y, base_z, r = 1.0, round_top = false );
 
                 translate([ front_cutout_edge_size, front_cutout_edge_size, 0 ])
                     cube([ front_tower_x - front_cutout_edge_size * 2, base_y - front_cutout_edge_size * 2, base_z ]);
@@ -148,13 +148,13 @@ module MiniSolderingIronStand()
 
         // base edges
         translate([ 0, 0, 0])
-            RoundedCubeAlt2( base_x, base_edge_width, base_edge_z, r = 1.0 );
+            RoundedCube( base_x, base_edge_width, base_edge_z, r = 1.0 );
         translate([ base_x - base_edge_width, 0, 0])
-            RoundedCubeAlt2( base_edge_width, base_y, base_edge_z, r = 1.0 );
+            RoundedCube( base_edge_width, base_y, base_edge_z, r = 1.0 );
         translate([ 0, base_y - base_edge_width, 0])
-            RoundedCubeAlt2( base_x, base_edge_width, base_edge_z, r = 1.0 );
+            RoundedCube( base_x, base_edge_width, base_edge_z, r = 1.0 );
         translate([ 0, 0, 0])
-            RoundedCubeAlt2( base_edge_width, base_y, base_edge_z, r = 1.0 );
+            RoundedCube( base_edge_width, base_y, base_edge_z, r = 1.0 );
 
         // front tower
         translate([ front_tower_x, 0, 0 ])

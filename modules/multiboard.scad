@@ -105,7 +105,7 @@ module MultiboardConnectorBackAlt( size_x, size_y )
 
     difference()
     {
-        RoundedCubeAlt2(
+        RoundedCube(
             size_x,
             size_y,
             multiboard_connector_back_z,
@@ -166,7 +166,7 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup )
 
     difference()
     {
-        RoundedCubeAlt2(
+        RoundedCube(
             size_x,
             size_y,
             multiboard_connector_back_z,

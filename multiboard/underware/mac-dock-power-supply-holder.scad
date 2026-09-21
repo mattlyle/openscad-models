@@ -68,7 +68,7 @@ module PowerStripHolder()
 
     // left - bottom
     translate([ 0, 0, multiboard_connector_back_z ])
-        RoundedCubeAlt2(
+        RoundedCube(
             wall_width,
             holder_y,
             bottom_z,
@@ -78,7 +78,7 @@ module PowerStripHolder()
 
     // right - bottom
     translate([ holder_x - wall_width, 0, multiboard_connector_back_z ])
-        RoundedCubeAlt2(
+        RoundedCube(
             wall_width,
             holder_y,
             bottom_z,
@@ -92,7 +92,7 @@ module PowerStripHolder()
         holder_y - wall_width,
         multiboard_connector_back_z + bottom_z - bottom_edge_z - wall_width
         ])
-        RoundedCubeAlt2(
+        RoundedCube(
             top_bottom_edge_width + wall_width,
             wall_width,
             wall_width + bottom_edge_z,
@@ -106,7 +106,7 @@ module PowerStripHolder()
         holder_y - wall_width,
         multiboard_connector_back_z + bottom_z - bottom_edge_z - wall_width
         ])
-        RoundedCubeAlt2(
+        RoundedCube(
             top_bottom_edge_width + wall_width,
             wall_width,
             wall_width + bottom_edge_z,
@@ -116,7 +116,7 @@ module PowerStripHolder()
 
     // top - left
     translate([ 0, 0, multiboard_connector_back_z ])
-        RoundedCubeAlt2(
+        RoundedCube(
             top_bottom_edge_width,
             wall_width,
             bottom_z,
@@ -126,7 +126,7 @@ module PowerStripHolder()
 
     // top - right
     translate([ holder_x - top_bottom_edge_width, 0, multiboard_connector_back_z ])
-        RoundedCubeAlt2(
+        RoundedCube(
             top_bottom_edge_width,
             wall_width,
             bottom_z,
@@ -136,7 +136,7 @@ module PowerStripHolder()
 
     // front
     translate([ 0, 0, multiboard_connector_back_z + bottom_z - wall_width ])
-        RoundedCubeAlt2(
+        RoundedCube(
             holder_x,
             holder_y,
             wall_width,

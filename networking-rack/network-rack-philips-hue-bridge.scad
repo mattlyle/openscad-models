@@ -105,7 +105,7 @@ else
 
 module HueBridgePreview()
 {
-    RoundedCubeAlt2(
+    RoundedCube(
         hue_bridge_x,
         hue_bridge_y,
         hue_bridge_z,

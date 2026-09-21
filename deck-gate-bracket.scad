@@ -344,7 +344,7 @@ module DeckGateBracket( mode, is_front )
     {
         union()
         {
-            RoundedCubeAlt2(
+            RoundedCube(
                 bracket_x,
                 bracket_y,
                 bracket_z,
@@ -681,7 +681,7 @@ module DeckGateLatchPreview()
         -latch_bend_y + latch_y,
         ( latch_z - latch_bend_z ) / 2
         ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 latch_total_x - latch_main_x - latch_pyramid_x,
                 latch_bend_y,
                 latch_bend_z,
@@ -730,7 +730,7 @@ module DeckGateBracketFlange( is_left, mode, is_front )
  
     difference()
     {
-        RoundedCubeAlt2(
+        RoundedCube(
             flange_width,
             bracket_thickness + flange_shroud_extra,
             bracket_back_z,

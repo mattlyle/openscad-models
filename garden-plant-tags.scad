@@ -358,7 +358,7 @@ module _PlantTag( tag_x, tag_y, is_vertical_label )
 
         // main body
         translate([ rounded_top_x, 0, 0 ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 x = tag_x,
                 y = tag_y,
                 z = tag_z,

@@ -958,7 +958,7 @@ module AMS2ProPreview()
 
     // ledge
     % translate([ ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2, ams_extra_front_y, 0 ])
-        RoundedCubeAlt2(
+        RoundedCube(
             x = ams_2_pro_bottom_ledge_x,
             y = ams_2_pro_bottom_ledge_y,
             z = ams_2_pro_bottom_ledge_z,
@@ -980,7 +980,7 @@ module AMS2ProPreview()
 
     // body
     % translate([ 0, 0, ams_2_pro_bottom_ledge_z ])
-        RoundedCubeAlt2(
+        RoundedCube(
             x = ams_2_pro_x,
             y = ams_2_pro_y,
             z = ams_2_pro_body_z,

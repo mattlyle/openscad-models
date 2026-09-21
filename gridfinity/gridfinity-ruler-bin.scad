@@ -131,7 +131,7 @@ module RulerBin()
 
             // bottom level
             translate([ 0, 0, base_offset_z ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     base_x,
                     base_bottom_y,
                     front_bin_z,
@@ -146,7 +146,7 @@ module RulerBin()
 
             // top bin
             translate([ 0, back_row_offset_y, base_offset_z + front_bin_z - GRIDFINITY_ROUNDING_R ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     base_x,
                     base_top_y,
                     front_bin_z + GRIDFINITY_ROUNDING_R,

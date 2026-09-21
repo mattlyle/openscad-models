@@ -127,7 +127,7 @@ module _PowerStripHolderMountingBar()
     {
         difference()
         {
-            RoundedCubeAlt2(
+            RoundedCube(
                 powerstrip_mounting_bar_x,
                 holder_y,
                 powerstrip_mounting_bar_z,
@@ -148,12 +148,12 @@ module _PowerStripHolderMountingBar()
             // TODO these will print as overhangs?!
 
             // sides
-            RoundedCubeAlt2(powerstrip_mounting_bar_x, wall_width, holder_side_z, round_top = false, round_bottom = false );
+            RoundedCube(powerstrip_mounting_bar_x, wall_width, holder_side_z, round_top = false, round_bottom = false );
             translate([ 0, holder_y - wall_width, 0 ])
-                RoundedCubeAlt2( powerstrip_mounting_bar_x, wall_width, holder_side_z, round_top = false, round_bottom = false );
+                RoundedCube( powerstrip_mounting_bar_x, wall_width, holder_side_z, round_top = false, round_bottom = false );
 
             // long edge
-            RoundedCubeAlt2( wall_width, holder_y, holder_side_z, round_top = false, round_bottom = false);
+            RoundedCube( wall_width, holder_y, holder_side_z, round_top = false, round_bottom = false);
         }
     }
 }

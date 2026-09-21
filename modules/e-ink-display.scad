@@ -51,10 +51,10 @@ module EInkDisplay( hide_clearance_areas = true )
                 difference()
                 {
                     RoundedCube(
-                        size = [ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, e_ink_display_circuit_board_depth ],
-                        center = false,
-                        r = e_ink_display_circuit_board_rounding_r,
-                        fn = 50 );
+                        e_ink_display_circuit_board_width,
+                        e_ink_display_circuit_board_height,
+                        e_ink_display_circuit_board_depth,
+                        r = e_ink_display_circuit_board_rounding_r );
 
                     // screw holes
                     translate([ e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])

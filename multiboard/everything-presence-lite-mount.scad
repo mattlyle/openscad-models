@@ -30,6 +30,8 @@ label_text = "Everything Presence Lite";
 label_font = "Liberation Sans:style=Bold";
 label_font_size = 3.5;
 
+mount_corner_rounding_r = 10.0;
+
 holder_extra_x = 6;
 holder_extra_y = 5;
 
@@ -196,7 +198,7 @@ module EverythingPresenceLitePreview()
 {
     % difference()
     {
-        RoundedCubeAlt3( mount_x, mount_y, mount_z, r_x = 10.0 );
+        RoundedCube( mount_x, mount_y, mount_z, r = mount_corner_rounding_r, round_top = false, round_bottom = false );
 
         translate([ cutout_offset_x, cutout_offset_y, 0 ])
             EverythingPresenceLitePreviewCutout();

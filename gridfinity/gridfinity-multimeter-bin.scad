@@ -110,9 +110,10 @@ module MultimeterHolder()
         {
             translate([ holder_clearance, holder_clearance, 0 ])
                 RoundedCube(
-                    size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_r,
-                    fn = 36 );
+                    holder_x,
+                    holder_y,
+                    holder_z,
+                    r = corner_rounding_r );
 
             // cut off the area the gridfinity base covers
             cube([ base_x, base_y, base_z ]);

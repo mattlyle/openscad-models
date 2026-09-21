@@ -9,7 +9,6 @@ tap_handle_width = 56; // previous size was 50, but need more for stregth
 tap_handle_height = 210; // previous height was 190
 tap_handle_depth = 20;
 tap_handle_r = 5.0;
-tap_handle_fn = 60;
 
 back_plate_clearance = 0.75; // clearance on all sides for the backplate
 back_plate_wall_snug_fit = 0.65; // eat this back into the clearance for the backplate
@@ -157,10 +156,10 @@ module TapHandle()
         difference()
         {
             RoundedCube(
-                size = [ tap_handle_width, tap_handle_height, tap_handle_depth ],
-                r = tap_handle_r,
-                center = false,
-                fn = tap_handle_fn );
+                tap_handle_width,
+                tap_handle_height,
+                tap_handle_depth,
+                r = tap_handle_r );
 
             // cutout for the screen to show through
             translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height, tap_handle_depth - e_ink_display_screen_depth - screen_depth_offset ])

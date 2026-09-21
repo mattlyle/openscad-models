@@ -107,7 +107,7 @@ else
 
 module GoogleFiberModemPreview()
 {
-    RoundedCubeAlt2(
+    RoundedCube(
         google_fiber_modem_x,
         google_fiber_modem_y,
         google_fiber_modem_z,

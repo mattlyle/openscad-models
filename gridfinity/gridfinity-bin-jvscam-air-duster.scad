@@ -109,7 +109,7 @@ module JvscamBin()
                 air_duster_wall_width,
                 base_offset_z
                 ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     air_duster_cutout_x - air_duster_wall_width * 2 - air_duster_holder_padding,
                     base_y - air_duster_wall_width * 2,
                     bin_base_z + DIFFERENCE_CLEARANCE,
@@ -124,7 +124,7 @@ module JvscamBin()
                 air_duster_wall_width + air_duster_top_y,
                 base_offset_z
                 ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     base_x - air_duster_wall_width * 2,
                     base_y - air_duster_top_y - air_duster_wall_width * 2,
                     bin_base_z + DIFFERENCE_CLEARANCE,
@@ -214,7 +214,7 @@ module JvscamPreview( pad_base = false )
         pad_base ? -air_duster_holder_padding : 0 ,
         0
         ])
-        RoundedCubeAlt2(
+        RoundedCube(
             air_duster_base_x + ( pad_base ? ( air_duster_holder_padding * 2 ) : 0 ),
             air_duster_base_y + ( pad_base ? ( air_duster_holder_padding * 2 ) : 0 ),
             air_duster_base_z,
@@ -229,7 +229,7 @@ module JvscamPreview( pad_base = false )
         -( air_duster_top_y - air_duster_base_y ) / 2,
         air_duster_base_z
         ])
-        RoundedCubeAlt2(
+        RoundedCube(
             air_duster_top_xz,
             air_duster_top_y,
             air_duster_top_xz,

@@ -29,6 +29,7 @@ tool_r = 8.0 / 2;
 
 jig_height = 25;
 jig_peg_height = 1.0;
+jig_corner_rounding_r = 4;
 
 jig2_height = 3;
 jig2_clearance = 0.1;
@@ -166,7 +167,7 @@ module GridfinityMagnetJig( label_text )
     // base
     if( render_mode == "preview" || render_mode == "print-jig-bottom" )
     {
-        RoundedCube([ bin_size, bin_size, jig_height ], r = 4);
+        RoundedCube( bin_size, bin_size, jig_height, r = jig_corner_rounding_r );
     }
 
     if( render_mode == "preview" || render_mode == "print-jig-top-base" || render_mode == "print-jig-top-bin" )

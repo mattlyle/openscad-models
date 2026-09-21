@@ -126,9 +126,10 @@ module OrangeRatchetScrewDriverHolder()
         {
             translate([ holder_clearance, holder_clearance, 0 ])
                 RoundedCube(
-                    size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_r,
-                    fn = 36
+                    holder_x,
+                    holder_y,
+                    holder_z,
+                    r = corner_rounding_r
                     );
 
             // cut off the area the gridfinity base covers

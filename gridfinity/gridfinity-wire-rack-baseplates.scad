@@ -122,7 +122,7 @@ module WireRackGridfinityBaseplate()
         difference()
         {
             translate([ offset_size_x, 0, 0 ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     total_size_x,
                     total_size_y,
                     base_height,

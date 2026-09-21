@@ -298,7 +298,7 @@ else
 module PVCCradle()
 {
     // base
-    RoundedCubeAlt2(
+    RoundedCube(
         cradle_base_x,
         cradle_base_y,
         cradle_base_z + DIFFERENCE_CLEARANCE,
@@ -314,7 +314,7 @@ module PVCCradle()
             calculateOffsetToCenter( cradle_base_y, cradle_riser_y ),
             cradle_base_z
             ] )
-            RoundedCubeAlt2(
+            RoundedCube(
                 cradle_riser_x,
                 cradle_riser_y,
                 cradle_riser_z,
