@@ -88,10 +88,10 @@ wall_width_single_z = wall_width_single_x * sqrt( 3 ) / 2;
 
 // selected_roll_radius
 hex_r = selected_roll_radius_with_clearance;
-hex_R = hex_r * 2 / sqrt( 3 );
-// hex_a = hex_R;
+hex_outer_r = hex_r * 2 / sqrt( 3 );
+// hex_a = hex_outer_r;
 
-hex_size_outer_x = hex_R * 2 + wall_width_single_x * 2;
+hex_size_outer_x = hex_outer_r * 2 + wall_width_single_x * 2;
 hex_size_outer_y = roll_holder_y;
 hex_size_outer_z = hex_r * 2 + wall_width_single_z * 2;
 
@@ -566,12 +566,12 @@ module HolderBase( id = -1 )
                     cube([ cube_x - base_cut_brim_offset_x, base_brim_y * 2 + roll_holder_y, wall_width_single_z ]);
 
                 // front bottom for connection hex
-                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, base_brim_y, -wall_width_single_z ])
-                    cube([ hex_R, roll_holder_y, wall_width_single_z ]);
+                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, base_brim_y, -wall_width_single_z ])
+                    cube([ hex_outer_r, roll_holder_y, wall_width_single_z ]);
 
                 // back bottom for connection hex
-                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, base_brim_y + back_face_offset_y, -wall_width_single_z ])
-                    cube([ hex_R, roll_holder_y, wall_width_single_z ]);
+                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, base_brim_y + back_face_offset_y, -wall_width_single_z ])
+                    cube([ hex_outer_r, roll_holder_y, wall_width_single_z ]);
 
                 // front brim
                 translate([ base_cut_brim_offset_x, 0, 0 ])
@@ -598,12 +598,12 @@ module HolderBase( id = -1 )
     else if( id == 1 )
     {
         // # translate([
-        //     CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x,
+        //     CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x,
         //     base_brim_y-0.3,
         //     -wall_width_single_z ]) cube([ 0.1,roll_holder_y,5]);
 
         // #translate([ 0, base_brim_y, -wall_width_single_z ])
-        //     cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+        //     cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
         render()
         {
@@ -617,7 +617,7 @@ module HolderBase( id = -1 )
 
                 // front bottom under center
                 translate([ 0, base_brim_y, -wall_width_single_z ])
-                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
                 // back bottom
                 // translate([ 0, back_face_offset_y, -wall_width_single_z ])
@@ -629,7 +629,7 @@ module HolderBase( id = -1 )
 
                 // back bottom under center
                 translate([ 0, base_brim_y + back_face_offset_y, -wall_width_single_z ])
-                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
                 // front brim
                 translate([ 0, 0, 0 ])
@@ -795,8 +795,8 @@ module _HolderSideWallConnection( is_top, is_left )
 
     row = rows_in_lower_hex_groups;
 
-    connection_left_offset_x = CalculateHexagonXOffset( row, -1 ) - hex_R - wall_width_single_x;
-    connection_right_offset_x = CalculateHexagonXOffset( row, cols_in_left_hex_groups ) - hex_R - wall_width_single_x;
+    connection_left_offset_x = CalculateHexagonXOffset( row, -1 ) - hex_outer_r - wall_width_single_x;
+    connection_right_offset_x = CalculateHexagonXOffset( row, cols_in_left_hex_groups ) - hex_outer_r - wall_width_single_x;
 
     if( is_top )
     {
@@ -812,11 +812,11 @@ module _HolderSideWallConnection( is_top, is_left )
 
                     // cut off top
                     translate([ connection_left_offset_x, 0, CalculateHexagonZOffset( row - 1 ) + connection_z ])
-                        cube([ hex_R * 2 + wall_width_single_x * 2, roll_holder_y, hex_R * 2 ]);
+                        cube([ hex_outer_r * 2 + wall_width_single_x * 2, roll_holder_y, hex_outer_r * 2 ]);
 
                     // cut off left
                     translate([ connection_left_offset_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                        cube([ -connection_left_offset_x, roll_holder_y, hex_R ]);
+                        cube([ -connection_left_offset_x, roll_holder_y, hex_outer_r ]);
 
                     // cut out the heated insert
                     translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
@@ -840,11 +840,11 @@ module _HolderSideWallConnection( is_top, is_left )
 
                     // cut off top
                     translate([ connection_right_offset_x, 0, CalculateHexagonZOffset( row - 1 ) + connection_z ])
-                        cube([ hex_R * 2 + wall_width_single_x * 2, roll_holder_y, hex_R * 2 ]);
+                        cube([ hex_outer_r * 2 + wall_width_single_x * 2, roll_holder_y, hex_outer_r * 2 ]);
 
                     // cut off right
                     translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                        cube([ -connection_left_offset_x, roll_holder_y, hex_R ]);
+                        cube([ -connection_left_offset_x, roll_holder_y, hex_outer_r ]);
 
                     // cut out the heated insert
                     translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
@@ -927,13 +927,13 @@ module _RollHexHolderHexagon( draw_filled_hexagon = false )
             difference()
             {
                 // outer
-                hexagon_prism( radius = hex_R + wall_width_single_x, height = roll_holder_y );
-                // regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_single_x, anchor = BOTTOM );
+                hexagon_prism( radius = hex_outer_r + wall_width_single_x, height = roll_holder_y );
+                // regular_prism( n = 6, height = roll_holder_y, r = hex_outer_r + wall_width_single_x, anchor = BOTTOM );
 
                 // inner
                 if( !draw_filled_hexagon )
-                    // regular_prism( n = 6, height = roll_holder_y, r = hex_R, anchor = BOTTOM );
-                    hexagon_prism( radius = hex_R, height = roll_holder_y );
+                    // regular_prism( n = 6, height = roll_holder_y, r = hex_outer_r, anchor = BOTTOM );
+                    hexagon_prism( radius = hex_outer_r, height = roll_holder_y );
             }
         }
     }

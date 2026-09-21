@@ -14,7 +14,7 @@ dowel_r = 22.3 / 2;
 filament_spool_r = 200 / 2;
 filament_spool_x = 68;
 
-ScrewHole_r = 5.0 / 2;
+screw_hole_r = 5.0 / 2;
 screw_head_r = 8.0 / 2 + 1;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ dowel_gripper_angle = atan2( filament_spool_offset_z, dowel_spacing_y / 2 );
 // this is the angle where the bottom of the bracket intersects with the dowel gripper
 bottom_bracket_gripper_intercept_angle = 25; // TODO would be great to calculate this too
 
-screw_hole_extra_z = ScrewHole_r * 4;
+screw_hole_extra_z = screw_hole_r * 4;
 
 label_neck_x = bracket_x - label_connector_cap_width * 2;
 
@@ -533,7 +533,7 @@ module DowelGripper()
 module ScrewHole()
 {
     translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
-        cylinder( r = ScrewHole_r, h = bracket_back_plate_width );
+        cylinder( r = screw_hole_r, h = bracket_back_plate_width );
 
     translate([ 0, 0, bracket_back_plate_width -bracket_back_plate_screw_inset_depth ])
         cylinder( r = screw_head_r, h = bracket_back_plate_screw_inset_depth + DIFFERENCE_CLEARANCE );

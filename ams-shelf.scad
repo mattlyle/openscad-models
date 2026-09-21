@@ -384,23 +384,23 @@ module Shelf( add_brackets, left_x, right_x, left_connection, right_connection, 
 
 module _ShelfTopBracket()
 {
-    rotateAbout = [ 0, shelf_base_offset_z ];
+    rotate_about = [ 0, shelf_base_offset_z ];
 
-    rotatedTopFar_xy = RotatePointAboutPoint( // using y,z as x,y
+    rotated_top_far_xy = RotatePointAboutPoint( // using y,z as x,y
         [ 0, shelf_base_offset_z + shelf_base_z ],
-        rotateAbout,
+        rotate_about,
         -shelf_base_angle
         );
-    rotatedTopNear_xy = RotatePointAboutPoint( // using y,z as x,y
+    rotated_top_near_xy = RotatePointAboutPoint( // using y,z as x,y
         [ -shelf_base_y, shelf_base_offset_z + shelf_base_z ],
-        rotateAbout,
+        rotate_about,
         -shelf_base_angle
         );
 
     // calculate the z where the shelf base meets the wall plate
     top_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
-        rotatedTopFar_xy,
-        rotatedTopNear_xy
+        rotated_top_far_xy,
+        rotated_top_near_xy
         );
     top_face_wall_intercept_z =
         top_face_wall_slope_intercept[ 0 ] * -shelf_wall_plate_y
@@ -409,10 +409,10 @@ module _ShelfTopBracket()
     // calculate the point where the bracket meets the base
     top_face_brace_intercept_y =
         -shelf_top_bracket_y_percent * shelf_base_y * cos( shelf_base_angle )
-        + rotatedTopFar_xy.x;
+        + rotated_top_far_xy.x;
     top_face_brace_intercept_z =
         shelf_top_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
-        + rotatedTopFar_xy.y;
+        + rotated_top_far_xy.y;
 
     points = [
         // where the shelf top face meets the wall plate
@@ -468,18 +468,18 @@ module _ShelfBottomBracket()
 {
     max_x = 400;
 
-    farBottom = [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ];
+    far_bottom = [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ];
 
-    rotatedBottomNear_xy = RotatePointAboutPoint( // using y,z as x,y
+    rotated_bottom_near_xy = RotatePointAboutPoint( // using y,z as x,y
         [ -shelf_base_y, shelf_base_offset_z ],
-        [ farBottom.y, farBottom.z ],
+        [ far_bottom.y, far_bottom.z ],
         -shelf_base_angle
         );
 
     // calculate the z where the shelf base meets the wall plate
     bottom_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
-        [ farBottom.y, farBottom.z ],
-        rotatedBottomNear_xy
+        [ far_bottom.y, far_bottom.z ],
+        rotated_bottom_near_xy
         );
     bottom_face_wall_intercept_z =
         bottom_face_wall_slope_intercept[ 0 ] * -shelf_wall_plate_y
@@ -488,10 +488,10 @@ module _ShelfBottomBracket()
     // calculate the z where the shelf base meets the bracket
     bottom_face_brace_intercept_y =
         -shelf_bottom_bracket_y_percent * shelf_base_y * cos( shelf_base_angle )
-        + farBottom.y;
+        + far_bottom.y;
     bottom_face_brace_intercept_z =
         shelf_bottom_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
-        + farBottom.z;
+        + far_bottom.z;
         
     bracket_points = [
         // where the top face meets the bracket
