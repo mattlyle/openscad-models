@@ -28,8 +28,8 @@ power_strip_coax_cutout_x = 62.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print";
 
 wall_width = 2.2;
 wall_clearance = 0.75;
