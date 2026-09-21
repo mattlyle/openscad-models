@@ -28,6 +28,8 @@ wall_preview_y = 120;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 power_cable_channel_x = power_cable_x + power_cable_clearance * 2;
 power_cable_channel_y = power_cable_y + power_cable_clearance * 2;
 

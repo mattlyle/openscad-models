@@ -79,6 +79,8 @@ heated_insert_def = M3x6_INSERT;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 // formulas: https://www.gigacalculator.com/calculators/hexagon-calculator.php
 
 selected_roll_with_clearance_r = selected_roll_r + roll_clearance;

@@ -55,6 +55,8 @@ bin_1_text_area_offset_y = 3;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
 

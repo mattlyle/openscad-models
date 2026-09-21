@@ -54,6 +54,8 @@ holder_offset_x = 3.5;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
 

@@ -45,6 +45,8 @@ show_previews = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 // screwdriver holder
 screwdriver_holder_r = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_top_extra_r + screwdriver_base_lip_r;
 

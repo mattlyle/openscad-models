@@ -51,6 +51,8 @@ render_mode = "preview";
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 r = roll_r + roll_clearance + holder_ring_thickness;
 R = CalculateFaceSideLength( roll_r );
 a = r * 2 / sqrt( 3 );

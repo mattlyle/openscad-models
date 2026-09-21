@@ -34,6 +34,8 @@ insert = M3x6_INSERT;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 holder_x_bottom = powerstrip_x_bottom + wall_width * 2 + wall_clearance * 2;
 holder_y = powerstrip_y + wall_width * 2 + wall_clearance * 2;
 

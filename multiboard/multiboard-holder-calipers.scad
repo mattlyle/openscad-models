@@ -64,6 +64,8 @@ larger_caliper_box_holder_svg_offset_vector = [ 5, -2, 0 ];
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 // original box
 
 original_caliper_box_holder_size_x = original_caliper_box_x + caliper_box_holder_thickness * 2 + clearance * 2;

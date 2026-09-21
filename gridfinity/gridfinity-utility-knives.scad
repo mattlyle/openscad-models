@@ -50,6 +50,8 @@ retractable_knife_spec = [ retractable_knife_x, retractable_knife_y, retractable
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
 

@@ -25,6 +25,8 @@ corner_rounding_r = 2.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 size_x = doxie_x + wall_width * 2 + clearance * 2;
 size_y = holder_y + wall_width;
 size_z = doxie_z + wall_width * 2 + clearance * 2;

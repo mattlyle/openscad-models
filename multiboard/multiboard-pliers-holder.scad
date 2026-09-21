@@ -69,6 +69,8 @@ label_depth = 0.4;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 holder_x = ring_wall_width
     + ( pliers_handle_x + handle_clearance * 2 + ring_wall_width ) * num_pliers;
 holder_z = multiboard_connector_back_z
