@@ -96,9 +96,8 @@ module MultimeterHolder()
         width = cup_x,
         depth = cup_y,
         height = cup_z,
-        position = "zero",
         filled_in = true,
-        lip_style = "none"
+        lip_settings = LipSettings( lipStyle = "none" )
         );
 
     back_width = multimeter_main_body_x + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
