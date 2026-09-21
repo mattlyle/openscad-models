@@ -8,16 +8,16 @@ include <modules/connectors.scad>
 tap_handle_width = 56; // previous size was 50, but need more for stregth
 tap_handle_height = 210; // previous height was 190
 tap_handle_depth = 20;
-tap_handle_radius = 5.0;
+tap_handle_r = 5.0;
 tap_handle_fn = 60;
 
 back_plate_clearance = 0.75; // clearance on all sides for the backplate
 back_plate_wall_snug_fit = 0.65; // eat this back into the clearance for the backplate
 back_plate_wall_width = 1.4;
-back_plate_finger_hole_radius = 8.0;
+back_plate_finger_hole_r = 8.0;
 back_plate_finger_hole_height_offset = 30.0;
 
-threaded_fitting_radius = 14.4 / 2;
+threaded_fitting_r = 14.4 / 2;
 threaded_fitting_height = 18;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,10 +137,10 @@ module ThreadedInsertTest()
         {
             difference()
             {
-                cube([ threaded_fitting_radius * 4, threaded_fitting_radius * 4, threaded_fitting_height * 1.5 ]);
+                cube([ threaded_fitting_r * 4, threaded_fitting_r * 4, threaded_fitting_height * 1.5 ]);
 
-                translate([ threaded_fitting_radius * 2, threaded_fitting_radius * 2, threaded_fitting_height / 2 ])
-                    cylinder( h = threaded_fitting_height, r = threaded_fitting_radius, $fn = 24 );
+                translate([ threaded_fitting_r * 2, threaded_fitting_r * 2, threaded_fitting_height / 2 ])
+                    cylinder( h = threaded_fitting_height, r = threaded_fitting_r, $fn = 24 );
             }
         }
     }
@@ -156,7 +156,7 @@ module TapHandle()
         {
             RoundedCube(
                 size = [ tap_handle_width, tap_handle_height, tap_handle_depth ],
-                r = tap_handle_radius,
+                r = tap_handle_r,
                 center = false,
                 fn = tap_handle_fn );
 
@@ -171,7 +171,7 @@ module TapHandle()
             // cutout for the threaded fitting
             translate([ tap_handle_width / 2, 0, tap_handle_depth / 2 ])
                 rotate([ 270, 0, 0 ])
-                    cylinder( h = threaded_fitting_height, r = threaded_fitting_radius );
+                    cylinder( h = threaded_fitting_height, r = threaded_fitting_r );
         }
 
         // add the screen bezel
@@ -251,7 +251,7 @@ module BackPlate()
 
             // remove the finger whole
             translate([ e_ink_display_circuit_board_width / 2, back_plate_finger_hole_height_offset, 0 ])
-                    cylinder( h = back_plate_wall_width, r = back_plate_finger_hole_radius );
+                    cylinder( h = back_plate_wall_width, r = back_plate_finger_hole_r );
             }
         }
 
@@ -270,13 +270,13 @@ module BackPlate()
 
         // cylinders on pegs
         translate([ corner_peg_width / 2, corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
         translate([ e_ink_display_circuit_board_width - corner_peg_width / 2, corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
         translate([ corner_peg_width / 2, e_ink_display_circuit_board_height - corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
         translate([ e_ink_display_circuit_board_width - corner_peg_width / 2, e_ink_display_circuit_board_height - corner_peg_width / 2, corner_peg_height + back_plate_wall_width ])
-            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+            cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
 
         // horizontal support
         translate([ 0, e_ink_display_circuit_board_horizonal_support_offset, back_plate_wall_width ])

@@ -37,7 +37,7 @@ cells_z = 1;
 
 orange_ratchet_screwdriver_case_clearance = 0.5;
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ module OrangeRatchetScrewDriverHolder()
             translate([ holder_clearance, holder_clearance, 0 ])
                 RoundedCube(
                     size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_radius,
+                    r = corner_rounding_r,
                     fn = 36
                     );
 

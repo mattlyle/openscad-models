@@ -16,7 +16,7 @@ hairbrush_handle_z = 21.0;
 hairbrush_head_base_x = 40.5;
 hairbrush_head_y = 121;
 hairbrush_head_z = 35;
-hairbrush_head_radius_z = 10.1;
+hairbrush_head_z_r = 10.1;
 hairbrush_head_angle = 25;
 hairbrush_head_offset_z = 4.0;
 
@@ -34,7 +34,7 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ module HairbrushHolder()
             translate([ holder_clearance, holder_clearance, 0 ])
                 RoundedCube(
                     size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_radius,
+                    r = corner_rounding_r,
                     fn = 36
                     );
 
@@ -177,7 +177,7 @@ module Hairbrush()
                     cylinder( h = hairbrush_handle_y, r = hairbrush_handle_x / 2 );
 
             // head
-            translate([ 0, hairbrush_handle_y, - hairbrush_head_base_x / 2 + hairbrush_head_radius_z + hairbrush_head_offset_z ])
+            translate([ 0, hairbrush_handle_y, - hairbrush_head_base_x / 2 + hairbrush_head_z_r + hairbrush_head_offset_z ])
             {
                 rotate([ -90, 0, 0 ])
                 {
@@ -187,11 +187,11 @@ module Hairbrush()
                         {
                             difference()
                             {
-                                scale([ 1.0, hairbrush_head_radius_z / hairbrush_head_z, 1.0 ])
+                                scale([ 1.0, hairbrush_head_z_r / hairbrush_head_z, 1.0 ])
                                     cylinder( h = hairbrush_head_y, r = hairbrush_head_base_x / 2 );
 
                                 translate([ 0, hairbrush_head_offset_z, 0 ])
-                                    scale([ 1.0, hairbrush_head_radius_z / hairbrush_head_z, 1.0 ])
+                                    scale([ 1.0, hairbrush_head_z_r / hairbrush_head_z, 1.0 ])
                                         cylinder( h = hairbrush_head_y, r = hairbrush_head_base_x / 2 );
                             }
                         }

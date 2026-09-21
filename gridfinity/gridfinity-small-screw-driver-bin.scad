@@ -30,7 +30,7 @@ cup_z = 1;
 num_screw_drivers = 7;
 
 holder_clearance = 0.15;
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 
 screw_driver_padding_x = 7;
 screw_driver_padding_y = 5;
@@ -89,7 +89,7 @@ module SmallScrewDriverBinHolder()
                 translate([ holder_clearance, holder_clearance, 0 ])
                     RoundedCube(
                         size = [ holder_x, holder_y, holder_z ],
-                        r = corner_rounding_radius,
+                        r = corner_rounding_r,
                         fn = 36
                         );
 

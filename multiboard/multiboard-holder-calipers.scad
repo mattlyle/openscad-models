@@ -29,7 +29,7 @@ label_font = "Verdana:style=Bold";
 
 caliper_box_holder_thickness = 1.5;
 
-corner_rounding_radius = 1.0;
+corner_rounding_r = 1.0;
 
 clearance = 2.5;
 
@@ -187,20 +187,20 @@ module CaliperBoxHolder(
             // join section
             difference()
             {
-                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
+                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_r * 2 ])
                     RoundedCube(
-                        size = [ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_radius * 3 ],
-                        r = corner_rounding_radius,
+                        size = [ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r * 3 ],
+                        r = corner_rounding_r,
                         fn = 36
                         );
                 
                 // cut off the bottom
-                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
-                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_radius ]);
+                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_r * 2 ])
+                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r ]);
                 
                 // cut off the top
                 translate([ 0, 0, multiboard_connector_back_z ])
-                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_radius ]);
+                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r ]);
             }
 
             difference()
@@ -208,7 +208,7 @@ module CaliperBoxHolder(
                 // start with a rounded box
                 RoundedCube(
                     size = [ holder_size_vector[ 0 ], holder_size_vector[ 1 ], holder_size_vector[ 2 ] ],
-                    r = corner_rounding_radius,
+                    r = corner_rounding_r,
                     fn = 36
                     );
 

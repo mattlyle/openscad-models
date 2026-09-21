@@ -9,7 +9,7 @@ include <../modules/utils.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-magnet_radius = 6.0 / 2;
+magnet_r = 6.0 / 2;
 magnet_height = 2.0;
 
 jig2_baseplate_wall_width = 2.85;
@@ -25,7 +25,7 @@ gridfinity_bin_tolerance = 0.5;
 // settings
 
 tool_length = 80.0;
-tool_radius = 8.0 / 2;
+tool_r = 8.0 / 2;
 
 jig_height = 25;
 jig_peg_height = 1.0;
@@ -52,7 +52,7 @@ label_font_size = 8;
 $fn = $preview ? 64 : 128;
 
 magnet_ridge_overlap = magnet_height / 2;
-tool_magnet_cutout_radius = magnet_radius + 0.2;
+tool_magnet_cutout_r = magnet_r + 0.2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -61,11 +61,11 @@ if( render_mode == "preview" )
 {
     // lower magnet preview
     % translate([ 0, 0, -magnet_ridge_overlap ])
-        cylinder( h = magnet_height, r = magnet_radius, $fn = 24 );
+        cylinder( h = magnet_height, r = magnet_r, $fn = 24 );
 
     // upper magnet preview
     translate([ 0, 0, tool_length - magnet_ridge_overlap])
-        % cylinder( h = magnet_height, r = magnet_radius, $fn = 24 );
+        % cylinder( h = magnet_height, r = magnet_r, $fn = 24 );
 
     // bottom half
     color([ 0.2, 0.2, 0.2 ])
@@ -138,10 +138,10 @@ module GridfinityMagnetToolHalf()
         difference()
         {
             // tool body
-            cylinder( h = tool_length / 2, r = tool_radius, $fn = 48 );
+            cylinder( h = tool_length / 2, r = tool_r, $fn = 48 );
 
             // cutout
-            cylinder( h = magnet_ridge_overlap, r = tool_magnet_cutout_radius, $fn = 48 );
+            cylinder( h = magnet_ridge_overlap, r = tool_magnet_cutout_r, $fn = 48 );
         }
     }
 }
@@ -173,26 +173,26 @@ module GridfinityMagnetJig( label_text )
     {
         // lower-left peg
         translate([ magnet_corner_offset, magnet_corner_offset, jig_height ])
-            cylinder( h = jig_peg_height, r = magnet_radius, $fn = 24 );
+            cylinder( h = jig_peg_height, r = magnet_r, $fn = 24 );
 
         // lower-right peg
         translate([ bin_size - magnet_corner_offset, magnet_corner_offset, jig_height ])
-            cylinder( h = jig_peg_height, r = magnet_radius, $fn = 24 );
+            cylinder( h = jig_peg_height, r = magnet_r, $fn = 24 );
 
         // upper-left peg
         translate([ magnet_corner_offset, bin_size - magnet_corner_offset, jig_height ])
-            cylinder( h = jig_peg_height, r = magnet_radius, $fn = 24 );
+            cylinder( h = jig_peg_height, r = magnet_r, $fn = 24 );
 
         // upper-right peg
         translate([ bin_size - magnet_corner_offset, bin_size - magnet_corner_offset, jig_height ])
-            cylinder( h = jig_peg_height, r = magnet_radius, $fn = 24 );
+            cylinder( h = jig_peg_height, r = magnet_r, $fn = 24 );
 
-        // % translate([ 0, magnet_corner_offset + magnet_radius, jig_height ])
-        //     cube([ bin_size, bin_size - ( magnet_corner_offset + magnet_radius ) * 2, 0.1 ]);
+        // % translate([ 0, magnet_corner_offset + magnet_r, jig_height ])
+        //     cube([ bin_size, bin_size - ( magnet_corner_offset + magnet_r ) * 2, 0.1 ]);
 
         // text
-        translate([ 0, magnet_corner_offset + magnet_radius, jig_height ])
-            CenteredTextLabel( label_text, font_size = label_font_size, font = label_font, bin_size, bin_size - ( magnet_corner_offset + magnet_radius ) * 2 );
+        translate([ 0, magnet_corner_offset + magnet_r, jig_height ])
+            CenteredTextLabel( label_text, font_size = label_font_size, font = label_font, bin_size, bin_size - ( magnet_corner_offset + magnet_r ) * 2 );
     }
 }
 

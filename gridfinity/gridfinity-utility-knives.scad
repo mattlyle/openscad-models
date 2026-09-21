@@ -39,7 +39,7 @@ top_z = 42.0;
 
 clearance = 1.5;
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 
 holder_clearance = 0.15;
 

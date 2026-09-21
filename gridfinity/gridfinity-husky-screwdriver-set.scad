@@ -30,9 +30,9 @@ base_y = cup_y * 42.0;
 base_z = 7.0;
 
 screwdriver_base_depth = 70;
-screwdriver_base_lip_radius = 1;
-screwdriver_base_cone_extra_radius_top = 1.5;
-screwdriver_base_cone_extra_radius_bottom = 0.1;
+screwdriver_base_lip_r = 1;
+screwdriver_base_cone_top_extra_r = 1.5;
+screwdriver_base_cone_bottom_extra_r = 0.1;
 
 screwdriver_bits_base_angle = 45;
 screwdriver_bits_base_lip_height = 8;
@@ -46,7 +46,7 @@ show_previews = false;
 // calculations
 
 // screwdriver holder
-screwdriver_holder_radius = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_extra_radius_top + screwdriver_base_lip_radius;
+screwdriver_holder_r = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_top_extra_r + screwdriver_base_lip_r;
 
 // bits holder
 screwdriver_bits_base_x = screwdriver_bits_holder_x + screwdriver_bits_base_lip_thickness * 2 + screwdriver_bits_base_extra_x;
@@ -73,14 +73,14 @@ translate([ 8, 3, base_z ]) // TODO this is just eyeball centered?!
     linear_extrude( 0.5 )
         text( "Husky Screwdriver", size = 6 );
 
-combined_x = screwdriver_bits_base_x + screwdriver_holder_radius * 2;
+combined_x = screwdriver_bits_base_x + screwdriver_holder_r * 2;
 
 // bits holder
 translate([ ( base_x - combined_x ) / 3, ( base_y - screwdriver_bits_base_y ) / 2, base_z ])
     screwdriver_bits_base();
 
 // screwdriver holder
-translate([ base_x - screwdriver_holder_radius - ( base_x - combined_x ) / 3, ( base_y - screwdriver_holder_radius * 2 ) / 2 + screwdriver_holder_radius, base_z ])
+translate([ base_x - screwdriver_holder_r - ( base_x - combined_x ) / 3, ( base_y - screwdriver_holder_r * 2 ) / 2 + screwdriver_holder_r, base_z ])
     screwdriver_base();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,13 +91,13 @@ module screwdriver_base()
     {
         difference()
         {
-            cylinder( h = screwdriver_base_depth, r = screwdriver_holder_radius, $fn = 48 );
+            cylinder( h = screwdriver_base_depth, r = screwdriver_holder_r, $fn = 48 );
 
             // cone
             cylinder(
                 h = screwdriver_base_depth,
-                r1 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_extra_radius_bottom,
-                r2 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_extra_radius_top,
+                r1 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_bottom_extra_r,
+                r2 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_top_extra_r,
                 $fn = 48 );
         }
     }

@@ -10,7 +10,7 @@ powerstrip_x_bottom = 204;
 powerstrip_y = 49;
 powerstrip_z = 34;
 
-powerstrip_screw_radius = 3.0 / 2;
+powerstrip_screw_r = 3.0 / 2;
 powerstrip_screw_separation_x = 194;
 powerstrip_screw_separation_y = 28;
 
@@ -88,14 +88,14 @@ module PowerStripPreview()
     color([ 0.4, 0.4, 0.4 ])
     {
         translate([ screwhole_offset_x, screwhole_offset_y, powerstrip_screw_preview_z ])
-            cylinder( r = powerstrip_screw_radius, powerstrip_screw_preview_z, $fn = 12 );
+            cylinder( r = powerstrip_screw_r, powerstrip_screw_preview_z, $fn = 12 );
         translate([ screwhole_offset_x, powerstrip_y - screwhole_offset_y, powerstrip_screw_preview_z ])
-            cylinder( r = powerstrip_screw_radius, powerstrip_screw_preview_z, $fn = 12 );
+            cylinder( r = powerstrip_screw_r, powerstrip_screw_preview_z, $fn = 12 );
 
         translate([ powerstrip_x_bottom - screwhole_offset_x, screwhole_offset_y, powerstrip_screw_preview_z ])
-            cylinder( r = powerstrip_screw_radius, powerstrip_screw_preview_z, $fn = 12 );
+            cylinder( r = powerstrip_screw_r, powerstrip_screw_preview_z, $fn = 12 );
         translate([ powerstrip_x_bottom - screwhole_offset_x, powerstrip_y - screwhole_offset_y, powerstrip_screw_preview_z ])
-            cylinder( r = powerstrip_screw_radius, powerstrip_screw_preview_z, $fn = 12 );
+            cylinder( r = powerstrip_screw_r, powerstrip_screw_preview_z, $fn = 12 );
     }
 }
 

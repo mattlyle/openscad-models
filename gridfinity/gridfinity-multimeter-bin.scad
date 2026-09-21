@@ -19,10 +19,10 @@ multimeter_main_body_front_z = 55.0;
 multimeter_main_body_front_sides_x = 11.0;
 multimeter_main_body_angle = 15.0; // TODO: maybe only 10 degrees, not 15
 
-multimeter_probe_tip_radius = 2.1 / 2;
+multimeter_probe_tip_r = 2.1 / 2;
 multimeter_probe_tip_length = 16;
 
-multimeter_probe_handle_radius = 10.1 / 2;
+multimeter_probe_handle_r = 10.1 / 2;
 multimeter_probe_handle_length = 19.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ multimeter_probe_1_offset_y = 14;
 multimeter_probe_2_offset_y = 36;
 multimeter_probe_clearance = 1.0;
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ module MultimeterHolder()
             translate([ holder_clearance, holder_clearance, 0 ])
                 RoundedCube(
                     size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_radius,
+                    r = corner_rounding_r,
                     fn = 36 );
 
             // cut off the area the gridfinity base covers
@@ -126,15 +126,15 @@ module MultimeterHolder()
 
             // remove the probe 1
             translate([ multimeter_probe_offset_x, multimeter_probe_1_offset_y, holder_z - multimeter_probe_handle_length ])
-                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_radius + multimeter_probe_clearance, $fn = 24 );
+                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_r + multimeter_probe_clearance, $fn = 24 );
             translate([ multimeter_probe_offset_x, multimeter_probe_1_offset_y, holder_z - multimeter_probe_handle_length - multimeter_probe_tip_length ])
-                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_radius + multimeter_probe_clearance, $fn = 24 );
+                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_r + multimeter_probe_clearance, $fn = 24 );
             
             // remove the probe 2
             translate([ multimeter_probe_offset_x, multimeter_probe_2_offset_y, holder_z - multimeter_probe_handle_length ])
-                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_radius + multimeter_probe_clearance, $fn = 24 );
+                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_r + multimeter_probe_clearance, $fn = 24 );
             translate([ multimeter_probe_offset_x, multimeter_probe_2_offset_y, holder_z - multimeter_probe_handle_length - multimeter_probe_tip_length ])
-                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_radius + multimeter_probe_clearance, $fn = 24 );
+                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_r + multimeter_probe_clearance, $fn = 24 );
         }
     }
 

@@ -13,8 +13,8 @@ include <modules/screw-connectors.scad>
 
 roll_length = 305;
 
-small_roll_radius = 46.0 / 2;
-large_roll_radius = 76.5 / 2;
+small_roll_r = 46.0 / 2;
+large_roll_r = 76.5 / 2;
 
 cube_x = 286;
 cube_y = 286;
@@ -33,7 +33,7 @@ render_mode = "preview";
 // render_mode = "print-base-0";
 // render_mode = "print-base-1";
 
-selected_roll_radius = small_roll_radius;
+selected_roll_r = small_roll_r;
 
 // number of rows
 num_rows = 9;
@@ -81,13 +81,13 @@ heated_insert_def = M3x6_INSERT;
 
 // formulas: https://www.gigacalculator.com/calculators/hexagon-calculator.php
 
-selected_roll_radius_with_clearance = selected_roll_radius + roll_clearance;
+selected_roll_with_clearance_r = selected_roll_r + roll_clearance;
 
 // this is a different size because as the hexagon goes around
 wall_width_single_z = wall_width_single_x * sqrt( 3 ) / 2;
 
-// selected_roll_radius
-hex_r = selected_roll_radius_with_clearance;
+// selected_roll_r
+hex_r = selected_roll_with_clearance_r;
 hex_outer_r = hex_r * 2 / sqrt( 3 );
 // hex_a = hex_outer_r;
 
@@ -944,7 +944,7 @@ module _RollHexHolderHexagon( draw_filled_hexagon = false )
 module RollPreview()
 {
     % rotate([ -90, 0, 0 ])
-        cylinder( h = roll_length, r = selected_roll_radius, $fn = 48 );
+        cylinder( h = roll_length, r = selected_roll_r, $fn = 48 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

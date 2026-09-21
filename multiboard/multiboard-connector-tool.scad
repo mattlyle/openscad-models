@@ -24,7 +24,7 @@ box_z = 15;
 
 measurement_tolerance = 0.5;
 
-holder_radius = 15;
+holder_r = 15;
 v2_offset_x = 60; // spacing between v1 and v2 in the preview
 v2_box_z = 20;
 
@@ -91,21 +91,21 @@ module ConnectorToolV2()
     {
         difference()
         {
-            translate([ 0, holder_radius, 0 ])
-                hexagon_prism( radius = holder_radius, height = v2_box_z ); // NOTE: octagon_prism also works great!
+            translate([ 0, holder_r, 0 ])
+                hexagon_prism( radius = holder_r, height = v2_box_z ); // NOTE: octagon_prism also works great!
 
             // cut out the cylinder
-            translate([ 0, holder_radius, v2_box_z - connector_handle_depth ])
+            translate([ 0, holder_r, v2_box_z - connector_handle_depth ])
                 cylinder( h = connector_handle_depth, r = connector_diameter / 2 + measurement_tolerance, $fn = 96 );
         }
     }
 
     color([ 0.5, 0, 0 ])
-        translate([ -peg_offset, holder_radius, v2_box_z - connector_handle_depth ])
+        translate([ -peg_offset, holder_r, v2_box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 
     color([ 0, 0, 0.5 ])
-        translate([ peg_offset, holder_radius, v2_box_z - connector_handle_depth ])
+        translate([ peg_offset, holder_r, v2_box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 }
 
