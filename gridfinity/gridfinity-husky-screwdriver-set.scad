@@ -43,7 +43,7 @@ screwdriver_bits_base_vertical_lip = 40.0;
 show_previews = false;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
 
 // screwdriver holder
 screwdriver_holder_radius = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_extra_radius_top + screwdriver_base_lip_radius;

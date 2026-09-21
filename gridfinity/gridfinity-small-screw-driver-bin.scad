@@ -41,7 +41,7 @@ screw_driver_shaft_clearance = 0.5;
 screw_driver_handle_flare_clearance = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
 
 base_x = cup_x * 42.0;
 base_y = cup_y * 42.0;

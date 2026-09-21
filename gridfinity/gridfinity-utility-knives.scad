@@ -49,7 +49,7 @@ folding_knife_spec = [ folding_knife_x, folding_knife_y, folding_knife_z ];
 retractable_knife_spec = [ retractable_knife_x, retractable_knife_y, retractable_knife_z ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
 
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );

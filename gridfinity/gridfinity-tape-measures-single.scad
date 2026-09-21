@@ -44,7 +44,7 @@ text_offset_x = 1.5;
 text_offset_y = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
 
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );

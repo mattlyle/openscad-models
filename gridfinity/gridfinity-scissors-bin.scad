@@ -30,7 +30,7 @@ clearance_y = 2.0;
 magnets_in_corners_only = false;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
 
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
