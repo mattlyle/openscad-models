@@ -54,7 +54,7 @@ else if( render_mode == "print" )
 }
 else
 {
-    assert( false, "Unknown render mode!" );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

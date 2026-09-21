@@ -13,7 +13,6 @@ deburring_blades_y = 10.1;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
@@ -49,6 +48,7 @@ deburring_blades_offset_x = calculateOffsetToCenter( base_x, deburring_blades_x 
 deburring_blades_offset_y = calculateEquallySpacedOffset( [ deburring_tool_r * 2, deburring_blades_y ], base_y, clearance, 1 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
 if( render_mode == "preview" )
 {
@@ -70,7 +70,7 @@ else if( render_mode == "print-text" )
 }
 else
 {
-    assert( false, "Unknown render mode!" );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

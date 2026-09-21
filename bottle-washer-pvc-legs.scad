@@ -290,7 +290,7 @@ else if( render_mode == "print-bottle-holder-support-structure-leg-test" )
 }
 else
 {
-    assert( false, str( "invalid render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

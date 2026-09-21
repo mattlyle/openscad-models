@@ -43,7 +43,6 @@ num_rows = 7;
 // roll_radius = large_roll_radius;
 // num_rows = 3;
 
-// only choose one
 render_mode = "preview";
 // render_mode = "preview-full";
 // render_mode = "print-holder";

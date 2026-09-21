@@ -23,7 +23,6 @@ orange_ratchet_screwdriver_case_sloped_corner_size = 10.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";

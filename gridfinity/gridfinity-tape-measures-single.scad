@@ -17,7 +17,6 @@ silver_malco_12ft_clip_z_offset = 9.5;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
@@ -58,6 +57,7 @@ silver_malco_12ft_holder_y = silver_malco_12ft_y + clearance * 2 + lip_thickness
 silver_malco_12ft_holder_offset_x = ( base_x - silver_malco_12ft_holder_x ) / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
 if( render_mode == "preview" )
 {

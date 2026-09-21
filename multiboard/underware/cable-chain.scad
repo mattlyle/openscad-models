@@ -116,7 +116,7 @@ render()
     }
     else
     {
-        assert( false, "Unknown render mode!" );
+        assert( false, str( "Unknown render mode: ", render_mode ) );
     }
 }
 

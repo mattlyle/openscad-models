@@ -18,7 +18,6 @@ screw_driver_handle_flare_length = 15.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
 // render_mode = "print-bin";
 // NOTE: the print-text branch below is disabled - its CenteredTextLabel() call uses
@@ -54,6 +53,7 @@ holder_z = cup_z * 42.0;
 screw_driver_full_length = screw_driver_shaft_length + screw_driver_handle_length + screw_driver_handle_flare_length;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
 if( render_mode == "preview" )
 {

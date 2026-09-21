@@ -59,7 +59,7 @@ else if( render_mode == "print-mount" )
 }
 else
 {
-    assert( false, str( "Invalid render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

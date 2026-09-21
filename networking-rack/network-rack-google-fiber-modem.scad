@@ -100,7 +100,7 @@ else if( render_mode == "print-text" )
 }
 else
 {
-    assert( false, str( "unknown render_mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

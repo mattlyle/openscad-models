@@ -33,7 +33,6 @@ jig_peg_height = 1.0;
 jig2_height = 3;
 jig2_clearance = 0.1;
 
-// only choose one
 render_mode = "preview";
 // render_mode = "print-tool-top";
 // render_mode = "print-tool-bottom";
