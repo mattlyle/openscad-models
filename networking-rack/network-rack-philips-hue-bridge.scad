@@ -113,8 +113,7 @@ module HueBridgePreview()
         round_top = false,
         round_bottom = false,
         round_left = true,
-        round_right = true,
-        center = false
+        round_right = true
         );
 }
 
