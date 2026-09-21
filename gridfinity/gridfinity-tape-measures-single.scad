@@ -118,7 +118,7 @@ module SilverMalcoHolder()
     if( render_mode == "preview" && show_previews )
     {
         translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
-            silver_malco_12ft_tape_measure();
+            SilverMalco12ftTapeMeasure();
     }
     }
 }
@@ -134,7 +134,7 @@ module SilverMalcoTextLabel()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module silver_malco_12ft_tape_measure()
+module SilverMalco12ftTapeMeasure()
 {
     % cube([ silver_malco_12ft_x, silver_malco_12ft_y, silver_malco_12ft_z ]);
 

@@ -134,7 +134,7 @@ module TapeMeasuresHolder()
         if( render_mode == "preview" && show_previews )
         {
             translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
-                blue_black_mileseey_laser_tape_measure();
+                BlueBlackMileseeyLaserTapeMeasure();
         }
     }
 
@@ -170,7 +170,7 @@ module TapeMeasuresHolder()
         if( render_mode == "preview" && show_previews )
         {
             translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
-                red_craftsman_8m_26ft_tape_measure();
+                RedCraftsman8m26ftTapeMeasure();
         }
     }
 }
@@ -191,7 +191,7 @@ module TapeMeasuresTextLabels()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module red_craftsman_8m_26ft_tape_measure()
+module RedCraftsman8m26ftTapeMeasure()
 {
     % cube([ red_craftsman_8m26ft_x, red_craftsman_8m26ft_y, red_craftsman_8m26ft_z ]);
 
@@ -201,7 +201,7 @@ module red_craftsman_8m_26ft_tape_measure()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module blue_black_mileseey_laser_tape_measure()
+module BlueBlackMileseeyLaserTapeMeasure()
 {
     % translate([ blue_black_mileseey_laser_clip_x, 0, 0 ])
         cube([ blue_black_mileseey_laser_x, blue_black_mileseey_laser_y, blue_black_mileseey_laser_z ]);

@@ -65,8 +65,8 @@ screwdriver_bits_base_z = screwdriver_bits_holder_y * sin( screwdriver_bits_base
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-// husky_screwdriver();
-// husky_screwdriver_bits();
+// HuskyScrewdriver();
+// HuskyScrewdriverBits();
 
 if( render_mode == "preview" )
 {
@@ -103,11 +103,11 @@ module HuskyScrewdriverHolder()
 
     // bits holder
     translate([ ( base_x - combined_x ) / 3, ( base_y - screwdriver_bits_base_y ) / 2, base_z ])
-        screwdriver_bits_base();
+        ScrewdriverBitsBase();
 
     // screwdriver holder
     translate([ base_x - screwdriver_holder_r - ( base_x - combined_x ) / 3, ( base_y - screwdriver_holder_r * 2 ) / 2 + screwdriver_holder_r, base_z ])
-        screwdriver_base();
+        ScrewdriverBase();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ module HuskyScrewdriverTextLabel()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module screwdriver_base()
+module ScrewdriverBase()
 {
     render()
     {
@@ -141,13 +141,13 @@ module screwdriver_base()
     if( render_mode == "preview" && show_previews )
     {
         translate([ 0, 0, 0 ])
-            husky_screwdriver();
+            HuskyScrewdriver();
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module screwdriver_bits_base()
+module ScrewdriverBitsBase()
 {
     translate([ screwdriver_bits_base_x, screwdriver_bits_base_y, 0 ])
         rotate([ 0, 0, 180 ])
@@ -171,13 +171,13 @@ module screwdriver_bits_base()
     {
         translate([ screwdriver_bits_base_lip_thickness + screwdriver_bits_base_extra_x / 2, screwdriver_bits_base_lip_thickness, 0 ])
             rotate([ screwdriver_bits_base_angle, 0, 0 ])
-                husky_screwdriver_bits();
+                HuskyScrewdriverBits();
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module husky_screwdriver()
+module HuskyScrewdriver()
 {
     union()
     {
@@ -190,7 +190,7 @@ module husky_screwdriver()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module husky_screwdriver_bits()
+module HuskyScrewdriverBits()
 {
     % cube([ screwdriver_bits_holder_x, screwdriver_bits_holder_y, screwdriver_bits_holder_z ]);
 
