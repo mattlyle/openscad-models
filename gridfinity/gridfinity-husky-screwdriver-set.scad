@@ -21,6 +21,13 @@ screwdriver_bits_above_inset_xy = 3.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
+render_mode = "preview";
+// render_mode = "print-bin";
+// render_mode = "print-text";
+
+label_text = "Husky Screwdriver";
+label_font_size = 6;
+
 cup_x = 2; // in grid cells
 cup_y = 2; // in grid cells
 cup_z = 1;
@@ -56,34 +63,61 @@ screwdriver_bits_base_y = screwdriver_bits_holder_y * cos( screwdriver_bits_base
 screwdriver_bits_base_z = screwdriver_bits_holder_y * sin( screwdriver_bits_base_angle );;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
 // husky_screwdriver();
 // husky_screwdriver_bits();
 
-// base
-gridfinity_cup(
-    width = cup_x,
-    depth = cup_y,
-    height = cup_z,
-    position = "zero",
-    filled_in = true,
-    lip_style = "none"
-    );
+if( render_mode == "preview" )
+{
+    HuskyScrewdriverHolder();
+    HuskyScrewdriverTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    HuskyScrewdriverHolder();
+}
+else if( render_mode == "print-text" )
+{
+    HuskyScrewdriverTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
-// text
-translate([ 8, 3, base_z ]) // TODO this is just eyeball centered?!
-    linear_extrude( 0.5 )
-        text( "Husky Screwdriver", size = 6 );
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-combined_x = screwdriver_bits_base_x + screwdriver_holder_r * 2;
+module HuskyScrewdriverHolder()
+{
+    // base
+    gridfinity_cup(
+        width = cup_x,
+        depth = cup_y,
+        height = cup_z,
+        filled_in = true,
+        lip_settings = LipSettings( lipStyle = "none" )
+        );
 
-// bits holder
-translate([ ( base_x - combined_x ) / 3, ( base_y - screwdriver_bits_base_y ) / 2, base_z ])
-    screwdriver_bits_base();
+    combined_x = screwdriver_bits_base_x + screwdriver_holder_r * 2;
 
-// screwdriver holder
-translate([ base_x - screwdriver_holder_r - ( base_x - combined_x ) / 3, ( base_y - screwdriver_holder_r * 2 ) / 2 + screwdriver_holder_r, base_z ])
-    screwdriver_base();
+    // bits holder
+    translate([ ( base_x - combined_x ) / 3, ( base_y - screwdriver_bits_base_y ) / 2, base_z ])
+        screwdriver_bits_base();
+
+    // screwdriver holder
+    translate([ base_x - screwdriver_holder_r - ( base_x - combined_x ) / 3, ( base_y - screwdriver_holder_r * 2 ) / 2 + screwdriver_holder_r, base_z ])
+        screwdriver_base();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module HuskyScrewdriverTextLabel()
+{
+    translate([ 8, 3, base_z ]) // TODO this is just eyeball centered?!
+        linear_extrude( 0.5 )
+            text( label_text, size = label_font_size );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,7 +138,7 @@ module screwdriver_base()
         }
     }
 
-    if( show_previews )
+    if( render_mode == "preview" && show_previews )
     {
         translate([ 0, 0, 0 ])
             husky_screwdriver();
@@ -133,7 +167,7 @@ module screwdriver_bits_base()
         rotate([ screwdriver_bits_base_angle, 0, 0 ])
             cube([ screwdriver_bits_base_lip_thickness, screwdriver_bits_base_vertical_lip, screwdriver_bits_base_lip_height ]);
 
-    if( show_previews )
+    if( render_mode == "preview" && show_previews )
     {
         translate([ screwdriver_bits_base_lip_thickness + screwdriver_bits_base_extra_x / 2, screwdriver_bits_base_lip_thickness, 0 ])
             rotate([ screwdriver_bits_base_angle, 0, 0 ])
