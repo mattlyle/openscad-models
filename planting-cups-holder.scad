@@ -124,7 +124,6 @@ module PlantingCupHolder()
             }
         }
 
-
         // remove the holes at the bottom
         for( x = [ 0 : num_cups_x - 1 ] )
         {
@@ -149,8 +148,6 @@ module PlantingCupHolder()
         }
     }
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

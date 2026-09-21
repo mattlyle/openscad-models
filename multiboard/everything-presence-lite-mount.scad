@@ -7,7 +7,6 @@ include <../modules/text-label.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-
 mount_x = 50.4;
 mount_y = 52.0;
 mount_z = 3.5;
@@ -186,7 +185,6 @@ module EverythingPresenceLiteHolderCordHook()
                 cord_hook_wall_width,
                 hook_z,
                 center = false );
-
 
     translate([ cord_hook_wall_width, ( hook_bottom_y - hook_top_y ) / 2, hook_z - cord_hook_wall_width])
         cube([ cord_r, hook_top_y, cord_hook_wall_width  ]);

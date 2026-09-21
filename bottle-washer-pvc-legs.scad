@@ -137,7 +137,6 @@ bottle_holder_support_structure_leg_x = bottle_holder_support_structure_grid_xy;
 bottle_holder_support_structure_leg_near_y = ( manifold_spacing_y * 2 - manifold_leg_spacing_y ) / 2;
 bottle_holder_support_structure_leg_far_y = bottle_holder_support_structure_leg_near_y + manifold_leg_spacing_y;
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
 

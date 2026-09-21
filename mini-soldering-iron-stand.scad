@@ -156,7 +156,6 @@ module MiniSolderingIronStand()
         translate([ 0, 0, 0])
             RoundedCubeAlt2( base_edge_width, base_y, base_edge_z, r = 1.0 );
 
-
         // front tower
         translate([ front_tower_x, 0, 0 ])
             _MiniSolderingIronStandTower( support_stand_front_z );
