@@ -17,6 +17,10 @@ jig2_corner_size = 12.0;
 jig2_size_outer = 36.3;
 jig2_size_inner = 18;
 
+// gridfinity bins are undersized by this much (this was gf_tolerance in gridfinity_extended
+// before it became configurable upstream)
+gridfinity_bin_tolerance = 0.5;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
@@ -145,7 +149,7 @@ module GridfinityMagnetToolHalf()
 module GridfinityMagnetJig( label_text )
 {
     magnet_corner_offset = gf_cupbase_upper_taper_height + gf_cupbase_lower_taper_height + gf_cupbase_magnet_position;
-    bin_size = gf_pitch - gf_tolerance;
+    bin_size = gf_pitch - gridfinity_bin_tolerance;
 
     // # translate([ 0, 0, gf_zpitch + jig_peg_height ])
     //     gridfinity_cup( width = 1, depth = 1, height = 1, position = "zero", filled_in = true, lip_style = "none" );
