@@ -77,8 +77,7 @@ module DoxieMultiboardHolder()
                     y = size_y,
                     z = size_z,
                     r = multiboard_corner_rounding_r,
-                    round_bottom = false,
-                    fn = 36
+                    round_bottom = false
                     );
 
             // cut out the middle
