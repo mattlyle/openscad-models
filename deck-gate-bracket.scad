@@ -290,7 +290,7 @@ else if( render_mode == "print-spool-side" )
         DeckGateBracket( MODE_SPOOL_SIDE, true );
 
         // back
-        translate([ 0, preview_separation, -spool_side_back_side_reduction_z ])
+        translate([ 0, preview_separation, -spool_back_cutouts[ 1 ] ])
             DeckGateBracket( MODE_SPOOL_SIDE, false );
     }
 }
