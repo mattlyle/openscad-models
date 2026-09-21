@@ -2,7 +2,7 @@ include <modules/e-ink-display.scad>
 include <modules/rounded-cube.scad>
 include <modules/connectors.scad>
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
 tap_handle_width = 56; // previous size was 50, but need more for stregth
@@ -20,20 +20,22 @@ back_plate_finger_hole_height_offset = 30.0;
 threaded_fitting_radius = 14.4 / 2;
 threaded_fitting_height = 18;
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// drawing options
-hide_tap_handle = false;
-hide_back_plate = false;
-hide_screen_above_plate = false;
-hide_sample_connector = false;
-hide_back_plate_below_tap_handle = false;
-hide_threaded_insert_test = false;
+// only choose one
+render_mode = "preview";
+// render_mode = "print-tap-handle";
+// render_mode = "print-back-plate";
 
-hide_clearance_areas = false;
+// TODO: the tap handle is printed rotated 180 about X - should the print mode do that?
 
-// TODO: should add a variable to rotate the tap handle 180 about X because that's how it's printed
+// design aids drawn alongside the models in preview: the e-ink display, a second
+// back plate below the handle, and the snap connector / threaded insert test pieces
+show_previews = true;
+
+// highlight the back plate clearance gaps with '#'
+show_clearance_areas = true;
 
 // the offset from the front of the tap handle to recess the screen
 screen_depth_offset = 2.0;
@@ -43,43 +45,66 @@ snap_connector_height = 1.8;
 snap_connector_angle = 45;
 snap_connector_clearance = 0.1;
 
-model_spacing = 10.0; // spacing between the tap handle and back plate in the render
+model_spacing = 10.0; // spacing between the tap handle and back plate in the preview
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 display_offset_height = tap_handle_height - e_ink_display_circuit_board_height - 20;
 
 back_plate_width = e_ink_display_circuit_board_width;
 back_plate_height = e_ink_display_circuit_board_height;
 
-// handle
-if( !hide_tap_handle )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
+
+if( render_mode == "preview" )
+{
+    TapHandle();
+
+    translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
+        BackPlate();
+
+    if( show_previews )
+    {
+        EInkDisplayPreview();
+        BackPlateBelowTapHandlePreview();
+        SnapConnectorTest();
+        ThreadedInsertTest();
+    }
+}
+else if( render_mode == "print-tap-handle" )
 {
     TapHandle();
 }
-
-// back plate
-if( !hide_back_plate )
+else if( render_mode == "print-back-plate" )
 {
-    translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, 0 ])
-        BackPlate();
+    BackPlate();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
-// draw the e-ink display next to it for design help
-if( !hide_screen_above_plate )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// draw the e-ink display next to the back plate for design help
+module EInkDisplayPreview()
 {
     // this is just a debugging var to show the e-ink display above the plane if you want to see the back plate better
     z_offset = 0.5;
 
     translate([ 0, 0, z_offset ])
         translate([ tap_handle_width + model_spacing, display_offset_height - e_ink_display_screen_offset_height, tap_handle_depth - e_ink_display_circuit_board_depth - e_ink_display_circuit_board_backside_clearance_depth - e_ink_display_screen_depth - screen_depth_offset ])
-            EInkDisplay( hide_clearance_areas );
+            EInkDisplay( !show_clearance_areas );
 }
 
-if( !hide_back_plate_below_tap_handle )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// a second back plate seated below the tap handle, to check the fit
+module BackPlateBelowTapHandlePreview()
 {
     demo_depth = 6;
 
@@ -88,7 +113,10 @@ if( !hide_back_plate_below_tap_handle )
             BackPlate();
 }
 
-if( !hide_sample_connector )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// a sample pair of snap connectors, off to the side
+module SnapConnectorTest()
 {
     translate([ 100, 0, 0 ])
     {
@@ -99,7 +127,10 @@ if( !hide_sample_connector )
     }
 }
 
-if( !hide_threaded_insert_test )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// a test block for the threaded fitting, off to the side
+module ThreadedInsertTest()
 {
     translate([ 150, 0, 0 ])
     {
@@ -116,7 +147,7 @@ if( !hide_threaded_insert_test )
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module TapHandle()
 {
@@ -272,7 +303,7 @@ module BackPlate()
         cube([ back_plate_wall_snug_fit, back_plate_height + back_plate_wall_snug_fit * 2, back_plate_wall_width ]);
 
     // clearance
-    if( !hide_clearance_areas )
+    if( render_mode == "preview" && show_clearance_areas )
     {
         # translate([ 0, -back_plate_clearance, 0 ])
             cube([ back_plate_width, back_plate_clearance, back_plate_wall_width ]);
