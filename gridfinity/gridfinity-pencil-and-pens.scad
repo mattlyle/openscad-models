@@ -18,6 +18,10 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
+label_text = "Pens and Pencils?!";
+label_font = "Georgia:style=Bold";
+label_font_size = 7;
+
 cells_x = 3;
 cells_y = 1;
 
@@ -120,7 +124,13 @@ module PenPencilSharpieTextLabel()
     //     cube([ base_x, text_area_y, 0.1 ]);
 
     translate([ 0, text_area_offset_y, holder_z ])
-        CenteredTextLabel( "Pens and Pencils?!", base_x, text_area_y, 7, "Georgia:style=Bold" );
+        CenteredTextLabel(
+            label_text,
+            centered_in_area_x = base_x,
+            centered_in_area_y = text_area_y,
+            font_size = label_font_size,
+            font = label_font
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

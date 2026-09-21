@@ -28,6 +28,10 @@ render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
 
+label_text = "Orange Ratchet Screwdriver";
+label_font = "Georgia:style=Bold";
+label_font_size = 5.5;
+
 cells_x = 3;
 cells_y = 2;
 cells_z = 1;
@@ -93,7 +97,13 @@ module OrangeRatchetScrewDriverTextLabel()
     //     cube([ text_area_x, text_area_y, 0.1 ]);
 
     translate([ 0, orange_ratchet_screwdriver_case_clearance, holder_z ])
-        CenteredTextLabel( "Orange Ratchet Screwdriver", 5.5, "Georgia:style=Bold", text_area_x, text_area_y );
+        CenteredTextLabel(
+            label_text,
+            centered_in_area_x = text_area_x,
+            centered_in_area_y = text_area_y,
+            font_size = label_font_size,
+            font = label_font
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
