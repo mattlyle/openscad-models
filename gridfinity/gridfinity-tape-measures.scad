@@ -30,6 +30,10 @@ red_craftsman_8m26ft_clip_z_offset = 18.0;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 blue_black_mileseey_laser_label_text = "Mileseey Laser";
 red_craftsman_8m26ft_label_text = "Craftsman 26ft";
@@ -89,6 +93,13 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     TapeMeasuresTextLabels();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        TapeMeasuresHolder();
+    color( label_color )
+        TapeMeasuresTextLabels();
 }
 else
 {

@@ -24,6 +24,10 @@ screwdriver_bits_above_inset_xy = 3.0;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 label_text = "Husky Screwdriver";
 label_font_size = 6;
@@ -80,6 +84,13 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     HuskyScrewdriverTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        HuskyScrewdriverHolder();
+    color( label_color )
+        HuskyScrewdriverTextLabel();
 }
 else
 {

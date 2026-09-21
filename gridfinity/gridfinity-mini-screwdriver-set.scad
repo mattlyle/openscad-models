@@ -31,6 +31,10 @@ mini_screwdriver_setups = [
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 screwdriver_angle = -35.0;
 
@@ -114,6 +118,15 @@ else if ( render_mode == "print-text" )
     translate([ cradle_offset_x, cradle_offset_y, cradle_offset_z ])
         rotate([ screwdriver_angle, 0, 0 ])
             MiniScrewdriverHolderCradleBaseText( false );
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        MiniScrewdriverSetHolder();
+    color( label_color )
+        translate([ cradle_offset_x, cradle_offset_y, cradle_offset_z ])
+            rotate([ screwdriver_angle, 0, 0 ])
+                MiniScrewdriverHolderCradleBaseText( false );
 }
 else
 {

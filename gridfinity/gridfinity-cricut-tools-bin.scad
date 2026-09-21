@@ -16,6 +16,10 @@ burnishing_tool_y = 11.1 + 2;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 label_text = "Cricut Tools";
 label_font = "Liberation Sans:style=Bold";
@@ -64,6 +68,13 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     CricutToolsTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        CricutToolsBin();
+    color( label_color )
+        CricutToolsTextLabel();
 }
 else
 {

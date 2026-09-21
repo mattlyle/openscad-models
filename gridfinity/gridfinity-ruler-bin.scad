@@ -32,6 +32,10 @@ angle_calipers_y = 35.3;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 cells_x = 2;
 
@@ -106,6 +110,13 @@ else if ( render_mode == "print-bin" )
 else if ( render_mode == "print-text" )
 {
     RulerBinTextLabel( false );
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        RulerBin();
+    color( label_color )
+        RulerBinTextLabel( false );
 }
 else
 {

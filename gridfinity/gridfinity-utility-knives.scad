@@ -25,11 +25,15 @@ x_acto_knife_z = 14.7;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
 
 label_text_line_1 = "Utility";
 label_text_line_2 = "Knives";
 label_font = "Georgia:style=Bold";
 label_font_size = 6;
+
+bin_color = "white";
+label_color = "black";
 
 cells_x = 3;
 cells_y = 4;
@@ -81,6 +85,13 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     UtilityKnivesTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        UtilityKnivesHolder();
+    color( label_color )
+        UtilityKnivesTextLabel();
 }
 else
 {

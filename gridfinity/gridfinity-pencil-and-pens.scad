@@ -16,6 +16,10 @@ small_screwdriver_r = 4.1 / 2;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 label_text = "Pens and Pencils?!";
 label_font = "Georgia:style=Bold";
@@ -77,6 +81,13 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     PenPencilSharpieTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        PenPencilSharpieHolder();
+    color( label_color )
+        PenPencilSharpieTextLabel();
 }
 else
 {

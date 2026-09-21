@@ -27,6 +27,10 @@ cord_main_r = 4.1 / 2;
 render_mode = "preview";
 // render_mode = "print-face";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+face_color = "white";
+label_color = "black";
 
 width_quarters = 2;
 
@@ -123,6 +127,17 @@ else if( render_mode == "print-text" )
     translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
         rotate([ 90, 0, 0 ])
             AcerUsbHubNetworkRackFaceDecoration();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( face_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                AcerUsbHubNetworkRackFace();
+    color( label_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                AcerUsbHubNetworkRackFaceDecoration();
 }
 else
 {

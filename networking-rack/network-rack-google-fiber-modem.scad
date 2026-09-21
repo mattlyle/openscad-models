@@ -19,6 +19,10 @@ face_cutout_z = 21.0;
 render_mode = "preview";
 // render_mode = "print-face";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+face_color = "white";
+label_color = "black";
 
 width_quarters = 2;
 
@@ -97,6 +101,17 @@ else if( render_mode == "print-text" )
     translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
         rotate([ 90, 0, 0 ])
             GoogleFiberModemNetworkRackFaceDecoration();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( face_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                GoogleFiberModemNetworkRackFace();
+    color( label_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                GoogleFiberModemNetworkRackFaceDecoration();
 }
 else
 {

@@ -5,3 +5,5 @@
 _renders/
 
 test.scad
+
+__pycache__/

@@ -20,6 +20,10 @@ silver_malco_12ft_clip_z_offset = 9.5;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 label_text = "Silver Malco";
 label_font_size = 5.1;
@@ -73,6 +77,13 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     SilverMalcoTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        SilverMalcoHolder();
+    color( label_color )
+        SilverMalcoTextLabel();
 }
 else
 {

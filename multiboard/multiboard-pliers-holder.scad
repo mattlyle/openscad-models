@@ -25,6 +25,10 @@ pliers_handle_z_large = 69.8;
 render_mode = "preview";
 // render_mode = "print-holder";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+holder_color = "white";
+label_color = "black";
 
 handle_clearance = 2;
 
@@ -118,20 +122,35 @@ else if( render_mode == "print-holder" )
 }
 else if( render_mode == "print-text" )
 {
-    rotate([ 90, 0, 0 ])
-        translate([ 0, holder_y - ring_wall_height, holder_z - label_depth + DIFFERENCE_CLEARANCE ])
-            color([ 0, 0, 0.4 ])
-                CenteredTextLabel(
-                    front_text,
-                    font = label_font,
-                    font_size = label_font_size,
-                    centered_in_area_x = holder_x,
-                    centered_in_area_y = ring_wall_height
-                    );
+    PliersHolderTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( holder_color )
+        rotate([ 90, 0, 0 ])
+            PliersHolder();
+    color( label_color )
+        PliersHolderTextLabel();
 }
 else
 {
     assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// the front label, positioned to match the print-holder orientation
+module PliersHolderTextLabel()
+{
+    rotate([ 90, 0, 0 ])
+        translate([ 0, holder_y - ring_wall_height, holder_z - label_depth + DIFFERENCE_CLEARANCE ])
+            CenteredTextLabel(
+                front_text,
+                font = label_font,
+                font_size = label_font_size,
+                centered_in_area_x = holder_x,
+                centered_in_area_y = ring_wall_height
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

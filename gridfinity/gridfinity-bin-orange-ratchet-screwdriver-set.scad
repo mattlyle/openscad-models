@@ -26,6 +26,10 @@ orange_ratchet_screwdriver_case_sloped_corner_size = 10.0;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 label_text = "Orange Ratchet Screwdriver";
 label_font = "Georgia:style=Bold";
@@ -73,6 +77,13 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     OrangeRatchetScrewDriverTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        OrangeRatchetScrewDriverHolder();
+    color( label_color )
+        OrangeRatchetScrewDriverTextLabel();
 }
 else
 {

@@ -2,11 +2,19 @@
 """
 build-openscad.py <model.scad>
 
-Renders every print mode ("print" and "print-*") of an OpenSCAD model to STL and
-saves them to the renders directory, all stamped with the same new version:
+Renders every print mode of an OpenSCAD model and saves the results to the renders
+directory, all stamped with the same new version:
 
     <model>-v<N>.stl             for render_mode "print"
     <model>-<name>-v<N>.stl      for render_mode "print-<name>"
+    <model>-v<N>.3mf             for render_mode "print-3mf"
+    <model>-<name>-v<N>.3mf      for render_mode "print-3mf-<name>"
+
+The print-3mf modes are for multi-color designs: they draw every part (body first,
+then text), each in its own color(), and are exported as a 3MF with OpenSCAD's
+lazy-union enabled so each part stays a separate object. Bambu Studio loads that as
+one object with multiple parts. The STL modes never use lazy-union, which can change
+geometry.
 
 N is one more than the highest version of this model already in the renders
 directory (v0 if there are none), so every run is a new version and parts of a
@@ -40,6 +48,9 @@ from pathlib import Path
 REPO_ROOT = Path( __file__ ).resolve().parent
 CONFIG_PATH = Path.home() / ".config" / "build-openscad" / "config.env"
 OUTPUT_EXTENSIONS = ( "stl", "3mf" )
+
+# multi-color modes ("print-3mf" or "print-3mf-<name>"): every part in its own color, exported as a 3MF
+MULTI_COLOR_MODE = "print-3mf"
 
 # modules/ holds shared code and archive/ holds retired models - neither is ever built
 EXCLUDED_DIRS = ( "modules", "archive" )
@@ -129,8 +140,19 @@ def FindPrintModes( model_path ):
 ########################################################################################################################
 
 
-def OutputName( model_name, mode, version, extension = "stl" ):
+def IsMultiColorMode( mode ):
+    return mode == MULTI_COLOR_MODE or mode.startswith( MULTI_COLOR_MODE + "-" )
+
+########################################################################################################################
+
+
+def OutputName( model_name, mode, version ):
+    if IsMultiColorMode( mode ):
+        # the extension already says 3mf: print-3mf -> <model>-v<N>.3mf, print-3mf-<name> -> <model>-<name>-v<N>.3mf
+        suffix = mode[ len( MULTI_COLOR_MODE ): ]
+        return "%s%s-v%d.3mf" % ( model_name, suffix, version )
     suffix = "" if mode == "print" else "-" + mode[ len( "print-" ): ]
+    extension = "stl"
     return "%s%s-v%d.%s" % ( model_name, suffix, version, extension )
 
 ########################################################################################################################
@@ -165,9 +187,10 @@ def FindNextVersion( model_name, output_dir ):
 
 
 def Render( openscad, model_path, mode, output_path ):
-    command = [
-        openscad,
-        "--enable=textmetrics",
+    command = [ openscad, "--enable=textmetrics" ]
+    if IsMultiColorMode( mode ):
+        command.append( "--enable=lazy-union" )
+    command += [
         "-D", 'render_mode="%s"' % mode,
         "-o", str( output_path ),
         str( model_path ) ]
@@ -185,7 +208,7 @@ def Render( openscad, model_path, mode, output_path ):
 
 def main():
     parser = argparse.ArgumentParser(
-        description = "Render every print mode of an OpenSCAD model to a new, versioned set of STL files." )
+        description = "Render every print mode of an OpenSCAD model to a new, versioned set of STL (and 3MF) files." )
     parser.add_argument( "model", help = "path to the .scad file, e.g. gridfinity/gridfinity-ruler-bin.scad" )
     args = parser.parse_args()
 
