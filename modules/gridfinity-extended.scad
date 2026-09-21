@@ -43,13 +43,9 @@ module GridfinityBaseplateSnugFitInto( max_x, max_y, grid_cells_x, grid_cells_y 
         num_x = grid_cells_x,
         num_y = grid_cells_y,
         oversizeMethod = "fill",
-        plateStyle = "base",
         plateOptions = "default",
-        lidOptions = "",
         customGridEnabled = false,
-        gridPositions = "",
-        cutx = 0,
-        cuty = 0
+        gridPositions = ""
         );
 
     // add the extensions...
