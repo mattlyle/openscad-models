@@ -107,7 +107,7 @@ if( render_mode == "preview" )
 else if( render_mode == "print-bracket-only" )
 {
     translate([
-        bracket_bottom_z + ScrewHole_extra_z,
+        bracket_bottom_z + screw_hole_extra_z,
         dowel_r + bracket_dowel_gripper_r,
         bracket_x
         ])
