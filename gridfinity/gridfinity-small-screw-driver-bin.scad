@@ -79,9 +79,8 @@ module SmallScrewDriverBinHolder()
         width = cup_x,
         depth = cup_y,
         height = cup_z,
-        position = "zero",
         filled_in = true,
-        lip_style = "none"
+        lip_settings = LipSettings( lipStyle = "none" )
         );
 
     render()

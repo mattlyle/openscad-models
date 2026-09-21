@@ -115,9 +115,8 @@ module OrangeRatchetScrewDriverHolder()
         width = cells_x,
         depth = cells_y,
         height = cells_z,
-        position = "zero",
         filled_in = true,
-        lip_style = "none"
+        lip_settings = LipSettings( lipStyle = "none" )
     );
 
     render()
