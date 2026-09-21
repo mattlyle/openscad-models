@@ -48,11 +48,11 @@ air_duster_cutout_x =
     base_x
     - air_duster_wall_width
     - air_duster_top_xz
-    + calculateOffsetToCenter( air_duster_top_xz, air_duster_base_x + air_duster_holder_padding * 2 );
+    + CalculateOffsetToCenter( air_duster_top_xz, air_duster_base_x + air_duster_holder_padding * 2 );
 
 air_duster_cutout_y =
     air_duster_wall_width
-        + calculateOffsetToCenter( air_duster_top_y, air_duster_base_y + air_duster_holder_padding * 2 );
+        + CalculateOffsetToCenter( air_duster_top_y, air_duster_base_y + air_duster_holder_padding * 2 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models

@@ -44,10 +44,10 @@ holder_z = GRIDFINITY_BASE_Z + top_z;
 offset_z = GRIDFINITY_BASE_Z + GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE;
 
 deburring_tool_offset_x = base_x / 2;
-deburring_tool_offset_y = calculateEquallySpacedOffset( [ deburring_tool_r * 2, deburring_blades_y ], base_y, clearance, 0 ) + deburring_tool_r;
+deburring_tool_offset_y = CalculateEquallySpacedOffset( [ deburring_tool_r * 2, deburring_blades_y ], base_y, clearance, 0 ) + deburring_tool_r;
 
-deburring_blades_offset_x = calculateOffsetToCenter( base_x, deburring_blades_x + clearance * 2 );
-deburring_blades_offset_y = calculateEquallySpacedOffset( [ deburring_tool_r * 2, deburring_blades_y ], base_y, clearance, 1 );
+deburring_blades_offset_x = CalculateOffsetToCenter( base_x, deburring_blades_x + clearance * 2 );
+deburring_blades_offset_y = CalculateEquallySpacedOffset( [ deburring_tool_r * 2, deburring_blades_y ], base_y, clearance, 1 );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models

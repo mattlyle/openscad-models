@@ -310,8 +310,8 @@ module PVCCradle()
     difference()
     {
         translate( [
-            calculateOffsetToCenter( cradle_base_x, cradle_riser_x ),
-            calculateOffsetToCenter( cradle_base_y, cradle_riser_y ),
+            CalculateOffsetToCenter( cradle_base_x, cradle_riser_x ),
+            CalculateOffsetToCenter( cradle_base_y, cradle_riser_y ),
             cradle_base_z
             ] )
             RoundedCube(

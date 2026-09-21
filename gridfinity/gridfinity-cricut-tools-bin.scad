@@ -97,7 +97,7 @@ render()
                 cylinder( r = tool_r, h = top_z, $fn = 32 );
 
             // cut out burnishing tool
-            translate([ calculateOffsetToCenter( base_x, burnishing_tool_x ), base_y / 4 * 1 - burnishing_tool_y, offset_z ])
+            translate([ CalculateOffsetToCenter( base_x, burnishing_tool_x ), base_y / 4 * 1 - burnishing_tool_y, offset_z ])
                 cube([ burnishing_tool_x, burnishing_tool_y, top_z ]);
         }
     }

@@ -99,15 +99,15 @@ else
 module TweezersBin()
 {
     offsets_x = [
-        calculateEquallySpacedOffset( bin_1_item_sizes, base_x, clearance, 0 ),
-        calculateEquallySpacedOffset( bin_1_item_sizes, base_x, clearance, 1 ),
-        calculateEquallySpacedOffset( bin_1_item_sizes, base_x, clearance, 2 )
+        CalculateEquallySpacedOffset( bin_1_item_sizes, base_x, clearance, 0 ),
+        CalculateEquallySpacedOffset( bin_1_item_sizes, base_x, clearance, 1 ),
+        CalculateEquallySpacedOffset( bin_1_item_sizes, base_x, clearance, 2 )
     ];
 
     offsets_y = [
-        calculateOffsetToCenter( base_y, tweezers_1_y + clearance * 2 ),
-        calculateOffsetToCenter( base_y, tweezers_2_y + clearance * 2 ),
-        calculateOffsetToCenter( base_y, green_pry_tool_y + clearance * 2 )
+        CalculateOffsetToCenter( base_y, tweezers_1_y + clearance * 2 ),
+        CalculateOffsetToCenter( base_y, tweezers_2_y + clearance * 2 ),
+        CalculateOffsetToCenter( base_y, green_pry_tool_y + clearance * 2 )
     ];
 
     text_area_y = min( offsets_y ) - bin_1_text_area_offset_y;
@@ -161,13 +161,13 @@ module TweezersBin()
 module TweezersBin2()
 {
     offsets_x = [
-        calculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 0 ),
-        calculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 1 ),
+        CalculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 0 ),
+        CalculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 1 ),
     ];
 
     offsets_y = [
-        calculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 0 ),
-        calculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 1 ),
+        CalculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 0 ),
+        CalculateEquallySpacedOffset( bin_2_item_sizes, base_x, clearance, 1 ),
     ];
 
     if( render_mode == "preview" || render_mode == "print-bin-2")

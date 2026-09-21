@@ -67,9 +67,9 @@ base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
 base_offset_z = GRIDFINITY_BASE_Z + top_z;
 
-cradle_support_y = max( getListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) );
+cradle_support_y = max( GetListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) );
 
-screwdriver_spacing_x = max( getListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) ) * 2
+screwdriver_spacing_x = max( GetListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) ) * 2
     + screwdriver_extra_spacing_x;
 
 setup_left = mini_screwdriver_setups[ 0 ];
@@ -88,7 +88,7 @@ cradle_right_z = wall_width * 2
 
 screwdrivers_offset_x = ( base_x - screwdriver_spacing_x * 5 ) / 2;
 
-cradle_offset_x = calculateOffsetToCenter( base_x, cradle_x );
+cradle_offset_x = CalculateOffsetToCenter( base_x, cradle_x );
 cradle_offset_z = base_offset_z;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -398,7 +398,7 @@ module _ShelfTopBracket()
         );
 
     // calculate the z where the shelf base meets the wall plate
-    top_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
+    top_face_wall_slope_intercept = FindSlopeIntercept( // using y,z as x,y
         rotated_top_far_xy,
         rotated_top_near_xy
         );
@@ -477,7 +477,7 @@ module _ShelfBottomBracket()
         );
 
     // calculate the z where the shelf base meets the wall plate
-    bottom_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
+    bottom_face_wall_slope_intercept = FindSlopeIntercept( // using y,z as x,y
         [ far_bottom.y, far_bottom.z ],
         rotated_bottom_near_xy
         );

@@ -52,8 +52,8 @@ echo( "angle_height", angle_height );
 item_sizes_x = [ scissors_x, scissors_x ];
 item_angle_offset_z = scissors_y * sin( -scissors_angle );
 offsets_x = [
-    calculateEquallySpacedOffset( item_sizes_x, base_x, 0, 0 ),
-    calculateEquallySpacedOffset( item_sizes_x, base_x, 0, 1 ),
+    CalculateEquallySpacedOffset( item_sizes_x, base_x, 0, 0 ),
+    CalculateEquallySpacedOffset( item_sizes_x, base_x, 0, 1 ),
     ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
