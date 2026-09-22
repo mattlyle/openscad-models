@@ -49,7 +49,7 @@ preview_gap_x = 20;
 holder_y_small = 120;
 front_text_small = "Small Pliers";
 holder_connector_row_setups_small = [ [ 4, 3 ], [ 2 ] ];
-num_pliers_small = 6;
+num_pliers_small = 8;
 pliers_handle_x_small = pliers_handle_x_raw_small_medium;
 pliers_handle_z_small = pliers_handle_z_raw_small_medium;
 
@@ -57,7 +57,7 @@ pliers_handle_z_small = pliers_handle_z_raw_small_medium;
 holder_y_medium = 135;
 front_text_medium = "Medium Pliers";
 holder_connector_row_setups_medium = [ [ 5, 4 ], [ 3, 2 ], [ 1 ] ];
-num_pliers_medium = 10;
+num_pliers_medium = 12;
 pliers_handle_x_medium = pliers_handle_x_raw_small_medium + 2.5;
 pliers_handle_z_medium = pliers_handle_z_raw_small_medium;
 
@@ -65,7 +65,7 @@ pliers_handle_z_medium = pliers_handle_z_raw_small_medium;
 holder_y_large = 155;
 front_text_large = "Large Pliers";
 holder_connector_row_setups_large = [ [ 6, 5 ], [ 4, 3 ], [ 2, 1 ] ];
-num_pliers_large = 6;
+num_pliers_large = 8;
 pliers_handle_x_large = pliers_handle_x_raw_large + 3;
 pliers_handle_z_large = pliers_handle_z_raw_large + 20;
 
