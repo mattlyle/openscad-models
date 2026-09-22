@@ -26,7 +26,7 @@ screw_hole_r = 3.86 / 2;
 screw_washer_r = 8.9 / 2;
 
 nut_r = 7.0 / 2;
-nut_h = 3.0;
+// nut_h = 3.0;
 
 gate_screw_separation_spool_side_z = 19.5;
 
@@ -74,7 +74,7 @@ vertical_post_preview_above_z = 80;
 horizontal_post_preview_x = 60;
 horizontal_post_weld_preview_size = 6;
 rear_post_preview_y = 60;
-rear_post_weld_preview_size = 6;
+// rear_post_weld_preview_size = 6;
 rear_post_angle = -35;
 latch_preview_y = -20;
 latch_preview_top_z = 50;

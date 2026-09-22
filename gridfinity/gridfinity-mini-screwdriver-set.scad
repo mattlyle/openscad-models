@@ -90,7 +90,7 @@ cradle_right_z = wall_width * 2
     + setup_right[ MINI_SCREWDRIVER_SETUP_INDEX_FULL_BARREL_Z ]
     + setup_right[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_Z ] * 0.7;
 
-screwdrivers_offset_x = ( base_x - screwdriver_spacing_x * 5 ) / 2;
+// screwdrivers_offset_x = ( base_x - screwdriver_spacing_x * 5 ) / 2;
 
 cradle_offset_x = CalculateOffsetToCenter( base_x, cradle_x );
 cradle_offset_z = base_offset_z;

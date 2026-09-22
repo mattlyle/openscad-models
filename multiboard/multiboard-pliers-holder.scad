@@ -10,14 +10,14 @@ include <../modules/utils.scad>
 // measurements
 
 pliers_handle_x_small_medium = 17.2;
-pliers_handle_x_large = 20.1;
+// pliers_handle_x_large = 20.1;
 
 // pliers_handle_to_pivot_y = 101.2;
 // pliers_top_y = 12.0;
 pliers_full_y = 210;
 
 pliers_handle_z_small_medium = 51.8;
-pliers_handle_z_large = 69.8;
+// pliers_handle_z_large = 69.8;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings

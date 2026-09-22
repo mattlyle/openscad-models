@@ -15,7 +15,7 @@ ams_2_pro_bottom_ledge_x = 338; // note the front is actually 324
 ams_2_pro_bottom_ledge_y = 250;
 ams_2_pro_bottom_ledge_z = 11;
 
-ams_2_pro_foot_x = 36;
+// ams_2_pro_foot_x = 36;
 ams_2_pro_foot_y = 19;
 ams_2_pro_foot_z = 2;
 ams_2_pro_foot_back_offset_y = 231; // distance to the back foot of the AMS
@@ -23,7 +23,7 @@ ams_2_pro_foot_back_offset_y = 231; // distance to the back foot of the AMS
 ams_2_pro_x = 372;
 ams_2_pro_y = 278;
 ams_2_pro_body_z = 110; // this is above the ledge below it
-ams_2_pro_lid_z = 102;
+// ams_2_pro_lid_z = 102;
 ams_2_pro_lid_r = 210 / 2;
 
 // these are referenced off the ledge!

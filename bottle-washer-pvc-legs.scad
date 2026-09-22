@@ -451,15 +451,15 @@ module ManifoldPreview( use_z_preview = true )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module LegPreviews()
-{
-    // far leg
-    % translate([ 0, manifold_spacing_y * 3 / 2, 0 ])
-        cylinder( r = pvc_r, h = manifold_z );
+// module LegPreviews()
+// {
+//     // far leg
+//     % translate([ 0, manifold_spacing_y * 3 / 2, 0 ])
+//         cylinder( r = pvc_r, h = manifold_z );
 
-    % translate([ 0, manifold_spacing_y / 2, 0 ])
-        cylinder( r = pvc_r, h = manifold_z );
-}
+//     % translate([ 0, manifold_spacing_y / 2, 0 ])
+//         cylinder( r = pvc_r, h = manifold_z );
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

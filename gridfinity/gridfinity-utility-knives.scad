@@ -68,7 +68,7 @@ x_offset_0 = spacing_x;
 x_offset_1 = UpdateCutoutXOffset( x_offset_0, x_acto_knife_spec );
 x_offset_2 = UpdateCutoutXOffset( x_offset_1, folding_knife_spec );
 x_offset_3 = UpdateCutoutXOffset( x_offset_2, retractable_knife_spec );
-x_offset_4 = UpdateCutoutXOffset( x_offset_3, retractable_knife_spec );
+// x_offset_4 = UpdateCutoutXOffset( x_offset_3, retractable_knife_spec );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models

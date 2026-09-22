@@ -61,7 +61,7 @@ fontname = "Liberation Sans:style=bold";
 label_first_line_offset_y = -1;
 label_second_line_offset_y = 1;
 
-outline_width = 0.8;
+// outline_width = 0.8;
 
 rounding_r = 1.4;
 stake_point_r = 0.2;

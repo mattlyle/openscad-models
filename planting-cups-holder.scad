@@ -37,7 +37,7 @@ cup_hole_r = 4.0;
 num_additional_holes = 6;
 additional_hole_r = 14.0;
 
-connector_width = 2.0;
+// connector_width = 2.0;
 connector_z = 6.0;
 
 center_cutout_r = 20.0;

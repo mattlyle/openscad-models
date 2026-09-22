@@ -326,24 +326,24 @@ module CubeShelfPreview()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module PrinterBuildVolumePreview()
-{
-    // bottom
-    # translate([ 0, 0, -preview_thickness ])
-        cube([ build_volume_size, build_volume_size, preview_thickness ]);
+// module PrinterBuildVolumePreview()
+// {
+//     // bottom
+//     # translate([ 0, 0, -preview_thickness ])
+//         cube([ build_volume_size, build_volume_size, preview_thickness ]);
 
-    // right
-    # translate([ build_volume_size, 0, 0 ])
-        cube([ preview_thickness, build_volume_size, build_volume_size ]);
+//     // right
+//     # translate([ build_volume_size, 0, 0 ])
+//         cube([ preview_thickness, build_volume_size, build_volume_size ]);
 
-    // top
-    # translate([ 0, 0, build_volume_size ])
-        cube([ build_volume_size, build_volume_size, preview_thickness ]);
+//     // top
+//     # translate([ 0, 0, build_volume_size ])
+//         cube([ build_volume_size, build_volume_size, preview_thickness ]);
 
-    // left
-    # translate([ -preview_thickness, 0, 0 ])
-        cube([ preview_thickness, build_volume_size, build_volume_size ]);
-}
+//     // left
+//     # translate([ -preview_thickness, 0, 0 ])
+//         cube([ preview_thickness, build_volume_size, build_volume_size ]);
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -355,10 +355,10 @@ module PrinterBuildPlatePreview()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module VinylRollPreview( r )
-{
-    % rotate([ -90, 0, 0 ])
-        cylinder( h = roll_length, r = r );
-}
+// module VinylRollPreview( r )
+// {
+//     % rotate([ -90, 0, 0 ])
+//         cylinder( h = roll_length, r = r );
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

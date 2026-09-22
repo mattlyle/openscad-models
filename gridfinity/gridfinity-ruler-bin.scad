@@ -42,7 +42,7 @@ cells_x = 2;
 cells_bottom_y = 2;
 cells_top_y = 1;
 
-back_bin_z = 80;
+// back_bin_z = 80;
 front_bin_z = 40;
 
 // the height to be added on top of the base
