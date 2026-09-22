@@ -171,13 +171,13 @@ function GenerateSectionLetterSizesX( section_config ) =
         ];
 
 function CalculateSectionX( section_config ) =
-        sumList( GenerateSectionLetterSizesX( section_config ) )
+        SumList( GenerateSectionLetterSizesX( section_config ) )
         + section_config[ SECTION_INDEX_PADDING_LEFT ]
         + section_config[ SECTION_INDEX_PADDING_RIGHT ];
 
 function CalculateLetterOffsetX( section_config, i ) =
     section_config[ SECTION_INDEX_PADDING_LEFT ]
-    + sumTo( GenerateSectionLetterSizesX( section_config ), i );
+    + SumTo( GenerateSectionLetterSizesX( section_config ), i );
 
 function CalculateSVGPlateX( svg_plate_config ) =
         svg_plate_config[ SVG_PLATE_INDEX_NUM_FLAGS ]
@@ -198,7 +198,7 @@ cord_cutout_r = cord_r * 2;
 section_sizes_x = [ for( section = sections ) CalculateSectionX( section ) ];
 svg_plate_sizes_x = [ for( svg_plate_config = svg_plate_configs ) CalculateSVGPlateX( svg_plate_config ) ];
 
-total_x = sumList( section_sizes_x );
+total_x = SumList( section_sizes_x );
 echo();
 echo( "Total X:" );
 echo( str( total_x, " mm" ));
@@ -225,7 +225,7 @@ if( render_mode == "preview" )
     {
         section = sections[ i ];
 
-        x_offset = sumTo( section_sizes_x, i ) + i * -5.1;
+        x_offset = SumTo( section_sizes_x, i ) + i * -5.1;
 
         translate([ x_offset, window_y - bottom_tray_y, 0 ])
             WindowTextLabelTop( section );
@@ -239,7 +239,7 @@ if( render_mode == "preview" )
     {
         svg_plate_config = svg_plate_configs[ i ];
 
-        x_offset = sumList( section_sizes_x ) + sumTo( svg_plate_sizes_x, i ) + i * -5.1;
+        x_offset = SumList( section_sizes_x ) + SumTo( svg_plate_sizes_x, i ) + i * -5.1;
 
         translate([ x_offset, window_y - bottom_tray_y, 0 ])
             WindowSVGPlate( svg_plate_config );
@@ -431,7 +431,7 @@ module WindowTextLabelBottom( x, cutout_start_x = -1, cutout_end_x = -1 )
         cube([
             x,
             window_base_offset_y,
-            bottom_tray_offset_z  + window_base_offset_overlap_z + bottom_tray_junction_z
+            bottom_tray_offset_z + window_base_offset_overlap_z + bottom_tray_junction_z
             ]);
 
     // connector top
@@ -479,7 +479,7 @@ module WindowSVGPlate( svg_plate_config )
         + num_flags * ( scaled_flag_size_x )
         + flag_spacing * ( num_flags - 1 );
 
-    echo("base_x",base_x);
+    echo( "base_x", base_x );
 
     _WindowTopConnector( base_x, true, true );
 
@@ -562,7 +562,7 @@ module _WindowTopConnector(
                 0
                 ])
                 rotate([ 0, -90, 0 ])
-                    TriangularPrism( 30, connector_edge, connector_edge  * 0.9 );
+                    TriangularPrism( 30, connector_edge, connector_edge * 0.9 );
         }
     }
 }

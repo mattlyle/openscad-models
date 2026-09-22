@@ -1,3 +1,5 @@
+include <utils.scad>
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 PINCH_CONNECTOR_WALL_THICKNESS = 1.2;
@@ -9,7 +11,7 @@ PINCH_CONNECTOR_OVERLAP_Z = 2.0;
 PINCH_CONNECTOR_LEDGE_Z = 1.6;
 
 PINCH_CONNECTOR_CLEARANCE = 0.1;
-// PINCH_CONNECTOR_CLEARANCE=0;
+// PINCH_CONNECTOR_CLEARANCE = 0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -134,13 +136,13 @@ module _PinchConnectorTrayBottomWall( x, tray_y, z )
             cube([ x, PINCH_CONNECTOR_OVERLAP_Y, PINCH_CONNECTOR_LEDGE_Z ]);
 
         translate([
-            -0.01,
+            -DIFFERENCE_CLEARANCE,
             PINCH_CONNECTOR_OVERLAP_STOPPER_Y - PINCH_CONNECTOR_OVERLAP_Y,
             PINCH_CONNECTOR_WALL_THICKNESS + z - PINCH_CONNECTOR_OVERLAP_Z - PINCH_CONNECTOR_LEDGE_Z / 2
             ])
             scale([ 1, PINCH_CONNECTOR_OVERLAP_Y / PINCH_CONNECTOR_LEDGE_Z * 2, 1 ])
                 rotate([ 0, 90, 0 ])
-                    cylinder( h = x + 0.02, r = PINCH_CONNECTOR_LEDGE_Z / 2, $fn = 32 );
+                    cylinder( h = x + DIFFERENCE_CLEARANCE * 2, r = PINCH_CONNECTOR_LEDGE_Z / 2, $fn = 32 );
     }
 
     stopper_z = PINCH_CONNECTOR_WALL_THICKNESS + z - PINCH_CONNECTOR_OVERLAP_Z - PINCH_CONNECTOR_LEDGE_Z;
@@ -163,7 +165,8 @@ module _PinchConnectorTrayBottomWall( x, tray_y, z )
             [ 3, 4, 1, 0 ],
             [ 2, 1, 4, 5 ],
             [ 5, 3, 0, 2 ]
-            ] );
+            ]
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,4 +208,3 @@ module _PinchConnectorTrayTopWall( x, tray_y )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-

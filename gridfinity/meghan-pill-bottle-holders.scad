@@ -25,9 +25,6 @@ top_z = 20;
 bottle_preview_z = 60;
 bottle_rounding_r = 1.0;
 
-bottle_locations_x = [ 0, 100 ];
-bottle_locations_y = [ 0, 100 ];
-
 bottle_clearance = 1.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,12 +75,12 @@ module MeghanPillBottleHolders()
             for( y = [ 1, 2 ] )
             {
                 translate([
-                    calculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_x, bottle_clearance, x - 1 ),
-                    calculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_y, bottle_clearance, y - 1 ),
+                    CalculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_x, bottle_clearance, x - 1 ),
+                    CalculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_y, bottle_clearance, y - 1 ),
                     offset_z
                     ])
                     RoundedCylinder(
-                        r = bottle_r[ x - 1][ y - 1 ] + bottle_clearance,
+                        r = bottle_r[ x - 1 ][ y - 1 ] + bottle_clearance,
                         h = bottle_preview_z,
                         rounding_r = bottle_rounding_r,
                         round_top = false
@@ -99,11 +96,11 @@ module MeghanPillBottleHolders()
             if( render_mode == "preview" )
             {
                 translate([
-                    calculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_x, bottle_clearance, x - 1 ),
-                    calculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_y, bottle_clearance, y - 1 ),
+                    CalculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_x, bottle_clearance, x - 1 ),
+                    CalculateEquallySpacedOffsetRadiuses( [ bottle_1_r, bottle_2_r ], size_y, bottle_clearance, y - 1 ),
                     offset_z + DIFFERENCE_CLEARANCE
                     ])
-                    BottlePreview( bottle_r[ x - 1][ y - 1 ] );
+                    BottlePreview( bottle_r[ x - 1 ][ y - 1 ] );
             }
         }
     }

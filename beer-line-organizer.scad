@@ -42,17 +42,17 @@ preview_line_length = 100.0;
 
 $fn = $preview ? 128 : 256;
 
-offsets_x = calculateOffsets( cutouts );
+offsets_x = CalculateOffsets( cutouts );
 
-holder_x = sumList( cutouts ) + separator_thickness * ( len( cutouts ) + 1 );
+holder_x = SumList( cutouts ) + separator_thickness * ( len( cutouts ) + 1 );
 holder_y = holder_back_y + max( cutouts ) / 2 + holder_wraparound_y;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // functions
 
-function calculateOffsets( list ) = [
+function CalculateOffsets( list ) = [
     for( i = [ 0 : len( list ) - 1 ] )
-        sumTo( list, i )
+        SumTo( list, i )
             + separator_thickness * ( i + 1 )
             + list[ i ] / 2
     ];

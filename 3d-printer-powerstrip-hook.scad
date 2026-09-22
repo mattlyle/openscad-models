@@ -134,11 +134,11 @@ module PowerstripHolder()
             wall_width + hook_z,
             rounding_r
             );
-    
+
     cord_hook_total_x = powerstrip_cord_r * 2
         + cord_clip_wall_width * 2
         + clearance * 2;
-    
+
     cord_hook_total_y = powerstrip_y
         - powerstrip_cord_r * 2
         + cord_clip_wall_width * 2

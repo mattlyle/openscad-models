@@ -18,7 +18,7 @@ module SmallCommandStrip()
             cylinder(
                 r = r,
                 h = SMALL_COMMAND_STRIP_Z
-            );
+                );
     }
 }
 

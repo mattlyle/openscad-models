@@ -25,6 +25,7 @@ quad_center_r = 5.4;
 
 render_mode = "preview";
 // render_mode = "print";
+// render_mode = "print-corner";
 
 board_size_x = 10;
 board_size_y = 10;
@@ -71,11 +72,11 @@ if( render_mode == "preview" )
 {
     MultiboardDrillJig();
 
-    #translate([ -100, 0, 0 ])
+    # translate([ -100, 0, 0 ])
         rotate([ 0, 0, 45 ])
             MultiboardCombinedQuadSnap();
 
-    #translate([ 125, 275, 18 ])
+    # translate([ 125, 275, 18 ])
         rotate([ 180, 0, 0 ])
             import( file = "../assets/multiboard - 10x2 MU - Mounting Template.stl" );
 }
@@ -149,8 +150,8 @@ module MultiboardDrillJig()
                 + strut_bottom_width / 2
                 + strut_bottom_height / 2
                 - corner_edge_length,
-            false
-            );
+                false
+                );
 
     // top strut
     translate([
@@ -249,7 +250,7 @@ module _MultiboardDrillJigCorner()
                     r = vacuum_adapter_rounding_r,
                     round_bottom = false,
                     round_top = true,
-                    round_back = false,
+                    round_back = false
                     );
         }
 
@@ -339,7 +340,7 @@ module _VacuumAdapterChuteOutsidePoint( is_near, is_left, is_bottom )
     big_edge = vacuum_adapter_r2 + vacuum_adapter_clearance + vacuum_adapter_wall_width;
 
     r = is_bottom
-        ? 0.01
+        ? DIFFERENCE_CLEARANCE
         : vacuum_adapter_rounding_r;
 
     x = is_near
@@ -349,11 +350,11 @@ module _VacuumAdapterChuteOutsidePoint( is_near, is_left, is_bottom )
     y = is_left
         ? -small_edge
         : -vacuum_adapter_chute_depth;
-    
+
     z = is_bottom
         ? r
         : ( is_left ? jig_z : big_edge * 2 ) - r;
-    
+
     // TODO: we should remove the left or right side of the sphere appropriately
 
     translate([ x, y, z ])
@@ -365,7 +366,7 @@ module _VacuumAdapterChuteOutsidePoint( is_near, is_left, is_bottom )
 module _VacuumAdapterChuteInside()
 {
     n = $fn;
-    
+
     angles = [ for( i = [ 0 : n - 1 ] ) i * 360 / n ];
 
     drill_bit_cutout_pts = [
