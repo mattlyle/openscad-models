@@ -4,9 +4,9 @@ include <modules/utils.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-powerstrip_x = 120;
+powerstrip_x = 121;
 powerstrip_y = 37;
-powerstrip_z = 328;
+powerstrip_z = 330;
 
 powerstrip_cord_r = 10.0 / 2;
 
