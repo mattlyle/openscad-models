@@ -1,5 +1,4 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-// include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-extended.scad>
 
 include <../modules/rounded-cube.scad>
 include <../modules/triangular-prism.scad>
@@ -92,13 +91,7 @@ else
 module MultimeterHolder()
 {
     // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        filled_in = true,
-        lip_settings = LipSettings( lipStyle = "none" )
-        );
+    GridfinityFilledCup( cup_x, cup_y, cup_z );
 
     back_width = multimeter_main_body_x + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
     back_depth = multimeter_main_body_y + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;

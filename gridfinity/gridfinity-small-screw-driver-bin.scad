@@ -1,5 +1,4 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-// include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-extended.scad>
 
 include <../modules/rounded-cube.scad>
 // include <../modules/text-label.scad>
@@ -75,13 +74,7 @@ else
 module SmallScrewDriverBinHolder()
 {
     // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        filled_in = true,
-        lip_settings = LipSettings( lipStyle = "none" )
-        );
+    GridfinityFilledCup( cup_x, cup_y, cup_z );
 
     render()
     {

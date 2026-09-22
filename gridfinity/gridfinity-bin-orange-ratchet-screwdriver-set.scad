@@ -1,5 +1,4 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-extended.scad>
 
 include <../modules/triangular-prism.scad>
 include <../modules/rounded-cube.scad>
@@ -122,13 +121,7 @@ module OrangeRatchetScrewDriverTextLabel()
 
 module OrangeRatchetScrewDriverHolder()
 {
-    gridfinity_cup(
-        width = cells_x,
-        depth = cells_y,
-        height = cells_z,
-        filled_in = true,
-        lip_settings = LipSettings( lipStyle = "none" )
-    );
+    GridfinityFilledCup( cells_x, cells_y, cells_z );
 
     render()
     {

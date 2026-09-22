@@ -1,6 +1,4 @@
-// use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity.scad>
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-extended.scad>
 
 use <../modules/triangular-prism.scad>
 
@@ -102,13 +100,7 @@ else
 module HuskyScrewdriverHolder()
 {
     // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        filled_in = true,
-        lip_settings = LipSettings( lipStyle = "none" )
-        );
+    GridfinityFilledCup( cup_x, cup_y, cup_z );
 
     combined_x = screwdriver_bits_base_x + screwdriver_holder_r * 2;
 
