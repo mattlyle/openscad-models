@@ -59,7 +59,7 @@ function _GetListOfLineHeights( text_lines, font_size, font ) =
         ];
 
 function CalculateMultilineTextLabelTotalX( text_lines, font_size, font, fixed_line_spacing ) =
-    sumList( _GetListOfLineHeights( text_lines, font_size, font ) ) + fixed_line_spacing * ( len( text_lines ) + 1 );
+    SumList( _GetListOfLineHeights( text_lines, font_size, font ) ) + fixed_line_spacing * ( len( text_lines ) + 1 );
 
 module MultilineTextLabel(
     text_lines,
