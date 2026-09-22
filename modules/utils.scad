@@ -20,30 +20,30 @@ module BuildPlatePreview()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // list, sum and spacing functions
 
-function reverse( list ) = [ for( i = [ len( list ) - 1 : -1 : 0 ] ) list[ i ] ];
+function Reverse( list ) = [ for( i = [ len( list ) - 1 : -1 : 0 ] ) list[ i ] ];
 
 // sum up the values in the given list
-function sumList( list ) = _sumListHelper( list, 0 );
-function _sumListHelper( list, n ) = n >= len( list ) ? 0 : list[ n ] + _sumListHelper( list, n + 1 );
+function SumList( list ) = _SumListHelper( list, 0 );
+function _SumListHelper( list, n ) = n >= len( list ) ? 0 : list[ n ] + _SumListHelper( list, n + 1 );
 
 // sum up the values in the given list from indicies 0..i (inclusive)
-function sumTo( list, i ) = _sumToHelper( list, i, 0 );
-function _sumToHelper( list, i, n ) = n >= i || n >= len( list ) ? 0 : list[ n ] + _sumToHelper( list, i, n + 1 );
+function SumTo( list, i ) = _SumToHelper( list, i, 0 );
+function _SumToHelper( list, i, n ) = n >= i || n >= len( list ) ? 0 : list[ n ] + _SumToHelper( list, i, n + 1 );
 
-function getListAtIndex( list, i ) = [ for ( entry = list ) entry[ i ] ];
+function GetListAtIndex( list, i ) = [ for ( entry = list ) entry[ i ] ];
 
 // adds val_to_add to each index of the given list, returning a new list
-function addValueToEachIndex( list, val_to_add ) = [ for( entry = list ) entry + val_to_add ];
+function AddValueToEachIndex( list, val_to_add ) = [ for( entry = list ) entry + val_to_add ];
 
 // for each size in list, adds up the size and the equally spaces them in the total_size with the given clearance factored in
-function calculateEquallySpacedOffset( list, total_size, clearance, i ) =
-    let( sizes_with_clearance = addValueToEachIndex( list, clearance * 2 ) )
-    let( spacing = ( total_size - sumList( sizes_with_clearance ) ) / ( len( list ) + 1 ) )
-    spacing * ( i + 1 ) + sumTo( sizes_with_clearance, i );
+function CalculateEquallySpacedOffset( list, total_size, clearance, i ) =
+    let( sizes_with_clearance = AddValueToEachIndex( list, clearance * 2 ) )
+    let( spacing = ( total_size - SumList( sizes_with_clearance ) ) / ( len( list ) + 1 ) )
+    spacing * ( i + 1 ) + SumTo( sizes_with_clearance, i );
 
-// function calculateEquallySpacedOffset( total_size, count, i, item_size ) = ( i + 1 ) / ( count + 1 ) * total_size - item_size / 2;
+// function CalculateEquallySpacedOffset( total_size, count, i, item_size ) = ( i + 1 ) / ( count + 1 ) * total_size - item_size / 2;
 
-function calculateOffsetToCenter( total_size, item_size ) = total_size / 2 - item_size / 2;
+function CalculateOffsetToCenter( total_size, item_size ) = total_size / 2 - item_size / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // rotate so that we can draw an object from one point to the next
@@ -77,7 +77,7 @@ function RotatePointAboutPoint( rotateThisPoint, aboutThisPoint, angle ) =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // returns [ m, b ] in slope intercept form y = mx + b
 
-function findSlopeIntercept( pointA, pointB ) =
+function FindSlopeIntercept( pointA, pointB ) =
     let( m = ( pointB.y - pointA.y ) / ( pointB.x - pointA.x ) )
     let( b = pointA.y - m * pointA.x )
     [ m, b ];

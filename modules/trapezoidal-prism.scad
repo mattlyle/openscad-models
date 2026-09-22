@@ -9,7 +9,7 @@ module TrapezoidalPrism( x_top, x_bottom, y, z, center = true )
                 [ x_bottom / 2, -y / 2, 0 ],   // 1: bottom back right
                 [ x_bottom / 2, y / 2, 0 ],    // 2: bottom front right
                 [ -x_bottom / 2, y / 2, 0 ],   // 3: bottom front left
-                
+
                 [ -x_top / 2, -y / 2, z ],  // 4: top back left
                 [ x_top / 2, -y / 2, z ],   // 5: top back right
                 [ x_top / 2, y / 2, z ],    // 6: top front right

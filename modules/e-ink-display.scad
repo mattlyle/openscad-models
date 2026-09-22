@@ -21,10 +21,10 @@ e_ink_display_circuit_board_height = 84.2; // spec: 84.5
 e_ink_display_circuit_board_width = 46.5; // spec: 47.5
 e_ink_display_circuit_board_depth = 1.6;
 e_ink_display_circuit_board_backside_clearance_depth = 2.0; // clearance for connectors on the backside
-e_ink_display_circuit_board_rounding_radius = 0.75;
+e_ink_display_circuit_board_rounding_r = 0.75;
 
 e_ink_display_circuit_board_screw_hole_corner_offset = 2.5; // the offset from the edge to the center of the corner screw hole
-e_ink_display_circuit_board_screw_hole_radius = 1.35; // spec: 1.5
+e_ink_display_circuit_board_screw_hole_r = 1.35; // spec: 1.5
 
 e_ink_display_circuit_board_horizonal_support_offset = 50.5; // the offset from the bottom to the bottom of the support
 e_ink_display_circuit_board_horizonal_support_height = 3.5;
@@ -37,6 +37,11 @@ e_ink_display_screen_usable_width = e_ink_display_screen_width - e_ink_display_s
 
 e_ink_display_circuit_board_combined_depth = e_ink_display_circuit_board_depth + e_ink_display_circuit_board_backside_clearance_depth;
 
+// preview colors
+e_ink_display_circuit_board_color = [ 0.0, 0.4, 0.5 ];
+e_ink_display_screen_color = [ 0.7, 0.7, 0.7 ];
+e_ink_display_screen_usable_color = [ 0.4, 0.4, 0.4 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module EInkDisplay( hide_clearance_areas = true )
@@ -44,27 +49,27 @@ module EInkDisplay( hide_clearance_areas = true )
     // circuit board
     translate([ 0, 0, e_ink_display_circuit_board_backside_clearance_depth ])
     {
-        color([ 0.0, 0.4, 0.5 ])
+        color( e_ink_display_circuit_board_color )
         {
             render()
             {
                 difference()
                 {
                     RoundedCube(
-                        size = [ e_ink_display_circuit_board_width, e_ink_display_circuit_board_height, e_ink_display_circuit_board_depth ],
-                        center = false,
-                        r = e_ink_display_circuit_board_rounding_radius,
-                        fn = 50 );
+                        e_ink_display_circuit_board_width,
+                        e_ink_display_circuit_board_height,
+                        e_ink_display_circuit_board_depth,
+                        r = e_ink_display_circuit_board_rounding_r );
 
                     // screw holes
                     translate([ e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
-                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
                     translate([ e_ink_display_circuit_board_width - e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
-                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
                     translate([ e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_height - e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
-                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
                     translate([ e_ink_display_circuit_board_width - e_ink_display_circuit_board_screw_hole_corner_offset, e_ink_display_circuit_board_height - e_ink_display_circuit_board_screw_hole_corner_offset, 0 ])
-                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_radius, $fn = 50 );
+                        cylinder( h = e_ink_display_circuit_board_depth, r = e_ink_display_circuit_board_screw_hole_r, $fn = 50 );
                 }
             }
         }
@@ -81,11 +86,11 @@ module EInkDisplay( hide_clearance_areas = true )
     translate([ e_ink_display_screen_offset_width, e_ink_display_screen_offset_height, e_ink_display_circuit_board_backside_clearance_depth + e_ink_display_circuit_board_depth ])
     {
         // hardware (including bezel)
-        color([ 0.7, 0.7, 0.7 ])
+        color( e_ink_display_screen_color )
             cube([ e_ink_display_screen_width, e_ink_display_screen_height, e_ink_display_screen_depth ]);
 
         // useful display (ignore bezel)
-        color([ 0.4, 0.4, 0.4 ])
+        color( e_ink_display_screen_usable_color )
             translate([ e_ink_display_screen_bezel_width, e_ink_display_screen_bezel_bottom, e_ink_display_screen_depth ])
                 cube([ e_ink_display_screen_usable_width, e_ink_display_screen_usable_height, 0.01 ]);
     }

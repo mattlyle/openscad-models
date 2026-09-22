@@ -26,7 +26,7 @@ screw_hole_r = 3.86 / 2;
 screw_washer_r = 8.9 / 2;
 
 nut_r = 7.0 / 2;
-nut_h = 3.0;
+// nut_h = 3.0;
 
 gate_screw_separation_spool_side_z = 19.5;
 
@@ -74,7 +74,7 @@ vertical_post_preview_above_z = 80;
 horizontal_post_preview_x = 60;
 horizontal_post_weld_preview_size = 6;
 rear_post_preview_y = 60;
-rear_post_weld_preview_size = 6;
+// rear_post_weld_preview_size = 6;
 rear_post_angle = -35;
 latch_preview_y = -20;
 latch_preview_top_z = 50;
@@ -160,6 +160,7 @@ function BarY( mode ) =
 //         , "-", version_tag );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
 if( render_mode == "preview" )
 {
@@ -290,13 +291,13 @@ else if( render_mode == "print-spool-side" )
         DeckGateBracket( MODE_SPOOL_SIDE, true );
 
         // back
-        translate([ 0, preview_separation, -spool_side_back_side_reduction_z ])
+        translate([ 0, preview_separation, -spool_back_cutouts[ 1 ] ])
             DeckGateBracket( MODE_SPOOL_SIDE, false );
     }
 }
 else
 {
-    assert( false, str( "Invalid render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,7 +344,7 @@ module DeckGateBracket( mode, is_front )
     {
         union()
         {
-            RoundedCubeAlt2(
+            RoundedCube(
                 bracket_x,
                 bracket_y,
                 bracket_z,
@@ -680,7 +681,7 @@ module DeckGateLatchPreview()
         -latch_bend_y + latch_y,
         ( latch_z - latch_bend_z ) / 2
         ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 latch_total_x - latch_main_x - latch_pyramid_x,
                 latch_bend_y,
                 latch_bend_z,
@@ -715,7 +716,7 @@ module DeckGateBracketFlange( is_left, mode, is_front )
         : mode == MODE_LATCH_SIDE_BOTTOM
             ? above_cutout_latch_side_z + ( bracket_back_z - above_cutout_latch_side_z ) / 2
             : bracket_back_z * flange_screw_hole_top_percent_z;
-    
+
     flange_screw_hole_bottom_z =  mode == MODE_LATCH_SIDE_TOP
         ? below_cutout_latch_side_z / 2
         : mode == MODE_LATCH_SIDE_BOTTOM
@@ -726,10 +727,10 @@ module DeckGateBracketFlange( is_left, mode, is_front )
     // # translate([0,0,below_cutout_latch_side_z]) sphere(r=1);
     // # translate([0,0,above_cutout_latch_side_z]) sphere(r=1);
     // # translate([0,0,bracket_back_z]) sphere(r=1);
- 
+
     difference()
     {
-        RoundedCubeAlt2(
+        RoundedCube(
             flange_width,
             bracket_thickness + flange_shroud_extra,
             bracket_back_z,

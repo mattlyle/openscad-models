@@ -69,10 +69,10 @@ module MultilineTextLabel(
     color = [ 0, 0, 0 ]
     )
 {
-    reversed_text_lines = reverse( text_lines );
+    reversed_text_lines = Reverse( text_lines );
 
     line_heights = _GetListOfLineHeights( reversed_text_lines, font_size = font_size, font = font );
-    line_height_total = sumList( line_heights );
+    line_height_total = SumList( line_heights );
 
     line_spacing = fixed_line_spacing > 0
         ? fixed_line_spacing
@@ -86,7 +86,7 @@ module MultilineTextLabel(
 
         line_metrics = textmetrics( text = line, size = font_size, font = font ).size;
 
-        translate([ 0, sumTo( line_heights, i ) + line_spacing * ( i + 1 ), 0 ])
+        translate([ 0, SumTo( line_heights, i ) + line_spacing * ( i + 1 ), 0 ])
             CenteredTextLabel(
                 text_string = line,
                 centered_in_area_x = centered_in_area_x,

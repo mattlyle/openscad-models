@@ -11,7 +11,6 @@ wire_spacing = 23.1 - wire_diameter;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
 // render_mode = "print";
 
@@ -33,7 +32,7 @@ rounding_r = 4;
 wire_cutout_multiplier = 1.75;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated
+// calculations
 
 $fn = $preview ? 16 : 64;
 
@@ -77,10 +76,11 @@ magnet_cupbase_xy =
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function CalculateWireX( wire_n ) = 
+function CalculateWireX( wire_n ) =
     wire_n * wire_spacing + first_wire_offset_x;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
 if( render_mode == "preview" )
 {
@@ -107,7 +107,7 @@ else if( render_mode == "print" )
 }
 else
 {
-    assert( false, str( "invalid render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ module WireRackGridfinityBaseplate()
         difference()
         {
             translate([ offset_size_x, 0, 0 ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     total_size_x,
                     total_size_y,
                     base_height,

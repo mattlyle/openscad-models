@@ -5,17 +5,31 @@ include <../modules/rounded-cube.scad>
 // include <../modules/text-label.scad>
 include <../modules/svg.scad>
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// measurements
+
+original_caliper_box_x = 91.4;
+original_caliper_box_y = 248;
+original_caliper_box_z = 26.3;
+
+larger_caliper_box_x = 127.2;
+larger_caliper_box_y = 425;
+larger_caliper_box_z = 32.1;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
-// render_mode = "original-bin-only";
-// render_mode = "larger-bin-only";
+// render_mode = "print-bin-original";
+// render_mode = "print-bin-larger";
+
+label_text_line_1 = "Digital";
+label_text_line_2 = "Calipers";
+label_font = "Verdana:style=Bold";
 
 caliper_box_holder_thickness = 1.5;
 
-corner_rounding_radius = 1.0;
+corner_rounding_r = 1.0;
 
 clearance = 2.5;
 
@@ -47,19 +61,12 @@ larger_caliper_box_holder_svg_scale_vector = [ 0.4, 0.4, 1.0 ];
 larger_caliper_box_holder_svg_rotation_z = 10;
 larger_caliper_box_holder_svg_offset_vector = [ 5, -2, 0 ];
 
-////////////////////////////////////////////////////////////////////////////////
-// measurements
+label_color = [ 0, 0, 0 ];
 
-original_caliper_box_x = 91.4;
-original_caliper_box_y = 248;
-original_caliper_box_z = 26.3;
-
-larger_caliper_box_x = 127.2;
-larger_caliper_box_y = 425;
-larger_caliper_box_z = 32.1;
-
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
+
+$fn = $preview ? 32 : 128;
 
 // original box
 
@@ -81,18 +88,43 @@ larger_caliper_box_holder_offset_x = MultiboardConnectorBackAltXOffset( larger_c
 larger_caliper_box_size_vector = [ larger_caliper_box_x, larger_caliper_box_y, larger_caliper_box_z ];
 larger_caliper_box_holder_size_vector = [ larger_caliper_box_holder_size_x, larger_caliper_box_holder_size_y, larger_caliper_box_holder_size_z ];
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
-// draw a sample multiboard tile
 if( render_mode == "preview" )
 {
+    MultiboardTilePreview();
+    OriginalCaliperBoxHolder();
+    LargerCaliperBoxHolder();
+    CaliperBoxesPreview();
+}
+else if( render_mode == "print-bin-original" )
+{
+    OriginalCaliperBoxHolder();
+}
+else if( render_mode == "print-bin-larger" )
+{
+    LargerCaliperBoxHolder();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// draw a sample multiboard tile
+module MultiboardTilePreview()
+{
     translate([ 0, 0, -multiboard_cell_height ])
-        color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
+        color( workroom_multiboard_color )
             MultiboardMockUpTile( 12, 4 );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // draw the original holder
-if( render_mode == "preview" || render_mode == "original-bin-only" )
+module OriginalCaliperBoxHolder()
 {
     translate( render_mode == "preview" ? [ ( original_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - original_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
         CaliperBoxHolder(
@@ -106,8 +138,10 @@ if( render_mode == "preview" || render_mode == "original-bin-only" )
             original_caliper_box_holder_svg_scale_vector );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // draw the larger holder
-if( render_mode == "preview" || render_mode == "larger-bin-only" )
+module LargerCaliperBoxHolder()
 {
     translate( render_mode == "preview" ? [ ( larger_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - larger_caliper_box_holder_offset_x, 0, 0 ] : [ 0, 0, 0 ])
         CaliperBoxHolder(
@@ -121,8 +155,10 @@ if( render_mode == "preview" || render_mode == "larger-bin-only" )
             larger_caliper_box_holder_svg_scale_vector );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // draw a preview of the boxes inside
-if( render_mode == "preview" )
+module CaliperBoxesPreview()
 {
     // original
     translate([ ( original_caliper_box_holder_cell_offset_x + 1 ) * multiboard_cell_size - original_caliper_box_holder_offset_x + caliper_box_holder_thickness + clearance, caliper_box_holder_thickness, multiboard_connector_back_z ])
@@ -133,7 +169,7 @@ if( render_mode == "preview" )
         CaliperBox( larger_caliper_box_size_vector );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CaliperBoxHolder(
     holder_size_vector,
@@ -155,29 +191,31 @@ module CaliperBoxHolder(
             // join section
             difference()
             {
-                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
+                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_r * 2 ])
                     RoundedCube(
-                        size = [ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_radius * 3 ],
-                        r = corner_rounding_radius,
-                        fn = 36
+                        holder_size_vector[ 0 ],
+                        holder_size_vector[ 1 ],
+                        corner_rounding_r * 3,
+                        r = corner_rounding_r
                         );
-                
+
                 // cut off the bottom
-                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_radius * 2 ])
-                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_radius ]);
-                
+                translate([ 0, 0, multiboard_connector_back_z - corner_rounding_r * 2 ])
+                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r ]);
+
                 // cut off the top
                 translate([ 0, 0, multiboard_connector_back_z ])
-                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_radius ]);
+                    cube([ holder_size_vector[ 0 ], holder_size_vector[ 1 ], corner_rounding_r ]);
             }
 
             difference()
             {
                 // start with a rounded box
                 RoundedCube(
-                    size = [ holder_size_vector[ 0 ], holder_size_vector[ 1 ], holder_size_vector[ 2 ] ],
-                    r = corner_rounding_radius,
-                    fn = 36
+                    holder_size_vector[ 0 ],
+                    holder_size_vector[ 1 ],
+                    holder_size_vector[ 2 ],
+                    r = corner_rounding_r
                     );
 
                 // remove the back
@@ -190,27 +228,27 @@ module CaliperBoxHolder(
         }
     }
 
-    color([ 0, 0, 0 ])
+    color( label_color )
         translate([ text_label_1_offset_vector[ 0 ], text_label_1_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             linear_extrude( 0.5 )
-                text( "Digital", size = text_label_font_size, font = "Verdana:style=Bold" ); // TODO: swap with module
-    color([ 0, 0, 0 ])
+                text( label_text_line_1, size = text_label_font_size, font = label_font ); // TODO: swap with module
+    color( label_color )
         translate([ text_label_2_offset_vector[ 0 ], text_label_2_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             linear_extrude( 0.5 )
-                text( "Calipers", size = text_label_font_size, font = "Verdana:style=Bold" ); // TODO: swap with module
+                text( label_text_line_2, size = text_label_font_size, font = label_font ); // TODO: swap with module
 
-    color([ 0, 0, 0 ])
+    color( label_color )
         translate([ svg_offset_vector[ 0 ], svg_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             scale( svg_scale_size_vector )
                 rotate([ 0, 0, svg_offset_rotation_z ])
-                    SVG( "../../assets/calipers-svgrepo-com.svg" );
+                    SVG( "../assets/calipers-svgrepo-com.svg" );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CaliperBox( box_size_vector )
 {
     % cube( box_size_vector );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
