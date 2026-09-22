@@ -80,13 +80,13 @@ module PowerCordHolder()
         PowerCordHolderPeg( BOTTOM_RIGHT);
 
     translate([ 0, 0, holder_z_offset ])
-        RoundedCubeAlt2( holder_x, edge_wall_width, edge_wall_z, round_bottom = false, round_top = true );
+        RoundedCube( holder_x, edge_wall_width, edge_wall_z, round_bottom = false, round_top = true );
     translate([ 0, 0, holder_z_offset ])
-        RoundedCubeAlt2( edge_wall_width, holder_y, edge_wall_z, round_bottom = false, round_top = true );
+        RoundedCube( edge_wall_width, holder_y, edge_wall_z, round_bottom = false, round_top = true );
     translate([ 0, holder_y - edge_wall_width, holder_z_offset ])
-        RoundedCubeAlt2( holder_x, edge_wall_width, edge_wall_z, round_bottom = false, round_top = true );
+        RoundedCube( holder_x, edge_wall_width, edge_wall_z, round_bottom = false, round_top = true );
     translate([ holder_x - edge_wall_width, 0, holder_z_offset ])
-        RoundedCubeAlt2( edge_wall_width, holder_y, edge_wall_z, round_bottom = false, round_top = true );
+        RoundedCube( edge_wall_width, holder_y, edge_wall_z, round_bottom = false, round_top = true );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

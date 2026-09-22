@@ -27,6 +27,18 @@ red_craftsman_8m26ft_clip_z_offset = 18.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
+render_mode = "preview";
+// render_mode = "print-bin";
+// render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
+
+blue_black_mileseey_laser_label_text = "Mileseey Laser";
+red_craftsman_8m26ft_label_text = "Craftsman 26ft";
+label_font_size = 6;
+
 show_previews = false;
 
 cells_x = 3;
@@ -44,7 +56,9 @@ holder_offset_y = 20;
 holder_offset_x = 3.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
+
+$fn = $preview ? 32 : 128;
 
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
@@ -65,95 +79,130 @@ red_craftsman_8m26ft_holder_offset_x = base_x - red_craftsman_8m26ft_holder_x - 
 text_offset_y = 8.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
-GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
-
-// text
-blue_black_mileseey_laser_holder_offset_x_fake_center = 3.0;
-translate([ blue_black_mileseey_laser_holder_offset_x + blue_black_mileseey_laser_holder_offset_x_fake_center, text_offset_y, holder_z ])
-    linear_extrude( 0.5 )
-        text( "Mileseey Laser", size = 6 );
-
-translate([ red_craftsman_8m26ft_holder_offset_x, text_offset_y, holder_z ])
-    linear_extrude( 0.5 )
-        text( "Craftsman 26ft", size = 6 );
-
-// blue/black mileseey
-translate([ blue_black_mileseey_laser_holder_offset_x, holder_offset_y, holder_z ])
+if( render_mode == "preview" )
 {
-    union()
-    {
-        // near wall
-        translate([ blue_black_mileseey_laser_clip_x, 0, 0 ])
-            cube([ blue_black_mileseey_laser_holder_x, lip_thickness, lip_height ]);
-
-        // right wall
-        translate([ blue_black_mileseey_laser_clip_x + blue_black_mileseey_laser_holder_x - lip_thickness, 0, 0 ])
-            cube([ lip_thickness, blue_black_mileseey_laser_holder_y, lip_height ]);
-
-        // far wall
-        translate([ blue_black_mileseey_laser_clip_x, blue_black_mileseey_laser_holder_y - lip_thickness, 0 ])
-            cube([ blue_black_mileseey_laser_holder_x, lip_thickness, lip_height ]);
-
-        // left wall
-        render()
-        {
-            difference()
-            {
-                translate([ blue_black_mileseey_laser_clip_x, 0, 0 ])
-                    cube([ lip_thickness, blue_black_mileseey_laser_holder_y, lip_height ]);
-                translate([ blue_black_mileseey_laser_clip_x, blue_black_mileseey_laser_clip_y_offset + lip_thickness, blue_black_mileseey_laser_clip_z_offset - clearance ])
-                    cube([ lip_thickness, blue_black_mileseey_laser_clip_y + clearance * 2, blue_black_mileseey_laser_clip_z ]);
-            }
-        }
-    }
-
-    if( show_previews )
-    {
-        translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
-            blue_black_mileseey_laser_tape_measure();
-    }
+    TapeMeasuresHolder();
+    TapeMeasuresTextLabels();
+}
+else if( render_mode == "print-bin" )
+{
+    TapeMeasuresHolder();
+}
+else if( render_mode == "print-text" )
+{
+    TapeMeasuresTextLabels();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        TapeMeasuresHolder();
+    color( label_color )
+        TapeMeasuresTextLabels();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
-// red craftsman
-translate([ red_craftsman_8m26ft_holder_offset_x, holder_offset_y, holder_z ])
-{
-    union()
-    {
-        // near wall
-        cube([ red_craftsman_8m26ft_holder_x, lip_thickness, lip_height ]);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // right wall
-        render()
+module TapeMeasuresHolder()
+{
+    GridfinityBase( cells_x, cells_y, top_z, round_top = false, center = false );
+
+    // blue/black mileseey
+    translate([ blue_black_mileseey_laser_holder_offset_x, holder_offset_y, holder_z ])
+    {
+        union()
         {
-            difference()
+            // near wall
+            translate([ blue_black_mileseey_laser_clip_x, 0, 0 ])
+                cube([ blue_black_mileseey_laser_holder_x, lip_thickness, lip_height ]);
+
+            // right wall
+            translate([ blue_black_mileseey_laser_clip_x + blue_black_mileseey_laser_holder_x - lip_thickness, 0, 0 ])
+                cube([ lip_thickness, blue_black_mileseey_laser_holder_y, lip_height ]);
+
+            // far wall
+            translate([ blue_black_mileseey_laser_clip_x, blue_black_mileseey_laser_holder_y - lip_thickness, 0 ])
+                cube([ blue_black_mileseey_laser_holder_x, lip_thickness, lip_height ]);
+
+            // left wall
+            render()
             {
-                translate([ red_craftsman_8m26ft_holder_x - lip_thickness, 0, 0 ])
-                    cube([ lip_thickness, red_craftsman_8m26ft_holder_y, lip_height ]);
-                translate([ red_craftsman_8m26ft_holder_x - lip_thickness, red_craftsman_8m26ft_clip_y_offset + lip_thickness, red_craftsman_8m26ft_clip_z_offset - clearance ])
-                    cube([ lip_thickness, red_craftsman_8m26ft_clip_y + clearance * 2, red_craftsman_8m26ft_clip_z ]);
+                difference()
+                {
+                    translate([ blue_black_mileseey_laser_clip_x, 0, 0 ])
+                        cube([ lip_thickness, blue_black_mileseey_laser_holder_y, lip_height ]);
+                    translate([ blue_black_mileseey_laser_clip_x, blue_black_mileseey_laser_clip_y_offset + lip_thickness, blue_black_mileseey_laser_clip_z_offset - clearance ])
+                        cube([ lip_thickness, blue_black_mileseey_laser_clip_y + clearance * 2, blue_black_mileseey_laser_clip_z ]);
+                }
             }
         }
 
-        // far wall
-        translate([ 0, red_craftsman_8m26ft_holder_y - lip_thickness, 0 ])
-            cube([ red_craftsman_8m26ft_holder_x, lip_thickness, lip_height ]);
-
-        // left wall
-        translate([ 0, 0, 0 ])
-            cube([ lip_thickness, red_craftsman_8m26ft_holder_y, lip_height ]);
+        if( render_mode == "preview" && show_previews )
+        {
+            translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
+                BlueBlackMileseeyLaserTapeMeasure();
+        }
     }
 
-    if( show_previews )
+    // red craftsman
+    translate([ red_craftsman_8m26ft_holder_offset_x, holder_offset_y, holder_z ])
     {
-        translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
-            red_craftsman_8m_26ft_tape_measure();
+        union()
+        {
+            // near wall
+            cube([ red_craftsman_8m26ft_holder_x, lip_thickness, lip_height ]);
+
+            // right wall
+            render()
+            {
+                difference()
+                {
+                    translate([ red_craftsman_8m26ft_holder_x - lip_thickness, 0, 0 ])
+                        cube([ lip_thickness, red_craftsman_8m26ft_holder_y, lip_height ]);
+                    translate([ red_craftsman_8m26ft_holder_x - lip_thickness, red_craftsman_8m26ft_clip_y_offset + lip_thickness, red_craftsman_8m26ft_clip_z_offset - clearance ])
+                        cube([ lip_thickness, red_craftsman_8m26ft_clip_y + clearance * 2, red_craftsman_8m26ft_clip_z ]);
+                }
+            }
+
+            // far wall
+            translate([ 0, red_craftsman_8m26ft_holder_y - lip_thickness, 0 ])
+                cube([ red_craftsman_8m26ft_holder_x, lip_thickness, lip_height ]);
+
+            // left wall
+            translate([ 0, 0, 0 ])
+                cube([ lip_thickness, red_craftsman_8m26ft_holder_y, lip_height ]);
+        }
+
+        if( render_mode == "preview" && show_previews )
+        {
+            translate([ lip_thickness + clearance, lip_thickness + clearance, 0 ])
+                RedCraftsman8m26ftTapeMeasure();
+        }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module red_craftsman_8m_26ft_tape_measure()
+module TapeMeasuresTextLabels()
+{
+    blue_black_mileseey_laser_holder_offset_x_fake_center = 3.0;
+    translate([ blue_black_mileseey_laser_holder_offset_x + blue_black_mileseey_laser_holder_offset_x_fake_center, text_offset_y, holder_z ])
+        linear_extrude( 0.5 )
+            text( blue_black_mileseey_laser_label_text, size = label_font_size );
+
+    translate([ red_craftsman_8m26ft_holder_offset_x, text_offset_y, holder_z ])
+        linear_extrude( 0.5 )
+            text( red_craftsman_8m26ft_label_text, size = label_font_size );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module RedCraftsman8m26ftTapeMeasure()
 {
     % cube([ red_craftsman_8m26ft_x, red_craftsman_8m26ft_y, red_craftsman_8m26ft_z ]);
 
@@ -163,7 +212,7 @@ module red_craftsman_8m_26ft_tape_measure()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module blue_black_mileseey_laser_tape_measure()
+module BlueBlackMileseeyLaserTapeMeasure()
 {
     % translate([ blue_black_mileseey_laser_clip_x, 0, 0 ])
         cube([ blue_black_mileseey_laser_x, blue_black_mileseey_laser_y, blue_black_mileseey_laser_z ]);

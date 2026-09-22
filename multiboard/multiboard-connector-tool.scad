@@ -1,10 +1,22 @@
-use <../../3rd-party/MCAD/regular_shapes.scad>
+use <MCAD/regular_shapes.scad>
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// measurements
+
+connector_diameter = 22.5;
+connector_full_depth = 13.2;
+connector_thread_depth = 6.0;
+
+peg_depth = 1.7;
+peg_diameter = 5.8;
+peg_offset = 5.0;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-draw_v1 = false;
-draw_v2 = true;
+render_mode = "preview";
+// render_mode = "print-v1";
+// render_mode = "print-v2";
 
 box_x = 35;
 box_y = 35;
@@ -12,26 +24,48 @@ box_z = 15;
 
 measurement_tolerance = 0.5;
 
-holder_radius = 15;
-v2_offset_x = 60;
+holder_r = 15;
+v2_offset_x = 60; // spacing between v1 and v2 in the preview
 v2_box_z = 20;
 
-////////////////////////////////////////////////////////////////////////////////
-// measurements
+// preview colors for the two alignment pegs
+peg_1_color = [ 0.5, 0, 0 ];
+peg_2_color = [ 0, 0, 0.5 ];
 
-connector_diameter = 22.5;
-connector_full_depth = 13.2;
-connector_thread_depth = 6.0;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// calculations
+
+$fn = $preview ? 32 : 128;
+
 connector_handle_depth = connector_full_depth - connector_thread_depth;
 
-peg_depth = 1.7;
-peg_diameter = 5.8;
-peg_offset = 5.0;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
-////////////////////////////////////////////////////////////////////////////////
-// v1
+if( render_mode == "preview" )
+{
+    ConnectorToolV1();
 
-if( draw_v1 )
+    translate([ v2_offset_x, 0, 0 ])
+        ConnectorToolV2();
+}
+else if( render_mode == "print-v1" )
+{
+    ConnectorToolV1();
+}
+else if( render_mode == "print-v2" )
+{
+    ConnectorToolV2();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// v1: square box
+module ConnectorToolV1()
 {
     render()
     {
@@ -45,43 +79,40 @@ if( draw_v1 )
         }
     }
 
-    color([ 0.5, 0, 0 ])
+    color( peg_1_color )
         translate([ box_x / 2 - peg_offset, box_y / 2, box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 
-    color([ 0, 0, 0.5 ])
+    color( peg_2_color )
         translate([ box_x / 2 + peg_offset, box_y / 2, box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// v2
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( draw_v2 )
+// v2: hexagon
+module ConnectorToolV2()
 {
-    translate([ v2_offset_x, 0, 0 ])
+    render()
     {
-        render()
+        difference()
         {
-            difference()
-            {
-                translate([ 0, holder_radius, 0 ])
-                    hexagon_prism( radius = holder_radius, height = v2_box_z ); // NOTE: octagon_prism also works great!                    
-            
-                // cut out the cylinder
-                translate([ 0, holder_radius, v2_box_z - connector_handle_depth ])
-                    cylinder( h = connector_handle_depth, r = connector_diameter / 2 + measurement_tolerance, $fn = 96 );
-            }
+            translate([ 0, holder_r, 0 ])
+                hexagon_prism( radius = holder_r, height = v2_box_z ); // NOTE: octagon_prism also works great!
+
+            // cut out the cylinder
+            translate([ 0, holder_r, v2_box_z - connector_handle_depth ])
+                cylinder( h = connector_handle_depth, r = connector_diameter / 2 + measurement_tolerance, $fn = 96 );
         }
-
-        color([ 0.5, 0, 0 ])
-            translate([ -peg_offset, holder_radius, v2_box_z - connector_handle_depth ])
-                cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
-
-        color([ 0, 0, 0.5 ])
-            translate([ peg_offset, holder_radius, v2_box_z - connector_handle_depth ])
-                cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
     }
+
+    color( peg_1_color )
+        translate([ -peg_offset, holder_r, v2_box_z - connector_handle_depth ])
+            cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
+
+    color( peg_2_color )
+        translate([ peg_offset, holder_r, v2_box_z - connector_handle_depth ])
+            cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

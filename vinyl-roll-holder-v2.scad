@@ -1,5 +1,5 @@
 // include <../3rd-party/BOSL2/std.scad>
-use <../3rd-party/MCAD/regular_shapes.scad>
+use <MCAD/regular_shapes.scad>
 
 include <modules/utils.scad>
 include <modules/screw-connectors.scad>
@@ -13,8 +13,8 @@ include <modules/screw-connectors.scad>
 
 roll_length = 305;
 
-small_roll_radius = 46.0 / 2;
-large_roll_radius = 76.5 / 2;
+small_roll_r = 46.0 / 2;
+large_roll_r = 76.5 / 2;
 
 cube_x = 286;
 cube_y = 286;
@@ -23,18 +23,17 @@ cube_z = 295;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
-render_mode = "debug-preview";
+render_mode = "preview";
 
-// render_mode = "render-face-0-for-printing";
-// render_mode = "render-face-1-for-printing";
-// render_mode = "render-face-2-for-printing";
-// render_mode = "render-face-3-for-printing";
+// render_mode = "print-face-0";
+// render_mode = "print-face-1";
+// render_mode = "print-face-2";
+// render_mode = "print-face-3";
 
-// render_mode = "render-base-0-for-printing";
-// render_mode = "render-base-1-for-printing";
+// render_mode = "print-base-0";
+// render_mode = "print-base-1";
 
-selected_roll_radius = small_roll_radius;
+selected_roll_r = small_roll_r;
 
 // number of rows
 num_rows = 9;
@@ -77,22 +76,27 @@ cols_in_left_hex_groups = 2;
 screw_def = M3x8;
 heated_insert_def = M3x6_INSERT;
 
+// preview colors for the four hex groups
+hex_group_colors = [ [ 0.4, 0, 0 ], [ 0, 0.4, 0 ], [ 0, 0, 0.4 ], [ 0.4, 0, 0.4 ] ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
+$fn = $preview ? 32 : 128;
+
 // formulas: https://www.gigacalculator.com/calculators/hexagon-calculator.php
 
-selected_roll_radius_with_clearance = selected_roll_radius + roll_clearance;
+selected_roll_with_clearance_r = selected_roll_r + roll_clearance;
 
 // this is a different size because as the hexagon goes around
 wall_width_single_z = wall_width_single_x * sqrt( 3 ) / 2;
 
-// selected_roll_radius
-hex_r = selected_roll_radius_with_clearance;
-hex_R = hex_r * 2 / sqrt( 3 );
-// hex_a = hex_R;
+// selected_roll_r
+hex_r = selected_roll_with_clearance_r;
+hex_outer_r = hex_r * 2 / sqrt( 3 );
+// hex_a = hex_outer_r;
 
-hex_size_outer_x = hex_R * 2 + wall_width_single_x * 2;
+hex_size_outer_x = hex_outer_r * 2 + wall_width_single_x * 2;
 hex_size_outer_y = roll_holder_y;
 hex_size_outer_z = hex_r * 2 + wall_width_single_z * 2;
 
@@ -131,7 +135,7 @@ function GetHexGroup( row, col ) =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "debug-preview" )
+if( render_mode == "preview" )
 {
     translate([ CalculateHexagonXOffset( 0, 0 ), cube_y - roll_length, CalculateHexagonZOffset( 0 ) ])
         RollPreview();
@@ -249,43 +253,43 @@ if( render_mode == "debug-preview" )
         }
     }
 }
-else if( render_mode == "render-face-0-for-printing" )
+else if( render_mode == "print-face-0" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 0 );
 }
-else if( render_mode == "render-face-1-for-printing" )
+else if( render_mode == "print-face-1" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 1 );
 }
-else if( render_mode == "render-face-2-for-printing" )
+else if( render_mode == "print-face-2" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 2 );
 }
-else if( render_mode == "render-face-3-for-printing" )
+else if( render_mode == "print-face-3" )
 {
     translate([ 0, 0, roll_holder_y ])
         rotate([ -90, 0, 0 ])
             HolderFace( only_hex_group = 3 );
 }
-else if( render_mode == "render-base-0-for-printing" )
+else if( render_mode == "print-base-0" )
 {
     translate([ 0, 0, wall_width_single_z ])
         HolderBase( 0 );
 }
-else if( render_mode == "render-base-1-for-printing" )
+else if( render_mode == "print-base-1" )
 {
     translate([ 0, 0, wall_width_single_z ])
         HolderBase( 1 );
 }
 else
 {
-    echo( "Unknown render mode: ", render_mode );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -567,12 +571,12 @@ module HolderBase( id = -1 )
                     cube([ cube_x - base_cut_brim_offset_x, base_brim_y * 2 + roll_holder_y, wall_width_single_z ]);
 
                 // front bottom for connection hex
-                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, base_brim_y, -wall_width_single_z ])
-                    cube([ hex_R, roll_holder_y, wall_width_single_z ]);
+                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, base_brim_y, -wall_width_single_z ])
+                    cube([ hex_outer_r, roll_holder_y, wall_width_single_z ]);
 
                 // back bottom for connection hex
-                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, base_brim_y + back_face_offset_y, -wall_width_single_z ])
-                    cube([ hex_R, roll_holder_y, wall_width_single_z ]);
+                translate([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, base_brim_y + back_face_offset_y, -wall_width_single_z ])
+                    cube([ hex_outer_r, roll_holder_y, wall_width_single_z ]);
 
                 // front brim
                 translate([ base_cut_brim_offset_x, 0, 0 ])
@@ -599,12 +603,12 @@ module HolderBase( id = -1 )
     else if( id == 1 )
     {
         // # translate([
-        //     CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x,
+        //     CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x,
         //     base_brim_y-0.3,
         //     -wall_width_single_z ]) cube([ 0.1,roll_holder_y,5]);
 
         // #translate([ 0, base_brim_y, -wall_width_single_z ])
-        //     cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+        //     cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
         render()
         {
@@ -618,7 +622,7 @@ module HolderBase( id = -1 )
 
                 // front bottom under center
                 translate([ 0, base_brim_y, -wall_width_single_z ])
-                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
                 // back bottom
                 // translate([ 0, back_face_offset_y, -wall_width_single_z ])
@@ -630,7 +634,7 @@ module HolderBase( id = -1 )
 
                 // back bottom under center
                 translate([ 0, base_brim_y + back_face_offset_y, -wall_width_single_z ])
-                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_R - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
+                    cube([ CalculateHexagonXOffset( -1, cols_in_left_hex_groups -1 ) - hex_outer_r - wall_width_single_x, roll_holder_y, wall_width_single_z ]);
 
                 // front brim
                 translate([ 0, 0, 0 ])
@@ -796,8 +800,8 @@ module _HolderSideWallConnection( is_top, is_left )
 
     row = rows_in_lower_hex_groups;
 
-    connection_left_offset_x = CalculateHexagonXOffset( row, -1 ) - hex_R - wall_width_single_x;
-    connection_right_offset_x = CalculateHexagonXOffset( row, cols_in_left_hex_groups ) - hex_R - wall_width_single_x;
+    connection_left_offset_x = CalculateHexagonXOffset( row, -1 ) - hex_outer_r - wall_width_single_x;
+    connection_right_offset_x = CalculateHexagonXOffset( row, cols_in_left_hex_groups ) - hex_outer_r - wall_width_single_x;
 
     if( is_top )
     {
@@ -813,11 +817,11 @@ module _HolderSideWallConnection( is_top, is_left )
 
                     // cut off top
                     translate([ connection_left_offset_x, 0, CalculateHexagonZOffset( row - 1 ) + connection_z ])
-                        cube([ hex_R * 2 + wall_width_single_x * 2, roll_holder_y, hex_R * 2 ]);
+                        cube([ hex_outer_r * 2 + wall_width_single_x * 2, roll_holder_y, hex_outer_r * 2 ]);
 
                     // cut off left
                     translate([ connection_left_offset_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                        cube([ -connection_left_offset_x, roll_holder_y, hex_R ]);
+                        cube([ -connection_left_offset_x, roll_holder_y, hex_outer_r ]);
 
                     // cut out the heated insert
                     translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
@@ -841,11 +845,11 @@ module _HolderSideWallConnection( is_top, is_left )
 
                     // cut off top
                     translate([ connection_right_offset_x, 0, CalculateHexagonZOffset( row - 1 ) + connection_z ])
-                        cube([ hex_R * 2 + wall_width_single_x * 2, roll_holder_y, hex_R * 2 ]);
+                        cube([ hex_outer_r * 2 + wall_width_single_x * 2, roll_holder_y, hex_outer_r * 2 ]);
 
                     // cut off right
                     translate([ cube_x, 0, CalculateHexagonZOffset( row - 1 ) ])
-                        cube([ -connection_left_offset_x, roll_holder_y, hex_R ]);
+                        cube([ -connection_left_offset_x, roll_holder_y, hex_outer_r ]);
 
                     // cut out the heated insert
                     translate([ CalculateSideWallHeadedInsertXOffset( is_left ), roll_holder_y / 2, CalculateHexagonZOffset( row - 1 ) ])
@@ -928,13 +932,13 @@ module _RollHexHolderHexagon( draw_filled_hexagon = false )
             difference()
             {
                 // outer
-                hexagon_prism( radius = hex_R + wall_width_single_x, height = roll_holder_y );
-                // regular_prism( n = 6, height = roll_holder_y, r = hex_R + wall_width_single_x, anchor = BOTTOM );
+                hexagon_prism( radius = hex_outer_r + wall_width_single_x, height = roll_holder_y );
+                // regular_prism( n = 6, height = roll_holder_y, r = hex_outer_r + wall_width_single_x, anchor = BOTTOM );
 
                 // inner
                 if( !draw_filled_hexagon )
-                    // regular_prism( n = 6, height = roll_holder_y, r = hex_R, anchor = BOTTOM );
-                    hexagon_prism( radius = hex_R, height = roll_holder_y );
+                    // regular_prism( n = 6, height = roll_holder_y, r = hex_outer_r, anchor = BOTTOM );
+                    hexagon_prism( radius = hex_outer_r, height = roll_holder_y );
             }
         }
     }
@@ -945,7 +949,7 @@ module _RollHexHolderHexagon( draw_filled_hexagon = false )
 module RollPreview()
 {
     % rotate([ -90, 0, 0 ])
-        cylinder( h = roll_length, r = selected_roll_radius, $fn = 48 );
+        cylinder( h = roll_length, r = selected_roll_r, $fn = 48 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -954,30 +958,10 @@ module SelectColorInPreview( row, col )
 {
     group_id = GetHexGroup( row, col );
 
-    if( group_id == 0 )
-    {
-        color([ 0.4, 0, 0 ])
-            children();
-    }
-    else if( group_id == 1 )
-    {
-        color([ 0, 0.4, 0 ])
-            children();
-    }
-    else if( group_id == 2 )
-    {
-        color([ 0, 0, 0.4 ])
-            children();
-    }
-    else if( group_id == 3 )
-    {
-        color([ 0.4, 0, 0.4 ])
-            children();
-    }
-    else
-    {
-        assert( false, "Unknown group id: " + group_id );
-    }
+    assert( group_id >= 0 && group_id < len( hex_group_colors ), str( "Unknown group id: ", group_id ) );
+
+    color( hex_group_colors[ group_id ] )
+        children();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

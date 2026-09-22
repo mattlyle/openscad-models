@@ -1,7 +1,7 @@
 include <../../modules/multiboard.scad>
 include <../../modules/rounded-cube.scad>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
 // power_strip_x = 326.0;
@@ -28,8 +28,8 @@ power_strip_coax_cutout_x = 62.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print";
 
 wall_width = 2.2;
 wall_clearance = 0.75;
@@ -40,7 +40,7 @@ power_strip_front_bottom_y = 30;
 
 holder_connector_row_setups = [ [ 10, 9 ], [ 7, 6 ], [ 4, 3 ], [ 1 ] ];
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 holder_x = wall_width * 2 + wall_clearance * 2 + power_strip_x;
@@ -52,7 +52,7 @@ power_strip_front_top_size = holder_y - power_strip_left_right_crossover_y - wal
 
 $fn = $preview ? 32 : 64;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
 if( render_mode == "preview" )
@@ -73,7 +73,7 @@ else if( render_mode == "print" )
 }
 else
 {
-    assert( false, "Unknown render mode!" );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,17 +93,17 @@ module BelkinPowerStripHolder()
 
     // left - bottom
     translate([ 0, 0, multiboard_connector_back_z ])
-        RoundedCubeAlt2( wall_width, holder_y, bottom_z, round_bottom = false, round_top = true );
+        RoundedCube( wall_width, holder_y, bottom_z, round_bottom = false, round_top = true );
 
     // right - bottom
     translate([ holder_x - wall_width, 0, multiboard_connector_back_z ])
-        RoundedCubeAlt2( wall_width, holder_y, bottom_z, round_bottom = false, round_top = true );
+        RoundedCube( wall_width, holder_y, bottom_z, round_bottom = false, round_top = true );
 
     // bottom
     difference()
     {
         translate([ 0, 0, multiboard_connector_back_z ])
-            RoundedCubeAlt2( holder_x, wall_width, bottom_z, round_bottom = false, round_top = true );
+            RoundedCube( holder_x, wall_width, bottom_z, round_bottom = false, round_top = true );
 
         // cut out the right side where the coax cable comes out
         translate([ power_strip_coax_cutout_x, -difference_overlap_offset, multiboard_connector_back_z ])
@@ -112,7 +112,7 @@ module BelkinPowerStripHolder()
 
     // front bottom
     translate([ 0, 0, multiboard_connector_back_z + bottom_z - wall_width ])
-        RoundedCubeAlt2( holder_x, power_strip_front_bottom_y, wall_width, round_bottom = false, round_top = true );
+        RoundedCube( holder_x, power_strip_front_bottom_y, wall_width, round_bottom = false, round_top = true );
 
     // I can't figure out the math for this, so hack it
     hack_y = 1.0;
@@ -123,14 +123,14 @@ module BelkinPowerStripHolder()
     {
         // across the front at the top
         translate([ 0, holder_y - power_strip_front_top_size, multiboard_connector_back_z + top_z - wall_width ])
-            RoundedCubeAlt2( power_strip_front_top_size, power_strip_front_top_size, wall_width, round_bottom = false, round_top = true );
+            RoundedCube( power_strip_front_top_size, power_strip_front_top_size, wall_width, round_bottom = false, round_top = true );
 
         // corner to connect the front to the side
         difference()
         {
             translate([ 0, holder_y - power_strip_front_top_size * 2, multiboard_connector_back_z + top_z ])
                 rotate([ 0, 90, 45 ])
-                    RoundedCubeAlt2( wall_width, top_front_edge, top_front_edge, round_bottom = true, round_top = true, center = true );
+                    RoundedCube( wall_width, top_front_edge, top_front_edge, round_bottom = true, round_top = true );
 
             translate([ -power_strip_front_top_size, holder_y - power_strip_front_top_size * 2, multiboard_connector_back_z + top_z - wall_width - difference_overlap_offset ])
                 cube([ power_strip_front_top_size + wall_width / 2, power_strip_front_top_size * 2 + 1, wall_width + difference_overlap_offset * 2 ]);
@@ -138,12 +138,12 @@ module BelkinPowerStripHolder()
 
         // side on top of the main part
         translate([ 0, holder_y - power_strip_front_top_size - power_strip_front_top_size, multiboard_connector_back_z ])
-            RoundedCubeAlt2( wall_width, power_strip_front_top_size * 2, top_z, round_bottom = false, round_top = true );
+            RoundedCube( wall_width, power_strip_front_top_size * 2, top_z, round_bottom = false, round_top = true );
 
         // corner to connect this extension to the main part
         translate([ 0, holder_y - power_strip_front_top_size - power_strip_front_top_size + hack_y, multiboard_connector_back_z + top_z - top_side_corner_offset * 2 + hack_z ])
             rotate([ 45, 0, 0 ])
-                RoundedCubeAlt2( wall_width, top_side_corner_edge, top_side_corner_edge, round_bottom = false, round_top = true, center = true );
+                RoundedCube( wall_width, top_side_corner_edge, top_side_corner_edge, round_bottom = false, round_top = true );
     }
 
     // front top - right
@@ -151,14 +151,14 @@ module BelkinPowerStripHolder()
     {
         // across the front at the top
         translate([ holder_x - power_strip_front_top_size, holder_y - power_strip_front_top_size, multiboard_connector_back_z + top_z - wall_width ])
-            RoundedCubeAlt2( power_strip_front_top_size, power_strip_front_top_size, wall_width, round_bottom = false, round_top = true );
+            RoundedCube( power_strip_front_top_size, power_strip_front_top_size, wall_width, round_bottom = false, round_top = true );
 
         // corner to connect the front to the side
         difference()
         {
             translate([ holder_x, holder_y - power_strip_front_top_size * 2, multiboard_connector_back_z + top_z ])
                 rotate([ 0, 90, 45 ])
-                    RoundedCubeAlt2( wall_width, top_front_edge, top_front_edge, round_bottom = true, round_top = true, center = true );
+                    RoundedCube( wall_width, top_front_edge, top_front_edge, round_bottom = true, round_top = true );
 
             translate([ holder_x - wall_width / 2, holder_y - power_strip_front_top_size * 2, multiboard_connector_back_z + top_z - wall_width - difference_overlap_offset ])
                 cube([ power_strip_front_top_size + wall_width / 2, power_strip_front_top_size * 2 + 1, wall_width + difference_overlap_offset * 2 ]);
@@ -166,12 +166,12 @@ module BelkinPowerStripHolder()
 
         // side on top of the main part
         translate([ holder_x - wall_width, holder_y - power_strip_front_top_size - power_strip_front_top_size, multiboard_connector_back_z ])
-            RoundedCubeAlt2( wall_width, power_strip_front_top_size * 2, top_z, round_bottom = false, round_top = true );
+            RoundedCube( wall_width, power_strip_front_top_size * 2, top_z, round_bottom = false, round_top = true );
 
         // corner to connect this extension to the main part
         translate([ holder_x - wall_width, holder_y - power_strip_front_top_size - power_strip_front_top_size + hack_y, multiboard_connector_back_z + top_z - top_side_corner_offset * 2 + hack_z ])
             rotate([ 45, 0, 0 ])
-                RoundedCubeAlt2( wall_width, top_side_corner_edge, top_side_corner_edge, round_bottom = false, round_top = true, center = true );
+                RoundedCube( wall_width, top_side_corner_edge, top_side_corner_edge, round_bottom = false, round_top = true );
     }
 }
 

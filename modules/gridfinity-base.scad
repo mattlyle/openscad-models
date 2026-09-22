@@ -80,7 +80,7 @@ module GridfinityTop( cells_x, cells_y, top_z, round_top = false )
     size_x = CalculateGridfinitySize( cells_x );
     size_y = CalculateGridfinitySize( cells_y );
 
-    RoundedCubeAlt2(
+    RoundedCube(
         size_x,
         size_y,
         top_z,

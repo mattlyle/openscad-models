@@ -4,19 +4,26 @@ include <../modules/text-label.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-pencil_radius = 9.55 / 2;
+pencil_r = 9.55 / 2;
 
-sharpie_radius = 11.6 / 2; // also pens
+sharpie_r = 11.6 / 2; // also pens
 
-small_screwdriver_radius = 4.1 / 2;
+// small_screwdriver_r = 4.1 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
+// render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
+
+label_text = "Pens and Pencils?!";
+label_font = "Georgia:style=Bold";
+label_font_size = 7;
 
 cells_x = 3;
 cells_y = 1;
@@ -24,7 +31,7 @@ cells_y = 1;
 // the height to be added on top of the base
 top_z = 42.0;
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
 pointed_tip_length = 6.0;
@@ -32,12 +39,14 @@ pointed_tip_length = 6.0;
 pen_pencil_sharpie_clearance = 0.4;
 
 cutout_rows = [
-    [ pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius, pencil_radius ],
-    [ sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius, sharpie_radius ],
+    [ pencil_r, pencil_r, pencil_r, pencil_r, pencil_r, pencil_r, pencil_r, pencil_r ],
+    [ sharpie_r, sharpie_r, sharpie_r, sharpie_r, sharpie_r, sharpie_r, sharpie_r ],
 ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
+
+$fn = $preview ? 32 : 128;
 
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
@@ -60,52 +69,80 @@ offset_z = GRIDFINITY_BASE_Z + GRIDFINITY_BASE_Z_SUGGESTED_CLEARANCE;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-PenPencilSharpieHolder();
+if( render_mode == "preview" )
+{
+    PenPencilSharpieHolder();
+    PenPencilSharpieTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    PenPencilSharpieHolder();
+}
+else if( render_mode == "print-text" )
+{
+    PenPencilSharpieTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        PenPencilSharpieHolder();
+    color( label_color )
+        PenPencilSharpieTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module PenPencilSharpieHolder()
 {
-    if( render_mode == "preview" || render_mode == "bin-only" )
+    difference()
     {
-        difference()
+        GridfinityBase(
+            cells_x,
+            cells_y,
+            top_z,
+            round_top = true,
+            center = false,
+            magnets = GRIDFINITY_BASE_MAGNETS_ALL
+            );
+
+        for( i = [ 0 : len( cutout_rows ) - 1 ] )
         {
-            GridfinityBase(
-                cells_x,
-                cells_y,
-                top_z,
-                round_top = true,
-                center = false,
-                magnets = GRIDFINITY_BASE_MAGNETS_ALL
-                );
-
-            for( i = [ 0 : len( cutout_rows ) - 1 ] )
+            row = cutout_rows[ i ];
+            for( j = [ 0 : len( row ) - 1 ] )
             {
-                row = cutout_rows[ i ];
-                for( j = [ 0 : len( row ) - 1 ] )
-                {
-                    offset_x = base_x / ( len( row ) + 1 ) * ( j + 1 );
+                offset_x = base_x / ( len( row ) + 1 ) * ( j + 1 );
 
-                    // the main shaft
-                    translate([ offset_x, offset_y[ i ], offset_z + pointed_tip_length ])
-                        cylinder( h = holder_z - offset_z - pointed_tip_length, r = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
+                // the main shaft
+                translate([ offset_x, offset_y[ i ], offset_z + pointed_tip_length ])
+                    cylinder( h = holder_z - offset_z - pointed_tip_length, r = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
 
-                    // pointed base
-                    translate([ offset_x, offset_y[ i ], offset_z ])
-                        cylinder( h = pointed_tip_length, r1 = pen_pencil_sharpie_clearance, r2 = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
-                }
+                // pointed base
+                translate([ offset_x, offset_y[ i ], offset_z ])
+                    cylinder( h = pointed_tip_length, r1 = pen_pencil_sharpie_clearance, r2 = row[ j ] + pen_pencil_sharpie_clearance, $fn = 24 );
             }
         }
     }
+}
 
-    if( render_mode == "preview" || render_mode == "text-only" )
-    {
-        // #translate([ 0, text_area_offset_y, holder_z ])
-        //     cube([ base_x, text_area_y, 0.1 ]);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        translate([ 0, text_area_offset_y, holder_z ])
-            CenteredTextLabel( "Pens and Pencils?!", base_x, text_area_y, 7, "Georgia:style=Bold" );
-    }
+module PenPencilSharpieTextLabel()
+{
+    // #translate([ 0, text_area_offset_y, holder_z ])
+    //     cube([ base_x, text_area_y, 0.1 ]);
+
+    translate([ 0, text_area_offset_y, holder_z ])
+        CenteredTextLabel(
+            label_text,
+            centered_in_area_x = base_x,
+            centered_in_area_y = text_area_y,
+            font_size = label_font_size,
+            font = label_font
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
