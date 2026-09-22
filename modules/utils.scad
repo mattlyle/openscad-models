@@ -41,7 +41,12 @@ function CalculateEquallySpacedOffset( list, total_size, clearance, i ) =
     let( spacing = ( total_size - SumList( sizes_with_clearance ) ) / ( len( list ) + 1 ) )
     spacing * ( i + 1 ) + SumTo( sizes_with_clearance, i );
 
-// function CalculateEquallySpacedOffset( total_size, count, i, item_size ) = ( i + 1 ) / ( count + 1 ) * total_size - item_size / 2;
+function calculateEquallySpacedOffsetRadiuses( list, total_size, clearance, i ) =
+    let( footprints = addValueToEachIndex( list, clearance ) * 2 )
+    let( spacing = ( total_size - sumList( footprints ) ) / ( len( list ) + 1 ) )
+    spacing * ( i + 1 ) + sumTo( footprints, i ) + clearance + list[i];
+
+// function calculateEquallySpacedOffset( total_size, count, i, item_size ) = ( i + 1 ) / ( count + 1 ) * total_size - item_size / 2;
 
 function CalculateOffsetToCenter( total_size, item_size ) = total_size / 2 - item_size / 2;
 
