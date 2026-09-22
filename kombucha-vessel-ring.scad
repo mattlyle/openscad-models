@@ -6,7 +6,7 @@ include <modules/rounded-cylinder.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-vessel_r = 218.0/2;
+vessel_r = 218.0 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -36,22 +36,22 @@ $fn = $preview ? 128 : 256;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if ( render_mode == "preview" )
+if( render_mode == "preview" )
 {
     % cylinder( r = vessel_r, h = preview_vessel_z );
 
     translate([ 0, 0, preview_vessel_z - ring_z ])
         KombuchaVesselRing();
 }
-else if ( render_mode == "print-ring" )
+else if( render_mode == "print-ring" )
 {
     translate([ 0, 0, ring_z + top_z ])
-    rotate([ 180, 0, 0 ])
-        KombuchaVesselRing();
+        rotate([ 180, 0, 0 ])
+            KombuchaVesselRing();
 }
 else
 {
-    echo( str( "Invalid render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,11 +101,11 @@ module KombuchaVesselRing()
 
     // horizontal strut
     translate([ -outer_r + top_r / 2, -strut_width / 2, ring_z ])
-        cube([ outer_r * 2 - top_r, strut_width, top_z ] );
+        cube([ outer_r * 2 - top_r, strut_width, top_z ]);
 
     // vertical strut
     translate([ -strut_width / 2, -outer_r + top_r / 2, ring_z ])
-        cube([ strut_width, outer_r * 2 - top_r, top_z ] );
+        cube([ strut_width, outer_r * 2 - top_r, top_z ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,3 @@
-use <../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-// include <../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
-
 include <modules/gridfinity-extended-solid-cutout-bin.scad>
 include <modules/gridfinity-helpers.scad>
 include <modules/text-label.scad>
@@ -39,9 +36,7 @@ min_holder_z = 20;
 bottle_clearance = 1.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
 translate([ 0, 0, 0 ])
     PillBottleHolder( aleve_diameter, aleve_y, "Aleve", 9 );
@@ -79,7 +74,7 @@ module PillBottleHolder( diameter, y, text_label, font_size )
                 difference()
                 {
                     GridfinityExtendedSolidCutoutBin( cells_x, cells_y, holder_z );
-                    
+
                     // cut out the bottle
                     translate([ x_offset, y_offset - bottle_clearance, z_offset ])
                         rotate([ -90, 0, 0 ])
@@ -111,4 +106,3 @@ module PillBottleHolder( diameter, y, text_label, font_size )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
