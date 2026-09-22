@@ -22,6 +22,8 @@ clearance = 1.5;
 
 corner_rounding_r = 2.0;
 
+label_color = [ 0.1, 0.1, 0.1 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -90,7 +92,7 @@ module DoxieMultiboardHolder()
         // add the text
         // #translate([ 0, 0, multiboard_connector_back_z + size_z ])
         //     cube([ size_x, size_y, 0.1 ]);
-        color([ 0.1, 0.1, 0.1 ])
+        color( label_color )
             translate([ -1.5, 0, 0 ]) // for some reason the textmetrics are broken?
                 translate([ 0, 0, multiboard_connector_back_z + size_z ])
                     CenteredTextLabel(

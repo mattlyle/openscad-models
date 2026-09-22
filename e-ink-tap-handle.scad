@@ -45,6 +45,10 @@ snap_connector_clearance = 0.1;
 
 model_spacing = 10.0; // spacing between the tap handle and back plate in the preview
 
+// preview colors
+design_aid_color = [ 0.4, 0, 0 ];
+screen_gap_color = [ 0.5, 0, 0 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -108,7 +112,7 @@ module BackPlateBelowTapHandlePreview()
 {
     demo_depth = 6;
 
-    color([ 0.4, 0, 0 ])
+    color( design_aid_color )
         translate([ ( tap_handle_width - back_plate_width ) / 2, display_offset_height - e_ink_display_screen_offset_height + back_plate_clearance * 2, -demo_depth ])
             BackPlate();
 }
@@ -122,7 +126,7 @@ module SnapConnectorTest()
     {
         SnapConnectorOver( snap_connector_width, snap_connector_height, snap_connector_angle, snap_connector_clearance );
 
-        color([ 0.4, 0, 0 ])
+        color( design_aid_color )
             SnapConnectorOverMe( snap_connector_width, snap_connector_height );
     }
 }
@@ -226,7 +230,7 @@ module TapHandle()
         }
 
         // add the extra gap for the screan offset
-        color([ 0.5, 0, 0 ])
+        color( screen_gap_color )
             translate([( tap_handle_width - e_ink_display_screen_width ) / 2, display_offset_height + screen_bezel_size * 2 + e_ink_display_screen_usable_height, tap_handle_depth - screen_bezel_depth ])
                 cube([ e_ink_display_circuit_board_width, e_ink_display_screen_bezel_top, screen_bezel_depth ]); // TODO: This is technically wrong and overlaps
 

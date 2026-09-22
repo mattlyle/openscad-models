@@ -76,6 +76,9 @@ cols_in_left_hex_groups = 2;
 screw_def = M3x8;
 heated_insert_def = M3x6_INSERT;
 
+// preview colors for the four hex groups
+hex_group_colors = [ [ 0.4, 0, 0 ], [ 0, 0.4, 0 ], [ 0, 0, 0.4 ], [ 0.4, 0, 0.4 ] ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -955,30 +958,10 @@ module SelectColorInPreview( row, col )
 {
     group_id = GetHexGroup( row, col );
 
-    if( group_id == 0 )
-    {
-        color([ 0.4, 0, 0 ])
-            children();
-    }
-    else if( group_id == 1 )
-    {
-        color([ 0, 0.4, 0 ])
-            children();
-    }
-    else if( group_id == 2 )
-    {
-        color([ 0, 0, 0.4 ])
-            children();
-    }
-    else if( group_id == 3 )
-    {
-        color([ 0.4, 0, 0.4 ])
-            children();
-    }
-    else
-    {
-        assert( false, "Unknown group id: " + group_id );
-    }
+    assert( group_id >= 0 && group_id < len( hex_group_colors ), str( "Unknown group id: ", group_id ) );
+
+    color( hex_group_colors[ group_id ] )
+        children();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

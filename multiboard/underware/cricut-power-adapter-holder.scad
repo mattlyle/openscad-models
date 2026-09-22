@@ -47,7 +47,7 @@ $fn = $preview ? 16 : 32;
 if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
-        color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
+        color( workroom_multiboard_color )
             MultiboardMockUpTile( 6, 6 );
 
     // translate([ MultiboardConnectorBackAltXOffset( holder_x_bottom ), 0, 0 ])

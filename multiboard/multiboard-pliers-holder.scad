@@ -106,7 +106,7 @@ if( render_mode == "preview" )
     }
 
     translate([ multiboard_cell_size - holder_offset_x, holder_y - ring_wall_height, holder_z ])
-        color([ 0, 0, 0.4 ])
+        color( label_color )
             CenteredTextLabel(
                 front_text,
                 font = label_font,

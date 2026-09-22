@@ -84,6 +84,11 @@ heated_insert_labels = [
 pegs_offset_y = 15;
 peg_text_offset_y = 6;
 
+// preview colors for the soldering iron
+soldering_iron_cord_color = [ 0.1, 0.1, 0.1 ];
+soldering_iron_body_color = [ 0.3, 0.3, 0.3 ];
+soldering_iron_tip_color = [ 0.6, 0.1, 0.1 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -314,7 +319,7 @@ module _MiniSolderingIronStandTipPegs()
 module MiniSolderingIronPreview()
 {
     // cord
-    color([ 0.1, 0.1, 0.1 ])
+    color( soldering_iron_cord_color )
         translate([ 0, 0, -mini_soldering_iron_cord_z ])
             cylinder(
                 h = mini_soldering_iron_cord_z,
@@ -322,7 +327,7 @@ module MiniSolderingIronPreview()
                 );
 
     // body
-    color([ 0.3, 0.3, 0.3 ])
+    color( soldering_iron_body_color )
         translate([ 0, 0, 0 ])
             cylinder(
                 h = mini_soldering_iron_body_z,
@@ -331,7 +336,7 @@ module MiniSolderingIronPreview()
                 );
 
     // grip c
-    color([ 0.3, 0.3, 0.3 ])
+    color( soldering_iron_body_color )
         translate([ 0, 0, mini_soldering_iron_body_z ])
             cylinder(
                 h = mini_soldering_iron_grip_c_z,
@@ -339,7 +344,7 @@ module MiniSolderingIronPreview()
                 );
 
     // grip b
-    color([ 0.3, 0.3, 0.3 ])
+    color( soldering_iron_body_color )
         translate([ 0, 0, mini_soldering_iron_body_z + mini_soldering_iron_grip_c_z ])
             cylinder(
                 h = mini_soldering_iron_grip_b_z,
@@ -347,7 +352,7 @@ module MiniSolderingIronPreview()
                 );
 
     // grip a
-    color([ 0.3, 0.3, 0.3 ])
+    color( soldering_iron_body_color )
         translate([ 0, 0, mini_soldering_iron_body_z + mini_soldering_iron_grip_c_z + mini_soldering_iron_grip_b_z ])
             cylinder(
                 h = mini_soldering_iron_grip_a_z,
@@ -356,7 +361,7 @@ module MiniSolderingIronPreview()
                 );
 
     // tip
-    color([ 0.6, 0.1, 0.1 ])
+    color( soldering_iron_tip_color )
         translate([ 0, 0, mini_soldering_iron_body_z + mini_soldering_iron_grip_c_z + mini_soldering_iron_grip_b_z + mini_soldering_iron_grip_a_z ])
             cylinder(
                 h = mini_soldering_iron_tip_z,

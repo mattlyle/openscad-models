@@ -45,6 +45,9 @@ multimeter_probe_clearance = 1.0;
 corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
+// preview color for the parts added back onto the holder
+holder_supports_color = [ 0.4, 0, 0 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -135,7 +138,7 @@ module MultimeterHolder()
 
     // now add all the other parts back
 
-    color([ 0.4, 0, 0 ])
+    color( holder_supports_color )
     {
         translate([ multimeter_main_body_offset_x - multimeter_back_sides_width - multimeter_back_clearance, multimeter_main_body_offset_y + multimeter_main_body_y, offset_z ])
         {

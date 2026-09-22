@@ -28,6 +28,10 @@ holder_r = 15;
 v2_offset_x = 60; // spacing between v1 and v2 in the preview
 v2_box_z = 20;
 
+// preview colors for the two alignment pegs
+peg_1_color = [ 0.5, 0, 0 ];
+peg_2_color = [ 0, 0, 0.5 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -75,11 +79,11 @@ module ConnectorToolV1()
         }
     }
 
-    color([ 0.5, 0, 0 ])
+    color( peg_1_color )
         translate([ box_x / 2 - peg_offset, box_y / 2, box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 
-    color([ 0, 0, 0.5 ])
+    color( peg_2_color )
         translate([ box_x / 2 + peg_offset, box_y / 2, box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 }
@@ -102,11 +106,11 @@ module ConnectorToolV2()
         }
     }
 
-    color([ 0.5, 0, 0 ])
+    color( peg_1_color )
         translate([ -peg_offset, holder_r, v2_box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 
-    color([ 0, 0, 0.5 ])
+    color( peg_2_color )
         translate([ peg_offset, holder_r, v2_box_z - connector_handle_depth ])
             cylinder( h = peg_depth, r = peg_diameter / 2 - measurement_tolerance, $fn = 24 );
 }

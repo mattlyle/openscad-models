@@ -70,6 +70,10 @@ flip_usb_hub = true;
 cord_clip_offset_x = 2.0;
 cord_clip_offset_z = cage_wall_width ;
 
+// preview colors for the usb hub
+usb_hub_preview_color = [ 0.3, 0.3, 0.3 ];
+usb_port_preview_color = [ 0.8, 0.8, 0 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -148,7 +152,7 @@ else
 
 module AcerUsbHubPreview()
 {
-    color([ 0.3, 0.3, 0.3 ])
+    color( usb_hub_preview_color )
         cube([ acer_usb_hub_x, acer_usb_hub_y, acer_usb_hub_z ]);
 
     slot_offset_z = ( acer_usb_hub_z - usb_z ) / 2;
@@ -157,14 +161,14 @@ module AcerUsbHubPreview()
     {
         for( i = [ 0 : 3 ] )
         {
-            color([ 0.8, 0.8, 0 ])
+            color( usb_port_preview_color )
                 translate([ i * ( usb_slot_spacer_x + usb_x ), 0, 0 ])
                     cube([ usb_x, usb_preview_thickness, usb_z ]);
         }
     }
 
     // cord
-    color([ 0.3, 0.3, 0.3 ])
+    color( usb_hub_preview_color )
         translate([ acer_usb_hub_x - cord_exit_r, acer_usb_hub_y / 2, acer_usb_hub_z / 2 ])
             rotate([ 0, 90, 0 ])
                 cylinder( r1 = cord_exit_r, r2 = cord_main_r, h = 20 );

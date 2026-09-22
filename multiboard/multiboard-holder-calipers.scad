@@ -61,6 +61,8 @@ larger_caliper_box_holder_svg_scale_vector = [ 0.4, 0.4, 1.0 ];
 larger_caliper_box_holder_svg_rotation_z = 10;
 larger_caliper_box_holder_svg_offset_vector = [ 5, -2, 0 ];
 
+label_color = [ 0, 0, 0 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -115,7 +117,7 @@ else
 module MultiboardTilePreview()
 {
     translate([ 0, 0, -multiboard_cell_height ])
-        color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
+        color( workroom_multiboard_color )
             MultiboardMockUpTile( 12, 4 );
 }
 
@@ -226,16 +228,16 @@ module CaliperBoxHolder(
         }
     }
 
-    color([ 0, 0, 0 ])
+    color( label_color )
         translate([ text_label_1_offset_vector[ 0 ], text_label_1_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             linear_extrude( 0.5 )
                 text( label_text_line_1, size = text_label_font_size, font = label_font ); // TODO: swap with module
-    color([ 0, 0, 0 ])
+    color( label_color )
         translate([ text_label_2_offset_vector[ 0 ], text_label_2_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             linear_extrude( 0.5 )
                 text( label_text_line_2, size = text_label_font_size, font = label_font ); // TODO: swap with module
 
-    color([ 0, 0, 0 ])
+    color( label_color )
         translate([ svg_offset_vector[ 0 ], svg_offset_vector[ 1 ], holder_size_vector[ 2 ] ])
             scale( svg_scale_size_vector )
                 rotate([ 0, 0, svg_offset_rotation_z ])

@@ -31,6 +31,8 @@ holder_corner_x = 10.0;
 
 insert = M3x6_INSERT;
 
+screw_preview_color = [ 0.4, 0.4, 0.4 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -53,7 +55,7 @@ powerstrip_mounting_bar_z = insert[ INSERT_LENGTH ] + z_clearance;
 if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
-        color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
+        color( workroom_multiboard_color )
             MultiboardMockUpTile( 12, 4 );
 
     // translate([ MultiboardConnectorBackAltXOffset( holder_x_bottom ), 0, 0 ])
@@ -87,7 +89,7 @@ module PowerStripPreview()
         powerstrip_z,
         center = false );
 
-    color([ 0.4, 0.4, 0.4 ])
+    color( screw_preview_color )
     {
         translate([ screwhole_offset_x, screwhole_offset_y, powerstrip_screw_preview_z ])
             cylinder( r = powerstrip_screw_r, powerstrip_screw_preview_z, $fn = 12 );

@@ -43,6 +43,10 @@ orange_ratchet_screwdriver_case_clearance = 0.5;
 corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
+// preview colors for the screwdriver case
+orange_ratchet_screwdriver_case_color = [ 0.3, 0.3, 0.3 ];
+orange_ratchet_screwdriver_hinge_color = [ 1.0, 0.4, 0.4 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -153,7 +157,7 @@ module OrangeRatchetScrewDriver( add_clearance )
 
     union()
     {
-    color([ 0.3, 0.3, 0.3 ])
+    color( orange_ratchet_screwdriver_case_color )
     {
         render()
         {
@@ -186,7 +190,7 @@ module OrangeRatchetScrewDriver( add_clearance )
     }
 
     // hinge
-    color([ 1.0, 0.4, 0.4 ])
+    color( orange_ratchet_screwdriver_hinge_color )
         translate([ 0, orange_ratchet_screwdriver_case_hinge_y_offset, orange_ratchet_screwdriver_case_hinge_z_offset ])
             cube([ orange_ratchet_screwdriver_case_hinge_x, orange_ratchet_screwdriver_case_hinge_y, orange_ratchet_screwdriver_case_z - orange_ratchet_screwdriver_case_hinge_z_offset * 2 ]);
     }
