@@ -14,7 +14,7 @@ render_mode = "preview";
 // render_mode = "print-tool-holder-logo";
 // x_render_mode = "print-battery-holder";
 
-num_tools = 1;
+num_tools = 3;
 
 num_batteries = 2;
 
@@ -131,15 +131,33 @@ module RidgidToolHolders()
 
 module RidgidToolHoldersLogo( is_cutout = false )
 {
-    translate([
-        CalculateOffsetToCenter( total_x, logo_size ),
-        svg_depth,
-        logo_offset_z
-        ])
-        rotate([ 90, 0, 0 ])
-            resize([ logo_size, 0 ], auto = true )
-                SVG( svg_path, depth = svg_depth + ( is_cutout ? DIFFERENCE_CLEARANCE: 0 ) );
-
+    if( num_tools % 2 == 1 )
+    {
+        // odd, so only draw the center one
+        translate([
+            CalculateOffsetToCenter( total_x, logo_size ),
+            svg_depth,
+            logo_offset_z
+            ])
+            rotate([ 90, 0, 0 ])
+                resize([ logo_size, 0 ], auto = true )
+                    SVG( svg_path, depth = svg_depth + ( is_cutout ? DIFFERENCE_CLEARANCE: 0 ) );
+    }
+    else
+    {
+        // even, so draw every one?
+        for( i = [ 0 : num_tools - 1 ] )
+        {
+            translate([
+                i * tool_slot_x + CalculateOffsetToCenter( tool_slot_x, logo_size ),
+                svg_depth,
+                logo_offset_z
+                ])
+                rotate([ 90, 0, 0 ])
+                    resize([ logo_size, 0 ], auto = true )
+                        SVG( svg_path, depth = svg_depth + ( is_cutout ? DIFFERENCE_CLEARANCE: 0 ) );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
