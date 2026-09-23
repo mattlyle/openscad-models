@@ -14,7 +14,7 @@ render_mode = "preview";
 // render_mode = "print-tool-holder-logo";
 // x_render_mode = "print-battery-holder";
 
-num_tools = 3;
+num_tools = 1;
 
 num_batteries = 2;
 
