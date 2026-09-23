@@ -100,13 +100,7 @@ module RidgidToolHolders()
 
         RidgidToolHoldersLogo( true );
     }
-
-    // # cube([
-    //     total_x,
-    //     5,
-    //     total_z
-    //     ]);
-
+    
     // arms
     for( i = [ 0 : num_tools - 1 ] )
     {
@@ -152,12 +146,6 @@ module RidgidToolHoldersLogo( is_cutout = false )
 
 module _RidgidToolHolderArm( is_left, is_shared )
 {
-    // % rotate([ 90 - tool_arm_angle, 0, 0 ])
-    //     cylinder(
-    //         r = tool_arm_z / 2,
-    //         h = tool_arm_y
-    //         );
-
     side_x = ( tool_slot_x - tool_arm_spacing_x ) / 2;
 
     // flat top
