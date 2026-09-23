@@ -49,8 +49,6 @@ $fn = $preview ? 32 : 128;
 
 total_x = tool_slot_x * num_tools;
 
-total_y = -1; // TODO finish
-
 total_z =
     tool_arm_support_z
     + tool_arm_z
@@ -58,7 +56,6 @@ total_z =
     + extra_z_bottom;
 
 echo( str( "Total X: ", total_x ) );
-echo( str( "Total Y: ", total_y ) );
 echo( str( "Total Z: ", total_z ) );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +97,7 @@ module RidgidToolHolders()
 
         RidgidToolHoldersLogo( true );
     }
-    
+
     // arms
     for( i = [ 0 : num_tools - 1 ] )
     {
