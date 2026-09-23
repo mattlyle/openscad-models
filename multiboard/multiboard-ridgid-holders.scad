@@ -1,6 +1,7 @@
 include <../modules/utils.scad>
 include <../modules/multiboard.scad>
 include <../modules/rounded-cube.scad>
+include <../modules/svg.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -10,9 +11,10 @@ include <../modules/rounded-cube.scad>
 
 render_mode = "preview";
 // render_mode = "print-tool-holder";
-// render_mode = "print-battery-holder";
+// render_mode = "print-tool-holder-logo";
+// x_render_mode = "print-battery-holder";
 
-num_tools = 3;
+num_tools = 1;
 
 num_batteries = 2;
 
@@ -32,6 +34,11 @@ extra_z_top = 5;
 extra_z_bottom = 5;
 
 holder_connector_row_setups = [ [3,2], [ 1 ] ];
+
+svg_path = "../assets/ridgid-logo.svg";
+svg_depth = 0.6;
+logo_size = 60;
+logo_offset_z = 2;
 
 // TODO add ridgid logo
 
@@ -60,11 +67,22 @@ echo( str( "Total Z: ", total_z ) );
 if( render_mode == "preview" )
 {
     RidgidToolHolders();
+
+    color( "black" )
+        RidgidToolHoldersLogo();
 }
-else if( render_mode == "print" )
+else if( render_mode == "print-tool-holder" )
 {
     RidgidToolHolders();
 }
+else if( render_mode == "print-tool-holder-logo" )
+{
+    RidgidToolHoldersLogo();
+}
+// else if( render_mode == "print-battery-holder" )
+// {
+//     RidgidBatteryHolders();
+// }
 else
 {
     assert( false, str( "Unknown render mode: ", render_mode ) );
@@ -74,9 +92,14 @@ else
 
 module RidgidToolHolders()
 {
-    translate([ 0, multiboard_connector_back_z, 0 ])
-        rotate([ 90, 0, 0 ])
-            MultiboardConnectorBackAlt2( total_x, total_z, holder_connector_row_setups );
+    difference()
+    {
+        translate([ 0, multiboard_connector_back_z, 0 ])
+            rotate([ 90, 0, 0 ])
+                MultiboardConnectorBackAlt2( total_x, total_z, holder_connector_row_setups );
+
+        RidgidToolHoldersLogo( true );
+    }
 
     // # cube([
     //     total_x,
@@ -108,8 +131,21 @@ module RidgidToolHolders()
                 _RidgidToolHolderArm( false, i < num_tools - 1 );
         }
     }
+}
 
-    // side dividers
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module RidgidToolHoldersLogo( is_cutout = false )
+{
+    translate([
+        CalculateOffsetToCenter( total_x, logo_size ),
+        svg_depth,
+        logo_offset_z
+        ])
+        rotate([ 90, 0, 0 ])
+            resize([ logo_size, 0 ], auto = true )
+                SVG( svg_path, depth = svg_depth + ( is_cutout ? DIFFERENCE_CLEARANCE: 0 ) );
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
