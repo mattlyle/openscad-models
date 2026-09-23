@@ -247,7 +247,7 @@ module _NetworkRackFaceEar1U()
     {
         translate([ -NETWORK_RACK_FACE_EAR_X, NETWORK_RACK_FACE_FACE_Y, 0 ])
             rotate([ 90, 0, 0 ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     x = NETWORK_RACK_FACE_EAR_X,
                     y = NETWORK_RACK_FACE_1U_Z,
                     z = NETWORK_RACK_FACE_FACE_Y,

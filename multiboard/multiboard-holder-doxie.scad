@@ -2,14 +2,14 @@ include <../modules/multiboard.scad>
 include <../modules/rounded-cube.scad>
 include <../modules/text-label.scad>
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
 doxie_x = 57.9;
 doxie_y = 310;
 doxie_z = 43.8;
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 render_mode = "preview";
@@ -20,10 +20,14 @@ holder_y = 80;
 wall_width = 2.0;
 clearance = 1.5;
 
-corner_rounding_radius = 2.0;
+corner_rounding_r = 2.0;
 
-////////////////////////////////////////////////////////////////////////////////
+label_color = [ 0.1, 0.1, 0.1 ];
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
+
+$fn = $preview ? 32 : 128;
 
 size_x = doxie_x + wall_width * 2 + clearance * 2;
 size_y = holder_y + wall_width;
@@ -31,7 +35,7 @@ size_z = doxie_z + wall_width * 2 + clearance * 2;
 
 offset_x = multiboard_cell_size - MultiboardConnectorBackAltXOffset( size_x );
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
 if( render_mode == "preview" )
@@ -48,15 +52,18 @@ if( render_mode == "preview" )
             DoxiePreview();
     }
 }
-
-if( render_mode == "print-holder" )
+else if( render_mode == "print-holder" )
 {
     translate([ 0, size_z + multiboard_connector_back_z, 0 ])
         rotate([ 90, 0, 0 ])
             DoxieMultiboardHolder();
 }
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // doxie module
 
 module DoxieMultiboardHolder()
@@ -69,13 +76,12 @@ module DoxieMultiboardHolder()
         difference()
         {
             translate([ 0, 0, multiboard_connector_back_z ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     x = size_x,
                     y = size_y,
                     z = size_z,
                     r = multiboard_corner_rounding_r,
-                    round_bottom = false,
-                    fn = 36
+                    round_bottom = false
                     );
 
             // cut out the middle
@@ -86,7 +92,7 @@ module DoxieMultiboardHolder()
         // add the text
         // #translate([ 0, 0, multiboard_connector_back_z + size_z ])
         //     cube([ size_x, size_y, 0.1 ]);
-        color([ 0.1, 0.1, 0.1 ])
+        color( label_color )
             translate([ -1.5, 0, 0 ]) // for some reason the textmetrics are broken?
                 translate([ 0, 0, multiboard_connector_back_z + size_z ])
                     CenteredTextLabel(
@@ -99,7 +105,7 @@ module DoxieMultiboardHolder()
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // doxie preview
 
 module DoxiePreview()
@@ -107,4 +113,4 @@ module DoxiePreview()
     % cube([ doxie_x, doxie_y, doxie_z ] );
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

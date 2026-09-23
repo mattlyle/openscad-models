@@ -12,9 +12,8 @@ scissors_z = 82;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
-// render_mode = "preview";
-render_mode = "print-bin";
+render_mode = "preview";
+// render_mode = "print-bin";
 
 cells_x = 1;
 cells_y = 5;
@@ -30,7 +29,9 @@ clearance_y = 2.0;
 magnets_in_corners_only = false;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
+
+$fn = $preview ? 32 : 128;
 
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
@@ -51,15 +52,30 @@ echo( "angle_height", angle_height );
 item_sizes_x = [ scissors_x, scissors_x ];
 item_angle_offset_z = scissors_y * sin( -scissors_angle );
 offsets_x = [
-    calculateEquallySpacedOffset( item_sizes_x, base_x, 0, 0 ),
-    calculateEquallySpacedOffset( item_sizes_x, base_x, 0, 1 ),
+    CalculateEquallySpacedOffset( item_sizes_x, base_x, 0, 0 ),
+    CalculateEquallySpacedOffset( item_sizes_x, base_x, 0, 1 ),
     ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-ScissorsBin();
+// models
 
 if( render_mode == "preview" )
+{
+    ScissorsBin();
+    ScissorsPreview();
+}
+else if( render_mode == "print-bin" )
+{
+    ScissorsBin();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ScissorsPreview()
 {
     % translate([-10,0,0]) // show it off to the side a little
         translate([ offsets_x[ 0 ], wall_width, item_angle_offset_z + offset_z])

@@ -1,4 +1,5 @@
 use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_baseplate.scad>
+use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
 include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
 GRIDFINITY_BASEPLATE_Z = 5.8;
@@ -16,6 +17,20 @@ module GridfinityBaseplate( grid_cells_x, grid_cells_y )
         oversizeMethod = "fill",
         magnetSize = [ 6.4, 2.0 ],
         magnetZOffset = 0.4
+        );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// a solid (filled-in) gridfinity cup with no stacking lip, with its corner at the origin
+module GridfinityFilledCup( grid_cells_x, grid_cells_y, grid_cells_z )
+{
+    gridfinity_cup(
+        width = grid_cells_x,
+        depth = grid_cells_y,
+        height = grid_cells_z,
+        filled_in = true,
+        lip_settings = LipSettings( lipStyle = "none" )
         );
 }
 
@@ -43,13 +58,9 @@ module GridfinityBaseplateSnugFitInto( max_x, max_y, grid_cells_x, grid_cells_y 
         num_x = grid_cells_x,
         num_y = grid_cells_y,
         oversizeMethod = "fill",
-        plateStyle = "base",
         plateOptions = "default",
-        lidOptions = "",
         customGridEnabled = false,
-        gridPositions = "",
-        cutx = 0,
-        cuty = 0
+        gridPositions = ""
         );
 
     // add the extensions...

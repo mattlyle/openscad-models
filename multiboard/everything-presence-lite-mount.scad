@@ -7,7 +7,6 @@ include <../modules/text-label.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-
 mount_x = 50.4;
 mount_y = 52.0;
 mount_z = 3.5;
@@ -26,6 +25,12 @@ difference_overlap = 0.01;
 
 render_mode = "preview";
 // render_mode = "print";
+
+label_text = "Everything Presence Lite";
+label_font = "Liberation Sans:style=Bold";
+label_font_size = 3.5;
+
+mount_corner_rounding_r = 10.0;
 
 holder_extra_x = 6;
 holder_extra_y = 5;
@@ -115,7 +120,7 @@ module EverythingPresenceLiteHolder()
     // text label
     text_area_offset_y = holder_y - holder_extra_y + 1.2;
     translate([ 0, text_area_offset_y, holder_z_offset ])
-        CenteredTextLabel( "Everything Presence Lite", holder_x, -1, font_size = 3.5, font = "Liberation Sans:style=Bold" );
+        CenteredTextLabel( label_text, holder_x, -1, font_size = label_font_size, font = label_font );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +188,6 @@ module EverythingPresenceLiteHolderCordHook()
                 hook_z,
                 center = false );
 
-
     translate([ cord_hook_wall_width, ( hook_bottom_y - hook_top_y ) / 2, hook_z - cord_hook_wall_width])
         cube([ cord_r, hook_top_y, cord_hook_wall_width  ]);
 }
@@ -194,7 +198,7 @@ module EverythingPresenceLitePreview()
 {
     % difference()
     {
-        RoundedCubeAlt3( mount_x, mount_y, mount_z, r_x = 10.0 );
+        RoundedCube( mount_x, mount_y, mount_z, r = mount_corner_rounding_r, round_top = false, round_bottom = false );
 
         translate([ cutout_offset_x, cutout_offset_y, 0 ])
             EverythingPresenceLitePreviewCutout();

@@ -1,0 +1,6 @@
+# normalize all text files to LF in the repo and in working copies
+* text=auto eol=lf
+
+# mesh files: never touch their bytes, even ASCII STLs
+*.stl binary
+*.3mf binary

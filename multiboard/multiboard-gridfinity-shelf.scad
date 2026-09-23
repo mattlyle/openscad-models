@@ -107,7 +107,7 @@ module _MultiboardGridfinityShelfArm( is_left )
             // right side
             translate([ arm_x + bin_clearance - 0.01, bottom_corder_xy, 0 ])
                 cube([ 0.01, arm_y, GRIDFINITY_BASEPLATE_Z ]);
-            
+
             // top
             translate([ 0, bottom_corder_xy, GRIDFINITY_BASEPLATE_Z - 0.01 ])
                 cube([ arm_x + bin_clearance, arm_y, 0.01 ]);

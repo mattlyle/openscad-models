@@ -1,5 +1,4 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-// include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-extended.scad>
 
 include <../modules/rounded-cube.scad>
 // include <../modules/text-label.scad>
@@ -18,10 +17,10 @@ screw_driver_handle_flare_length = 15.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
-// render_mode = "preview";
-render_mode = "bin-only";
-// render_mode = "text-only";
+render_mode = "preview";
+// render_mode = "print-bin";
+// NOTE: the print-text branch below is disabled - its CenteredTextLabel() call uses
+//       stale positional arguments from an older signature and needs re-laying out.
 
 cup_x = 3; // in grid cells
 cup_y = 4; // in grid cells
@@ -30,7 +29,7 @@ cup_z = 1;
 num_screw_drivers = 7;
 
 holder_clearance = 0.15;
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 
 screw_driver_padding_x = 7;
 screw_driver_padding_y = 5;
@@ -40,7 +39,9 @@ screw_driver_shaft_clearance = 0.5;
 screw_driver_handle_flare_clearance = 0.5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
+
+$fn = $preview ? 32 : 128;
 
 base_x = cup_x * 42.0;
 base_y = cup_y * 42.0;
@@ -53,18 +54,27 @@ holder_z = cup_z * 42.0;
 screw_driver_full_length = screw_driver_shaft_length + screw_driver_handle_length + screw_driver_handle_flare_length;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+if( render_mode == "preview" )
+{
+    SmallScrewDriverBinHolder();
+}
+else if( render_mode == "print-bin" )
+{
+    SmallScrewDriverBinHolder();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module SmallScrewDriverBinHolder()
 {
     // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        position = "zero",
-        filled_in = true,
-        lip_style = "none"
-        );
+    GridfinityFilledCup( cup_x, cup_y, cup_z );
 
     render()
     {
@@ -72,9 +82,10 @@ if( render_mode == "preview" || render_mode == "bin-only" )
         {
                 translate([ holder_clearance, holder_clearance, 0 ])
                     RoundedCube(
-                        size = [ holder_x, holder_y, holder_z ],
-                        r = corner_rounding_radius,
-                        fn = 36
+                        holder_x,
+                        holder_y,
+                        holder_z,
+                        r = corner_rounding_r
                         );
 
                 // cut off the area the gridfinity base covers
@@ -120,7 +131,7 @@ if( render_mode == "preview" || render_mode == "bin-only" )
     }
 }
 
-// if( render_mode == "preview" || render_mode == "text-only" )
+// if( render_mode == "preview" || render_mode == "print-text" )
 // {
 //     translate([ 0, holder_y - holder_y / 3, holder_z ])
 //         CenteredTextLabel( "Small Screwdriver Set", 5, holder_x, holder_y / 3 );

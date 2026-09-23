@@ -22,10 +22,18 @@ x_acto_knife_z = 14.7;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
+// render_mode = "print-text";
+// render_mode = "print-3mf";
+
+label_text_line_1 = "Utility";
+label_text_line_2 = "Knives";
+label_font = "Georgia:style=Bold";
+label_font_size = 6;
+
+bin_color = "white";
+label_color = "black";
 
 cells_x = 3;
 cells_y = 4;
@@ -35,7 +43,7 @@ top_z = 42.0;
 
 clearance = 1.5;
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 
 holder_clearance = 0.15;
 
@@ -44,7 +52,9 @@ folding_knife_spec = [ folding_knife_x, folding_knife_y, folding_knife_z ];
 retractable_knife_spec = [ retractable_knife_x, retractable_knife_y, retractable_knife_z ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
+
+$fn = $preview ? 32 : 128;
 
 base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
@@ -58,11 +68,39 @@ x_offset_0 = spacing_x;
 x_offset_1 = UpdateCutoutXOffset( x_offset_0, x_acto_knife_spec );
 x_offset_2 = UpdateCutoutXOffset( x_offset_1, folding_knife_spec );
 x_offset_3 = UpdateCutoutXOffset( x_offset_2, retractable_knife_spec );
-x_offset_4 = UpdateCutoutXOffset( x_offset_3, retractable_knife_spec );
+// x_offset_4 = UpdateCutoutXOffset( x_offset_3, retractable_knife_spec );
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
+
+if( render_mode == "preview" )
+{
+    UtilityKnivesHolder();
+    UtilityKnivesTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    UtilityKnivesHolder();
+}
+else if( render_mode == "print-text" )
+{
+    UtilityKnivesTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        UtilityKnivesHolder();
+    color( label_color )
+        UtilityKnivesTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+module UtilityKnivesHolder()
 {
     render()
     {
@@ -87,7 +125,9 @@ if( render_mode == "preview" || render_mode == "bin-only" )
     }
 }
 
-if( render_mode == "preview" || render_mode == "text-only" )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module UtilityKnivesTextLabel()
 {
     text_area_offset_x = x_offset_0 + x_acto_knife_x + clearance;
     text_area_x = x_offset_2 - text_area_offset_x - clearance;
@@ -99,9 +139,9 @@ if( render_mode == "preview" || render_mode == "text-only" )
     //     cube([ text_area_x, text_area_y, 0.5 ]);
 
     translate([ text_area_offset_x, 17, holder_z ])
-        CenteredTextLabel( "Utility", centered_in_area_x = text_area_x, centered_in_area_y = -1, font_size = 6, font = "Georgia:style=Bold"  );
+        CenteredTextLabel( label_text_line_1, centered_in_area_x = text_area_x, centered_in_area_y = -1, font_size = label_font_size, font = label_font );
     translate([ text_area_offset_x, 8, holder_z ])
-        CenteredTextLabel( "Knives", font_size = 6, font = "Georgia:style=Bold", centered_in_area_x = text_area_x, centered_in_area_y = -1 );
+        CenteredTextLabel( label_text_line_2, centered_in_area_x = text_area_x, centered_in_area_y = -1, font_size = label_font_size, font = label_font );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -7,7 +7,7 @@ include <modules/utils.scad>
 // settings
 
 render_mode = "preview";
-// render_mode = "mo-model";
+// render_mode = "print";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -21,7 +21,7 @@ if( render_mode == "preview" )
 {
     MyModel();
 }
-else if( render_mode == "my-model" )
+else if( render_mode == "print" )
 {
     MyModel();
 }

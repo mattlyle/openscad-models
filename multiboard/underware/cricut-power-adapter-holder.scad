@@ -3,7 +3,7 @@ include <../../modules/rounded-cube.scad>
 include <../../modules/triangular-prism.scad>
 include <../../modules/text-label.scad>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
 adapter_x = 60.1;
@@ -16,15 +16,19 @@ adapter_power_out_r = 3.5 / 2;
 wall_width = 2.2;
 wall_clearance = 0.75;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 render_mode = "preview";
 // render_mode = "print";
 
+label_lines = [ "Cricut", "Power", "Adapter" ];
+label_font = "Liberation Sans:style=Bold";
+label_font_size = 16;
+
 lip_z = 3.0;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 adapter_r = adapter_z / 2;
@@ -37,13 +41,13 @@ holder_z_offset = multiboard_connector_back_z;
 
 $fn = $preview ? 16 : 32;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
 if( render_mode == "preview" )
 {
     translate([ 0, 0, -multiboard_cell_height ])
-        color([ 112.0/255.0, 128.0/255.0, 144.0/255.0 ])
+        color( workroom_multiboard_color )
             MultiboardMockUpTile( 6, 6 );
 
     // translate([ MultiboardConnectorBackAltXOffset( holder_x_bottom ), 0, 0 ])
@@ -60,8 +64,12 @@ else if( render_mode == "print" )
         rotate([ 90, 0, 0 ])
             CricutPowerAdapterHolder();
 }
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CricutPowerAdapterHolder()
 {
@@ -76,7 +84,7 @@ module CricutPowerAdapterHolder()
         difference()
         {
             translate([ 0, 0, holder_z_offset ])
-                RoundedCubeAlt2( x = holder_x, y = holder_y, z = holder_z, round_bottom = false );
+                RoundedCube( x = holder_x, y = holder_y, z = holder_z, round_bottom = false );
 
             translate([ wall_width + wall_clearance, wall_width, holder_z_offset ])
                 cube([ holder_inside_x, holder_y, holder_inside_z ]);
@@ -91,16 +99,16 @@ module CricutPowerAdapterHolder()
     // text label
     translate([ 48, holder_y, holder_z_offset + holder_z ])
         rotate([ 0, 0, -90 ])
-            CenteredTextLabel( "Cricut", holder_y, -1, font_size = 16, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( label_lines[ 0 ], holder_y, -1, font_size = label_font_size, font = label_font );
     translate([ 28, holder_y, holder_z_offset + holder_z ])
         rotate([ 0, 0, -90 ])
-            CenteredTextLabel( "Power", holder_y, -1, font_size = 16, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( label_lines[ 1 ], holder_y, -1, font_size = label_font_size, font = label_font );
     translate([ 8, holder_y, holder_z_offset + holder_z ])
         rotate([ 0, 0, -90 ])
-            CenteredTextLabel( "Adapter", holder_y, -1, font_size = 16, font = "Liberation Sans:style=Bold" );
+            CenteredTextLabel( label_lines[ 2 ], holder_y, -1, font_size = label_font_size, font = label_font );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module CricutPowerAdapterPreview()
 {
@@ -129,4 +137,4 @@ module CricutPowerAdapterPreview()
             cylinder( h = adapter_y * 2, r = adapter_power_out_r );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

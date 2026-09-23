@@ -1,6 +1,4 @@
-// use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity.scad>
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-extended.scad>
 
 use <../modules/triangular-prism.scad>
 
@@ -21,6 +19,17 @@ screwdriver_bits_above_inset_xy = 3.0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
+render_mode = "preview";
+// render_mode = "print-bin";
+// render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
+
+label_text = "Husky Screwdriver";
+label_font_size = 6;
+
 cup_x = 2; // in grid cells
 cup_y = 2; // in grid cells
 cup_z = 1;
@@ -30,9 +39,9 @@ base_y = cup_y * 42.0;
 base_z = 7.0;
 
 screwdriver_base_depth = 70;
-screwdriver_base_lip_radius = 1;
-screwdriver_base_cone_extra_radius_top = 1.5;
-screwdriver_base_cone_extra_radius_bottom = 0.1;
+screwdriver_base_lip_r = 1;
+screwdriver_base_cone_top_extra_r = 1.5;
+screwdriver_base_cone_bottom_extra_r = 0.1;
 
 screwdriver_bits_base_angle = 45;
 screwdriver_bits_base_lip_height = 8;
@@ -43,75 +52,105 @@ screwdriver_bits_base_vertical_lip = 40.0;
 show_previews = false;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
+
+$fn = $preview ? 32 : 128;
 
 // screwdriver holder
-screwdriver_holder_radius = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_extra_radius_top + screwdriver_base_lip_radius;
+screwdriver_holder_r = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_top_extra_r + screwdriver_base_lip_r;
 
 // bits holder
 screwdriver_bits_base_x = screwdriver_bits_holder_x + screwdriver_bits_base_lip_thickness * 2 + screwdriver_bits_base_extra_x;
 screwdriver_bits_base_y = screwdriver_bits_holder_y * cos( screwdriver_bits_base_angle );
-screwdriver_bits_base_z = screwdriver_bits_holder_y * sin( screwdriver_bits_base_angle );;
+screwdriver_bits_base_z = screwdriver_bits_holder_y * sin( screwdriver_bits_base_angle );
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// models
+
+// HuskyScrewdriver();
+// HuskyScrewdriverBits();
+
+if( render_mode == "preview" )
+{
+    HuskyScrewdriverHolder();
+    HuskyScrewdriverTextLabel();
+}
+else if( render_mode == "print-bin" )
+{
+    HuskyScrewdriverHolder();
+}
+else if( render_mode == "print-text" )
+{
+    HuskyScrewdriverTextLabel();
+}
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        HuskyScrewdriverHolder();
+    color( label_color )
+        HuskyScrewdriverTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// husky_screwdriver();
-// husky_screwdriver_bits();
+module HuskyScrewdriverHolder()
+{
+    // base
+    GridfinityFilledCup( cup_x, cup_y, cup_z );
 
-// base
-gridfinity_cup(
-    width = cup_x,
-    depth = cup_y,
-    height = cup_z,
-    position = "zero",
-    filled_in = true,
-    lip_style = "none"
-    );
+    combined_x = screwdriver_bits_base_x + screwdriver_holder_r * 2;
 
-// text
-translate([ 8, 3, base_z ]) // TODO this is just eyeball centered?!
-    linear_extrude( 0.5 )
-        text( "Husky Screwdriver", size = 6 );
+    // bits holder
+    translate([ ( base_x - combined_x ) / 3, ( base_y - screwdriver_bits_base_y ) / 2, base_z ])
+        ScrewdriverBitsBase();
 
-combined_x = screwdriver_bits_base_x + screwdriver_holder_radius * 2;
-
-// bits holder
-translate([ ( base_x - combined_x ) / 3, ( base_y - screwdriver_bits_base_y ) / 2, base_z ])
-    screwdriver_bits_base();
-
-// screwdriver holder
-translate([ base_x - screwdriver_holder_radius - ( base_x - combined_x ) / 3, ( base_y - screwdriver_holder_radius * 2 ) / 2 + screwdriver_holder_radius, base_z ])
-    screwdriver_base();
+    // screwdriver holder
+    translate([ base_x - screwdriver_holder_r - ( base_x - combined_x ) / 3, ( base_y - screwdriver_holder_r * 2 ) / 2 + screwdriver_holder_r, base_z ])
+        ScrewdriverBase();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module screwdriver_base()
+module HuskyScrewdriverTextLabel()
+{
+    translate([ 8, 3, base_z ]) // TODO this is just eyeball centered?!
+        linear_extrude( 0.5 )
+            text( label_text, size = label_font_size );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ScrewdriverBase()
 {
     render()
     {
         difference()
         {
-            cylinder( h = screwdriver_base_depth, r = screwdriver_holder_radius, $fn = 48 );
+            cylinder( h = screwdriver_base_depth, r = screwdriver_holder_r, $fn = 48 );
 
             // cone
             cylinder(
                 h = screwdriver_base_depth,
-                r1 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_extra_radius_bottom,
-                r2 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_extra_radius_top,
+                r1 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_bottom_extra_r,
+                r2 = screwdriver_shaft_diameter / 2 + screwdriver_base_cone_top_extra_r,
                 $fn = 48 );
         }
     }
 
-    if( show_previews )
+    if( render_mode == "preview" && show_previews )
     {
         translate([ 0, 0, 0 ])
-            husky_screwdriver();
+            HuskyScrewdriver();
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module screwdriver_bits_base()
+module ScrewdriverBitsBase()
 {
     translate([ screwdriver_bits_base_x, screwdriver_bits_base_y, 0 ])
         rotate([ 0, 0, 180 ])
@@ -131,17 +170,17 @@ module screwdriver_bits_base()
         rotate([ screwdriver_bits_base_angle, 0, 0 ])
             cube([ screwdriver_bits_base_lip_thickness, screwdriver_bits_base_vertical_lip, screwdriver_bits_base_lip_height ]);
 
-    if( show_previews )
+    if( render_mode == "preview" && show_previews )
     {
         translate([ screwdriver_bits_base_lip_thickness + screwdriver_bits_base_extra_x / 2, screwdriver_bits_base_lip_thickness, 0 ])
             rotate([ screwdriver_bits_base_angle, 0, 0 ])
-                husky_screwdriver_bits();
+                HuskyScrewdriverBits();
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module husky_screwdriver()
+module HuskyScrewdriver()
 {
     union()
     {
@@ -154,7 +193,7 @@ module husky_screwdriver()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module husky_screwdriver_bits()
+module HuskyScrewdriverBits()
 {
     % cube([ screwdriver_bits_holder_x, screwdriver_bits_holder_y, screwdriver_bits_holder_z ]);
 

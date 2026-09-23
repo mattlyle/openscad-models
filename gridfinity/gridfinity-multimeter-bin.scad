@@ -1,5 +1,4 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-// include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+include <../modules/gridfinity-extended.scad>
 
 include <../modules/rounded-cube.scad>
 include <../modules/triangular-prism.scad>
@@ -19,19 +18,17 @@ multimeter_main_body_front_z = 55.0;
 multimeter_main_body_front_sides_x = 11.0;
 multimeter_main_body_angle = 15.0; // TODO: maybe only 10 degrees, not 15
 
-multimeter_probe_tip_radius = 2.1 / 2;
+multimeter_probe_tip_r = 2.1 / 2;
 multimeter_probe_tip_length = 16;
 
-multimeter_probe_handle_radius = 10.1 / 2;
+multimeter_probe_handle_r = 10.1 / 2;
 multimeter_probe_handle_length = 19.0;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
 
 cup_x = 3; // in grid cells
 cup_y = 2; // in grid cells
@@ -45,11 +42,16 @@ multimeter_probe_1_offset_y = 14;
 multimeter_probe_2_offset_y = 36;
 multimeter_probe_clearance = 1.0;
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
+// preview color for the parts added back onto the holder
+holder_supports_color = [ 0.4, 0, 0 ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// calculated values
+// calculations
+
+$fn = $preview ? 32 : 128;
 
 base_x = cup_x * 42.0;
 base_y = cup_y * 42.0;
@@ -67,9 +69,17 @@ offset_z = base_z + multimeter_back_sides_width + 0.4;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+if( render_mode == "preview" )
 {
     MultimeterHolder();
+}
+else if( render_mode == "print-bin" )
+{
+    MultimeterHolder();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 // if( render_mode == "preview" )
@@ -84,14 +94,7 @@ if( render_mode == "preview" || render_mode == "bin-only" )
 module MultimeterHolder()
 {
     // base
-    gridfinity_cup(
-        width = cup_x,
-        depth = cup_y,
-        height = cup_z,
-        position = "zero",
-        filled_in = true,
-        lip_style = "none"
-        );
+    GridfinityFilledCup( cup_x, cup_y, cup_z );
 
     back_width = multimeter_main_body_x + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
     back_depth = multimeter_main_body_y + multimeter_back_sides_width * 2 + multimeter_back_clearance * 2;
@@ -102,9 +105,10 @@ module MultimeterHolder()
         {
             translate([ holder_clearance, holder_clearance, 0 ])
                 RoundedCube(
-                    size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_radius,
-                    fn = 36 );
+                    holder_x,
+                    holder_y,
+                    holder_z,
+                    r = corner_rounding_r );
 
             // cut off the area the gridfinity base covers
             cube([ base_x, base_y, base_z ]);
@@ -120,21 +124,21 @@ module MultimeterHolder()
 
             // remove the probe 1
             translate([ multimeter_probe_offset_x, multimeter_probe_1_offset_y, holder_z - multimeter_probe_handle_length ])
-                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_radius + multimeter_probe_clearance, $fn = 24 );
+                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_r + multimeter_probe_clearance, $fn = 24 );
             translate([ multimeter_probe_offset_x, multimeter_probe_1_offset_y, holder_z - multimeter_probe_handle_length - multimeter_probe_tip_length ])
-                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_radius + multimeter_probe_clearance, $fn = 24 );
-            
+                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_r + multimeter_probe_clearance, $fn = 24 );
+
             // remove the probe 2
             translate([ multimeter_probe_offset_x, multimeter_probe_2_offset_y, holder_z - multimeter_probe_handle_length ])
-                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_radius + multimeter_probe_clearance, $fn = 24 );
+                cylinder( h = multimeter_probe_handle_length, r = multimeter_probe_handle_r + multimeter_probe_clearance, $fn = 24 );
             translate([ multimeter_probe_offset_x, multimeter_probe_2_offset_y, holder_z - multimeter_probe_handle_length - multimeter_probe_tip_length ])
-                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_radius + multimeter_probe_clearance, $fn = 24 );
+                cylinder( h = multimeter_probe_tip_length, r = multimeter_probe_tip_r + multimeter_probe_clearance, $fn = 24 );
         }
     }
 
     // now add all the other parts back
 
-    color([ 0.4, 0, 0 ])
+    color( holder_supports_color )
     {
         translate([ multimeter_main_body_offset_x - multimeter_back_sides_width - multimeter_back_clearance, multimeter_main_body_offset_y + multimeter_main_body_y, offset_z ])
         {
@@ -179,15 +183,15 @@ module MultimeterHolder()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module MultimeterBody()
-{
-    cube([ multimeter_main_body_x, multimeter_main_body_y, multimeter_main_body_z ]);
-}
+// module MultimeterBody()
+// {
+//     cube([ multimeter_main_body_x, multimeter_main_body_y, multimeter_main_body_z ]);
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module MultimeterProbe()
-{
-}
+// module MultimeterProbe()
+// {
+// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

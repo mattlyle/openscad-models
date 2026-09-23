@@ -16,7 +16,7 @@ link_z = 16;
 link_cutout_offset_y = 16.3;
 link_cutout_r = 8.3;
 link_hole_offset_y = 8;
-link_hole_r = 3;
+// link_hole_r = 3;
 
 link_offset_x = 0.782;
 link_offset_y = 2.5;
@@ -116,7 +116,7 @@ render()
     }
     else
     {
-        assert( false, "Unknown render mode!" );
+        assert( false, str( "Unknown render mode: ", render_mode ) );
     }
 }
 
@@ -272,7 +272,6 @@ module ChainLinkProng( prong_r )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 module ChainTopVelcroTie()
 {

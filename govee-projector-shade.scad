@@ -42,14 +42,35 @@ function CalculateFlareZ( i, num_levels, extra_r, max_angle ) =
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-translate([
-    govee_projector_shade_x / 2 + wall_width + base_width + clearance,
-    govee_projector_shade_y / 2 + wall_width + base_width + clearance,
-    0
-    ])
-    GoveeProjectorShade();
-
 if( render_mode == "preview" )
+{
+    GoveeProjectorShadePositioned();
+    GoveeProjectorShadePreview();
+}
+else if( render_mode == "print" )
+{
+    GoveeProjectorShadePositioned();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module GoveeProjectorShadePositioned()
+{
+    translate([
+        govee_projector_shade_x / 2 + wall_width + base_width + clearance,
+        govee_projector_shade_y / 2 + wall_width + base_width + clearance,
+        0
+        ])
+        GoveeProjectorShade();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module GoveeProjectorShadePreview()
 {
     % cube([
         govee_projector_shade_x + wall_width * 2 + base_width * 2 + clearance * 2,

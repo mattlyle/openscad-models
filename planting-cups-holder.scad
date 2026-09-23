@@ -13,8 +13,8 @@ cup_z = 80;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
-// render_mode = "preview";
-render_mode = "print";
+render_mode = "preview";
+// render_mode = "print";
 
 num_cups_x = 2;
 num_cups_y = 2;
@@ -37,7 +37,7 @@ cup_hole_r = 4.0;
 num_additional_holes = 6;
 additional_hole_r = 14.0;
 
-connector_width = 2.0;
+// connector_width = 2.0;
 connector_z = 6.0;
 
 center_cutout_r = 20.0;
@@ -64,7 +64,7 @@ else if( render_mode == "print" )
 }
 else
 {
-    assert( false, str( "Unknown render_mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +124,6 @@ module PlantingCupHolder()
             }
         }
 
-
         // remove the holes at the bottom
         for( x = [ 0 : num_cups_x - 1 ] )
         {
@@ -149,8 +148,6 @@ module PlantingCupHolder()
         }
     }
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
