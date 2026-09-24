@@ -209,9 +209,9 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup, rounding_
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// the [ x, y, z ] outer size of the shell MultiboardConnectorHelper() makes for item_size_vector
+// the bin size MultiboardConnectorHelper() makes for item_size_vector
 //
-// this is the size as modelled, lying on its back, so the printed height holder_z lands in y
+// the item's own y is its length, which runs up the holder, so it plays no part in the size
 function MultiboardConnectorHelperSize(
     item_size_vector,
     holder_z,
@@ -219,9 +219,9 @@ function MultiboardConnectorHelperSize(
     wall_width = multiboard_wall_width
     ) =
     [
-        item_size_vector[ 0 ] + wall_width * 2 + clearance * 2,
-        holder_z + wall_width,
-        item_size_vector[ 2 ] + wall_width * 2 + clearance * 2
+        item_size_vector.x + wall_width * 2 + clearance * 2,
+        item_size_vector.z + wall_width * 2 + clearance * 2,
+        holder_z
         ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,15 +244,13 @@ module MultiboardConnectorHelper(
         wall_width
         );
 
-    item_cutout = BinHelperCube(
-        item_size_vector[ 0 ] + clearance * 2,
-        item_size_vector[ 2 ] + clearance * 2
-        );
+    item_cutout_y = item_size_vector.z + clearance * 2;
 
+    // the item sits back against the plate, which puts the leftover wall on the outside
     MultiboardConnectorHelperBin(
         size_vector,
-        [ item_cutout ],
-        [ [ wall_width, 0 ] ],
+        [ BinHelperCube( item_size_vector.x + clearance * 2, item_cutout_y ) ],
+        [ [ wall_width, size_vector.y - item_cutout_y ] ],
         wall_width,
         corner_rounding_r
         );
@@ -260,111 +258,47 @@ module MultiboardConnectorHelper(
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// the holder's modelled [ x, y, z ] for a bin of the given cutouts
-//
-// the bin stands up the way it prints, but the holder is modelled lying on its back, so the
-// bin's height (holder_z) lands in y here and its depth away from the board lands in z
+// the bin size for the given cutouts, laid out equally spaced
 function MultiboardConnectorHelperBinSize(
-    cutouts,
+    cutout_list,
     holder_z,
     spacing,
     wall_width = multiboard_wall_width
     ) =
-    let( bin_size = BinHelperEquallySpacedSize( cutouts, spacing, wall_width ) )
-    [
-        bin_size[ 0 ],
-        holder_z + wall_width,
-        bin_size[ 1 ]
-        ];
+        let( bin_size = BinHelperEquallySpacedSize( cutout_list, spacing, wall_width ) )
+        [
+            bin_size.x,
+            bin_size.y,
+            holder_z
+            ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// a multiboard-mounted holder of the given outer size: connector back + rounded outer shell
-// with the bin cutouts removed, for holders needing more than MultiboardConnectorHelper() covers
+// a multiboard-mounted holder: the bin, with the connector back stood up behind it
 module MultiboardConnectorHelperBin(
     size_vector,
-    cutouts,
-    cutout_locations,
+    cutout_list,
+    cutout_location_list,
     wall_width = multiboard_wall_width,
     corner_rounding_r = multiboard_corner_rounding_r
     )
 {
-    // back
-    MultiboardConnectorBackAlt( size_vector[ 0 ], size_vector[ 1 ] );
+    // the back plate is drawn flat, so tip it up to stand behind the bin
+    //
+    // tipping it this way is what puts its connectors up the holder and its rounded face out
+    // against the board, which is why the board ends up at the far y rather than at zero
+    translate([ 0, size_vector.y + multiboard_connector_back_z, 0 ])
+        rotate([ 90, 0, 0 ])
+            MultiboardConnectorBackAlt( size_vector.x, size_vector.z );
 
-    difference()
-    {
-        translate([ 0, 0, multiboard_connector_back_z ])
-            RoundedCube(
-                x = size_vector[ 0 ],
-                y = size_vector[ 1 ],
-                z = size_vector[ 2 ],
-                r = corner_rounding_r,
-                round_bottom = false
-                );
-
-        // cut out the middle
-        for( i = [ 0 : len( cutouts ) - 1 ] )
-        {
-            _MultiboardConnectorHelperBinCutout(
-                cutouts[ i ],
-                cutout_locations[ i ],
-                size_vector,
-                wall_width
-                );
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// one bin cutout, placed in the holder
-//
-// the bin stands the way it prints, but the holder is modelled lying on its back, so the three
-// bin axes land on the holder like this:
-//
-//     bin x (across)                -> holder x
-//     bin y (depth away from board) -> holder z, sat on top of the back plate
-//     bin z (how far things go in)  -> holder y, counted back from the open end
-module _MultiboardConnectorHelperBinCutout( cutout, location, size_vector, wall_width )
-{
-    footprint = BinHelperCutoutFootprint( cutout );
-    cutout_depth = BinHelperCutoutDepth( cutout );
-
-    // no depth of its own means it runs the whole way in, stopping at the lip things rest on
-    depth_y = cutout_depth == 0 ? size_vector[ 1 ] - wall_width : cutout_depth;
-
-    offset_x = location[ 0 ];
-    offset_z = multiboard_connector_back_z + location[ 1 ];
-
-    // it cuts back from the open end, standing a little proud so it shares no face with it
-    offset_y = size_vector[ 1 ] - depth_y;
-    cut_y = depth_y + DIFFERENCE_OFFSET;
-
-    // cubes are located by their corner and cylinders by their center, so ask for the corner
-    corner = BinHelperCutoutCorner( cutout, location );
-
-    assert(
-        corner[ 0 ] >= 0 && corner[ 0 ] + footprint[ 0 ] <= size_vector[ 0 ],
-        str( "cutout at ", location, " does not fit the holder's x" )
+    BinHelperBin(
+        size_vector = size_vector,
+        cutout_list = cutout_list,
+        cutout_location_list = cutout_location_list,
+        corner_rounding_r = corner_rounding_r,
+        floor_z = wall_width,
+        round_back = false
         );
-    assert(
-        corner[ 1 ] >= 0 && corner[ 1 ] + footprint[ 1 ] <= size_vector[ 2 ],
-        str( "cutout at ", location, " does not fit the holder's z" )
-        );
-
-    if( BinHelperCutoutIsCube( cutout ) )
-    {
-        translate([ offset_x, offset_y, offset_z ])
-            cube([ footprint[ 0 ], cut_y, footprint[ 1 ] ]);
-    }
-    else
-    {
-        // the cylinder is drawn up its own z, so tip it over to run along the holder's y
-        translate([ offset_x, offset_y, offset_z ])
-            rotate([ -90, 0, 0 ])
-                cylinder( r = footprint[ 0 ] / 2, h = cut_y );
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

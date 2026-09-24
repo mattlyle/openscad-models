@@ -1,47 +1,53 @@
 include <utils.scad>
+include <rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cutout definitions
 //
-// a cutout is a vector whose first entry marks the shape: [ true, x, y, z ] for a cube,
-// [ false, r, h ] for a cylinder
+// a cutout is [ is_cube, size ], where size is [ x, y, z ] for a cube and [ r, h ] for a cylinder
 //
 // the z / h is how deep to cut, measured down from the top of the bin; 0 cuts all the
 // way through the bottom
 
-function BinHelperCube( x, y, z = 0 ) = [ true, x, y, z ];
+function BinHelperCube( x, y, z = 0 ) = [ true, [ x, y, z ] ];
 
-function BinHelperCylinder( r, h = 0 ) = [ false, r, h ];
+function BinHelperCylinder( r, h = 0 ) = [ false, [ r, h ] ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cutout accessors
 
 function BinHelperCutoutIsCube( cutout ) = cutout[ 0 ];
 
+function BinHelperCutoutSize( cutout ) = cutout[ 1 ];
+
 // the [ x, y ] the cutout takes up on the bin floor
 function BinHelperCutoutFootprint( cutout ) =
+    let( size = BinHelperCutoutSize( cutout ) )
     BinHelperCutoutIsCube( cutout )
-        ? [ cutout[ 1 ], cutout[ 2 ] ]
-        : [ cutout[ 1 ] * 2, cutout[ 1 ] * 2 ];
+        ? [ size.x, size.y ]
+        : [ size.x * 2, size.x * 2 ];
 
 // how deep to cut; 0 means all the way through the bottom of the bin
 function BinHelperCutoutDepth( cutout ) =
+    let( size = BinHelperCutoutSize( cutout ) )
     BinHelperCutoutIsCube( cutout )
-        ? cutout[ 3 ]
-        : cutout[ 2 ];
+        ? size.z
+        : size.y;
 
 // the [ x, y ] lower-left corner of the cutout's footprint when placed at the given location
 // (cubes are located by that corner, cylinders by their center)
 function BinHelperCutoutCorner( cutout, location ) =
+    let( size = BinHelperCutoutSize( cutout ) )
     BinHelperCutoutIsCube( cutout )
         ? location
-        : [ location[ 0 ] - cutout[ 1 ], location[ 1 ] - cutout[ 1 ] ];
+        : [ location.x - size.x, location.y - size.x ];
 
 // the same cutout cut to a new depth, for bins that set the depth themselves
 function BinHelperCutoutWithDepth( cutout, z ) =
+    let( size = BinHelperCutoutSize( cutout ) )
     BinHelperCutoutIsCube( cutout )
-        ? BinHelperCube( cutout[ 1 ], cutout[ 2 ], z )
-        : BinHelperCylinder( cutout[ 1 ], z );
+        ? BinHelperCube( size.x, size.y, z )
+        : BinHelperCylinder( size.x, z );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // equally spaced layout: a single row along x, with 'spacing' between the cutouts and
@@ -51,84 +57,109 @@ function BinHelperCutoutWithDepth( cutout, z ) =
 function BinHelperEquallySpacedMargin( spacing, margin ) = is_undef( margin ) ? spacing : margin;
 
 // the [ x, y ] bin size needed to hold the cutouts
-function BinHelperEquallySpacedSize( cutouts, spacing, margin ) =
+function BinHelperEquallySpacedSize( cutout_list, spacing, margin ) =
     let( edge_margin = BinHelperEquallySpacedMargin( spacing, margin ) )
-    let( footprints = [ for( cutout = cutouts ) BinHelperCutoutFootprint( cutout ) ] )
-    let( footprints_total_x = SumList( GetListAtIndex( footprints, 0 ) ) )
-    let( gaps_x = spacing * ( len( cutouts ) - 1 ) )
+    let( footprint_list = [ for( cutout = cutout_list ) BinHelperCutoutFootprint( cutout ) ] )
+    let( footprint_total_x = SumList( GetListAtIndex( footprint_list, 0 ) ) )
+    let( gaps_x = spacing * ( len( cutout_list ) - 1 ) )
     [
-        footprints_total_x + gaps_x + edge_margin * 2,
-        max( GetListAtIndex( footprints, 1 ) ) + edge_margin * 2
+        footprint_total_x + gaps_x + edge_margin * 2,
+        max( GetListAtIndex( footprint_list, 1 ) ) + edge_margin * 2
         ];
 
 // the location of each cutout, centered in y
 // (cubes by their lower-left corner, cylinders by their center)
-function BinHelperEquallySpacedLocations( cutouts, spacing, margin ) =
+function BinHelperEquallySpacedLocations( cutout_list, spacing, margin ) =
     let( edge_margin = BinHelperEquallySpacedMargin( spacing, margin ) )
-    let( footprints = [ for( cutout = cutouts ) BinHelperCutoutFootprint( cutout ) ] )
-    let( footprints_x = GetListAtIndex( footprints, 0 ) )
-    let( bin_y = BinHelperEquallySpacedSize( cutouts, spacing, margin )[ 1 ] )
+    let( footprint_list = [ for( cutout = cutout_list ) BinHelperCutoutFootprint( cutout ) ] )
+    let( footprint_x_list = GetListAtIndex( footprint_list, 0 ) )
+    let( bin_y = BinHelperEquallySpacedSize( cutout_list, spacing, margin ).y )
     [
-        for( i = [ 0 : len( cutouts ) - 1 ] )
-            let( offset_x = edge_margin + spacing * i + SumTo( footprints_x, i ) )
-            BinHelperCutoutIsCube( cutouts[ i ] )
-                ? [ offset_x, ( bin_y - footprints[ i ][ 1 ] ) / 2 ]
-                : [ offset_x + footprints[ i ][ 0 ] / 2, bin_y / 2 ]
+        for( i = [ 0 : len( cutout_list ) - 1 ] )
+            let( offset_x = edge_margin + spacing * i + SumTo( footprint_x_list, i ) )
+            BinHelperCutoutIsCube( cutout_list[ i ] )
+                ? [ offset_x, ( bin_y - footprint_list[ i ].y ) / 2 ]
+                : [ offset_x + footprint_list[ i ].x / 2, bin_y / 2 ]
         ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// the cutouts for a bin sized by BinHelperEquallySpacedSize()
-// meant to be used inside a difference()
+// a bin of the given size with the cutouts taken out of it
+//
+// everything cuts down the z, so the bin stands the way it prints: open at the top, sat on a
+// floor_z thick floor that a cutout with no depth of its own stops at
 
-module BinHelperEquallySpaced( bin_z, cutouts, spacing, margin )
+module BinHelperBin(
+    size_vector,
+    cutout_list,
+    cutout_location_list,
+    corner_rounding_r,
+    floor_z = 0,
+    round_back = true
+    )
 {
-    bin_size = BinHelperEquallySpacedSize( cutouts, spacing, margin );
+    bin_cutout_list = [
+        for( cutout = cutout_list )
+            BinHelperCutoutDepth( cutout ) == 0
+                ? BinHelperCutoutWithDepth( cutout, size_vector.z - floor_z )
+                : cutout
+        ];
 
-    BinHelper(
-        bin_x = bin_size[ 0 ],
-        bin_y = bin_size[ 1 ],
-        bin_z = bin_z,
-        cutouts = cutouts,
-        cutout_locations = BinHelperEquallySpacedLocations( cutouts, spacing, margin )
-        );
+    difference()
+    {
+        RoundedCube(
+            x = size_vector.x,
+            y = size_vector.y,
+            z = size_vector.z,
+            r = corner_rounding_r,
+            round_back = round_back
+            );
+
+        BinHelper(
+            bin_x = size_vector.x,
+            bin_y = size_vector.y,
+            bin_z = size_vector.z,
+            cutout_list = bin_cutout_list,
+            cutout_location_list = cutout_location_list
+            );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // the cutouts at the given locations; meant to be used inside a difference()
 // bin_x / bin_y are only used to check that everything fits - leave them 0 to skip the check
 
-module BinHelper( bin_x = 0, bin_y = 0, bin_z, cutouts, cutout_locations )
+module BinHelper( bin_x = 0, bin_y = 0, bin_z, cutout_list, cutout_location_list )
 {
     assert(
-        len( cutouts ) == len( cutout_locations ),
-        str( "got ", len( cutouts ), " cutouts but ", len( cutout_locations ), " locations" )
+        len( cutout_list ) == len( cutout_location_list ),
+        str( "got ", len( cutout_list ), " cutouts but ", len( cutout_location_list ), " locations" )
         );
 
     if( bin_x > 0 && bin_y > 0 )
     {
-        for( i = [ 0 : len( cutouts ) - 1 ] )
+        for( i = [ 0 : len( cutout_list ) - 1 ] )
         {
-            corner = BinHelperCutoutCorner( cutouts[ i ], cutout_locations[ i ] );
-            footprint = BinHelperCutoutFootprint( cutouts[ i ] );
+            corner = BinHelperCutoutCorner( cutout_list[ i ], cutout_location_list[ i ] );
+            footprint = BinHelperCutoutFootprint( cutout_list[ i ] );
 
             assert(
-                corner[ 0 ] >= 0 && corner[ 1 ] >= 0,
+                corner.x >= 0 && corner.y >= 0,
                 str( "cutout ", i, " starts outside the bin" )
                 );
             assert(
-                corner[ 0 ] + footprint[ 0 ] <= bin_x,
+                corner.x + footprint.x <= bin_x,
                 str( "cutout ", i, " is too wide for the bin" )
                 );
             assert(
-                corner[ 1 ] + footprint[ 1 ] <= bin_y,
+                corner.y + footprint.y <= bin_y,
                 str( "cutout ", i, " is too deep for the bin" )
                 );
         }
     }
 
-    for( i = [ 0 : len( cutouts ) - 1 ] )
+    for( i = [ 0 : len( cutout_list ) - 1 ] )
     {
-        _BinHelperCutout( cutouts[ i ], cutout_locations[ i ], bin_z );
+        _BinHelperCutout( cutout_list[ i ], cutout_location_list[ i ], bin_z );
     }
 }
 
@@ -136,6 +167,8 @@ module BinHelper( bin_x = 0, bin_y = 0, bin_z, cutouts, cutout_locations )
 
 module _BinHelperCutout( cutout, location, bin_z )
 {
+    size = BinHelperCutoutSize( cutout );
+
     cutout_z = BinHelperCutoutDepth( cutout );
 
     cut_through = cutout_z == 0;
@@ -143,15 +176,15 @@ module _BinHelperCutout( cutout, location, bin_z )
     cut_z = cut_through ? bin_z + DIFFERENCE_OFFSET * 2 : cutout_z + DIFFERENCE_OFFSET;
     offset_z = cut_through ? -DIFFERENCE_OFFSET : bin_z - cutout_z;
 
-    translate([ location[ 0 ], location[ 1 ], offset_z ])
+    translate([ location.x, location.y, offset_z ])
     {
         if( BinHelperCutoutIsCube( cutout ) )
         {
-            cube([ cutout[ 1 ], cutout[ 2 ], cut_z ]);
+            cube([ size.x, size.y, cut_z ]);
         }
         else
         {
-            cylinder( r = cutout[ 1 ], h = cut_z );
+            cylinder( r = size.x, h = cut_z );
         }
     }
 }
