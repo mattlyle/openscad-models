@@ -208,57 +208,8 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup, rounding_
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// the bin size MultiboardConnectorHelper() makes for item_size_vector
-//
-// the item's own y is its length, which runs up the holder, so it plays no part in the size
-function MultiboardConnectorHelperSize(
-    item_size_vector,
-    holder_z,
-    clearance,
-    wall_width = multiboard_wall_width
-    ) =
-    [
-        item_size_vector.x + wall_width * 2 + clearance * 2,
-        item_size_vector.z + wall_width * 2 + clearance * 2,
-        holder_z
-        ];
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// a multiboard-mounted holder shell sized around item_size_vector: connector back + rounded
-// outer shell with a cutout for the item, running the full holder_z and open at the far end
-// (for items that extend past it, like the doxie)
-module MultiboardConnectorHelper(
-    item_size_vector,
-    holder_z,
-    clearance,
-    wall_width = multiboard_wall_width,
-    corner_rounding_r = multiboard_corner_rounding_r
-    )
-{
-    size_vector = MultiboardConnectorHelperSize(
-        item_size_vector,
-        holder_z,
-        clearance,
-        wall_width
-        );
-
-    item_cutout_y = item_size_vector.z + clearance * 2;
-
-    // the item sits back against the plate, which puts the leftover wall on the outside
-    MultiboardConnectorHelperBin(
-        size_vector,
-        [ BinHelperCube( item_size_vector.x + clearance * 2, item_cutout_y ) ],
-        [ [ wall_width, size_vector.y - item_cutout_y ] ],
-        wall_width,
-        corner_rounding_r
-        );
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // the bin size for the given cutouts, laid out equally spaced
+
 function MultiboardConnectorHelperBinSize(
     cutout_list,
     holder_z,
@@ -273,8 +224,8 @@ function MultiboardConnectorHelperBinSize(
             ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 // a multiboard-mounted holder: the bin, with the connector back stood up behind it
+
 module MultiboardConnectorHelperBin(
     size_vector,
     cutout_list,
