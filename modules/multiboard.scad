@@ -1,6 +1,7 @@
 include <trapezoidal-prism.scad>
 include <triangular-prism.scad>
 include <rounded-cube.scad>
+include <bin-helper.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -204,6 +205,51 @@ module MultiboardConnectorBackAlt2( size_x, size_y, connector_y_setup, rounding_
     }
 
     // TODO: add the pins for all the cutouts
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// the bin size for the given cutouts, laid out equally spaced
+
+function MultiboardConnectorHelperBinSize(
+    cutout_list,
+    holder_z,
+    spacing,
+    wall_width = multiboard_wall_width
+    ) =
+        let( bin_size = BinHelperEquallySpacedSize( cutout_list, spacing, wall_width ) )
+        [
+            bin_size.x,
+            bin_size.y,
+            holder_z
+            ];
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// a multiboard-mounted holder: the bin, with the connector back stood up behind it
+
+module MultiboardConnectorHelperBin(
+    size_vector,
+    cutout_list,
+    cutout_location_list,
+    wall_width = multiboard_wall_width,
+    corner_rounding_r = multiboard_corner_rounding_r
+    )
+{
+    // the back plate is drawn flat, so tip it up to stand behind the bin
+    //
+    // tipping it this way is what puts its connectors up the holder and its rounded face out
+    // against the board, which is why the board ends up at the far y rather than at zero
+    translate([ 0, size_vector.y + multiboard_connector_back_z, 0 ])
+        rotate([ 90, 0, 0 ])
+            MultiboardConnectorBackAlt( size_vector.x, size_vector.z );
+
+    BinHelperBin(
+        size_vector = size_vector,
+        cutout_list = cutout_list,
+        cutout_location_list = cutout_location_list,
+        corner_rounding_r = corner_rounding_r,
+        floor_z = wall_width,
+        round_back = false
+        );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
