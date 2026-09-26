@@ -1,13 +1,13 @@
+include <../modules/utils.scad>
 include <../modules/multiboard.scad>
-include <../modules/rounded-cube.scad>
 include <../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
 doxie_x = 57.9;
-doxie_y = 310;
-doxie_z = 43.8;
+doxie_y = 43.8;
+doxie_z = 310;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -15,13 +15,15 @@ doxie_z = 43.8;
 render_mode = "preview";
 // render_mode = "print-holder";
 
-holder_y = 80;
+// the height of the bin, including the floor the doxie rests on
+holder_z = 82;
 
 wall_width = 2.0;
 clearance = 1.5;
 
-corner_rounding_r = 2.0;
-
+label_text = "Doxie";
+label_font = "DejaVu Sans:style=Bold";
+label_font_size = 13;
 label_color = [ 0.1, 0.1, 0.1 ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,34 +31,51 @@ label_color = [ 0.1, 0.1, 0.1 ];
 
 $fn = $preview ? 32 : 128;
 
-size_x = doxie_x + wall_width * 2 + clearance * 2;
-size_y = holder_y + wall_width;
-size_z = doxie_z + wall_width * 2 + clearance * 2;
+doxie_cutout_y = doxie_y + clearance * 2;
 
-offset_x = multiboard_cell_size - MultiboardConnectorBackAltXOffset( size_x );
+// the bin is sized around the doxie itself
+holder_size_vector = MultiboardConnectorHelperBinSize(
+    [ BinHelperCube( doxie_x + clearance * 2, doxie_cutout_y ) ],
+    holder_z,
+    wall_width
+    );
+
+// but the cut runs out through the back of the bin, where the plate closes it off, so the two
+// share no face; it is not given a depth either, so it also runs down to the floor
+doxie_cutout_list = [
+    BinHelperCube( doxie_x + clearance * 2, doxie_cutout_y + DIFFERENCE_OFFSET )
+    ];
+
+// the doxie sits back against the plate, which puts the leftover wall on the outside
+doxie_cutout_location_list = [
+    [ wall_width, holder_size_vector.y - doxie_cutout_y ]
+    ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
 if( render_mode == "preview" )
 {
-    translate([ 0, 0, -multiboard_cell_height ])
-        color( workroom_multiboard_color )
-            MultiboardMockUpTile( 12, 4 );
+    // the board stands behind the holder, so tip it up too
+    translate([ 0, holder_size_vector.y + multiboard_connector_back_z + multiboard_cell_height, 0 ])
+        rotate([ 90, 0, 0 ])
+            color( workroom_multiboard_color )
+                MultiboardMockUpTile( 12, 4 );
 
-    translate([ offset_x, 0, 0  ])
+    translate([
+        multiboard_cell_size - MultiboardConnectorBackAltXOffset( holder_size_vector.x ),
+        0,
+        0
+        ])
     {
         DoxieMultiboardHolder();
 
-        translate([ wall_width + clearance, wall_width, multiboard_connector_back_z ])
-            DoxiePreview();
+        DoxiePreview();
     }
 }
 else if( render_mode == "print-holder" )
 {
-    translate([ 0, size_z + multiboard_connector_back_z, 0 ])
-        rotate([ 90, 0, 0 ])
-            DoxieMultiboardHolder();
+    DoxieMultiboardHolder();
 }
 else
 {
@@ -68,41 +87,24 @@ else
 
 module DoxieMultiboardHolder()
 {
-    render()
-    {
-        // back
-        MultiboardConnectorBackAlt( size_x, size_y );
+    MultiboardConnectorHelperBin(
+        holder_size_vector,
+        doxie_cutout_list,
+        doxie_cutout_location_list,
+        wall_width
+        );
 
-        difference()
-        {
-            translate([ 0, 0, multiboard_connector_back_z ])
-                RoundedCube(
-                    x = size_x,
-                    y = size_y,
-                    z = size_z,
-                    r = multiboard_corner_rounding_r,
-                    round_bottom = false
-                    );
-
-            // cut out the middle
-            translate([ wall_width, wall_width, multiboard_connector_back_z ])
-                    cube([ doxie_x + clearance * 2, doxie_y, doxie_z + clearance * 2]);
-        }
-
-        // add the text
-        // #translate([ 0, 0, multiboard_connector_back_z + size_z ])
-        //     cube([ size_x, size_y, 0.1 ]);
-        color( label_color )
-            translate([ -1.5, 0, 0 ]) // for some reason the textmetrics are broken?
-                translate([ 0, 0, multiboard_connector_back_z + size_z ])
-                    CenteredTextLabel(
-                        "Doxie",
-                        centered_in_area_x = size_x,
-                        centered_in_area_y = size_y,
-                        font_size = 13,
-                        font = "DejaVu Sans:style=Bold"
-                        );
-    }
+    // add the text, raised off the face away from the board
+    translate([ -1.5, 0, 0 ]) // for some reason the textmetrics are broken?
+        rotate([ 90, 0, 0 ])
+            CenteredTextLabel(
+                label_text,
+                centered_in_area_x = holder_size_vector.x,
+                centered_in_area_y = holder_size_vector.z,
+                font_size = label_font_size,
+                font = label_font,
+                color = label_color
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +112,14 @@ module DoxieMultiboardHolder()
 
 module DoxiePreview()
 {
-    % cube([ doxie_x, doxie_y, doxie_z ] );
+    // it sits inside its cutout by the clearance, and lifts off the floor it rests on so it
+    // doesn't fight with it in the preview
+    translate([
+        doxie_cutout_location_list[ 0 ].x + clearance,
+        doxie_cutout_location_list[ 0 ].y + clearance,
+        wall_width + DIFFERENCE_OFFSET
+        ])
+        % cube([ doxie_x, doxie_y, doxie_z ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
