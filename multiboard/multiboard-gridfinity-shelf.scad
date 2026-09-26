@@ -13,14 +13,14 @@ include <../modules/rounded-cube.scad>
 render_mode = "preview";
 // render_mode = "print-shelf";
 
-grid_cells_x = 3;
-grid_cells_y = 2;
+grid_cells_x = 6;
+grid_cells_y = 3;
 
 back_z = 50;
 
 bin_clearance = 1.2;
 
-arm_x = 4.0;
+arm_x = 3.0;
 arm_z = 35;
 
 bottom_corder_xy = 3.4;
