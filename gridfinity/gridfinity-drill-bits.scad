@@ -17,6 +17,7 @@ drill_bits_y = 97.8;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-front-text";
 // render_mode = "print-3mf";
 
 bin_color = "white";
@@ -93,6 +94,10 @@ else if( render_mode == "print-bin" )
 else if( render_mode == "print-text" )
 {
     DrillBitsTextLabel();
+}
+else if( render_mode == "print-front-text" )
+{
+    DrillBitsFrontTextLabel();
 }
 else if( render_mode == "print-3mf" )
 {
