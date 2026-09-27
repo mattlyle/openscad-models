@@ -27,6 +27,8 @@ label_font = "Liberation Sans:style=Bold";
 label_font_size = 8;
 label_depth = 0.5;
 
+front_label_font_size = 12;
+
 cells_z = 1;
 
 // a thin floor left on top of the base so the cutout doesn't expose the base's grid pattern
@@ -68,6 +70,13 @@ label_margin = GRIDFINITY_ROUNDING_R;
 label_area_x = base_x - label_margin * 2;
 label_area_y = drill_bits_pocket_offset_y - clearance - label_margin;
 
+// "Drill" / "Bits" on the front face, inset the same way as the top label
+front_label_lines = [ "Drill", "Bits" ];
+front_label_line_spacing = 2;
+front_label_area_x = base_x - label_margin * 2;
+front_label_block_z = front_label_font_size * 2 + front_label_line_spacing * 3;
+front_label_offset_z = ( holder_z - front_label_block_z ) / 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -75,6 +84,7 @@ if( render_mode == "preview" )
 {
     DrillBitsBin();
     DrillBitsTextLabel();
+    DrillBitsFrontTextLabel();
 }
 else if( render_mode == "print-bin" )
 {
@@ -89,7 +99,10 @@ else if( render_mode == "print-3mf" )
     color( bin_color )
         DrillBitsBin();
     color( label_color )
+    {
         DrillBitsTextLabel();
+        DrillBitsFrontTextLabel();
+    }
 }
 else
 {
@@ -121,6 +134,8 @@ module DrillBitsBin()
 
         translate([ 0, 0, DIFFERENCE_CLEARANCE ])
             DrillBitsTextLabel();
+
+        DrillBitsFrontTextLabel( is_cutout = true );
     }
 }
 
@@ -137,6 +152,31 @@ module DrillBitsTextLabel()
             font_size = label_font_size,
             font = label_font
             );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// "Drill" / "Bits", inset into the bin's front face
+//
+// the cut version stands proud of the face so it has no coplanar surface to fight with, and
+// is only ever subtracted so it has no use for a color; the printed one sits flush in the recess
+module DrillBitsFrontTextLabel( is_cutout = false )
+{
+    color_choice = is_cutout ? undef : label_color;
+    depth_choice = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
+
+    translate([ label_margin, label_depth, front_label_offset_z ])
+        rotate([ 90, 0, 0 ])
+            MultilineTextLabel(
+                front_label_lines,
+                centered_in_area_x = front_label_area_x,
+                centered_in_area_y = front_label_block_z,
+                fixed_line_spacing = front_label_line_spacing,
+                depth = depth_choice,
+                font_size = front_label_font_size,
+                font = label_font,
+                color = color_choice
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
