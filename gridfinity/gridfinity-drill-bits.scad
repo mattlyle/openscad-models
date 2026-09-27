@@ -99,10 +99,9 @@ else if( render_mode == "print-3mf" )
     color( bin_color )
         DrillBitsBin();
     color( label_color )
-    {
         DrillBitsTextLabel();
+    color( label_color )
         DrillBitsFrontTextLabel();
-    }
 }
 else
 {
