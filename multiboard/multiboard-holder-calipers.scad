@@ -317,15 +317,11 @@ module CaliperBoxHolderLabel(
                 );
 
             // and the logo sits above them, placed by eye
-            SVGLabel(
-                label_logo_path,
-                svg_scale = logo_scale,
-                rotation_angle = logo_angle,
-                offset_x = logo_offset_x,
-                offset_y = logo_offset_y,
-                depth = cut_depth,
-                color = cut_color
-                );
+            color( cut_color )
+                translate([ logo_offset_x, logo_offset_y, 0 ])
+                    rotate([ 0, 0, logo_angle ])
+                        scale([ logo_scale, logo_scale, 1.0 ])
+                            SVG( label_logo_path, cut_depth );
         }
 }
 
