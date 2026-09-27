@@ -231,16 +231,20 @@ module MultiboardConnectorHelperBin(
     cutout_list,
     cutout_location_list,
     wall_width = multiboard_wall_width,
-    corner_rounding_r = multiboard_corner_rounding_r
+    corner_rounding_r = multiboard_corner_rounding_r,
+    back_z = 0
     )
 {
+    // a shallow bin can still want a tall plate, to take more of the board; 0 matches the bin
+    plate_z = back_z == 0 ? size_vector.z : back_z;
+
     // the back plate is drawn flat, so tip it up to stand behind the bin
     //
     // tipping it this way is what puts its connectors up the holder and its rounded face out
     // against the board, which is why the board ends up at the far y rather than at zero
     translate([ 0, size_vector.y + multiboard_connector_back_z, 0 ])
         rotate([ 90, 0, 0 ])
-            MultiboardConnectorBackAlt( size_vector.x, size_vector.z );
+            MultiboardConnectorBackAlt( size_vector.x, plate_z );
 
     BinHelperBin(
         size_vector = size_vector,
