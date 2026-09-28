@@ -56,7 +56,13 @@ back_z = multiboard_connector_back_z;
 // itself is shorter - so the two are different heights, like the tape measure holder
 back_plate_z = multiboard_cell_size;
 
-ruler_spacing = multiboard_wall_width;
+// the gap between adjacent ruler slots, and the margin around the outside of the row - split
+// so the two can differ; the floor itself stays thin (bin_floor_z), these only space out the
+// dividers and edges
+ruler_spacing_x = 12.0;
+ruler_spacing_y = multiboard_wall_width * 3;
+
+bin_floor_z = multiboard_wall_width;
 
 clearance_x = 0.3;
 clearance_y = 0.4;
@@ -101,9 +107,9 @@ ruler_cutout_list = [
     BinHelperCube( angle_calipers_x + clearance_x * 2, angle_calipers_y + clearance_y * 2 ),
     ];
 
-ruler_location_list = BinHelperEquallySpacedLocations( ruler_cutout_list, ruler_spacing, ruler_spacing );
+ruler_location_list = BinHelperEquallySpacedLocations( ruler_cutout_list, ruler_spacing_x, ruler_spacing_y );
 
-bin_size_vector = MultiboardConnectorHelperBinSize( ruler_cutout_list, holder_z, ruler_spacing, ruler_spacing );
+bin_size_vector = MultiboardConnectorHelperBinSize( ruler_cutout_list, holder_z, ruler_spacing_x, ruler_spacing_y );
 guide_size_vector = [ bin_size_vector.x, bin_size_vector.y, holder_guide_z ];
 
 // the plain rectangular slots - everything except the tri-ruler
@@ -192,16 +198,16 @@ module RulersBin()
             cutout_list = standard_cutout_list,
             cutout_location_list = standard_location_list,
             corner_rounding_r = corner_rounding_r,
-            floor_z = ruler_spacing,
+            floor_z = bin_floor_z,
             round_back = false
             );
 
         // the tri-ruler's Y-shaped slot, cut to the same floor depth as the rest
-        translate([ tri_ruler_center.x, tri_ruler_center.y, ruler_spacing ])
+        translate([ tri_ruler_center.x, tri_ruler_center.y, bin_floor_z ])
             TriRulerCutout(
                 ruler_d_arm_x, ruler_d_arm_y,
                 clearance_x, clearance_y,
-                holder_z - ruler_spacing + DIFFERENCE_OFFSET
+                holder_z - bin_floor_z + DIFFERENCE_OFFSET
                 );
 
         RulersBinTextLabel( is_cutout = true );
@@ -279,12 +285,17 @@ module RulersGuide()
     // already left between/around the slots below, so they line up with the bin's own dividers
     for( i = [ 0 : len( ruler_cutout_list ) ] )
     {
+        is_outer_fin = ( i == 0 || i == len( ruler_cutout_list ) );
+
         fin_x = ( i == 0 )
             ? 0
             : ruler_location_list[ i - 1 ].x + BinHelperCutoutFootprint( ruler_cutout_list[ i - 1 ] ).x;
 
+        // the outer two fins sit in the row's edge margin, the rest sit in the between-slot gaps
+        fin_width = is_outer_fin ? ruler_spacing_y : ruler_spacing_x;
+
         translate([ fin_x, 0, 0 ])
-            cube([ ruler_spacing, guide_size_vector.y, guide_size_vector.z ]);
+            cube([ fin_width, guide_size_vector.y, guide_size_vector.z ]);
     }
 }
 
@@ -316,12 +327,12 @@ module RulersPreviewRulers()
             location = ruler_location_list[ i ];
             footprint = BinHelperCutoutFootprint( ruler_cutout_list[ i ] );
 
-            translate([ location.x + clearance_x, location.y + clearance_y, ruler_spacing ])
+            translate([ location.x + clearance_x, location.y + clearance_y, bin_floor_z ])
                 % cube([ footprint.x - clearance_x * 2, footprint.y - clearance_y * 2, preview_ruler_length ]);
         }
     }
 
-    translate([ tri_ruler_center.x, tri_ruler_center.y, ruler_spacing ])
+    translate([ tri_ruler_center.x, tri_ruler_center.y, bin_floor_z ])
         % TriRulerCutout( ruler_d_arm_x, ruler_d_arm_y, 0, 0, preview_ruler_length );
 }
 
