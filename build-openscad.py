@@ -20,6 +20,10 @@ N is one more than the highest version of this model already in the renders
 directory (v0 if there are none), so every run is a new version and parts of a
 multi-part design always line up. Existing files are never overwritten.
 
+Pass --dry-run to render everything (so failures still surface) without writing
+anything to the output directory - useful for checking a model before committing
+it to a real version number.
+
 The render modes come from the model's settings block:
 
     render_mode = "preview";
@@ -210,6 +214,9 @@ def main():
     parser = argparse.ArgumentParser(
         description = "Render every print mode of an OpenSCAD model to a new, versioned set of STL (and 3MF) files." )
     parser.add_argument( "model", help = "path to the .scad file, e.g. gridfinity/gridfinity-ruler-bin.scad" )
+    parser.add_argument(
+        "--dry-run", action = "store_true",
+        help = "render everything to verify it works, but don't write anything to the output directory" )
     args = parser.parse_args()
 
     model_path = Path( args.model )
@@ -228,7 +235,8 @@ def main():
         if target.exists():
             Fail( "refusing to overwrite existing file: %s" % target )
 
-    print( "%s v%d: rendering %d print mode(s) into %s" % ( model_name, version, len( targets ), output_dir ) )
+    dry_run_prefix = "[dry-run] " if args.dry_run else ""
+    print( "%s%s v%d: rendering %d print mode(s) into %s" % ( dry_run_prefix, model_name, version, len( targets ), output_dir ) )
 
     # render everything to a temporary directory first, so a failure never leaves a partial version behind
     with tempfile.TemporaryDirectory( prefix = "build-openscad-" ) as temp_dir:
@@ -247,15 +255,17 @@ def main():
                 Fail( "render of %s failed - nothing was written" % mode )
             rendered.append( ( temp_path, target ) )
 
-        for temp_path, target in rendered:
-            with open( temp_path, "rb" ) as source, open( target, "xb" ) as destination:
-                shutil.copyfileobj( source, destination )
+        if not args.dry_run:
+            for temp_path, target in rendered:
+                with open( temp_path, "rb" ) as source, open( target, "xb" ) as destination:
+                    shutil.copyfileobj( source, destination )
 
     print()
+    verb = "would write" if args.dry_run else "wrote"
     for _, target in rendered:
-        print( "  wrote %s" % target.name )
+        print( "  %s %s" % ( verb, target.name ) )
     print()
-    print( "version: %s v%d" % ( model_name, version ) )
+    print( "%sversion: %s v%d" % ( dry_run_prefix, model_name, version ) )
 
 ########################################################################################################################
 

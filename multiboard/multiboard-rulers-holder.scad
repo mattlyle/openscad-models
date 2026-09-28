@@ -35,9 +35,9 @@ angle_calipers_y = 35.3;
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-bin-text";
-// render_mode = "print-bin-3mf";
+// render_mode = "print-3mf-bin";
 // render_mode = "print-guide";
-// render_mode = "print-guide-3mf";
+// render_mode = "print-3mf-guide";
 
 bin_color = "white";
 guide_color = "white";
@@ -134,7 +134,7 @@ else if( render_mode == "print-bin-text" )
 {
     RulersBinTextLabel();
 }
-else if( render_mode == "print-bin-3mf" )
+else if( render_mode == "print-3mf-bin" )
 {
     color( bin_color )
         RulersBin();
@@ -145,7 +145,7 @@ else if( render_mode == "print-guide" )
 {
     RulersGuide();
 }
-else if( render_mode == "print-guide-3mf" )
+else if( render_mode == "print-3mf-guide" )
 {
     color( guide_color )
         RulersGuide();
