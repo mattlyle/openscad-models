@@ -294,8 +294,15 @@ module RulersGuide()
         // the outer two fins sit in the row's edge margin, the rest sit in the between-slot gaps
         fin_width = is_outer_fin ? ruler_spacing_y : ruler_spacing_x;
 
+        // round everything except the back, which sits flush against the connector back plate
         translate([ fin_x, 0, 0 ])
-            cube([ fin_width, guide_size_vector.y, guide_size_vector.z ]);
+            RoundedCube(
+                fin_width,
+                guide_size_vector.y,
+                guide_size_vector.z,
+                r = corner_rounding_r,
+                round_back = false
+                );
     }
 }
 
