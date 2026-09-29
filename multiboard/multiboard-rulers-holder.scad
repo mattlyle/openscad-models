@@ -85,6 +85,20 @@ guide_mount_gap_z = 304.8;
 
 preview_ruler_length = 350;
 
+// every ruler in the row, in order: [ x, y, is_tri ]. The tri-ruler's arm dimensions go in x/y
+// just like any other ruler - it's just tagged so it can be found and cut Y-shaped (see
+// TriRulerCutout) instead of as a plain rectangle, no matter where it sits in the list
+ruler_specs = [
+    [ ruler_a_x, ruler_a_y, false ],
+    [ ruler_b_x, ruler_b_y, false ],
+    [ ruler_b_x, ruler_b_y, false ],
+    [ ruler_c_x, ruler_c_y, false ],
+    [ ruler_c_x, ruler_c_y, false ],
+    [ ruler_c_x, ruler_c_y, false ],
+    [ ruler_d_arm_x, ruler_d_arm_y, true ],
+    [ angle_calipers_x, angle_calipers_y, false ],
+    ];
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -93,18 +107,17 @@ $fn = $preview ? 32 : 128;
 holder_z = bin_z + back_z;
 holder_guide_z = top_guide_z + back_z;
 
-// the tri-ruler's cutout is Y-shaped (see TriRulerCutout), but reserves a square footprint here
-// so it still takes part in the equally-spaced layout
-tri_ruler_index = 4;
-tri_bbox = ( ruler_d_arm_y + clearance_y ) * 2;
+tri_ruler_index = [ for( i = [ 0 : len( ruler_specs ) - 1 ] ) if( ruler_specs[ i ][ 2 ] ) i ][ 0 ];
+
+// the tri-ruler's cutout is Y-shaped, but reserves a square footprint here so it still takes
+// part in the equally-spaced layout
+tri_bounding_box = ( ruler_specs[ tri_ruler_index ][ 1 ] + clearance_y ) * 2;
 
 ruler_cutout_list = [
-    BinHelperCube( ruler_a_x + clearance_x * 2, ruler_a_y + clearance_y * 2 ),
-    BinHelperCube( ruler_b_x + clearance_x * 2, ruler_b_y + clearance_y * 2 ),
-    BinHelperCube( ruler_c_x + clearance_x * 2, ruler_c_y + clearance_y * 2 ),
-    BinHelperCube( ruler_c_x + clearance_x * 2, ruler_c_y + clearance_y * 2 ),
-    BinHelperCube( tri_bbox, tri_bbox ),
-    BinHelperCube( angle_calipers_x + clearance_x * 2, angle_calipers_y + clearance_y * 2 ),
+    for( spec = ruler_specs )
+        spec[ 2 ]
+            ? BinHelperCube( tri_bounding_box, tri_bounding_box )
+            : BinHelperCube( spec[ 0 ] + clearance_x * 2, spec[ 1 ] + clearance_y * 2 )
     ];
 
 ruler_location_list = BinHelperEquallySpacedLocations( ruler_cutout_list, ruler_spacing_x, ruler_spacing_y );
@@ -117,7 +130,7 @@ standard_cutout_list = [ for( i = [ 0 : len( ruler_cutout_list ) - 1 ] ) if( i !
 standard_location_list = [ for( i = [ 0 : len( ruler_cutout_list ) - 1 ] ) if( i != tri_ruler_index ) ruler_location_list[ i ] ];
 
 tri_ruler_location = ruler_location_list[ tri_ruler_index ];
-tri_ruler_center = [ tri_ruler_location.x + tri_bbox / 2, tri_ruler_location.y + tri_bbox / 2 ];
+tri_ruler_center = [ tri_ruler_location.x + tri_bounding_box / 2, tri_ruler_location.y + tri_bounding_box / 2 ];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
