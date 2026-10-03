@@ -3,7 +3,7 @@ include <../modules/rounded-cube.scad>
 include <../modules/text-label.scad>
 include <../modules/utils.scad>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
 MINI_SCREWDRIVER_SETUP_INDEX_TIP_Z = 0;
@@ -25,12 +25,16 @@ mini_screwdriver_setups = [
     [ 30, 2.0 / 2, 8.0, 87.4, 10.0 / 2, 3.8, 13.6 / 2, "PH1 / SILVER +", ],
 ];
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
 
 render_mode = "preview";
 // render_mode = "print-bin";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+bin_color = "white";
+label_color = "black";
 
 screwdriver_angle = -35.0;
 
@@ -58,7 +62,7 @@ cradle_offset_y = 16.0;
 
 back_wall_support_point_percent = 0.6;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 $fn = $preview ? 64 : 128;
@@ -67,9 +71,9 @@ base_x = CalculateGridfinitySize( cells_x );
 base_y = CalculateGridfinitySize( cells_y );
 base_offset_z = GRIDFINITY_BASE_Z + top_z;
 
-cradle_support_y = max( getListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) );
+cradle_support_y = max( GetListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) );
 
-screwdriver_spacing_x = max( getListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) ) * 2
+screwdriver_spacing_x = max( GetListAtIndex( mini_screwdriver_setups, MINI_SCREWDRIVER_SETUP_INDEX_BASE_R ) ) * 2
     + screwdriver_extra_spacing_x;
 
 setup_left = mini_screwdriver_setups[ 0 ];
@@ -86,12 +90,12 @@ cradle_right_z = wall_width * 2
     + setup_right[ MINI_SCREWDRIVER_SETUP_INDEX_FULL_BARREL_Z ]
     + setup_right[ MINI_SCREWDRIVER_SETUP_INDEX_TIP_Z ] * 0.7;
 
-screwdrivers_offset_x = ( base_x - screwdriver_spacing_x * 5 ) / 2;
+// screwdrivers_offset_x = ( base_x - screwdriver_spacing_x * 5 ) / 2;
 
-cradle_offset_x = calculateOffsetToCenter( base_x, cradle_x );
+cradle_offset_x = CalculateOffsetToCenter( base_x, cradle_x );
 cradle_offset_z = base_offset_z;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
 // rotate([ -90, 0, 0 ])
@@ -115,12 +119,21 @@ else if ( render_mode == "print-text" )
         rotate([ screwdriver_angle, 0, 0 ])
             MiniScrewdriverHolderCradleBaseText( false );
 }
+else if( render_mode == "print-3mf" )
+{
+    color( bin_color )
+        MiniScrewdriverSetHolder();
+    color( label_color )
+        translate([ cradle_offset_x, cradle_offset_y, cradle_offset_z ])
+            rotate([ screwdriver_angle, 0, 0 ])
+                MiniScrewdriverHolderCradleBaseText( false );
+}
 else
 {
-    echo( str( "Unknown render mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MiniScrewdriverPreview( setup )
 {
@@ -151,7 +164,7 @@ module MiniScrewdriverPreview( setup )
         cylinder( r = tip_r, h = tip_z );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MiniScrewdriverSetHolder()
 {
@@ -162,7 +175,7 @@ module MiniScrewdriverSetHolder()
     difference()
     {
         translate([ 0, 0, base_offset_z ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 x = base_x,
                 y = base_y,
                 z = base_wall_z,
@@ -174,7 +187,7 @@ module MiniScrewdriverSetHolder()
                 );
 
         translate([ wall_width, -GRIDFINITY_ROUNDING_R, base_offset_z - DIFFERENCE_CLEARANCE ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 x = base_x - wall_width * 2,
                 y = base_y - wall_width + GRIDFINITY_ROUNDING_R,
                 z = base_wall_z + DIFFERENCE_CLEARANCE * 2,
@@ -196,7 +209,7 @@ module MiniScrewdriverSetHolder()
         _MiniScrewdriverHolderCradleBase();
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module _MiniScrewdriverHolderCradle()
 {
@@ -222,7 +235,7 @@ module _MiniScrewdriverHolderCradle()
     back_wall_front_y = -wall_width;
     back_wall_back_y = 0;
     top_support_front_y = back_wall_front_y - cradle_support_y;
-    
+
     back_wall_bottom_z = 0;
     back_wall_top_left_z = cradle_left_z;
     back_wall_top_right_z = cradle_right_z;
@@ -264,11 +277,11 @@ module _MiniScrewdriverHolderCradle()
         // remove the labels
         MiniScrewdriverHolderCradleBaseText( true );
     }
-    
+
     // bottom wall
     translate([ back_wall_left_x, top_support_front_y, back_wall_bottom_z ])
         cube([ cradle_x, cradle_support_y, wall_width ]);
-    
+
     // bottom support bar
     difference()
     {
@@ -294,7 +307,7 @@ module _MiniScrewdriverHolderCradle()
                     );
         }
     }
-    
+
     // top support bar
     top_support_bar_points = [
         [ back_wall_left_x, back_wall_front_y, back_wall_top_left_z ], // 0 - top left
@@ -345,7 +358,7 @@ module _MiniScrewdriverHolderCradle()
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module MiniScrewdriverHolderCradleBaseText( is_for_difference )
 {
@@ -367,7 +380,7 @@ module MiniScrewdriverHolderCradleBaseText( is_for_difference )
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module _MiniScrewdriverHolderCradleBase()
 {
@@ -433,4 +446,4 @@ module _MiniScrewdriverHolderCradleBase()
     );
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

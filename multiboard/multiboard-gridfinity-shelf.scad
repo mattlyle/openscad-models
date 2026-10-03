@@ -13,14 +13,14 @@ include <../modules/rounded-cube.scad>
 render_mode = "preview";
 // render_mode = "print-shelf";
 
-grid_cells_x = 3;
-grid_cells_y = 2;
+grid_cells_x = 6;
+grid_cells_y = 3;
 
 back_z = 50;
 
 bin_clearance = 1.2;
 
-arm_x = 4.0;
+arm_x = 3.0;
 arm_z = 35;
 
 bottom_corder_xy = 3.4;
@@ -107,7 +107,7 @@ module _MultiboardGridfinityShelfArm( is_left )
             // right side
             translate([ arm_x + bin_clearance - 0.01, bottom_corder_xy, 0 ])
                 cube([ 0.01, arm_y, GRIDFINITY_BASEPLATE_Z ]);
-            
+
             // top
             translate([ 0, bottom_corder_xy, GRIDFINITY_BASEPLATE_Z - 0.01 ])
                 cube([ arm_x + bin_clearance, arm_y, 0.01 ]);

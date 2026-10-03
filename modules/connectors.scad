@@ -51,7 +51,7 @@ module SlideConnectorM(
 
             // cap
             translate([ -cap_x, -cap_y, 0 ])
-                RoundedCubeAlt2( cap_x * 2 + neck_x, cap_y, cap_z + neck_z, 0.5, round_bottom = false );
+                RoundedCube( cap_x * 2 + neck_x, cap_y, cap_z + neck_z, 0.5, round_bottom = false );
         }
     }
 }
@@ -77,7 +77,7 @@ module SlideConnectorF(
         {
             // cap cover
             translate([ -cap_x - collar_x - clearance, -cap_y, 0 ])
-                RoundedCubeAlt2(
+                RoundedCube(
                     x = neck_x + cap_x * 2 + collar_x * 2 + clearance * 2,
                     y = cap_y + clearance + collar_y,
                     z = neck_z + cap_z + clearance + collar_z,

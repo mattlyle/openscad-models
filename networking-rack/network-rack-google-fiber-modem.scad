@@ -19,6 +19,10 @@ face_cutout_z = 21.0;
 render_mode = "preview";
 // render_mode = "print-face";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+face_color = "white";
+label_color = "black";
 
 width_quarters = 2;
 
@@ -98,16 +102,27 @@ else if( render_mode == "print-text" )
         rotate([ 90, 0, 0 ])
             GoogleFiberModemNetworkRackFaceDecoration();
 }
+else if( render_mode == "print-3mf" )
+{
+    color( face_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                GoogleFiberModemNetworkRackFace();
+    color( label_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                GoogleFiberModemNetworkRackFaceDecoration();
+}
 else
 {
-    assert( false, str( "unknown render_mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module GoogleFiberModemPreview()
 {
-    RoundedCubeAlt2(
+    RoundedCube(
         google_fiber_modem_x,
         google_fiber_modem_y,
         google_fiber_modem_z,
@@ -115,8 +130,7 @@ module GoogleFiberModemPreview()
         round_top = false,
         round_bottom = false,
         round_left = true,
-        round_right = true,
-        center = false
+        round_right = true
         );
 }
 

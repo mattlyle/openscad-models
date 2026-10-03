@@ -16,6 +16,11 @@ render_mode = "preview";
 // render_mode = "print-body-horizontal";
 // render_mode = "print-text-vertical";
 // render_mode = "print-text-horizontal";
+// render_mode = "print-3mf-vertical";
+// render_mode = "print-3mf-horizontal";
+
+body_color = "white";
+label_color = "black";
 
 label_first_line = "Fresh Salsa";
 // label_first_line = "SuperSauce";
@@ -56,7 +61,7 @@ fontname = "Liberation Sans:style=bold";
 label_first_line_offset_y = -1;
 label_second_line_offset_y = 1;
 
-outline_width = 0.8;
+// outline_width = 0.8;
 
 rounding_r = 1.4;
 stake_point_r = 0.2;
@@ -81,56 +86,109 @@ $fn = $preview ? 64 : 128;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
-intersection()
+if( render_mode == "preview" )
 {
-    cube([ BUILD_PLATE_X, BUILD_PLATE_Y, tag_z ]);
-
-    if( render_mode == "preview" )
+    ClipToTagThickness()
     {
         VerticalPlantTag();
 
         translate([ 0, 50, 0 ])
             HorizontalPlantTag();
     }
-    else if( render_mode == "print-body-vertical" )
-    {
+}
+else if( render_mode == "print-body-vertical" )
+{
+    ClipToTagThickness()
         VerticalPlantTag();
-    }
-    else if( render_mode == "print-body-horizontal" )
-    {
+}
+else if( render_mode == "print-body-horizontal" )
+{
+    ClipToTagThickness()
         HorizontalPlantTag();
-    }
-    else if( render_mode == "print-text-vertical" )
+}
+else if( render_mode == "print-text-vertical" )
+{
+    ClipToTagThickness()
+        VerticalPlantTagText();
+}
+else if( render_mode == "print-text-horizontal" )
+{
+    ClipToTagThickness()
+        HorizontalPlantTagText();
+}
+else if( render_mode == "print-3mf-vertical" )
+{
+    color( body_color )
+        ClipToTagThickness()
+            VerticalPlantTag();
+    color( label_color )
+        ClipToTagThickness()
+            VerticalPlantTagText();
+}
+else if( render_mode == "print-3mf-horizontal" )
+{
+    color( body_color )
+        ClipToTagThickness()
+            HorizontalPlantTag();
+    color( label_color )
+        ClipToTagThickness()
+            HorizontalPlantTagText();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// trims its children to the tag's thickness (z = 0 .. tag_z); the explicit union() keeps multiple children
+// merged even with lazy-union enabled (used for the print-3mf modes)
+module ClipToTagThickness()
+{
+    intersection()
     {
-        // top decoration
-        translate([ 0, 0, -decoration_depth ])
+        cube([ BUILD_PLATE_X, BUILD_PLATE_Y, tag_z ]);
+
+        union()
+        {
+            children();
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// the text for both faces of a vertical tag
+module VerticalPlantTagText()
+{
+    // top decoration
+    translate([ 0, 0, -decoration_depth ])
+        _PlantTagDecoration( false, true );
+
+    // bottom decoration
+    translate([ 0, tag_height, tag_z + decoration_depth ])
+        rotate([ 180, 0, 0 ])
             _PlantTagDecoration( false, true );
+}
 
-        // bottom decoration
-        translate([ 0, tag_height, tag_z + decoration_depth ])
-            rotate([ 180, 0, 0 ])
-                _PlantTagDecoration( false, true );
-    }
-    else if( render_mode == "print-text-horizontal" )
-    {
-        tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
-        offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x )
-            - horizontal_overlap_x;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // top decoration
-        translate([ offset_x + tag_height, 0, -decoration_depth ])
-            rotate([ 0, 0, 90 ])
-                _PlantTagDecoration( false, false );
+// the text for both faces of a horizontal tag
+module HorizontalPlantTagText()
+{
+    tag_y = CalculateMaxLabelLength() + horizontal_extra_y;
+    offset_x = CalculateRoundedTopX( tag_y, rounded_top_horizontal_scale_x )
+        - horizontal_overlap_x;
 
-        // bottom decoration
-        translate([ offset_x + tag_height, tag_y, tag_z + decoration_depth ])
-            rotate([ 180, 0, -90 ])
-                _PlantTagDecoration( false, false );
-    }
-    else
-    {
-        assert( false, str( "Unknown render mode: ", render_mode ) );
-    }
+    // top decoration
+    translate([ offset_x + tag_height, 0, -decoration_depth ])
+        rotate([ 0, 0, 90 ])
+            _PlantTagDecoration( false, false );
+
+    // bottom decoration
+    translate([ offset_x + tag_height, tag_y, tag_z + decoration_depth ])
+        rotate([ 180, 0, -90 ])
+            _PlantTagDecoration( false, false );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,7 +416,7 @@ module _PlantTag( tag_x, tag_y, is_vertical_label )
 
         // main body
         translate([ rounded_top_x, 0, 0 ])
-            RoundedCubeAlt2(
+            RoundedCube(
                 x = tag_x,
                 y = tag_y,
                 z = tag_z,

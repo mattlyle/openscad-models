@@ -1,10 +1,10 @@
-use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
-include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
+use <../../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.scad>
+include <../../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
-include <../modules/rounded-cube.scad>
-include <../modules/pie-slice-prism.scad>
-include <../modules/trapezoidal-prism.scad>
-include <../modules/text-label.scad>
+include <../../modules/rounded-cube.scad>
+include <../../modules/pie-slice-prism.scad>
+include <../../modules/trapezoidal-prism.scad>
+include <../../modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -16,7 +16,7 @@ hairbrush_handle_z = 21.0;
 hairbrush_head_base_x = 40.5;
 hairbrush_head_y = 121;
 hairbrush_head_z = 35;
-hairbrush_head_radius_z = 10.1;
+hairbrush_head_z_r = 10.1;
 hairbrush_head_angle = 25;
 hairbrush_head_offset_z = 4.0;
 
@@ -31,10 +31,10 @@ hairbrush_clearance = 1.25;
 
 // only choose one
 render_mode = "preview";
-// render_mode = "bin-only";
-// render_mode = "text-only";
+// render_mode = "print-bin";
+// render_mode = "print-text";
 
-corner_rounding_radius = 3.7;
+corner_rounding_r = 3.7;
 holder_clearance = 0.15;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,18 +61,36 @@ echo( "cells_y", cells_y );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( render_mode == "preview" || render_mode == "bin-only" )
+if( render_mode == "preview" )
+{
+    HairbrushHolder();
+    HairbrushPreview();
+    HairbrushTextLabel();
+}
+else if( render_mode == "print-bin" )
 {
     HairbrushHolder();
 }
+else if( render_mode == "print-text" )
+{
+    HairbrushTextLabel();
+}
+else
+{
+    assert( false, str( "Unknown render mode: ", render_mode ) );
+}
 
-if( render_mode == "preview" )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module HairbrushPreview()
 {
     translate([ base_x / 2, ( base_y - hairbrush_y ) / 2, base_z + hairbrush_z / 2 + hairbrush_clearance * 2 ])
         Hairbrush();
 }
 
-if( render_mode == "preview" || render_mode == "text-only" )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module HairbrushTextLabel()
 {
     text_area_width = hairbrush_handle_y + ( holder_y - hairbrush_y ) / 2 - hairbrush_clearance;
     text_area_height = ( holder_x - hairbrush_handle_x * 1.5 + hairbrush_clearance * 2 ) / 2;
@@ -102,9 +120,10 @@ module HairbrushHolder()
         {
             translate([ holder_clearance, holder_clearance, 0 ])
                 RoundedCube(
-                    size = [ holder_x, holder_y, holder_z ],
-                    r = corner_rounding_radius,
-                    fn = 36
+                    holder_x,
+                    holder_y,
+                    holder_z,
+                    r = corner_rounding_r
                     );
 
             // cut off the area the gridfinity base covers
@@ -159,7 +178,7 @@ module Hairbrush()
                     cylinder( h = hairbrush_handle_y, r = hairbrush_handle_x / 2 );
 
             // head
-            translate([ 0, hairbrush_handle_y, - hairbrush_head_base_x / 2 + hairbrush_head_radius_z + hairbrush_head_offset_z ])
+            translate([ 0, hairbrush_handle_y, - hairbrush_head_base_x / 2 + hairbrush_head_z_r + hairbrush_head_offset_z ])
             {
                 rotate([ -90, 0, 0 ])
                 {
@@ -169,11 +188,11 @@ module Hairbrush()
                         {
                             difference()
                             {
-                                scale([ 1.0, hairbrush_head_radius_z / hairbrush_head_z, 1.0 ])
+                                scale([ 1.0, hairbrush_head_z_r / hairbrush_head_z, 1.0 ])
                                     cylinder( h = hairbrush_head_y, r = hairbrush_head_base_x / 2 );
 
                                 translate([ 0, hairbrush_head_offset_z, 0 ])
-                                    scale([ 1.0, hairbrush_head_radius_z / hairbrush_head_z, 1.0 ])
+                                    scale([ 1.0, hairbrush_head_z_r / hairbrush_head_z, 1.0 ])
                                         cylinder( h = hairbrush_head_y, r = hairbrush_head_base_x / 2 );
                             }
                         }

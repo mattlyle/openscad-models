@@ -1,54 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// a cube with rounded edges/corners; each side can be left square with its round_* flag
+// (corner resolution comes from $fn/$fa/$fs - pass $fn = ... at the call site to override)
 
-module RoundedCubeAlt( x, y, z, center = false, r = 1.0, fn = 24 )
-{
-    RoundedCube( size = [ x, y, z ], center, r, fn );
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// model for a rounded cube
-
-module RoundedCube( size = [ 1, 1, 1 ], center = false, r = 1.0, fn = 24 )
-{
-    main_translate = ( center == true )
-        ? [ 0, 0, 0 ]
-        : [ size[ 0 ] / 2, size[ 1 ] / 2, size[ 2 ] / 2 ];
-
-    translate( main_translate )
-    {
-        hull()
-        {
-            // faces
-            cube([ size[ 0 ] - r * 2, size[ 1 ] - r * 2, size[ 2 ] ], center = true );
-            cube([ size[ 0 ] - r * 2, size[ 1 ], size[ 2 ] - r * 2 ], center = true );
-            cube([ size[ 0 ], size[ 1 ] - r * 2, size[ 2 ] - r * 2 ], center = true );
-
-            // top corners
-            translate ([ size[ 0 ] / 2 - r, size[ 1 ] / 2 - r, size[ 2 ] / 2 - r ] )
-                sphere( r = r, $fn = fn );
-            translate ([ 0 - size[ 0 ] / 2 + r, size[ 1 ] / 2 - r, size[ 2 ] / 2 - r ] )
-                sphere( r = r, $fn = fn );
-            translate ([ 0 - size[ 0 ] / 2 + r, 0 - size[ 1 ] / 2 + r, size[ 2 ] / 2 - r ] )
-                sphere( r = r, $fn = fn );
-            translate ([ size[ 0 ] / 2 - r, 0 - size[ 1 ] / 2 + r, size[ 2 ] / 2 - r ] )
-                sphere( r = r, $fn = fn );
-
-            // bottom corners
-            translate ([ size[ 0 ] / 2 - r, size[ 1 ] / 2 - r, 0 - size[ 2 ] / 2 + r ] )
-                sphere( r = r, $fn = fn );
-            translate ([ 0 - size[ 0 ] / 2 + r, size[ 1 ] / 2 - r, 0 - size[ 2 ] / 2 + r ] )
-                sphere( r = r, $fn = fn );
-            translate ([ 0 - size[ 0 ] / 2 + r, 0 - size[ 1 ] / 2 + r, 0 - size[ 2 ] / 2 + r ] )
-                sphere( r = r, $fn = fn );
-            translate ([ size[ 0 ] / 2 - r, 0 - size[ 1 ] / 2 + r, 0 - size[ 2 ] / 2 + r ] )
-                sphere( r = r, $fn = fn );
-        }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module RoundedCubeAlt2(
+module RoundedCube(
     x,
     y,
     z,
@@ -109,23 +63,6 @@ module RoundedCubeAlt2(
                     sphere( r = r );
             }
         }
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-module RoundedCubeAlt3( x, y, z, r_top = 1.0, r_bottom = 1.0, r_x = 5.0 )
-{
-    hull()
-    {
-        translate([ r_x, r_x, 0 ])
-            cylinder( h = z, r = r_x );
-        translate([ x - r_x, r_x, 0 ])
-            cylinder( h = z, r = r_x );
-        translate([ r_x, y - r_x, 0 ])
-            cylinder( h = z, r = r_x );
-        translate([ x - r_x, y - r_x, 0 ])
-            cylinder( h = z, r = r_x );
     }
 }
 

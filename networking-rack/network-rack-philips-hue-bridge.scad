@@ -19,6 +19,10 @@ face_cutout_z = 23.0;
 render_mode = "preview";
 // render_mode = "print-face";
 // render_mode = "print-text";
+// render_mode = "print-3mf";
+
+face_color = "white";
+label_color = "black";
 
 width_quarters = 2;
 
@@ -96,16 +100,27 @@ else if( render_mode == "print-text" )
         rotate([ 90, 0, 0 ])
             HueBridgeNetworkRackFaceDecoration();
 }
+else if( render_mode == "print-3mf" )
+{
+    color( face_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                HueBridgeNetworkRackFace();
+    color( label_color )
+        translate([ NetworkRackFaceOffsetX( left_ear ), NetworkRackFaceZ(), 0 ])
+            rotate([ 90, 0, 0 ])
+                HueBridgeNetworkRackFaceDecoration();
+}
 else
 {
-    assert( false, str( "unknown render_mode: ", render_mode ) );
+    assert( false, str( "Unknown render mode: ", render_mode ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module HueBridgePreview()
 {
-    RoundedCubeAlt2(
+    RoundedCube(
         hue_bridge_x,
         hue_bridge_y,
         hue_bridge_z,
@@ -113,8 +128,7 @@ module HueBridgePreview()
         round_top = false,
         round_bottom = false,
         round_left = true,
-        round_right = true,
-        center = false
+        round_right = true
         );
 }
 

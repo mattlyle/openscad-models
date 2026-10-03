@@ -15,7 +15,7 @@ ams_2_pro_bottom_ledge_x = 338; // note the front is actually 324
 ams_2_pro_bottom_ledge_y = 250;
 ams_2_pro_bottom_ledge_z = 11;
 
-ams_2_pro_foot_x = 36;
+// ams_2_pro_foot_x = 36;
 ams_2_pro_foot_y = 19;
 ams_2_pro_foot_z = 2;
 ams_2_pro_foot_back_offset_y = 231; // distance to the back foot of the AMS
@@ -23,7 +23,7 @@ ams_2_pro_foot_back_offset_y = 231; // distance to the back foot of the AMS
 ams_2_pro_x = 372;
 ams_2_pro_y = 278;
 ams_2_pro_body_z = 110; // this is above the ledge below it
-ams_2_pro_lid_z = 102;
+// ams_2_pro_lid_z = 102;
 ams_2_pro_lid_r = 210 / 2;
 
 // these are referenced off the ledge!
@@ -53,7 +53,8 @@ render_mode = "preview";
 // render_mode = "print-shelf-a";
 // render_mode = "print-shelf-b";
 // render_mode = "print-shelf-c";
-// render_mode = "print-spacer";
+// render_mode = "print-spacer-left";
+// render_mode = "print-spacer-right";
 // render_mode = "print-shelf-test";
 // render_mode = "print-shelf-test-mini";
 // render_mode = "print-spacer-test";
@@ -327,7 +328,7 @@ module Shelf( add_brackets, left_x, right_x, left_connection, right_connection, 
                 ])
                 rotate([ 90, 0, 0 ])
                     cylinder( r = shelf_screw_r, h = shelf_wall_plate_y + DIFFERENCE_CLEARANCE * 2 );
-            
+
             // bottom screw hole cone
             translate([
                 0,
@@ -383,23 +384,23 @@ module Shelf( add_brackets, left_x, right_x, left_connection, right_connection, 
 
 module _ShelfTopBracket()
 {
-    rotateAbout = [ 0, shelf_base_offset_z ];
+    rotate_about = [ 0, shelf_base_offset_z ];
 
-    rotatedTopFar_xy = RotatePointAboutPoint( // using y,z as x,y
+    rotated_top_far_xy = RotatePointAboutPoint( // using y,z as x,y
         [ 0, shelf_base_offset_z + shelf_base_z ],
-        rotateAbout,
+        rotate_about,
         -shelf_base_angle
         );
-    rotatedTopNear_xy = RotatePointAboutPoint( // using y,z as x,y
+    rotated_top_near_xy = RotatePointAboutPoint( // using y,z as x,y
         [ -shelf_base_y, shelf_base_offset_z + shelf_base_z ],
-        rotateAbout,
+        rotate_about,
         -shelf_base_angle
         );
 
     // calculate the z where the shelf base meets the wall plate
-    top_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
-        rotatedTopFar_xy,
-        rotatedTopNear_xy
+    top_face_wall_slope_intercept = FindSlopeIntercept( // using y,z as x,y
+        rotated_top_far_xy,
+        rotated_top_near_xy
         );
     top_face_wall_intercept_z =
         top_face_wall_slope_intercept[ 0 ] * -shelf_wall_plate_y
@@ -408,10 +409,10 @@ module _ShelfTopBracket()
     // calculate the point where the bracket meets the base
     top_face_brace_intercept_y =
         -shelf_top_bracket_y_percent * shelf_base_y * cos( shelf_base_angle )
-        + rotatedTopFar_xy.x;
+        + rotated_top_far_xy.x;
     top_face_brace_intercept_z =
         shelf_top_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
-        + rotatedTopFar_xy.y;
+        + rotated_top_far_xy.y;
 
     points = [
         // where the shelf top face meets the wall plate
@@ -467,18 +468,18 @@ module _ShelfBottomBracket()
 {
     max_x = 400;
 
-    farBottom = [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ];
+    far_bottom = [ -shelf_wall_plate_x / 2, 0, shelf_base_offset_z ];
 
-    rotatedBottomNear_xy = RotatePointAboutPoint( // using y,z as x,y
+    rotated_bottom_near_xy = RotatePointAboutPoint( // using y,z as x,y
         [ -shelf_base_y, shelf_base_offset_z ],
-        [ farBottom.y, farBottom.z ],
+        [ far_bottom.y, far_bottom.z ],
         -shelf_base_angle
         );
 
     // calculate the z where the shelf base meets the wall plate
-    bottom_face_wall_slope_intercept = findSlopeIntercept( // using y,z as x,y
-        [ farBottom.y, farBottom.z ],
-        rotatedBottomNear_xy
+    bottom_face_wall_slope_intercept = FindSlopeIntercept( // using y,z as x,y
+        [ far_bottom.y, far_bottom.z ],
+        rotated_bottom_near_xy
         );
     bottom_face_wall_intercept_z =
         bottom_face_wall_slope_intercept[ 0 ] * -shelf_wall_plate_y
@@ -487,11 +488,11 @@ module _ShelfBottomBracket()
     // calculate the z where the shelf base meets the bracket
     bottom_face_brace_intercept_y =
         -shelf_bottom_bracket_y_percent * shelf_base_y * cos( shelf_base_angle )
-        + farBottom.y;
+        + far_bottom.y;
     bottom_face_brace_intercept_z =
         shelf_bottom_bracket_y_percent * shelf_base_y * sin( shelf_base_angle )
-        + farBottom.z;
-        
+        + far_bottom.z;
+
     bracket_points = [
         // where the top face meets the bracket
         [ -shelf_wall_plate_x / 2, -shelf_wall_plate_y, bottom_face_wall_intercept_z ],
@@ -522,7 +523,7 @@ module _ShelfBottomBracket()
                 [ 1, 4, 5, 2 ],
                 [ 0, 2, 5, 3 ],
                 [ 0, 3, 4, 1 ],
-                ]    
+                ]
             );
 
         // remove the back dowel
@@ -797,7 +798,7 @@ module _ShelfBaseMainFace( x )
         [ x, shelf_base_y + dowel_front_offset_y * 2, 0 ],
         ];
     // for( point = front_dowel_support_points )
-    //     # translate( point )       
+    //     # translate( point )
     //         sphere( r = 1 );
 
     dowel_back_support_under_ring_z = shelf_base_z
@@ -817,7 +818,7 @@ module _ShelfBaseMainFace( x )
         ];
 
     // for( point = back_dowel_support_points )
-    //     # translate( point )       
+    //     # translate( point )
     //         sphere( r = 1 );
 
     // main face
@@ -957,7 +958,7 @@ module AMS2ProPreview()
 
     // ledge
     % translate([ ( ams_2_pro_x - ams_2_pro_bottom_ledge_x ) / 2, ams_extra_front_y, 0 ])
-        RoundedCubeAlt2(
+        RoundedCube(
             x = ams_2_pro_bottom_ledge_x,
             y = ams_2_pro_bottom_ledge_y,
             z = ams_2_pro_bottom_ledge_z,
@@ -979,7 +980,7 @@ module AMS2ProPreview()
 
     // body
     % translate([ 0, 0, ams_2_pro_bottom_ledge_z ])
-        RoundedCubeAlt2(
+        RoundedCube(
             x = ams_2_pro_x,
             y = ams_2_pro_y,
             z = ams_2_pro_body_z,
