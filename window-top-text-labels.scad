@@ -544,8 +544,8 @@ module _WindowTopConnector(
         if( connector_left )
         {
             translate([
-                -DIFFERENCE_OFFSET,
-                -4 - DIFFERENCE_OFFSET + connector_edge,
+                -DIFFERENCE_CLEARANCE,
+                -4 - DIFFERENCE_CLEARANCE + connector_edge,
                 0
                 ])
                 rotate([ 180, -90, 0 ])
@@ -557,8 +557,8 @@ module _WindowTopConnector(
             // add the 0.9 so the sides meet better
 
             translate([
-                base_x + DIFFERENCE_OFFSET,
-                -4 - DIFFERENCE_OFFSET,
+                base_x + DIFFERENCE_CLEARANCE,
+                -4 - DIFFERENCE_CLEARANCE,
                 0
                 ])
                 rotate([ 0, -90, 0 ])

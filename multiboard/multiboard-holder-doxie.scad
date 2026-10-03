@@ -43,7 +43,7 @@ holder_size_vector = MultiboardConnectorHelperBinSize(
 // but the cut runs out through the back of the bin, where the plate closes it off, so the two
 // share no face; it is not given a depth either, so it also runs down to the floor
 doxie_cutout_list = [
-    BinHelperCube( doxie_x + clearance * 2, doxie_cutout_y + DIFFERENCE_OFFSET )
+    BinHelperCube( doxie_x + clearance * 2, doxie_cutout_y + DIFFERENCE_CLEARANCE )
     ];
 
 // the doxie sits back against the plate, which puts the leftover wall on the outside
@@ -117,7 +117,7 @@ module DoxiePreview()
     translate([
         doxie_cutout_location_list[ 0 ].x + clearance,
         doxie_cutout_location_list[ 0 ].y + clearance,
-        wall_width + DIFFERENCE_OFFSET
+        wall_width + DIFFERENCE_CLEARANCE
         ])
         % cube([ doxie_x, doxie_y, doxie_z ]);
 }

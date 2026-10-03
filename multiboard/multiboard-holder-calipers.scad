@@ -177,7 +177,7 @@ function CaliperCutoutList( box_size_vector ) =
     [
         BinHelperCube(
             box_size_vector.x + clearance * 2,
-            box_size_vector.y + clearance + DIFFERENCE_OFFSET
+            box_size_vector.y + clearance + DIFFERENCE_CLEARANCE
             )
         ];
 
@@ -299,7 +299,7 @@ module CaliperBoxHolderLabel(
     is_cutout = false
     )
 {
-    cut_depth = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
+    cut_depth = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth;
     cut_color = is_cutout ? undef : label_color;
 
     translate([ 0, label_depth, 0 ])
@@ -336,7 +336,7 @@ module CaliperBoxPreview( box_size_vector, bin_size_vector )
     % translate([
         location.x + clearance,
         location.y,
-        wall_width + DIFFERENCE_OFFSET
+        wall_width + DIFFERENCE_CLEARANCE
         ])
         cube( box_size_vector );
 }

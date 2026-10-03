@@ -151,7 +151,7 @@ module FlashlightHolder()
 
 module FlashlightHolderLabel( is_cutout = false )
 {
-    cut_depth = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
+    cut_depth = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth;
     cut_color = is_cutout ? undef : label_color;
 
     // the svg's own ink sits off its origin, so place it by its middle
