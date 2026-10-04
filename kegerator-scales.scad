@@ -36,7 +36,9 @@ render_mode = "preview";
 scale_extra_r = 5;
 
 base_lid_z = 3;
-// top_lid_z = 3;
+
+top_lid_z = 3;
+top_wall_z = 6;
 
 wall_width = 2;
 
@@ -64,6 +66,7 @@ weight_module_corner_length = 2;
 $fn = $preview ? 32 : 128;
 
 base_z = base_lid_z + load_cell_z;
+top_z = top_lid_z + top_wall_z;
 
 weight_module_holder_x =
     weight_module_x
@@ -80,6 +83,11 @@ weight_module_holder_y =
 if( render_mode == "preview" )
 {
     ScaleBase( keg_r );
+
+    // translate([ 0, 0, 18 ])
+    translate([ 0, 0, 30 ])
+        rotate([ 0, 180, 0 ])
+            ScaleTop( keg_r );
 
     translate([ 250, 0, 0 ])
         ScaleBase( keg_r );
@@ -108,21 +116,21 @@ module ScaleBase( scale_r )
     {
         // full base
         cylinder(
-            r = scale_r + scale_extra_r + wall_width,
+            r = scale_r + wall_width,
             h = base_z
             );
         
         // cut out the inside
         translate([ 0, 0, base_lid_z ])
             cylinder(
-                r = scale_r + scale_extra_r,
+                r = scale_r,
                 h = base_z
                 );
 
         // cut out the cord
         translate([
             -cord_r / 2,
-            -scale_r - scale_extra_r - wall_width,
+            -scale_r - wall_width,
             base_lid_z
             ])
             cube([
@@ -132,7 +140,6 @@ module ScaleBase( scale_r )
                 ]);
     }
 
-
     // add back the load cell holders
     for( i = [ 45, 135, 225, 315 ])
     {
@@ -140,7 +147,6 @@ module ScaleBase( scale_r )
             translate([
                 -load_cell_xy / 2,
                 scale_r
-                    + scale_extra_r
                     - load_cell_xy
                     - load_cell_wall_width * 2
                     - load_cell_clearance * 2
@@ -166,7 +172,35 @@ module ScaleBase( scale_r )
 
 module ScaleTop( scale_r )
 {
-    // TODO: finish!
+    difference()
+    {
+        // full base
+        cylinder(
+            r = scale_r + scale_extra_r + wall_width,
+            h = top_z
+            );
+        
+        // cut out the inside
+        translate([ 0, 0, top_lid_z ])
+            cylinder(
+                r = scale_r + scale_extra_r,
+                h = top_z
+                );
+
+        // cut out the cord
+        translate([
+            -cord_r / 2,
+            -scale_r - scale_extra_r - wall_width,
+            top_lid_z
+            ])
+            cube([
+                cord_r,
+                wall_width * 2,
+                top_z - top_lid_z + DIFFERENCE_CLEARANCE
+                ]);
+    }
+
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
