@@ -105,6 +105,8 @@ $fn = $preview ? 32 : 128;
 base_z = base_lid_z + load_cell_z;
 top_z = top_lid_z + top_wall_z;
 
+load_cell_holder_xy = load_cell_xy + ( load_cell_wall_width + load_cell_clearance ) * 2;
+
 esp32_holder_x = esp32_x + esp32_wall_width * 2 + esp32_clearance * 2;
 esp32_holder_y = esp32_y + esp32_wall_width * 2 + esp32_clearance * 2;
 
@@ -301,12 +303,8 @@ module ScaleBase( scale_r, label )
     {
         rotate([ 0, 0, i ])
             translate([
-                -load_cell_xy / 2,
-                scale_r
-                    - load_cell_xy
-                    - load_cell_wall_width * 2
-                    - load_cell_clearance * 2
-                    - load_cell_offset_y,
+                -load_cell_holder_xy / 2,
+                scale_r - load_cell_holder_xy - load_cell_offset_y,
                 base_lid_z - DIFFERENCE_CLEARANCE
                 ])
                 _LoadCellHolder();
@@ -411,8 +409,8 @@ module _LoadCellHolder()
     difference()
     {
         cube([
-            load_cell_xy + load_cell_wall_width * 2,
-            load_cell_xy + load_cell_wall_width * 2,
+            load_cell_holder_xy,
+            load_cell_holder_xy,
             load_cell_wall_z
             ]);
 
@@ -422,14 +420,14 @@ module _LoadCellHolder()
             -DIFFERENCE_CLEARANCE
             ])
             cube([
-                load_cell_xy,
-                load_cell_xy,
+                load_cell_xy + load_cell_clearance * 2,
+                load_cell_xy + load_cell_clearance * 2,
                 load_cell_wall_z + DIFFERENCE_CLEARANCE * 2
                 ]);
 
         // cut out the wires
         translate([
-            ( load_cell_xy + load_cell_wall_width * 2 - load_cell_wire_cutout_x ) / 2,
+            ( load_cell_holder_xy - load_cell_wire_cutout_x ) / 2,
             -DIFFERENCE_CLEARANCE,
             -DIFFERENCE_CLEARANCE
             ])
