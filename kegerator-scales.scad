@@ -53,12 +53,26 @@ load_cell_wall_width = 2.0;
 load_cell_wall_z = 5.0;
 load_cell_offset_y = 5;
 
+weight_module_clearance = 0.2;
+weight_module_wall_width = 2.0;
+weight_module_wall_z = 5.0;
+weight_module_corner_length = 2;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
 $fn = $preview ? 32 : 128;
 
 base_z = base_lid_z + load_cell_z;
+
+weight_module_holder_x =
+    weight_module_x
+    + weight_module_wall_width * 2
+    + weight_module_clearance * 2;
+weight_module_holder_y =
+    weight_module_y
+    + weight_module_wall_width * 2
+    + weight_module_clearance * 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -139,8 +153,13 @@ module ScaleBase( scale_r )
     // add back the ESP32 holder
     // TODO: finish!
 
-    // add back the weight module holder
-    // TODO: finish!
+    // add back the weight module holder, dead center
+    translate([
+        -weight_module_holder_x / 2,
+        -weight_module_holder_y / 2,
+        base_lid_z - DIFFERENCE_CLEARANCE
+        ])
+        _WeightModuleHolder();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,6 +223,66 @@ module _LoadCellHolder()
                 round_bottom = false
             );
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _WeightModuleHolder()
+{
+    cavity_x = weight_module_x + weight_module_clearance * 2;
+    cavity_y = weight_module_y + weight_module_clearance * 2;
+
+    difference()
+    {
+        cube([
+            weight_module_holder_x,
+            weight_module_holder_y,
+            weight_module_wall_z
+            ]);
+
+        translate([
+            weight_module_wall_width,
+            weight_module_wall_width,
+            -DIFFERENCE_CLEARANCE
+            ])
+            cube([
+                cavity_x,
+                cavity_y,
+                weight_module_wall_z + DIFFERENCE_CLEARANCE * 2
+                ]);
+
+        // cut out the left and right walls, leaving only the corners
+        for( x = [
+            -DIFFERENCE_CLEARANCE,
+            weight_module_holder_x - weight_module_wall_width - DIFFERENCE_CLEARANCE
+            ] )
+            translate([
+                x,
+                weight_module_wall_width + weight_module_corner_length,
+                -DIFFERENCE_CLEARANCE
+                ])
+                cube([
+                    weight_module_wall_width + DIFFERENCE_CLEARANCE * 2,
+                    cavity_y - weight_module_corner_length * 2,
+                    weight_module_wall_z + DIFFERENCE_CLEARANCE * 2
+                    ]);
+    }
+
+    if( render_mode == "preview" )
+    {
+        %translate([
+            weight_module_wall_width + weight_module_clearance,
+            weight_module_wall_width + weight_module_clearance,
+            0
+            ])
+            cube([ weight_module_x, weight_module_y, weight_module_z ]);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ESP32Holder()
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
