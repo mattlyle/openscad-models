@@ -1,5 +1,6 @@
 include <modules/utils.scad>
 include <modules/rounded-cube.scad>
+include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -26,12 +27,26 @@ cord_r = 3.6;
 // settings
 
 render_mode = "preview";
-// render_mode = "print-keg-base";
-// render_mode = "print-keg-top";
+// render_mode = "print-keg-1-base";
+// render_mode = "print-keg-1-top";
+// render_mode = "print-keg-1-top-text";
+// render_mode = "print-3mf-keg-1-top";
+// render_mode = "print-keg-2-base";
+// render_mode = "print-keg-2-top";
+// render_mode = "print-keg-2-top-text";
+// render_mode = "print-3mf-keg-2-top";
+// render_mode = "print-keg-3-base";
+// render_mode = "print-keg-3-top";
+// render_mode = "print-keg-3-top-text";
+// render_mode = "print-3mf-keg-3-top";
 // render_mode = "print-co2-base";
 // render_mode = "print-co2-top";
+// render_mode = "print-co2-top-text";
+// render_mode = "print-3mf-co2-top";
 // render_mode = "print-n2-base";
 // render_mode = "print-n2-top";
+// render_mode = "print-n2-top-text";
+// render_mode = "print-3mf-n2-top";
 
 scale_extra_r = 5;
 
@@ -60,6 +75,22 @@ weight_module_wall_width = 2.0;
 weight_module_wall_z = 5.0;
 weight_module_corner_length = 2;
 
+top_color = "white";
+label_color = "black";
+
+keg_1_label = "Keg 1";
+keg_2_label = "Keg 2";
+keg_3_label = "Keg 3";
+co2_label = "CO₂";
+n2_label = "N₂";
+
+label_font = "Liberation Sans:style=Bold";
+label_font_size_top = 40;
+label_font_size_bottom = 8;
+label_depth = 0.5;
+label_area_x = 40;
+label_area_y = 12;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -82,26 +113,113 @@ weight_module_holder_y =
 
 if( render_mode == "preview" )
 {
-    ScaleBase( keg_r );
+    PreviewRow( keg_r, keg_1_label );
 
-    // translate([ 0, 0, 18 ])
-    translate([ 0, 0, 30 ])
-        rotate([ 0, 180, 0 ])
-            ScaleTop( keg_r );
+    translate([ 0, 250, 0 ])
+        PreviewRow( co2_tank_r, co2_label );
 
-    translate([ 250, 0, 0 ])
-        ScaleBase( keg_r );
-
-    translate([ 500, 0, 0 ])
-        ScaleTop( keg_r );
+    translate([ 0, 500, 0 ])
+        PreviewRow( n2_tank_r, n2_label );
 }
-else if( render_mode == "print-keg-base" )
+else if( render_mode == "print-keg-1-base" )
 {
-    ScaleBase( keg_r );
+    ScaleBase( keg_r, keg_1_label );
 }
-else if( render_mode == "print-keg-top" )
+else if( render_mode == "print-keg-1-top" )
 {
-    ScaleTop( keg_r );
+    ScaleTop( keg_r, keg_1_label );
+}
+else if( render_mode == "print-keg-1-top-text" )
+{
+    ScaleTopLabel( keg_1_label );
+}
+else if( render_mode == "print-3mf-keg-1-top" )
+{
+    color( top_color )
+        ScaleTop( keg_r, keg_1_label );
+
+    color( label_color )
+        ScaleTopLabel( keg_1_label );
+}
+else if( render_mode == "print-keg-2-base" )
+{
+    ScaleBase( keg_r, keg_2_label );
+}
+else if( render_mode == "print-keg-2-top" )
+{
+    ScaleTop( keg_r, keg_2_label );
+}
+else if( render_mode == "print-keg-2-top-text" )
+{
+    ScaleTopLabel( keg_2_label );
+}
+else if( render_mode == "print-3mf-keg-2-top" )
+{
+    color( top_color )
+        ScaleTop( keg_r, keg_2_label );
+
+    color( label_color )
+        ScaleTopLabel( keg_2_label );
+}
+else if( render_mode == "print-keg-3-base" )
+{
+    ScaleBase( keg_r, keg_3_label );
+}
+else if( render_mode == "print-keg-3-top" )
+{
+    ScaleTop( keg_r, keg_3_label );
+}
+else if( render_mode == "print-keg-3-top-text" )
+{
+    ScaleTopLabel( keg_3_label );
+}
+else if( render_mode == "print-3mf-keg-3-top" )
+{
+    color( top_color )
+        ScaleTop( keg_r, keg_3_label );
+
+    color( label_color )
+        ScaleTopLabel( keg_3_label );
+}
+else if( render_mode == "print-co2-base" )
+{
+    ScaleBase( co2_tank_r, co2_label );
+}
+else if( render_mode == "print-co2-top" )
+{
+    ScaleTop( co2_tank_r, co2_label );
+}
+else if( render_mode == "print-co2-top-text" )
+{
+    ScaleTopLabel( co2_label );
+}
+else if( render_mode == "print-3mf-co2-top" )
+{
+    color( top_color )
+        ScaleTop( co2_tank_r, co2_label );
+
+    color( label_color )
+        ScaleTopLabel( co2_label );
+}
+else if( render_mode == "print-n2-base" )
+{
+    ScaleBase( n2_tank_r, n2_label );
+}
+else if( render_mode == "print-n2-top" )
+{
+    ScaleTop( n2_tank_r, n2_label );
+}
+else if( render_mode == "print-n2-top-text" )
+{
+    ScaleTopLabel( n2_label );
+}
+else if( render_mode == "print-3mf-n2-top" )
+{
+    color( top_color )
+        ScaleTop( n2_tank_r, n2_label );
+
+    color( label_color )
+        ScaleTopLabel( n2_label );
 }
 else
 {
@@ -110,7 +228,36 @@ else
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ScaleBase( scale_r )
+// the assembled scale, then the base and the top as they print
+module PreviewRow( scale_r, label )
+{
+    ScaleBase( scale_r, label );
+
+    // translate([ 0, 0, 18 ])
+    translate([ 0, 0, 30 ])
+        rotate([ 0, 180, 0 ])
+        {
+            ScaleTop( scale_r, label );
+
+            color( label_color )
+                ScaleTopLabel( label );
+        }
+
+    translate([ 250, 0, 0 ])
+        ScaleBase( scale_r, label );
+
+    translate([ 500, 0, 0 ])
+    {
+        ScaleTop( scale_r, label );
+
+        color( label_color )
+            ScaleTopLabel( label );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module ScaleBase( scale_r, label )
 {
     difference()
     {
@@ -166,11 +313,27 @@ module ScaleBase( scale_r )
         base_lid_z - DIFFERENCE_CLEARANCE
         ])
         _WeightModuleHolder();
+
+    // raised label on the floor, just above the weight module holder
+    translate([
+        -label_area_x / 2,
+        weight_module_holder_y / 2,
+        base_lid_z - DIFFERENCE_CLEARANCE
+        ])
+        CenteredTextLabel(
+            label,
+            centered_in_area_x = label_area_x,
+            centered_in_area_y = label_area_y,
+            depth = label_depth + DIFFERENCE_CLEARANCE,
+            font_size = label_font_size_bottom,
+            font = label_font,
+            color = undef
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ScaleTop( scale_r )
+module ScaleTop( scale_r, label )
 {
     difference()
     {
@@ -198,9 +361,33 @@ module ScaleTop( scale_r )
                 wall_width * 2,
                 top_z - top_lid_z + DIFFERENCE_CLEARANCE
                 ]);
+
+        // inset the label into the face that prints on the bed
+        ScaleTopLabel( label, is_cutout = true );
     }
+}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// centered in the top. mirrored because the top is modeled upside down, so it reads correctly once
+// the top is flipped over the base. the cut version stands proud of the face so it has no coplanar
+// surface to fight with; the printed one sits flush in the recess
+module ScaleTopLabel( label, is_cutout = false )
+{
+    offset_z = is_cutout ? -DIFFERENCE_OFFSET : 0;
+    depth_choice = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
+
+    mirror([ 1, 0, 0 ])
+        translate([ -label_area_x / 2, -label_area_y / 2, offset_z ])
+            CenteredTextLabel(
+                label,
+                centered_in_area_x = label_area_x,
+                centered_in_area_y = label_area_y,
+                depth = depth_choice,
+                font_size = label_font_size_top,
+                font = label_font,
+                color = undef
+                );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
