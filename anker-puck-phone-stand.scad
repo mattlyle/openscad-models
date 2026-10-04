@@ -1,4 +1,5 @@
 include <modules/utils.scad>
+include <modules/rounded-cube.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -12,8 +13,13 @@ anker_puck_cord_strain_relief_length = 12;
 anker_puck_cord_r = 3.5 / 2;
 
 phone_x = 75;
-phone_y = 13;
-phone_z = 110;
+phone_y = 156.5;
+phone_z = 13;
+phone_camera_bump_x = 70.5;
+phone_camera_bump_y = 29.5;
+phone_camera_bump_z = 2.0;
+phone_camera_bump_offset_y = 13;
+phone_rounding_r = 10;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -36,7 +42,7 @@ phone_case_holder_corner_r = 10;
 // height the holder off the floor
 phone_case_holder_z = 100;
 
-phone_case_holder_angle = 10;
+phone_case_holder_angle = 15;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -51,7 +57,31 @@ if( render_mode == "preview" )
     // color( [ 0.1, 0.1, 0.1 ] )
     //     AnkerPuckPreview();
 
-    PhoneCaseHolder();
+    translate([
+        0,
+        0,
+        phone_case_holder_z
+        ])
+        rotate([
+            -90 - phone_case_holder_angle,
+            0,
+            0
+            ])
+        {
+            PhoneCaseHolder();
+
+            // the phone's back lies on the holder's front face, with the camera bump ending at the
+            // holder's top edge
+            translate([
+                -phone_x / 2,
+                -anker_puck_body_r
+                    - phone_case_holder_above
+                    - phone_camera_bump_y
+                    - phone_camera_bump_offset_y,
+                -phone_z
+                ])
+                PhonePreview();
+        }
 }
 else if( render_mode == "print" )
 {
@@ -166,6 +196,12 @@ module PhoneCaseHolder()
 
 module PhoneCaseBase()
 {
+    // base plate
+
+    // base front face
+
+    // base 
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,6 +258,35 @@ module AnkerPuckPreview()
                 h = anker_puck_cord_preview_length,
                 r = anker_puck_cord_r
                 );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PhonePreview()
+{
+    RoundedCube(
+        phone_x,
+        phone_y,
+        phone_z,
+        r = phone_rounding_r,
+        round_top = false,
+        round_bottom = false,
+        );
+
+    translate([
+        ( phone_x - phone_camera_bump_x ) / 2,
+        phone_camera_bump_offset_y,
+        phone_z - DIFFERENCE_CLEARANCE
+        ])
+        RoundedCube(
+            phone_camera_bump_x,
+            phone_camera_bump_y,
+            phone_camera_bump_z,
+            r = phone_camera_bump_y / 2,
+            round_top = false,
+            round_bottom = false,
+            )
+            translate([ 0, phone_camera_bump_offset_y, 0 ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
