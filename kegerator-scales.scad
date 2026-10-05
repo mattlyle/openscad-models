@@ -120,9 +120,13 @@ label_font_size_bottom = 8;
 label_depth = 0.5;
 label_area_x = 40;
 label_area_y = 12;
+version_font_size = 6;
 
 // space between the wall and the label on the base
 base_label_offset_y = 5;
+
+// THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
+BUILD_SCRIPT_VERSION = "v2";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -438,6 +442,14 @@ module ScaleBase( scale_r, label, use_cord_clips )
             font = label_font,
             color = undef
             );
+
+    // raised version on the floor, at 3 o'clock where the label is at 12, facing the same way
+    translate([
+        scale_r - base_label_offset_y - label_area_y / 2,
+        0,
+        base_lid_z - DIFFERENCE_CLEARANCE
+        ])
+        VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -474,6 +486,10 @@ module ScaleTop( scale_r, label )
         // inset the label into the face that prints on the bed
         ScaleTopLabel( label, is_cutout = true );
     }
+
+    // raised version, dead center on the underside
+    translate([ 0, 0, top_lid_z - DIFFERENCE_CLEARANCE ])
+        VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
 
     // alignment guides, between the pairs of guides on the base and clear of its rim
     for( i = alignment_guide_angle_list )
@@ -518,6 +534,15 @@ module TestRing( scale_r, label )
                 is_cutout = true,
                 font_size = test_top_label_font_size
                 );
+
+        // inset the version in the same face, at the bottom of the ring. mirrored like the label
+        translate([
+            0,
+            -( test_top_r - test_top_width / 2 - test_top_label_offset_y ),
+            -DIFFERENCE_OFFSET
+            ])
+            mirror([ 1, 0, 0 ])
+                VersionLabel( label_depth + DIFFERENCE_OFFSET );
     }
 
     for( i = alignment_guide_angle_list )
@@ -557,6 +582,23 @@ module ScaleTopLabel( label, is_cutout = false, font_size = label_font_size_top 
                 font = label_font,
                 color = undef
                 );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// the version the build script stamped into the model, centered on the origin
+module VersionLabel( depth )
+{
+    translate([ -label_area_x / 2, -label_area_y / 2, 0 ])
+        CenteredTextLabel(
+            BUILD_SCRIPT_VERSION,
+            centered_in_area_x = label_area_x,
+            centered_in_area_y = label_area_y,
+            depth = depth,
+            font_size = version_font_size,
+            font = label_font,
+            color = undef
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
