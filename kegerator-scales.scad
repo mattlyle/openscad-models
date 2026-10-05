@@ -1,5 +1,6 @@
 include <modules/utils.scad>
 include <modules/rounded-cube.scad>
+include <modules/cord-clip.scad>
 include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +75,7 @@ load_cell_ring_thickness = 4.0;
 load_cell_clip_xy = 2.0;
 load_cell_clip_z = 1.4;
 load_cell_rounding_r = 5.0;
+load_cell_cord_hook_spacing = 6;
 
 weight_module_clearance = 0.2;
 weight_module_wall_width = 2.0;
@@ -129,17 +131,17 @@ weight_module_holder_y =
 
 if( render_mode == "preview" )
 {
-    PreviewRow( keg_r, keg_1_label );
+    PreviewRow( keg_r, keg_1_label, true );
 
     translate([ 0, 250, 0 ])
-        PreviewRow( co2_tank_r, co2_label );
+        PreviewRow( co2_tank_r, co2_label, false );
 
     translate([ 0, 500, 0 ])
-        PreviewRow( n2_tank_r, n2_label );
+        PreviewRow( n2_tank_r, n2_label, false );
 }
 else if( render_mode == "print-keg-1-base" )
 {
-    ScaleBase( keg_r, keg_1_label );
+    ScaleBase( keg_r, keg_1_label, true );
 }
 else if( render_mode == "print-keg-1-top" )
 {
@@ -159,7 +161,7 @@ else if( render_mode == "print-3mf-keg-1-top" )
 }
 else if( render_mode == "print-keg-2-base" )
 {
-    ScaleBase( keg_r, keg_2_label );
+    ScaleBase( keg_r, keg_2_label, true );
 }
 else if( render_mode == "print-keg-2-top" )
 {
@@ -179,7 +181,7 @@ else if( render_mode == "print-3mf-keg-2-top" )
 }
 else if( render_mode == "print-keg-3-base" )
 {
-    ScaleBase( keg_r, keg_3_label );
+    ScaleBase( keg_r, keg_3_label, true );
 }
 else if( render_mode == "print-keg-3-top" )
 {
@@ -199,7 +201,7 @@ else if( render_mode == "print-3mf-keg-3-top" )
 }
 else if( render_mode == "print-co2-base" )
 {
-    ScaleBase( co2_tank_r, co2_label );
+    ScaleBase( co2_tank_r, co2_label, false );
 }
 else if( render_mode == "print-co2-top" )
 {
@@ -219,7 +221,7 @@ else if( render_mode == "print-3mf-co2-top" )
 }
 else if( render_mode == "print-n2-base" )
 {
-    ScaleBase( n2_tank_r, n2_label );
+    ScaleBase( n2_tank_r, n2_label, false );
 }
 else if( render_mode == "print-n2-top" )
 {
@@ -245,9 +247,9 @@ else
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // the assembled scale, then the base and the top as they print
-module PreviewRow( scale_r, label )
+module PreviewRow( scale_r, label, use_cord_clips )
 {
-    ScaleBase( scale_r, label );
+    ScaleBase( scale_r, label, use_cord_clips );
 
     // translate([ 0, 0, 18 ])
     translate([ 0, 0, 30 ])
@@ -260,7 +262,7 @@ module PreviewRow( scale_r, label )
         }
 
     translate([ 250, 0, 0 ])
-        ScaleBase( scale_r, label );
+        ScaleBase( scale_r, label, use_cord_clips );
 
     translate([ 500, 0, 0 ])
     {
@@ -273,7 +275,7 @@ module PreviewRow( scale_r, label )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module ScaleBase( scale_r, label )
+module ScaleBase( scale_r, label, use_cord_clips )
 {
     difference()
     {
@@ -312,7 +314,7 @@ module ScaleBase( scale_r, label )
                 scale_r - load_cell_holder_xy - load_cell_offset_y,
                 base_lid_z - DIFFERENCE_CLEARANCE
                 ])
-                _LoadCellHolder();
+                _LoadCellHolder( use_cord_clips );
     }
 
     // add back the ESP32 holder, just inside the cord cutout
@@ -409,7 +411,7 @@ module ScaleTopLabel( label, is_cutout = false )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _LoadCellHolder()
+module _LoadCellHolder( use_cord_clips )
 {
     difference()
     {
@@ -483,24 +485,40 @@ module _LoadCellHolder()
             load_cell_clip_z
             ]);
 
-    // TODO: add wire hooks too
+    // hooks to pin the wire down, centered below the wire channel
+    if( use_cord_clips )
+    {
+        translate([
+            load_cell_holder_xy / 2,
+            -load_cell_wall_width * 2 - load_cell_cord_hook_spacing * 2,
+            0
+            ])
+            CordHookPair(
+                load_cell_wire_cutout_x,
+                load_cell_wire_cutout_x / 2,
+                load_cell_wall_width,
+                load_cell_wall_width,
+                load_cell_cord_hook_spacing,
+                true
+                );
+    }
 
-    // if( render_mode == "preview" )
-    // {
-    //     %translate([
-    //         load_cell_wall_width + load_cell_clearance,
-    //         load_cell_wall_width + load_cell_clearance,
-    //         load_cell_ring_z
-    //         ])
-    //         RoundedCube(
-    //             load_cell_xy,
-    //             load_cell_xy,
-    //             load_cell_z,
-    //             load_cell_rounding_r,
-    //             round_top = false,
-    //             round_bottom = false
-    //         );
-    // }
+    if( render_mode == "preview" )
+    {
+        %translate([
+            load_cell_wall_width + load_cell_clearance,
+            load_cell_wall_width + load_cell_clearance,
+            load_cell_ring_z
+            ])
+            RoundedCube(
+                load_cell_xy,
+                load_cell_xy,
+                load_cell_z,
+                load_cell_rounding_r,
+                round_top = false,
+                round_bottom = false
+            );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
