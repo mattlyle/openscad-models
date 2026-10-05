@@ -85,6 +85,7 @@ weight_module_corner_length = 2;
 esp32_clearance = 0.2;
 esp32_wall_width = 2.0;
 esp32_wall_z = 5.0;
+
 // space between the cord cutout wall and the usb end of the board, for the plug
 esp32_offset_y = 5;
 
@@ -103,6 +104,9 @@ label_font_size_bottom = 8;
 label_depth = 0.5;
 label_area_x = 40;
 label_area_y = 12;
+
+// space between the wall and the label on the base
+base_label_offset_y = 5;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -333,10 +337,10 @@ module ScaleBase( scale_r, label, use_cord_clips )
         ])
         _WeightModuleHolder();
 
-    // raised label on the floor, just above the weight module holder
+    // raised label on the floor, opposite the ESP32 holder
     translate([
         -label_area_x / 2,
-        weight_module_holder_y / 2,
+        scale_r - base_label_offset_y - label_area_y,
         base_lid_z - DIFFERENCE_CLEARANCE
         ])
         CenteredTextLabel(
