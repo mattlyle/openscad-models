@@ -54,7 +54,7 @@ top_bottom_fit_clearance = 0.5;
 
 base_lid_z = 2;
 
-top_lid_z = 3;
+top_lid_z = 4;
 top_wall_z = 6;
 
 wall_width = 2;
