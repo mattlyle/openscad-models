@@ -66,7 +66,7 @@ wall_width = 2;
 // top_struts_z = 4;
 // num_top_struts = 2;
 
-load_cell_clearance = 0.2;
+load_cell_clearance = 0.05;
 load_cell_wall_width = 2.0;
 load_cell_wall_z = 5.0;
 load_cell_offset_y = 5;
