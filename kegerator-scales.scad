@@ -48,6 +48,7 @@ render_mode = "preview";
 // render_mode = "print-n2-top";
 // render_mode = "print-n2-top-text";
 // render_mode = "print-3mf-n2-top";
+// render_mode = "print-test-top";
 
 scale_extra_r = 5;
 
@@ -97,6 +98,12 @@ alignment_guide_clearance = 0.3;
 alignment_guide_angle_list = [ -90, 0, 90 ];
 alignment_guide_top_z = 6;
 
+test_top_r = 95;
+test_top_width = 18;
+test_top_z = 4;
+test_top_label_font_size = 8;
+test_top_label_offset_y = 1;
+
 top_color = "white";
 label_color = "black";
 
@@ -143,13 +150,20 @@ weight_module_holder_y =
 
 if( render_mode == "preview" )
 {
+    // keg row
     PreviewRow( keg_r, keg_1_label, true );
 
+    // co2 tank row
     translate([ 0, 250, 0 ])
         PreviewRow( co2_tank_r, co2_label, false );
 
+    // n2 tank row
     translate([ 0, 500, 0 ])
         PreviewRow( n2_tank_r, n2_label, false );
+
+    // test top row
+    translate([ 0, -250, 0 ])
+        PreviewTestRow( keg_r, keg_1_label, false );
 }
 else if( render_mode == "print-keg-1-base" )
 {
@@ -251,6 +265,10 @@ else if( render_mode == "print-3mf-n2-top" )
     color( label_color )
         ScaleTopLabel( n2_label );
 }
+else if( render_mode == "print-test-top" )
+{
+    TestTop( keg_r, keg_1_label );
+}
 else
 {
     assert( false, str( "Unknown render mode: ", render_mode ) );
@@ -283,6 +301,18 @@ module PreviewRow( scale_r, label, use_cord_clips )
         color( label_color )
             ScaleTopLabel( label );
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module PreviewTestRow( scale_r, label, use_cord_clips )
+{
+    ScaleBase( scale_r, label, use_cord_clips );
+
+    // translate([ 0, 0, 18 ])
+    translate([ 0, 0, 30 ])
+        rotate([ 0, 180, 0 ])
+            TestTop( scale_r, label );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -461,10 +491,41 @@ module ScaleTop( scale_r, label )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module TestTop( scale_r, label )
+{
+    difference()
+    {
+        cylinder(
+            r = test_top_r,
+            h = test_top_z
+            );
+
+        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+            cylinder(
+                r = test_top_r - test_top_width,
+                h = test_top_z + DIFFERENCE_CLEARANCE * 2
+                );
+
+        // inset the label into the face that prints on the bed, centered across the ring at the top
+        translate([
+            0,
+            test_top_r - test_top_width / 2 - test_top_label_offset_y,
+            0
+            ])
+            ScaleTopLabel(
+                label,
+                is_cutout = true,
+                font_size = test_top_label_font_size
+                );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // centered in the top. mirrored because the top is modeled upside down, so it reads correctly once
 // the top is flipped over the base. the cut version stands proud of the face so it has no coplanar
 // surface to fight with; the printed one sits flush in the recess
-module ScaleTopLabel( label, is_cutout = false )
+module ScaleTopLabel( label, is_cutout = false, font_size = label_font_size_top )
 {
     offset_z = is_cutout ? -DIFFERENCE_OFFSET : 0;
     depth_choice = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
@@ -476,7 +537,7 @@ module ScaleTopLabel( label, is_cutout = false )
                 centered_in_area_x = label_area_x,
                 centered_in_area_y = label_area_y,
                 depth = depth_choice,
-                font_size = label_font_size_top,
+                font_size = font_size,
                 font = label_font,
                 color = undef
                 );
