@@ -380,10 +380,6 @@ module ScaleBase( scale_r, label, use_cord_clips )
         ])
         _WeightModuleHolder();
 
-// alignment_guide_length = 3.5;
-// alignment_guide_width = 2.0;
-// alignment_guide_clearance = 0.3;
-
     // alignment guides
     for( i = alignment_guide_angle_list )
     {
