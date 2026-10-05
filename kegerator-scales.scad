@@ -75,7 +75,9 @@ load_cell_ring_thickness = 4.0;
 load_cell_clip_xy = 2.0;
 load_cell_clip_z = 1.4;
 load_cell_rounding_r = 5.0;
-load_cell_cord_hook_spacing = 6;
+load_cell_wire_hook_spacing = 6;
+load_cell_wire_hook_x = 4.0;
+load_cell_wire_hook_z = 1.0;
 
 weight_module_clearance = 0.2;
 weight_module_wall_width = 2.0;
@@ -561,15 +563,15 @@ module _LoadCellHolder( use_cord_clips )
     {
         translate([
             load_cell_holder_xy / 2,
-            -load_cell_wall_width * 2 - load_cell_cord_hook_spacing * 2,
+            -load_cell_wall_width * 2 - load_cell_wire_hook_spacing * 2,
             0
             ])
             CordHookPair(
-                load_cell_wire_cutout_x,
-                load_cell_wire_cutout_x / 2,
+                load_cell_wire_hook_x,
+                load_cell_wire_hook_z,
                 load_cell_wall_width,
                 load_cell_wall_width,
-                load_cell_cord_hook_spacing,
+                load_cell_wire_hook_spacing,
                 true
                 );
     }
