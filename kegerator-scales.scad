@@ -89,6 +89,12 @@ esp32_wall_z = 5.0;
 // space between the cord cutout wall and the usb end of the board, for the plug
 esp32_offset_y = 5;
 
+alignment_guide_length = 3.5;
+alignment_guide_width = 2.0;
+alignment_guide_clearance = 0.3;
+alignment_guide_angle_list = [ -90, 0, 90 ];
+alignment_guide_top_z = 6;
+
 top_color = "white";
 label_color = "black";
 
@@ -111,7 +117,7 @@ base_label_offset_y = 5;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
-$fn = $preview ? 32 : 128;
+$fn = $preview ? 32 : 512;
 
 base_z = base_lid_z + load_cell_z;
 top_z = top_lid_z + top_wall_z;
@@ -337,6 +343,53 @@ module ScaleBase( scale_r, label, use_cord_clips )
         ])
         _WeightModuleHolder();
 
+// alignment_guide_length = 3.5;
+// alignment_guide_width = 2.0;
+// alignment_guide_clearance = 0.3;
+
+    // alignment guides
+    for( i = alignment_guide_angle_list )
+    {
+        // center
+        // #rotate([ 0, 0, i ])
+        //     translate([
+        //         -alignment_guide_width / 2,
+        //         scale_r - alignment_guide_length,
+        //         base_lid_z
+        //         ])
+        //         cube([
+        //             alignment_guide_width,
+        //             alignment_guide_length,
+        //             base_z - base_lid_z
+        //             ]);
+
+        // left
+        rotate([ 0, 0, i ])
+            translate([
+                -alignment_guide_width / 2 - alignment_guide_width - alignment_guide_clearance,
+                scale_r - alignment_guide_length,
+                base_lid_z
+                ])
+                cube([
+                    alignment_guide_width,
+                    alignment_guide_length,
+                    base_z - base_lid_z
+                    ]);
+        
+        // right
+        rotate([ 0, 0, i ])
+            translate([
+                alignment_guide_width / 2 + alignment_guide_clearance,
+                scale_r - alignment_guide_length,
+                base_lid_z
+                ])
+                cube([
+                    alignment_guide_width,
+                    alignment_guide_length,
+                    base_z - base_lid_z
+                    ]);
+    }
+
     // raised label on the floor, opposite the ESP32 holder
     translate([
         -label_area_x / 2,
@@ -388,6 +441,20 @@ module ScaleTop( scale_r, label )
         // inset the label into the face that prints on the bed
         ScaleTopLabel( label, is_cutout = true );
     }
+
+    // alignment guides, between the pairs of guides on the base and clear of its rim
+    for( i = alignment_guide_angle_list )
+        rotate([ 0, 0, i ])
+            translate([
+                -alignment_guide_width / 2,
+                scale_r - alignment_guide_length,
+                top_lid_z - DIFFERENCE_CLEARANCE
+                ])
+                cube([
+                    alignment_guide_width,
+                    alignment_guide_length - alignment_guide_clearance,
+                    alignment_guide_top_z + DIFFERENCE_CLEARANCE
+                    ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
