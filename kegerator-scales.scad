@@ -69,6 +69,11 @@ load_cell_clearance = 0.2;
 load_cell_wall_width = 2.0;
 load_cell_wall_z = 5.0;
 load_cell_offset_y = 5;
+load_cell_ring_z = 1.6;
+load_cell_ring_thickness = 4.0;
+load_cell_clip_xy = 2.0;
+load_cell_clip_z = 1.4;
+load_cell_rounding_r = 5.0;
 
 weight_module_clearance = 0.2;
 weight_module_wall_width = 2.0;
@@ -414,18 +419,34 @@ module _LoadCellHolder()
             load_cell_wall_z
             ]);
 
+        // remove above the load cell ring
         translate([
             load_cell_wall_width,
             load_cell_wall_width,
+            load_cell_ring_z
+            ])
+            RoundedCube(
+                load_cell_xy + load_cell_clearance * 2,
+                load_cell_xy + load_cell_clearance * 2,
+                load_cell_wall_z,
+                load_cell_rounding_r,
+                round_top = false,
+                round_bottom = false
+                );
+
+        // remove the extra material below the center of the load cell
+        translate([
+            load_cell_wall_width + load_cell_ring_thickness,
+            load_cell_wall_width + load_cell_ring_thickness,
             -DIFFERENCE_CLEARANCE
             ])
             cube([
-                load_cell_xy + load_cell_clearance * 2,
-                load_cell_xy + load_cell_clearance * 2,
-                load_cell_wall_z + DIFFERENCE_CLEARANCE * 2
+                load_cell_xy + load_cell_clearance * 2 - load_cell_ring_thickness * 2,
+                load_cell_xy + load_cell_clearance * 2 - load_cell_ring_thickness * 2,
+                load_cell_wall_z
                 ]);
 
-        // cut out the wires
+        // cut out the wire channel
         translate([
             ( load_cell_holder_xy - load_cell_wire_cutout_x ) / 2,
             -DIFFERENCE_CLEARANCE,
@@ -438,24 +459,48 @@ module _LoadCellHolder()
                 ]);
     }
 
-    // TODO: should add clips to keep the load cell in place
+    // top-left clip
+    translate([
+        0,
+        load_cell_holder_xy - load_cell_wall_z - load_cell_clip_xy,
+        load_cell_wall_z
+        ])
+        cube([
+            load_cell_wall_z + load_cell_clip_xy,
+            load_cell_wall_z + load_cell_clip_xy,
+            load_cell_clip_z
+            ]);
 
-    if( render_mode == "preview" )
-    {
-        %translate([
-            load_cell_wall_width + load_cell_clearance,
-            load_cell_wall_width + load_cell_clearance,
-            0
-            ])
-            RoundedCube(
-                load_cell_xy,
-                load_cell_xy,
-                load_cell_z,
-                8,
-                round_top = false,
-                round_bottom = false
-            );
-    }
+    // top-right clip
+    translate([
+        load_cell_holder_xy - load_cell_wall_z - load_cell_clip_xy,
+        load_cell_holder_xy - load_cell_wall_z - load_cell_clip_xy,
+        load_cell_wall_z
+        ])
+        cube([
+            load_cell_wall_z + load_cell_clip_xy,
+            load_cell_wall_z + load_cell_clip_xy,
+            load_cell_clip_z
+            ]);
+
+    // TODO: add wire hooks too
+
+    // if( render_mode == "preview" )
+    // {
+    //     %translate([
+    //         load_cell_wall_width + load_cell_clearance,
+    //         load_cell_wall_width + load_cell_clearance,
+    //         load_cell_ring_z
+    //         ])
+    //         RoundedCube(
+    //             load_cell_xy,
+    //             load_cell_xy,
+    //             load_cell_z,
+    //             load_cell_rounding_r,
+    //             round_top = false,
+    //             round_bottom = false
+    //         );
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
