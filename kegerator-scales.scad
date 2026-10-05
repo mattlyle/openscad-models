@@ -50,7 +50,7 @@ render_mode = "preview";
 // render_mode = "print-3mf-n2-top";
 // render_mode = "print-test-ring";
 
-scale_extra_r = 5;
+top_bottom_fit_clearance = 0.5;
 
 base_lid_z = 2;
 
@@ -460,21 +460,21 @@ module ScaleTop( scale_r, label )
     {
         // full base
         cylinder(
-            r = scale_r + scale_extra_r + wall_width,
+            r = scale_r + wall_width * 2 + top_bottom_fit_clearance,
             h = top_z
             );
         
         // cut out the inside
         translate([ 0, 0, top_lid_z ])
             cylinder(
-                r = scale_r + scale_extra_r,
+                r = scale_r + wall_width + top_bottom_fit_clearance,
                 h = top_z
                 );
 
         // cut out the cord
         translate([
             -cord_r / 2,
-            -scale_r - scale_extra_r - wall_width,
+            -scale_r - wall_width + top_bottom_fit_clearance - wall_width,
             top_lid_z
             ])
             cube([
