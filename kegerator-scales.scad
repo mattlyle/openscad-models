@@ -48,7 +48,7 @@ render_mode = "preview";
 // render_mode = "print-n2-top";
 // render_mode = "print-n2-top-text";
 // render_mode = "print-3mf-n2-top";
-// render_mode = "print-test-top";
+// render_mode = "print-test-ring";
 
 scale_extra_r = 5;
 
@@ -266,9 +266,9 @@ else if( render_mode == "print-3mf-n2-top" )
     color( label_color )
         ScaleTopLabel( n2_label );
 }
-else if( render_mode == "print-test-top" )
+else if( render_mode == "print-test-ring" )
 {
-    TestTop( keg_r, keg_1_label );
+    TestRing( keg_r, keg_1_label );
 }
 else
 {
@@ -313,7 +313,7 @@ module PreviewTestRow( scale_r, label, use_cord_clips )
     // translate([ 0, 0, 18 ])
     translate([ 0, 0, 30 ])
         rotate([ 0, 180, 0 ])
-            TestTop( scale_r, label );
+            TestRing( scale_r, label );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -492,7 +492,7 @@ module ScaleTop( scale_r, label )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TestTop( scale_r, label )
+module TestRing( scale_r, label )
 {
     difference()
     {
