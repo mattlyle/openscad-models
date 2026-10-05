@@ -52,7 +52,7 @@ render_mode = "preview";
 
 scale_extra_r = 5;
 
-base_lid_z = 3;
+base_lid_z = 2;
 
 top_lid_z = 3;
 top_wall_z = 6;
@@ -101,6 +101,7 @@ alignment_guide_top_z = 6;
 test_top_r = 95;
 test_top_width = 18;
 test_top_z = 4;
+test_top_alignment_guide_z = 10;
 test_top_label_font_size = 8;
 test_top_label_offset_y = 1;
 
@@ -517,6 +518,21 @@ module TestTop( scale_r, label )
                 is_cutout = true,
                 font_size = test_top_label_font_size
                 );
+    }
+
+    for( i = alignment_guide_angle_list )
+    {
+        rotate([ 0, 0, i ])
+            translate([
+                -alignment_guide_width / 2,
+                test_top_r - alignment_guide_clearance,
+                0
+                ])
+                cube([
+                    alignment_guide_width,
+                    scale_r - test_top_r - alignment_guide_clearance,
+                    test_top_alignment_guide_z
+                    ]);
     }
 }
 
