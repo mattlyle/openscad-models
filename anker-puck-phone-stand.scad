@@ -287,10 +287,6 @@ module PhoneCaseHolder()
         [ base_core_interface_rear_x, offset_bottom_y, base_core_interface_rear_z ],
         ];
 
-    // for( point = base_core_interface_points )
-    //     # translate( point )
-    //         sphere( r = phone_case_holder_corner_r );
-
     difference()
     {
         hull()
@@ -368,10 +364,6 @@ module PhoneCaseBase()
 
 module _PhoneCaseBaseCore()
 {
-    // for( point = base_core_points )
-    //     # translate( point )
-    //         sphere( r = 1 );
-
     base_core_faces = [
         [ 0, 4, 2 ],
         [ 1, 3, 5 ],
