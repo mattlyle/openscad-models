@@ -49,6 +49,8 @@ phone_case_holder_angle = 15;
 base_core_extra_x = 10;
 base_core_extra_y = 20;
 
+holder_base_interface_clearance = 0.2;
+
 base_plate_x = 130;
 base_plate_y = 120;
 base_plate_offset_y = 10;
@@ -57,6 +59,8 @@ base_plate_rounding_r = 10;
 
 // space between the parts in the print previews
 print_preview_gap = 20;
+
+// TODO: route the cord for the puck through the base
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -107,6 +111,40 @@ base_core_points = [
 base_core_rear_angle =
     phone_case_holder_angle
     + atan( base_core_extra_y / base_core_back_top_z );
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// the unit normal of a face of a convex shape, pointing out of the shape
+function _FaceNormal( point_list, face, center ) =
+    let( normal = cross(
+        point_list[ face[ 1 ] ] - point_list[ face[ 0 ] ],
+        point_list[ face[ 2 ] ] - point_list[ face[ 0 ] ]
+        ) )
+    let( unit_normal = normal / norm( normal ) )
+    unit_normal * ( point_list[ face[ 0 ] ] - center ) < 0 ? -unit_normal : unit_normal;
+
+// where a corner of a convex shape ends up when all of its faces move inward by the clearance; the
+// corner must be shared by exactly three faces, and it is where those three moved faces meet
+function _InsetCorner( corner_index, point_list, face_list, clearance ) =
+    let( center = [
+        SumList( GetListAtIndex( point_list, 0 ) ),
+        SumList( GetListAtIndex( point_list, 1 ) ),
+        SumList( GetListAtIndex( point_list, 2 ) )
+        ] / len( point_list ) )
+    let( corner_face_list = [
+        for( face = face_list )
+            if( search( corner_index, face ) != [] )
+                face
+        ] )
+    assert( len( corner_face_list ) == 3, "every corner must be shared by exactly three faces" )
+    let( n1 = _FaceNormal( point_list, corner_face_list[ 0 ], center ) )
+    let( n2 = _FaceNormal( point_list, corner_face_list[ 1 ], center ) )
+    let( n3 = _FaceNormal( point_list, corner_face_list[ 2 ], center ) )
+    let( d1 = n1 * point_list[ corner_index ] - clearance )
+    let( d2 = n2 * point_list[ corner_index ] - clearance )
+    let( d3 = n3 * point_list[ corner_index ] - clearance )
+    ( d1 * cross( n2, n3 ) + d2 * cross( n3, n1 ) + d3 * cross( n1, n2 ) )
+        / ( n1 * cross( n2, n3 ) );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -332,8 +370,7 @@ module PhoneCaseHolder()
                     0,
                     -phone_case_holder_z
                     ])
-                    _PhoneCaseBaseCore();
-
+                    _PhoneCaseBaseCore( false );
     }
 }
 
@@ -362,8 +399,13 @@ module PhoneCaseBase()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _PhoneCaseBaseCore()
+// shrinking moves every face of the core inward by the holder interface clearance
+module _PhoneCaseBaseCore( shrink = true )
 {
+    clearance = shrink
+        ? holder_base_interface_clearance
+        : 0;
+
     base_core_faces = [
         [ 0, 4, 2 ],
         [ 1, 3, 5 ],
@@ -372,7 +414,12 @@ module _PhoneCaseBaseCore()
         [ 0, 2, 3, 1 ],
         ];
 
-    polyhedron( points = base_core_points, faces = base_core_faces );
+    inset_point_list = [
+        for( i = [ 0 : len( base_core_points ) - 1 ] )
+            _InsetCorner( i, base_core_points, base_core_faces, clearance )
+        ];
+
+    polyhedron( points = inset_point_list, faces = base_core_faces );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
