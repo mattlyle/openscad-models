@@ -25,7 +25,8 @@ phone_rounding_r = 10;
 // settings
 
 render_mode = "preview";
-// render_mode = "print";
+// render_mode = "print-base";
+// render_mode = "print-holder";
 
 anker_puck_cord_preview_length = 30;
 
@@ -149,9 +150,13 @@ if( render_mode == "preview" )
     translate([ 350, 0, 0 ])
         PhoneCaseHolder();
 }
-else if( render_mode == "print" )
+else if( render_mode == "print-base" )
 {
-    MyModel();
+    PhoneCaseBase();
+}
+else if( render_mode == "print-holder" )
+{
+    PhoneCaseHolder();
 }
 else
 {
