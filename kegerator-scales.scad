@@ -92,7 +92,7 @@ esp32_wall_z = 5.0;
 // space between the cord cutout wall and the usb end of the board, for the plug
 esp32_offset_y = 5;
 
-alignment_guide_length = 3.5;
+alignment_guide_length = 5;
 alignment_guide_width = 2.0;
 alignment_guide_clearance = 0.3;
 alignment_guide_angle_list = [ -90, 0, 90 ];
