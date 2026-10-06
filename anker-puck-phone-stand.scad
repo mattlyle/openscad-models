@@ -44,6 +44,18 @@ phone_case_holder_z = 100;
 
 phone_case_holder_angle = 15;
 
+base_core_extra_x = 10;
+base_core_extra_y = 20;
+
+base_plate_x = 130;
+base_plate_y = 120;
+base_plate_offset_y = 10;
+base_plate_z = 2;
+base_plate_rounding_r = 10;
+
+// space between the parts in the print previews
+print_preview_gap = 20;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
 
@@ -90,7 +102,13 @@ if( render_mode == "preview" )
                 PhonePreview();
         }
 
-    %PhoneCaseBase();
+    % PhoneCaseBase();
+
+    translate([ 200, 0, 0 ])
+        PhoneCaseBase();
+
+    translate([ 350, 0, 0 ])
+        PhoneCaseHolder();
 }
 else if( render_mode == "print" )
 {
@@ -197,15 +215,6 @@ module PhoneCaseHolder()
 
 module PhoneCaseBase()
 {
-    base_core_extra_x = 10;
-    base_core_extra_y = 20;
-
-    base_plate_x = 130;
-    base_plate_y = 120;
-    base_plate_offset_y = 10;
-    base_plate_z = 2;
-    base_plate_rounding_r = 10;
-
     // base core
 
     // the corners of the puck's bounding square on the holder's back face, found by tilting a point
