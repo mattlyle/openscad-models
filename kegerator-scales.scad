@@ -467,15 +467,15 @@ module ScaleTop( scale_r, label )
                 h = top_z
                 );
 
-        // cut out the cord
+        // cut out the cord, starting outside the skirt so nothing is left of it
         translate([
             -cord_r / 2,
-            -scale_r - wall_width + top_bottom_fit_clearance - wall_width,
+            -scale_r - wall_width * 2 - top_bottom_fit_clearance - DIFFERENCE_CLEARANCE,
             top_lid_z
             ])
             cube([
                 cord_r,
-                wall_width * 2,
+                wall_width * 2 + DIFFERENCE_CLEARANCE,
                 top_z - top_lid_z + DIFFERENCE_CLEARANCE
                 ]);
 
