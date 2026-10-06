@@ -113,7 +113,7 @@ def find_next_version(output_dir):
 def run_openscad(openscad, output_path, render_mode, label):
     first_line, second_line, first_line_offset_y, second_line_offset_y = label
 
-    args = [openscad, "--enable=textmetrics"]
+    args = [openscad]
     if render_mode.startswith("print-3mf"):
         # keep the body and text as separate objects in the 3MF (see build-openscad.py)
         args.append("--enable=lazy-union")

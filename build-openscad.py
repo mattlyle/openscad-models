@@ -187,7 +187,7 @@ def FindNextVersion( model_name, output_dir ):
 
 
 def Render( openscad, model_path, mode, output_path ):
-    command = [ openscad, "--enable=textmetrics" ]
+    command = [ openscad ]
     if IsMultiColorMode( mode ):
         command.append( "--enable=lazy-union" )
     command += [
