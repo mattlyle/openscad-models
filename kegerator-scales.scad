@@ -89,7 +89,7 @@ load_cell_wire_hook_spacing = 6;
 load_cell_wire_hook_x = 4.0;
 load_cell_wire_hook_z = 1.0;
 
-weight_module_clearance = 0.2;
+weight_module_clearance = 0.1;
 weight_module_wall_width = 2.0;
 weight_module_wall_z = 5.0;
 weight_module_corner_length = 2;
