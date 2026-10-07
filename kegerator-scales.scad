@@ -98,7 +98,7 @@ esp32_clearance = 0.2;
 esp32_wall_width = 2.0;
 esp32_wall_z = 5.0;
 esp32_offset_z = 2.0;
-esp32_extra_y = 0.75;
+esp32_extra_y = 1.1;
 
 // how far the usb end of the board sticks out past the inside of the base wall, into the cutout
 esp32_poke_y = 1.0;
