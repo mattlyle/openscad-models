@@ -18,11 +18,20 @@ weight_module_x = 34.2;
 weight_module_y = 21.3;
 weight_module_z = 3.2;
 
-esp32_x = 28.3;
-esp32_y = 51.5;
-esp32_z = 12.6;
+// large ESP32
+// esp32_x = 28.3;
+// esp32_y = 51.5;
+// esp32_z = 12.6;
+esp32_x = 17.9;
+esp32_y = 21.2;
+esp32_z = 3.5;
+esp32_board_only_z = 2.0;
+esp32_pin_pitch = 2.54;
 
-cord_r = 3.6;
+// measured from the usb end of the board to the center of the first pad
+esp32_first_pin_y = 3.0;
+
+cord_x = 9.1;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -88,9 +97,18 @@ weight_module_corner_length = 2;
 esp32_clearance = 0.2;
 esp32_wall_width = 2.0;
 esp32_wall_z = 5.0;
+esp32_offset_z = 2.0;
 
-// space between the cord cutout wall and the usb end of the board, for the plug
-esp32_offset_y = 5;
+// how far the usb end of the board sticks out past the inside of the base wall, into the cutout
+esp32_poke_y = 1.0;
+
+// the pads that get wired, counted from the usb end starting at 0, the same on both sides: D1 and
+// D2 on one side, GND and 3V3 on the other
+esp32_wired_pin_list = [ 1, 2 ];
+esp32_pin_cutout_margin = 2.0;
+
+esp32_clip_xy = 3.0;
+esp32_clip_z = 1.8;
 
 alignment_guide_length = 5;
 alignment_guide_width = 2.0;
@@ -341,12 +359,12 @@ module ScaleBase( scale_r, label, use_cord_clips )
 
         // cut out the cord
         translate([
-            -cord_r / 2,
+            -cord_x / 2,
             -scale_r - wall_width,
             base_lid_z
             ])
             cube([
-                cord_r,
+                cord_x,
                 wall_width * 2,
                 base_z - base_lid_z + DIFFERENCE_CLEARANCE
                 ]);
@@ -364,13 +382,20 @@ module ScaleBase( scale_r, label, use_cord_clips )
                 _LoadCellHolder( use_cord_clips );
     }
 
-    // add back the ESP32 holder, just inside the cord cutout
-    translate([
-        -esp32_holder_x / 2,
-        -scale_r + esp32_offset_y,
-        base_lid_z - DIFFERENCE_CLEARANCE
-        ])
-        _ESP32Holder();
+    // add back the ESP32 holder, with the usb end of the board poking into the cord cutout. the
+    // board is wider than the cutout, so the holder is clipped at the inside of the wall
+    intersection()
+    {
+        translate([
+            -esp32_holder_x / 2,
+            -scale_r - esp32_poke_y - esp32_wall_width - esp32_clearance,
+            base_lid_z - DIFFERENCE_CLEARANCE
+            ])
+            _ESP32Holder();
+
+        translate([ -esp32_holder_x, -scale_r, 0 ])
+            cube([ esp32_holder_x * 2, scale_r, base_z ]);
+    }
 
     // add back the weight module holder, dead center
     translate([
@@ -469,12 +494,12 @@ module ScaleTop( scale_r, label )
 
         // cut out the cord, starting outside the skirt so nothing is left of it
         translate([
-            -cord_r / 2,
+            -cord_x / 2,
             -scale_r - wall_width * 2 - top_bottom_fit_clearance - DIFFERENCE_CLEARANCE,
             top_lid_z
             ])
             cube([
-                cord_r,
+                cord_x,
                 wall_width * 2 + DIFFERENCE_CLEARANCE,
                 top_z - top_lid_z + DIFFERENCE_CLEARANCE
                 ]);
@@ -765,7 +790,7 @@ module _WeightModuleHolder()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// the usb end of the board faces -y, toward the cord, and is left open
+// the usb end of the board faces -y, toward the cord, and is left open. the board sits on a pad
 module _ESP32Holder()
 {
     cavity_x = esp32_x + esp32_clearance * 2;
@@ -801,14 +826,53 @@ module _ESP32Holder()
                 esp32_wall_width + DIFFERENCE_CLEARANCE * 2,
                 esp32_wall_z + DIFFERENCE_CLEARANCE * 2
                 ]);
+
+        // open both sides at the pads that get wired, from the board up so the wires can leave
+        for( x = [
+            -DIFFERENCE_CLEARANCE,
+            esp32_holder_x - esp32_wall_width - DIFFERENCE_CLEARANCE
+            ] )
+            translate([
+                x,
+                esp32_wall_width
+                    + esp32_clearance
+                    + esp32_first_pin_y
+                    + ( min( esp32_wired_pin_list ) - 0.5 ) * esp32_pin_pitch
+                    - esp32_pin_cutout_margin,
+                esp32_offset_z
+                ])
+                cube([
+                    esp32_wall_width + DIFFERENCE_CLEARANCE * 2,
+                    ( max( esp32_wired_pin_list ) - min( esp32_wired_pin_list ) + 1 )
+                        * esp32_pin_pitch
+                        + esp32_pin_cutout_margin * 2,
+                    esp32_wall_z
+                    ]);
     }
+
+    // pad that raises the board
+    translate([ esp32_wall_width, esp32_wall_width, 0 ])
+        cube([ cavity_x, cavity_y, esp32_offset_z ]);
+
+    // clips over the corners at the back, just above the board, to keep it from popping out
+    for( x = [ 0, esp32_holder_x - esp32_wall_width - esp32_clip_xy ] )
+        translate([
+            x,
+            esp32_holder_y - esp32_wall_width - esp32_clip_xy,
+            esp32_offset_z + esp32_board_only_z + esp32_clearance
+            ])
+            cube([
+                esp32_wall_width + esp32_clip_xy,
+                esp32_wall_width + esp32_clip_xy,
+                esp32_clip_z
+                ]);
 
     if( render_mode == "preview" )
     {
         %translate([
             esp32_wall_width + esp32_clearance,
             esp32_wall_width + esp32_clearance,
-            0
+            esp32_offset_z
             ])
             cube([ esp32_x, esp32_y, esp32_z ]);
     }
