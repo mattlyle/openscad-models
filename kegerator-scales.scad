@@ -17,6 +17,7 @@ load_cell_wire_cutout_x = 4;
 weight_module_x = 34.2;
 weight_module_y = 21.3;
 weight_module_z = 3.2;
+weight_module_pcb_z = 1.7;
 
 // large ESP32
 // esp32_x = 28.3;
@@ -26,6 +27,7 @@ esp32_x = 17.9;
 esp32_y = 21.2;
 esp32_z = 3.5;
 esp32_board_only_z = 2.0;
+esp32_pcb_z = 1.3;
 esp32_pin_pitch = 2.54;
 
 // measured from the usb end of the board to the center of the first pad
@@ -58,6 +60,7 @@ render_mode = "preview";
 // render_mode = "print-n2-top-text";
 // render_mode = "print-3mf-n2-top";
 // render_mode = "print-test-ring";
+// render_mode = "print-soldering-jig";
 
 top_bottom_fit_clearance = 0.5;
 
@@ -123,6 +126,29 @@ test_top_z = 4;
 test_top_alignment_guide_z = 10;
 test_top_label_font_size = 8;
 test_top_label_offset_y = 1;
+
+soldering_jig_base_x = 100;
+soldering_jig_base_y = 100;
+soldering_jig_base_z = 3;
+soldering_jig_stand_r = 6;
+soldering_jig_stand_z = 45;
+soldering_jig_arm_clearance = 0.2;
+soldering_jig_arm_width = 2;
+soldering_jig_esp32_arm_x = 2.25;
+soldering_jig_esp32_arm_y = 10;
+soldering_jig_weightmodule_arm_x = 2.10;
+soldering_jig_weightmodule_arm_y = 6;
+
+// how far each holder is moved out from the center of the stand, so the boards don't touch
+soldering_jig_extension_x = 10;
+
+// degrees each side of the crossbar is tilted up at its free end, so the boards slide back
+soldering_jig_tilt = 10;
+
+soldering_jig_gusset_width = 12;
+
+// height of the ridge behind each board that stops it sliding off the end, toward the stand
+soldering_jig_stop_z = 1;
 
 top_color = "white";
 label_color = "black";
@@ -192,6 +218,10 @@ if( render_mode == "preview" )
     // test top row
     translate([ 0, -250, 0 ])
         PreviewTestRow( keg_r, keg_1_label, false );
+
+    // soldering jig, below the test top row
+    translate([ 0, -500, 0 ])
+        SolderingJig();
 }
 else if( render_mode == "print-keg-1-base" )
 {
@@ -296,6 +326,10 @@ else if( render_mode == "print-3mf-n2-top" )
 else if( render_mode == "print-test-ring" )
 {
     TestRing( keg_r, keg_1_label );
+}
+else if( render_mode == "print-soldering-jig" )
+{
+    SolderingJig();
 }
 else
 {
@@ -883,6 +917,180 @@ module _ESP32Holder()
             esp32_offset_z
             ])
             cube([ esp32_x, esp32_y, esp32_z ]);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// holds the PCBs while their wires are soldered. just the base and stand so far
+module SolderingJig()
+{
+    cube([ soldering_jig_base_x, soldering_jig_base_y, soldering_jig_base_z ]);
+
+    // stand, from the center of the base, to raise the jig up
+    translate([
+        soldering_jig_base_x / 2,
+        soldering_jig_base_y / 2,
+        soldering_jig_base_z - DIFFERENCE_CLEARANCE
+        ])
+        cylinder( r = soldering_jig_stand_r, h = soldering_jig_stand_z + DIFFERENCE_CLEARANCE );
+
+    // the two holders make a T across the top of the stand. each side points away from the stand
+    // and is tilted up at its free end, about the center of the top of the stand. the end of each
+    // holder nearest the stand is moved out by the extension
+    center_x = soldering_jig_base_x / 2;
+    center_y = soldering_jig_base_y / 2;
+    stand_top_z = soldering_jig_base_z + soldering_jig_stand_z - DIFFERENCE_CLEARANCE;
+    board_z = soldering_jig_arm_width + soldering_jig_arm_clearance;
+
+    translate([ center_x, center_y, stand_top_z ])
+        rotate([ 0, -soldering_jig_tilt, 0 ])
+            _SolderingJigSide( esp32_x, soldering_jig_esp32_arm_y )
+                translate([ soldering_jig_extension_x + esp32_y, -esp32_x / 2, board_z ])
+                    rotate([ 0, 0, 90 ])
+                        _SolderingJigESP32();
+
+    // built the same way as the other side, then mirrored to the -x side
+    translate([ center_x, center_y, stand_top_z ])
+        rotate([ 0, soldering_jig_tilt, 0 ])
+            mirror([ 1, 0, 0 ])
+                _SolderingJigSide( weight_module_y, soldering_jig_weightmodule_arm_y )
+                    translate([
+                        soldering_jig_extension_x + weight_module_x,
+                        -weight_module_y / 2,
+                        board_z
+                        ])
+                        rotate([ 0, 0, 90 ])
+                            _SolderingJigWeightModule();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// one side of the crossbar, built on the +x side with the bottom of its floor at z = 0 and the
+// center of the stand at x = 0. the child is the holder, already placed
+module _SolderingJigSide( board_across, tube_y )
+{
+    holder_width = board_across + soldering_jig_arm_width * 2 + soldering_jig_arm_clearance * 2;
+    reach = soldering_jig_extension_x + tube_y;
+
+    // flat extension of the holders' floor, to move the holders apart
+    translate([ 0, -holder_width / 2, 0 ])
+        cube([
+            soldering_jig_extension_x + DIFFERENCE_CLEARANCE,
+            holder_width,
+            soldering_jig_arm_width
+            ]);
+
+    // gusset under the crossbar: a 45 degree wedge from the stand, so it prints without support.
+    // the part inside the stand just fuses it
+    translate([ 0, 0, DIFFERENCE_CLEARANCE ])
+        rotate([ 90, 0, 0 ])
+            linear_extrude( height = soldering_jig_gusset_width, center = true )
+                polygon([ [ 0, 0 ], [ 0, -reach ], [ reach, 0 ] ]);
+
+    // ridge behind the board, on the floor, so it can't slide off the end nearest the stand
+    translate([
+        soldering_jig_extension_x - soldering_jig_arm_width,
+        -( board_across + soldering_jig_arm_clearance * 2 ) / 2,
+        soldering_jig_arm_width - DIFFERENCE_CLEARANCE
+        ])
+        cube([
+            soldering_jig_arm_width,
+            board_across + soldering_jig_arm_clearance * 2,
+            soldering_jig_arm_clearance + soldering_jig_stop_z + DIFFERENCE_CLEARANCE
+            ]);
+
+    children();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _SolderingJigESP32()
+{
+    %cube([ esp32_x, esp32_y, esp32_z ]);
+
+    difference()
+    {
+        translate([
+            -soldering_jig_arm_width - soldering_jig_arm_clearance,
+            esp32_y - soldering_jig_esp32_arm_y,
+            -soldering_jig_arm_width - soldering_jig_arm_clearance
+            ])
+            cube([
+                esp32_x + soldering_jig_arm_width * 2 + soldering_jig_arm_clearance * 2,
+                soldering_jig_esp32_arm_y,
+                esp32_pcb_z + soldering_jig_arm_width * 2 + soldering_jig_arm_clearance * 2 ]);
+
+        // cut out the center
+        translate([
+            -soldering_jig_arm_clearance - DIFFERENCE_CLEARANCE,
+            esp32_y - soldering_jig_esp32_arm_y - DIFFERENCE_CLEARANCE,
+            -soldering_jig_arm_clearance - DIFFERENCE_CLEARANCE
+            ])
+            cube([
+                esp32_x + soldering_jig_arm_clearance * 2 + DIFFERENCE_CLEARANCE * 2,
+                soldering_jig_esp32_arm_y + DIFFERENCE_CLEARANCE * 2,
+                esp32_pcb_z + soldering_jig_arm_clearance * 2 + DIFFERENCE_CLEARANCE * 2
+                ]);
+
+        // cut out the top
+        translate([
+            soldering_jig_esp32_arm_x,
+            esp32_y - soldering_jig_esp32_arm_y - DIFFERENCE_CLEARANCE,
+            esp32_pcb_z + soldering_jig_arm_clearance
+            ])
+            cube([
+                esp32_x - soldering_jig_esp32_arm_x * 2,
+                soldering_jig_esp32_arm_y + DIFFERENCE_CLEARANCE * 2,
+                soldering_jig_arm_width + DIFFERENCE_CLEARANCE * 2
+                ]);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// the board is held by its long edges, at one narrow end, so the pads on the narrow ends stay open.
+// across the holder the board is weight_module_y, and its length is weight_module_x
+module _SolderingJigWeightModule()
+{
+    %cube([ weight_module_y, weight_module_x, weight_module_z ]);
+
+    difference()
+    {
+        translate([
+            -soldering_jig_arm_width - soldering_jig_arm_clearance,
+            weight_module_x - soldering_jig_weightmodule_arm_y,
+            -soldering_jig_arm_width - soldering_jig_arm_clearance
+            ])
+            cube([
+                weight_module_y + soldering_jig_arm_width * 2 + soldering_jig_arm_clearance * 2,
+                soldering_jig_weightmodule_arm_y,
+                weight_module_pcb_z + soldering_jig_arm_width * 2 + soldering_jig_arm_clearance * 2
+                ]);
+
+        // cut out the center
+        translate([
+            -soldering_jig_arm_clearance - DIFFERENCE_CLEARANCE,
+            weight_module_x - soldering_jig_weightmodule_arm_y - DIFFERENCE_CLEARANCE,
+            -soldering_jig_arm_clearance - DIFFERENCE_CLEARANCE
+            ])
+            cube([
+                weight_module_y + soldering_jig_arm_clearance * 2 + DIFFERENCE_CLEARANCE * 2,
+                soldering_jig_weightmodule_arm_y + DIFFERENCE_CLEARANCE * 2,
+                weight_module_pcb_z + soldering_jig_arm_clearance * 2 + DIFFERENCE_CLEARANCE * 2
+                ]);
+
+        // cut out the top
+        translate([
+            soldering_jig_weightmodule_arm_x,
+            weight_module_x - soldering_jig_weightmodule_arm_y - DIFFERENCE_CLEARANCE,
+            weight_module_pcb_z + soldering_jig_arm_clearance
+            ])
+            cube([
+                weight_module_y - soldering_jig_weightmodule_arm_x * 2,
+                soldering_jig_weightmodule_arm_y + DIFFERENCE_CLEARANCE * 2,
+                soldering_jig_arm_width + DIFFERENCE_CLEARANCE * 2
+                ]);
     }
 }
 
