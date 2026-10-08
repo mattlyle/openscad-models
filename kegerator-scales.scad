@@ -137,6 +137,7 @@ test_top_label_offset_y = 1;
 soldering_jig_base_x = 100;
 soldering_jig_base_y = 100;
 soldering_jig_base_z = 3;
+soldering_jig_base_rounding_r = 5;
 soldering_jig_stand_r = 6;
 soldering_jig_stand_z = 45;
 soldering_jig_arm_clearance = 0.2;
@@ -156,6 +157,9 @@ soldering_jig_gusset_width = 12;
 
 // height of the ridge behind each board that stops it sliding off the end, toward the stand
 soldering_jig_stop_z = 1;
+
+// space between the front edge of the base and the version label
+soldering_jig_label_offset_y = 5;
 
 top_color = "white";
 label_color = "black";
@@ -944,7 +948,22 @@ module _ESP32Holder()
 // holds the PCBs while their wires are soldered. just the base and stand so far
 module SolderingJig()
 {
-    cube([ soldering_jig_base_x, soldering_jig_base_y, soldering_jig_base_z ]);
+    RoundedCube(
+        soldering_jig_base_x,
+        soldering_jig_base_y,
+        soldering_jig_base_z,
+        soldering_jig_base_rounding_r,
+        round_top = false,
+        round_bottom = false
+        );
+
+    // raised version on the base, centered near the front (-y) edge
+    translate([
+        soldering_jig_base_x / 2,
+        soldering_jig_label_offset_y + label_area_y / 2,
+        soldering_jig_base_z - DIFFERENCE_CLEARANCE
+        ])
+        VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
 
     // stand, from the center of the base, to raise the jig up
     translate([
