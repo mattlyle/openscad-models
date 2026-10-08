@@ -19,6 +19,9 @@ weight_module_y = 21.3;
 weight_module_z = 3.2;
 weight_module_pcb_z = 1.7;
 
+// width of the strip along the left and right sides of the board that has the solder pads
+weight_module_pads_x = 6.7;
+
 // large ESP32
 // esp32_x = 28.3;
 // esp32_y = 51.5;
@@ -28,6 +31,9 @@ esp32_y = 21.2;
 esp32_z = 3.5;
 esp32_board_only_z = 2.0;
 esp32_pcb_z = 1.3;
+
+// width of the strip along the left and right sides of the board that has the solder pads
+esp32_pads_x = 3.0;
 esp32_pin_pitch = 2.54;
 
 // measured from the usb end of the board to the center of the first pad
@@ -817,9 +823,17 @@ module _WeightModuleHolder()
                     ]);
     }
 
-    // pad that raises the board
-    translate([ weight_module_wall_width, weight_module_wall_width, 0 ])
-        cube([ cavity_x, cavity_y, weight_module_offset_z ]);
+    // pad that raises the board, left out under the solder pads on the left and right
+    translate([
+        weight_module_wall_width + weight_module_clearance + weight_module_pads_x,
+        weight_module_wall_width,
+        0
+        ])
+        cube([
+            weight_module_x - weight_module_pads_x * 2,
+            cavity_y,
+            weight_module_offset_z
+            ]);
 
     if( render_mode == "preview" )
     {
@@ -897,9 +911,9 @@ module _ESP32Holder()
                     ]);
     }
 
-    // pad that raises the board
-    translate([ esp32_wall_width, esp32_wall_width, 0 ])
-        cube([ cavity_x, cavity_y, esp32_offset_z ]);
+    // pad that raises the board, left out under the solder pads on the left and right
+    translate([ esp32_wall_width + esp32_clearance + esp32_pads_x, esp32_wall_width, 0 ])
+        cube([ esp32_x - esp32_pads_x * 2, cavity_y, esp32_offset_z ]);
 
     // clips over the corners at the back, just above the board, to keep it from popping out
     for( x = [ 0, esp32_holder_x - esp32_wall_width - esp32_clip_xy ] )
