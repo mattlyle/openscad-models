@@ -96,6 +96,7 @@ weight_module_clearance = 0.1;
 weight_module_wall_width = 2.0;
 weight_module_wall_z = 5.0;
 weight_module_corner_length = 2;
+weight_module_offset_z = 1.0;
 
 esp32_clearance = 0.2;
 esp32_wall_width = 2.0;
@@ -816,12 +817,16 @@ module _WeightModuleHolder()
                     ]);
     }
 
+    // pad that raises the board
+    translate([ weight_module_wall_width, weight_module_wall_width, 0 ])
+        cube([ cavity_x, cavity_y, weight_module_offset_z ]);
+
     if( render_mode == "preview" )
     {
         %translate([
             weight_module_wall_width + weight_module_clearance,
             weight_module_wall_width + weight_module_clearance,
-            0
+            weight_module_offset_z
             ])
             cube([ weight_module_x, weight_module_y, weight_module_z ]);
     }
