@@ -164,6 +164,10 @@ soldering_jig_stop_z = 1;
 // space between the front edge of the base and the version label
 soldering_jig_label_offset_y = 5;
 
+soldering_jib_alligator_clip_r = 3.0 / 2;
+soldering_jib_alligator_clip_z = 15;
+soldering_jib_alligator_clip_spacing_x = 40;
+
 top_color = "white";
 label_color = "black";
 
@@ -967,6 +971,21 @@ module SolderingJig()
         soldering_jig_base_z - DIFFERENCE_CLEARANCE
         ])
         VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
+
+    // two posts for alligator clips, just above the version label
+    for( x = [
+        -soldering_jib_alligator_clip_spacing_x / 2,
+        soldering_jib_alligator_clip_spacing_x / 2
+        ] )
+        translate([
+            soldering_jig_base_x / 2 + x,
+            soldering_jig_label_offset_y + label_area_y + soldering_jib_alligator_clip_r,
+            soldering_jig_base_z - DIFFERENCE_CLEARANCE
+            ])
+            cylinder(
+                r = soldering_jib_alligator_clip_r,
+                h = soldering_jib_alligator_clip_z + DIFFERENCE_CLEARANCE
+                );
 
     // stand, from the center of the base, to raise the jig up
     translate([
