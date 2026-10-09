@@ -343,7 +343,9 @@ else if( render_mode == "print-3mf-n2-top" )
 }
 else if( render_mode == "print-test-ring" )
 {
-    TestRing( keg_r, test_ring_keg_r, keg_1_label );
+    // TestRing( keg_r, test_ring_keg_r, keg_1_label );
+    TestRing( co2_tank_r, test_ring_co2_tank_r, co2_tank_label );
+    // TestRing( n2_tank_r, test_ring_n2_tank_r, n2_tank_label );
 }
 else if( render_mode == "print-soldering-jig" )
 {
