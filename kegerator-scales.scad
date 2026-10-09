@@ -129,7 +129,7 @@ alignment_guide_top_z = 6;
 
 test_top_r = 95;
 test_top_width = 18;
-test_top_z = 4;
+test_top_z = 6;
 test_top_alignment_guide_z = 10;
 test_top_label_font_size = 8;
 test_top_label_offset_y = 1;
@@ -145,7 +145,7 @@ soldering_jig_arm_width = 2;
 soldering_jig_esp32_arm_x = 2.25;
 soldering_jig_esp32_arm_y = 10;
 soldering_jig_weightmodule_arm_x = 2.10;
-soldering_jig_weightmodule_arm_y = 6;
+soldering_jig_weightmodule_arm_y = 8;
 
 // how far each holder is moved out from the center of the stand, so the boards don't touch
 soldering_jig_extension_x = 10;
