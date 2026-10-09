@@ -127,12 +127,15 @@ alignment_guide_clearance = 0.3;
 alignment_guide_angle_list = [ -90, 0, 90 ];
 alignment_guide_top_z = 6;
 
-test_top_r = 95;
-test_top_width = 18;
-test_top_z = 6;
-test_top_alignment_guide_z = 10;
-test_top_label_font_size = 8;
-test_top_label_offset_y = 1;
+test_ring_keg_r = 95;
+test_ring_co2_tank_r = 50;
+test_ring_n2_tank_r = 65;
+
+test_ring_width = 18;
+test_ring_z = 6;
+test_ring_alignment_guide_z = 10;
+test_ring_label_font_size = 8;
+test_ring_label_offset_y = 1;
 
 soldering_jig_base_x = 100;
 soldering_jig_base_y = 100;
@@ -228,7 +231,7 @@ if( render_mode == "preview" )
 
     // test top row
     translate([ 0, -250, 0 ])
-        PreviewTestRow( co2_tank_r, co2_tank_label, false );
+        PreviewTestRingRow( co2_tank_r, test_ring_co2_tank_r, co2_tank_label, false );
 
     // soldering jig, below the test top row
     translate([ 0, -500, 0 ])
@@ -336,7 +339,7 @@ else if( render_mode == "print-3mf-n2-top" )
 }
 else if( render_mode == "print-test-ring" )
 {
-    TestRing( keg_r, keg_1_label );
+    TestRing( keg_r, test_ring_keg_r, keg_1_label );
 }
 else if( render_mode == "print-soldering-jig" )
 {
@@ -378,14 +381,14 @@ module PreviewRow( scale_r, label, use_cord_clips )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module PreviewTestRow( scale_r, label, use_cord_clips )
+module PreviewTestRingRow( scale_r, test_ring_r, label, use_cord_clips )
 {
     ScaleBase( scale_r, label, use_cord_clips );
 
     // translate([ 0, 0, 18 ])
     translate([ 0, 0, 30 ])
         rotate([ 0, 180, 0 ])
-            TestRing( scale_r, label );
+            TestRing( scale_r, test_ring_r, label );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -579,37 +582,37 @@ module ScaleTop( scale_r, label )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module TestRing( scale_r, label )
+module TestRing( scale_r, test_ring_r, label )
 {
     difference()
     {
         cylinder(
-            r = test_top_r,
-            h = test_top_z
+            r = test_ring_r,
+            h = test_ring_z
             );
 
         translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
             cylinder(
-                r = test_top_r - test_top_width,
-                h = test_top_z + DIFFERENCE_CLEARANCE * 2
+                r = test_ring_r - test_ring_width,
+                h = test_ring_z + DIFFERENCE_CLEARANCE * 2
                 );
 
         // inset the label into the face that prints on the bed, centered across the ring at the top
         translate([
             0,
-            test_top_r - test_top_width / 2 - test_top_label_offset_y,
+            test_ring_r - test_ring_width / 2 - test_ring_label_offset_y,
             0
             ])
             ScaleTopLabel(
                 label,
                 is_cutout = true,
-                font_size = test_top_label_font_size
+                font_size = test_ring_label_font_size
                 );
 
         // inset the version in the same face, at the bottom of the ring. mirrored like the label
         translate([
             0,
-            -( test_top_r - test_top_width / 2 - test_top_label_offset_y ),
+            -( test_ring_r - test_ring_width / 2 - test_ring_label_offset_y ),
             -DIFFERENCE_OFFSET
             ])
             mirror([ 1, 0, 0 ])
@@ -621,13 +624,13 @@ module TestRing( scale_r, label )
         rotate([ 0, 0, i ])
             translate([
                 -alignment_guide_width / 2,
-                test_top_r - alignment_guide_clearance,
+                test_ring_r - alignment_guide_clearance,
                 0
                 ])
                 cube([
                     alignment_guide_width,
-                    scale_r - test_top_r - alignment_guide_clearance,
-                    test_top_alignment_guide_z
+                    scale_r - test_ring_r - alignment_guide_clearance,
+                    test_ring_alignment_guide_z
                     ]);
     }
 }
