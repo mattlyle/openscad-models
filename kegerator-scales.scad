@@ -167,8 +167,8 @@ label_color = "black";
 keg_1_label = "Keg 1";
 keg_2_label = "Keg 2";
 keg_3_label = "Keg 3";
-co2_label = "CO₂";
-n2_label = "N₂";
+co2_tank_label = "CO₂";
+n2_tank_label = "N₂";
 
 label_font = "Liberation Sans:style=Bold";
 label_font_size_top = 40;
@@ -220,15 +220,15 @@ if( render_mode == "preview" )
 
     // co2 tank row
     translate([ 0, 250, 0 ])
-        PreviewRow( co2_tank_r, co2_label, false );
+        PreviewRow( co2_tank_r, co2_tank_label, false );
 
     // n2 tank row
     translate([ 0, 500, 0 ])
-        PreviewRow( n2_tank_r, n2_label, false );
+        PreviewRow( n2_tank_r, n2_tank_label, false );
 
     // test top row
     translate([ 0, -250, 0 ])
-        PreviewTestRow( keg_r, keg_1_label, false );
+        PreviewTestRow( co2_tank_r, co2_tank_label, false );
 
     // soldering jig, below the test top row
     translate([ 0, -500, 0 ])
@@ -296,43 +296,43 @@ else if( render_mode == "print-3mf-keg-3-top" )
 }
 else if( render_mode == "print-co2-base" )
 {
-    ScaleBase( co2_tank_r, co2_label, false );
+    ScaleBase( co2_tank_r, co2_tank_label, false );
 }
 else if( render_mode == "print-co2-top" )
 {
-    ScaleTop( co2_tank_r, co2_label );
+    ScaleTop( co2_tank_r, co2_tank_label );
 }
 else if( render_mode == "print-co2-top-text" )
 {
-    ScaleTopLabel( co2_label );
+    ScaleTopLabel( co2_tank_label );
 }
 else if( render_mode == "print-3mf-co2-top" )
 {
     color( top_color )
-        ScaleTop( co2_tank_r, co2_label );
+        ScaleTop( co2_tank_r, co2_tank_label );
 
     color( label_color )
-        ScaleTopLabel( co2_label );
+        ScaleTopLabel( co2_tank_label );
 }
 else if( render_mode == "print-n2-base" )
 {
-    ScaleBase( n2_tank_r, n2_label, false );
+    ScaleBase( n2_tank_r, n2_tank_label, false );
 }
 else if( render_mode == "print-n2-top" )
 {
-    ScaleTop( n2_tank_r, n2_label );
+    ScaleTop( n2_tank_r, n2_tank_label );
 }
 else if( render_mode == "print-n2-top-text" )
 {
-    ScaleTopLabel( n2_label );
+    ScaleTopLabel( n2_tank_label );
 }
 else if( render_mode == "print-3mf-n2-top" )
 {
     color( top_color )
-        ScaleTop( n2_tank_r, n2_label );
+        ScaleTop( n2_tank_r, n2_tank_label );
 
     color( label_color )
-        ScaleTopLabel( n2_label );
+        ScaleTopLabel( n2_tank_label );
 }
 else if( render_mode == "print-test-ring" )
 {
