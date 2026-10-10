@@ -70,6 +70,11 @@ render_mode = "preview";
 
 top_bottom_fit_clearance = 0.5;
 
+// extra room around each tank, added to the radius of the whole scale
+co2_extra_r = 8;
+n2_extra_r = 5;
+keg_extra_r = 0;
+
 base_lid_z = 2;
 
 top_lid_z = 4;
@@ -201,6 +206,10 @@ top_z = top_lid_z + top_wall_z;
 
 load_cell_holder_xy = load_cell_xy + ( load_cell_wall_width + load_cell_clearance ) * 2;
 
+co2_scale_r = co2_tank_r + co2_extra_r;
+n2_scale_r = n2_tank_r + n2_extra_r;
+keg_scale_r = keg_r + keg_extra_r;
+
 esp32_holder_x = esp32_x
     + esp32_wall_width * 2
     + esp32_clearance * 2;
@@ -223,19 +232,19 @@ weight_module_holder_y =
 if( render_mode == "preview" )
 {
     // keg row
-    PreviewRow( keg_r, keg_1_label, true );
+    PreviewRow( keg_scale_r, keg_1_label, true );
 
     // co2 tank row
     translate([ 0, 250, 0 ])
-        PreviewRow( co2_tank_r, co2_tank_label, false );
+        PreviewRow( co2_scale_r, co2_tank_label, false );
 
     // n2 tank row
     translate([ 0, 500, 0 ])
-        PreviewRow( n2_tank_r, n2_tank_label, false );
+        PreviewRow( n2_scale_r, n2_tank_label, false );
 
     // test top row
     translate([ 0, -250, 0 ])
-        PreviewTestRingRow( co2_tank_r, test_ring_co2_tank_r, co2_tank_label, false );
+        PreviewTestRingRow( co2_scale_r, test_ring_co2_tank_r, co2_tank_label, false );
 
     // soldering jig, below the test top row
     translate([ 0, -500, 0 ])
@@ -243,11 +252,11 @@ if( render_mode == "preview" )
 }
 else if( render_mode == "print-keg-1-base" )
 {
-    ScaleBase( keg_r, keg_1_label, true );
+    ScaleBase( keg_scale_r, keg_1_label, true );
 }
 else if( render_mode == "print-keg-1-top" )
 {
-    ScaleTop( keg_r, keg_1_label );
+    ScaleTop( keg_scale_r, keg_1_label );
 }
 else if( render_mode == "print-keg-1-top-text" )
 {
@@ -256,18 +265,18 @@ else if( render_mode == "print-keg-1-top-text" )
 else if( render_mode == "print-3mf-keg-1-top" )
 {
     color( top_color )
-        ScaleTop( keg_r, keg_1_label );
+        ScaleTop( keg_scale_r, keg_1_label );
 
     color( label_color )
         ScaleTopLabel( keg_1_label );
 }
 else if( render_mode == "print-keg-2-base" )
 {
-    ScaleBase( keg_r, keg_2_label, true );
+    ScaleBase( keg_scale_r, keg_2_label, true );
 }
 else if( render_mode == "print-keg-2-top" )
 {
-    ScaleTop( keg_r, keg_2_label );
+    ScaleTop( keg_scale_r, keg_2_label );
 }
 else if( render_mode == "print-keg-2-top-text" )
 {
@@ -276,18 +285,18 @@ else if( render_mode == "print-keg-2-top-text" )
 else if( render_mode == "print-3mf-keg-2-top" )
 {
     color( top_color )
-        ScaleTop( keg_r, keg_2_label );
+        ScaleTop( keg_scale_r, keg_2_label );
 
     color( label_color )
         ScaleTopLabel( keg_2_label );
 }
 else if( render_mode == "print-keg-3-base" )
 {
-    ScaleBase( keg_r, keg_3_label, true );
+    ScaleBase( keg_scale_r, keg_3_label, true );
 }
 else if( render_mode == "print-keg-3-top" )
 {
-    ScaleTop( keg_r, keg_3_label );
+    ScaleTop( keg_scale_r, keg_3_label );
 }
 else if( render_mode == "print-keg-3-top-text" )
 {
@@ -296,18 +305,18 @@ else if( render_mode == "print-keg-3-top-text" )
 else if( render_mode == "print-3mf-keg-3-top" )
 {
     color( top_color )
-        ScaleTop( keg_r, keg_3_label );
+        ScaleTop( keg_scale_r, keg_3_label );
 
     color( label_color )
         ScaleTopLabel( keg_3_label );
 }
 else if( render_mode == "print-co2-base" )
 {
-    ScaleBase( co2_tank_r, co2_tank_label, false );
+    ScaleBase( co2_scale_r, co2_tank_label, false );
 }
 else if( render_mode == "print-co2-top" )
 {
-    ScaleTop( co2_tank_r, co2_tank_label );
+    ScaleTop( co2_scale_r, co2_tank_label );
 }
 else if( render_mode == "print-co2-top-text" )
 {
@@ -316,18 +325,18 @@ else if( render_mode == "print-co2-top-text" )
 else if( render_mode == "print-3mf-co2-top" )
 {
     color( top_color )
-        ScaleTop( co2_tank_r, co2_tank_label );
+        ScaleTop( co2_scale_r, co2_tank_label );
 
     color( label_color )
         ScaleTopLabel( co2_tank_label );
 }
 else if( render_mode == "print-n2-base" )
 {
-    ScaleBase( n2_tank_r, n2_tank_label, false );
+    ScaleBase( n2_scale_r, n2_tank_label, false );
 }
 else if( render_mode == "print-n2-top" )
 {
-    ScaleTop( n2_tank_r, n2_tank_label );
+    ScaleTop( n2_scale_r, n2_tank_label );
 }
 else if( render_mode == "print-n2-top-text" )
 {
@@ -336,16 +345,16 @@ else if( render_mode == "print-n2-top-text" )
 else if( render_mode == "print-3mf-n2-top" )
 {
     color( top_color )
-        ScaleTop( n2_tank_r, n2_tank_label );
+        ScaleTop( n2_scale_r, n2_tank_label );
 
     color( label_color )
         ScaleTopLabel( n2_tank_label );
 }
 else if( render_mode == "print-test-ring" )
 {
-    // TestRing( keg_r, test_ring_keg_r, keg_1_label );
-    TestRing( co2_tank_r, test_ring_co2_tank_r, co2_tank_label );
-    // TestRing( n2_tank_r, test_ring_n2_tank_r, n2_tank_label );
+    // TestRing( keg_scale_r, test_ring_keg_r, keg_1_label );
+    TestRing( co2_scale_r, test_ring_co2_tank_r, co2_tank_label );
+    // TestRing( n2_scale_r, test_ring_n2_tank_r, n2_tank_label );
 }
 else if( render_mode == "print-soldering-jig" )
 {
