@@ -268,8 +268,8 @@ module GridfinityMagnetJig4()
     bottom_height = 2.35 + DIFFERENCE_CLEARANCE;
 
     core_bottom_size = 14.4;
-    core_top_size = 10;
-    core_top_height = 5;
+    core_top_size = 11;
+    core_top_height = 6;
     core_top_edge_offset = 3.2;
 
     core_bottom_offset = ( bin_size - core_bottom_size ) / 2;
@@ -278,6 +278,7 @@ module GridfinityMagnetJig4()
 
     union()
     {
+        // bottom
         difference()
         {
             GridfinityBaseplate( 1, 1 );
@@ -289,6 +290,31 @@ module GridfinityMagnetJig4()
                     bin_size + DIFFERENCE_CLEARANCE * 2,
                     5
                     ]);
+        }
+
+        // top to support the second magnet
+        translate([ 0, 0, 1.96 ])
+        {
+            difference()
+            {
+                GridfinityBaseplate( 1, 1 );
+
+                // cut off the top
+                translate([ -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE, bottom_height ])
+                    cube([
+                        bin_size + DIFFERENCE_CLEARANCE * 2,
+                        bin_size + DIFFERENCE_CLEARANCE * 2,
+                        5
+                        ]);
+
+                // cut off the bottom
+                translate([ -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE, -DIFFERENCE_CLEARANCE ])
+                    cube([
+                        bin_size + DIFFERENCE_CLEARANCE * 2,
+                        bin_size + DIFFERENCE_CLEARANCE * 2,
+                        GRIDFINITY_BASEPLATE_MAGNET_OFFSET_Z + DIFFERENCE_CLEARANCE
+                        ]);
+            }
         }
 
         // vertical core - bottom
@@ -305,7 +331,7 @@ module GridfinityMagnetJig4()
 
         // horizontal core - bottom
         translate([ core_top_edge_offset, core_top_offset, bottom_height ])
-            cube([ core_top_length,core_top_size,  core_top_height ]);
+            cube([ core_top_length, core_top_size, core_top_height ]);
     }
 }
 

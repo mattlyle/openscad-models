@@ -3,6 +3,7 @@ use <../../3rd-party/gridfinity_extended_openscad/modules/module_gridfinity_cup.
 include <../../3rd-party/gridfinity_extended_openscad/modules/gridfinity_constants.scad>
 
 GRIDFINITY_BASEPLATE_Z = 5.8;
+GRIDFINITY_BASEPLATE_MAGNET_OFFSET_Z = 0.4;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -16,7 +17,7 @@ module GridfinityBaseplate( grid_cells_x, grid_cells_y )
         num_y = grid_cells_y,
         oversizeMethod = "fill",
         magnetSize = [ 6.4, 2.0 ],
-        magnetZOffset = 0.4
+        magnetZOffset = GRIDFINITY_BASEPLATE_MAGNET_OFFSET_Z
         );
 }
 
