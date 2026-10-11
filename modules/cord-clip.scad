@@ -53,10 +53,16 @@ module CordClip( inner_r, wall_thickness, length, show_preview = true )
 
 // a small L-shaped hook that pins a flat cord down against the surface it stands on. the cord runs
 // along y, centered on x, and is pressed in sideways under the arm. the post stands on the +x side
-module CordHook( cord_width, cord_z, wall_thickness, length, show_preview = true )
+module CordHook(
+    cord_width,
+    cord_z,
+    wall_thickness,
+    length,
+    show_preview = true,
+    clearance = 0.2,
+    arm_extra = 0
+    )
 {
-    clearance = 0.2;
-
     inner_x = cord_width / 2 + clearance;
     arm_z = cord_z + clearance;
 
@@ -64,9 +70,9 @@ module CordHook( cord_width, cord_z, wall_thickness, length, show_preview = true
     translate([ inner_x, 0, 0 ])
         cube([ wall_thickness, length, arm_z + wall_thickness ]);
 
-    // arm, reaching across the whole cord
-    translate([ -inner_x, 0, arm_z ])
-        cube([ inner_x * 2 + wall_thickness, length, wall_thickness ]);
+    // arm, reaching across the whole cord, and arm_extra past it
+    translate([ -inner_x - arm_extra, 0, arm_z ])
+        cube([ inner_x * 2 + wall_thickness + arm_extra, length, wall_thickness ]);
 
     if( show_preview )
         _CordPreview( cord_width, cord_z, length, length / 2 );
