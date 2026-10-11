@@ -174,6 +174,8 @@ keg_3_label = "Keg 3";
 co2_tank_label = "CO₂";
 n2_tank_label = "N₂";
 
+scale_base_version_label_offset_x = -2;
+scale_base_version_label_offset_y = 15;
 label_font = "Liberation Sans:style=Bold";
 label_font_size_top = 40;
 label_font_size_bottom = 8;
@@ -526,8 +528,11 @@ module ScaleBase( scale_r, label, use_cord_clips )
 
     // raised version on the floor, at 3 o'clock where the label is at 12, facing the same way
     translate([
-        scale_r - base_label_offset_y - label_area_y / 2,
-        0,
+        scale_r
+            - base_label_offset_y
+            - label_area_y / 2
+            + scale_base_version_label_offset_x,
+        scale_base_version_label_offset_y,
         base_lid_z - DIFFERENCE_CLEARANCE
         ])
         VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
@@ -670,7 +675,11 @@ module ScaleTopLabel( label, is_cutout = false, font_size = label_font_size_top 
 // the version the build script stamped into the model, centered on the origin
 module VersionLabel( depth )
 {
-    translate([ -label_area_x / 2, -label_area_y / 2, 0 ])
+    translate([
+        -label_area_x / 2,
+        -label_area_y / 2,
+        0
+        ])
         CenteredTextLabel(
             BUILD_SCRIPT_VERSION,
             centered_in_area_x = label_area_x,
