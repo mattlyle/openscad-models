@@ -254,7 +254,7 @@ else if( render_mode == "print-keg-1-top" )
 }
 else if( render_mode == "print-keg-1-top-text" )
 {
-    ScaleTopLabel( keg_1_label );
+    _ScaleTopLabel( keg_1_label );
 }
 else if( render_mode == "print-3mf-keg-1-top" )
 {
@@ -262,7 +262,7 @@ else if( render_mode == "print-3mf-keg-1-top" )
         ScaleTop( keg_scale_r, keg_1_label );
 
     color( label_color )
-        ScaleTopLabel( keg_1_label );
+        _ScaleTopLabel( keg_1_label );
 }
 else if( render_mode == "print-keg-2-base" )
 {
@@ -274,7 +274,7 @@ else if( render_mode == "print-keg-2-top" )
 }
 else if( render_mode == "print-keg-2-top-text" )
 {
-    ScaleTopLabel( keg_2_label );
+    _ScaleTopLabel( keg_2_label );
 }
 else if( render_mode == "print-3mf-keg-2-top" )
 {
@@ -282,7 +282,7 @@ else if( render_mode == "print-3mf-keg-2-top" )
         ScaleTop( keg_scale_r, keg_2_label );
 
     color( label_color )
-        ScaleTopLabel( keg_2_label );
+        _ScaleTopLabel( keg_2_label );
 }
 else if( render_mode == "print-keg-3-base" )
 {
@@ -294,7 +294,7 @@ else if( render_mode == "print-keg-3-top" )
 }
 else if( render_mode == "print-keg-3-top-text" )
 {
-    ScaleTopLabel( keg_3_label );
+    _ScaleTopLabel( keg_3_label );
 }
 else if( render_mode == "print-3mf-keg-3-top" )
 {
@@ -302,7 +302,7 @@ else if( render_mode == "print-3mf-keg-3-top" )
         ScaleTop( keg_scale_r, keg_3_label );
 
     color( label_color )
-        ScaleTopLabel( keg_3_label );
+        _ScaleTopLabel( keg_3_label );
 }
 else if( render_mode == "print-co2-base" )
 {
@@ -314,7 +314,7 @@ else if( render_mode == "print-co2-top" )
 }
 else if( render_mode == "print-co2-top-text" )
 {
-    ScaleTopLabel( co2_tank_label );
+    _ScaleTopLabel( co2_tank_label );
 }
 else if( render_mode == "print-3mf-co2-top" )
 {
@@ -322,7 +322,7 @@ else if( render_mode == "print-3mf-co2-top" )
         ScaleTop( co2_scale_r, co2_tank_label );
 
     color( label_color )
-        ScaleTopLabel( co2_tank_label );
+        _ScaleTopLabel( co2_tank_label );
 }
 else if( render_mode == "print-n2-base" )
 {
@@ -334,7 +334,7 @@ else if( render_mode == "print-n2-top" )
 }
 else if( render_mode == "print-n2-top-text" )
 {
-    ScaleTopLabel( n2_tank_label );
+    _ScaleTopLabel( n2_tank_label );
 }
 else if( render_mode == "print-3mf-n2-top" )
 {
@@ -342,7 +342,7 @@ else if( render_mode == "print-3mf-n2-top" )
         ScaleTop( n2_scale_r, n2_tank_label );
 
     color( label_color )
-        ScaleTopLabel( n2_tank_label );
+        _ScaleTopLabel( n2_tank_label );
 }
 else if( render_mode == "print-test-ring" )
 {
@@ -373,7 +373,7 @@ module PreviewRow( scale_r, label, use_cord_clips )
             ScaleTop( scale_r, label );
 
             color( label_color )
-                ScaleTopLabel( label );
+                _ScaleTopLabel( label );
         }
 
     translate([ 250, 0, 0 ])
@@ -384,7 +384,7 @@ module PreviewRow( scale_r, label, use_cord_clips )
         ScaleTop( scale_r, label );
 
         color( label_color )
-            ScaleTopLabel( label );
+            _ScaleTopLabel( label );
     }
 }
 
@@ -535,7 +535,7 @@ module ScaleBase( scale_r, label, use_cord_clips )
         scale_base_version_label_offset_y,
         base_lid_z - DIFFERENCE_CLEARANCE
         ])
-        VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
+        _VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -570,12 +570,12 @@ module ScaleTop( scale_r, label )
                 ]);
 
         // inset the label into the face that prints on the bed
-        ScaleTopLabel( label, is_cutout = true );
+        _ScaleTopLabel( label, is_cutout = true );
     }
 
     // raised version, dead center on the underside
     translate([ 0, 0, top_lid_z - DIFFERENCE_CLEARANCE ])
-        VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
+        _VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
 
     // alignment guides, between the pairs of guides on the base and clear of its rim
     for( i = alignment_guide_angle_list )
@@ -615,7 +615,7 @@ module TestRing( scale_r, test_ring_r, label )
             test_ring_r - test_ring_width / 2 - test_ring_label_offset_y,
             0
             ])
-            ScaleTopLabel(
+            _ScaleTopLabel(
                 label,
                 is_cutout = true,
                 font_size = test_ring_label_font_size
@@ -628,7 +628,7 @@ module TestRing( scale_r, test_ring_r, label )
             -DIFFERENCE_OFFSET
             ])
             mirror([ 1, 0, 0 ])
-                VersionLabel( label_depth + DIFFERENCE_OFFSET );
+                _VersionLabel( label_depth + DIFFERENCE_OFFSET );
     }
 
     for( i = alignment_guide_angle_list )
@@ -652,7 +652,7 @@ module TestRing( scale_r, test_ring_r, label )
 // centered in the top. mirrored because the top is modeled upside down, so it reads correctly once
 // the top is flipped over the base. the cut version stands proud of the face so it has no coplanar
 // surface to fight with; the printed one sits flush in the recess
-module ScaleTopLabel( label, is_cutout = false, font_size = label_font_size_top )
+module _ScaleTopLabel( label, is_cutout = false, font_size = label_font_size_top )
 {
     offset_z = is_cutout ? -DIFFERENCE_OFFSET : 0;
     depth_choice = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
@@ -673,7 +673,7 @@ module ScaleTopLabel( label, is_cutout = false, font_size = label_font_size_top 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // the version the build script stamped into the model, centered on the origin
-module VersionLabel( depth )
+module _VersionLabel( depth )
 {
     translate([
         -label_area_x / 2,
@@ -982,7 +982,7 @@ module SolderingJig()
         soldering_jig_label_offset_y + label_area_y / 2,
         soldering_jig_base_z - DIFFERENCE_CLEARANCE
         ])
-        VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
+        _VersionLabel( label_depth + DIFFERENCE_CLEARANCE );
 
     // two posts for alligator clips, just above the version label
     for( x = [
