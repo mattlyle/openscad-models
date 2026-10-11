@@ -12,7 +12,7 @@ keg_r = 220 / 2;
 
 load_cell_xy = 34.1;
 load_cell_z = 8.7;
-load_cell_wire_cutout_x = 4;
+load_cell_wire_cutout_x = 5.5;
 
 weight_module_x = 34.2;
 weight_module_y = 21.3;
