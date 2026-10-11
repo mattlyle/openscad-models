@@ -207,7 +207,7 @@ version_font_size = 6;
 base_label_offset_y = 5;
 
 // THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
-BUILD_SCRIPT_VERSION = "v12";
+BUILD_SCRIPT_VERSION = "v13";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
