@@ -111,6 +111,11 @@ cord_hook_arm_extra = 1;
 
 // distance from the center to the outer face of the cord hooks just inside the alignment guides
 alignment_cord_hook_r = 65;
+
+// how much longer the arm of the hook to the left of the weight module reaches, toward its opening,
+// than the arms of the others
+left_cord_hook_extra_length = 2;
+
 weight_module_offset_z = 1.0;
 
 esp32_clearance = 0.2;
@@ -186,6 +191,8 @@ keg_3_label = "Keg 3";
 co2_tank_label = "CO₂";
 n2_tank_label = "N₂";
 
+scale_base_label_offset_x = -16;
+scale_base_label_offset_y = -2;
 scale_base_version_label_offset_x = -2;
 scale_base_version_label_offset_y = 15;
 label_font = "Liberation Sans:style=Bold";
@@ -511,7 +518,7 @@ module ScaleBase( scale_r, label, use_cord_clips )
         base_lid_z - DIFFERENCE_CLEARANCE
         ])
         rotate([ 0, 0, 90 ])
-            _CordHook();
+            _CordHook( extra_arm = left_cord_hook_extra_length );
 
     // cord hooks just inside the alignment guides, with their openings toward the center
     for( i = alignment_guide_angle_list )
@@ -569,8 +576,8 @@ module ScaleBase( scale_r, label, use_cord_clips )
 
     // raised label on the floor, opposite the ESP32 holder
     translate([
-        -label_area_x / 2,
-        scale_r - base_label_offset_y - label_area_y,
+        -label_area_x / 2 + scale_base_label_offset_x,
+        scale_r - base_label_offset_y - label_area_y + scale_base_label_offset_y,
         base_lid_z - DIFFERENCE_CLEARANCE
         ])
         CenteredTextLabel(
@@ -751,7 +758,7 @@ module _VersionLabel( depth )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // a cord hook at the size used on the scale, with its post on the +x side and the cord along y
-module _CordHook()
+module _CordHook( extra_arm = 0 )
 {
     CordHook(
         cord_width = load_cell_wire_hook_x,
@@ -760,7 +767,7 @@ module _CordHook()
         length = load_cell_wall_width,
         show_preview = false,
         clearance = cord_clip_clearance,
-        arm_extra = cord_hook_arm_extra
+        arm_extra = cord_hook_arm_extra + extra_arm
         );
 }
 
