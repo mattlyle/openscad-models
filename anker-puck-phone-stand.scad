@@ -41,6 +41,8 @@ phone_case_holder_thickness_front = 1.4;
 phone_case_holder_thickness_back = 2;
 phone_case_holder_corner_r = 10;
 phone_case_holder_back_rounding_r = 3.0;
+phone_case_holder_flange_width = 0.8;
+phone_case_holder_flange_clearance_z = 0.1;
 
 // the radius of the curve that lifts the cord out of the holder, as a multiple of how deep the cord
 // sits
@@ -73,8 +75,6 @@ base_plate_rounding_r = 10;
 print_preview_gap = 20;
 
 // TODO: notch to keep the puck in place
-
-// TODO: add a small basket on the front
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -235,6 +235,11 @@ module PhoneCaseHolder()
         + phone_case_holder_above
         + phone_case_holder_below;
 
+    flange_start_z =
+        anker_puck_front_z
+        + anker_puck_body_z
+        + phone_case_holder_flange_clearance_z;
+
     cord_z = ( anker_puck_front_z + anker_puck_body_z ) / 2 + phone_case_holder_cord_offset_z;
 
     // the cord runs straight for the length of the strain relief, then curves up out of the back;
@@ -317,11 +322,19 @@ module PhoneCaseHolder()
                         ]);
             }
 
-            // open the back above the puck body
+            // open the back above the puck body, up to the flange
             translate([ 0, 0, anker_puck_front_z + anker_puck_body_z - DIFFERENCE_CLEARANCE ])
                 cylinder(
-                    h = phone_case_holder_thickness_z,
+                    h = phone_case_holder_flange_clearance_z + DIFFERENCE_CLEARANCE,
                     r = anker_puck_body_r
+                    );
+
+            // the flange is what is left around this smaller opening, all the way to the back of
+            // the holder, and the puck has to be pushed through it
+            translate([ 0, 0, flange_start_z - DIFFERENCE_CLEARANCE ])
+                cylinder(
+                    h = phone_case_holder_thickness_z,
+                    r = anker_puck_body_r - phone_case_holder_flange_width
                     );
 
             // open the back above the cord, at the full strain relief thickness the whole way out
