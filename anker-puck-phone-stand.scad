@@ -55,6 +55,10 @@ phone_case_holder_angle = 15;
 
 base_core_extra_x = 10;
 base_core_extra_y = 20;
+base_core_cord_r = 12.1 / 2;
+base_core_cord_cutout_angle = 60;
+base_core_cord_cutout_offset_z = 10;
+base_core_cord_clearance = 0.15;
 
 holder_base_interface_clearance = 0.2;
 
@@ -421,7 +425,7 @@ module PhoneCaseHolder()
                     0,
                     -phone_case_holder_z
                     ])
-                    _PhoneCaseBaseCore( false );
+                    _PhoneCaseBaseCore( for_difference = true );
     }
 }
 
@@ -450,12 +454,13 @@ module PhoneCaseBase()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// shrinking moves every face of the core inward by the holder interface clearance
-module _PhoneCaseBaseCore( shrink = true )
+// the core as it prints: every face moved inward by the holder interface clearance, and a channel
+// for the cord; for_difference gives the full-size solid core for cutting out of the holder instead
+module _PhoneCaseBaseCore( for_difference = false )
 {
-    clearance = shrink
-        ? holder_base_interface_clearance
-        : 0;
+    clearance = for_difference
+        ? 0
+        : holder_base_interface_clearance;
 
     base_core_faces = [
         [ 0, 4, 2 ],
@@ -470,7 +475,28 @@ module _PhoneCaseBaseCore( shrink = true )
             _InsetCorner( i, base_core_points, base_core_faces, clearance )
         ];
 
-    polyhedron( points = inset_point_list, faces = base_core_faces );
+    difference()
+    {
+        polyhedron( points = inset_point_list, faces = base_core_faces );
+
+        if( !for_difference )
+        {
+            translate([
+                0,
+                base_plate_y / 2 + base_plate_offset_y,
+                base_core_cord_cutout_offset_z
+                ])
+                rotate([
+                    base_core_cord_cutout_angle,
+                    0,
+                    0
+                    ])
+                    cylinder(
+                        r = base_core_cord_r + base_core_cord_clearance,
+                        h = base_plate_y
+                        );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
