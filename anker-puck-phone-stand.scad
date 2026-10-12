@@ -88,7 +88,7 @@ version_label_depth = 0.4;
 print_preview_gap = 20;
 
 // THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
-BUILD_SCRIPT_VERSION = "v2";
+BUILD_SCRIPT_VERSION = "v4";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
