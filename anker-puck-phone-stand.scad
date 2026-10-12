@@ -1,5 +1,6 @@
 include <modules/utils.scad>
 include <modules/rounded-cube.scad>
+include <modules/rounded-cylinder.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -71,8 +72,6 @@ base_plate_rounding_r = 10;
 // space between the parts in the print previews
 print_preview_gap = 20;
 
-// TODO: route the cord for the puck through the base
-
 // TODO: notch to keep the puck in place
 
 // TODO: add a small basket on the front
@@ -81,6 +80,8 @@ print_preview_gap = 20;
 // calculations
 
 $fn = $preview ? 32 : 128;
+
+base_plate_top_rounding_r = base_plate_z / 2;
 
 phone_case_holder_thickness_z =
     phone_case_holder_thickness_front
@@ -436,20 +437,28 @@ module PhoneCaseBase()
     // base core
     _PhoneCaseBaseCore();
 
-    // base plate
-    translate([
-        -base_plate_x / 2,
-        -base_plate_y / 2 + base_plate_offset_y,
-        0
-        ])
-        RoundedCube(
-            base_plate_x,
-            base_plate_y,
-            base_plate_z,
-            r = base_plate_rounding_r,
-            round_top = false,
-            round_bottom = false,
-            );
+    // base plate, with the corners at base_plate_rounding_r and the top edge at its own radius
+    base_plate_corner_x = base_plate_x / 2 - base_plate_rounding_r;
+    base_plate_corner_front_y = -base_plate_y / 2 + base_plate_offset_y + base_plate_rounding_r;
+    base_plate_corner_back_y = base_plate_y / 2 + base_plate_offset_y - base_plate_rounding_r;
+
+    hull()
+    {
+        for(
+            x = [ -base_plate_corner_x, base_plate_corner_x ],
+            y = [ base_plate_corner_front_y, base_plate_corner_back_y ]
+            )
+        {
+            translate([ x, y, 0 ])
+                RoundedCylinder(
+                    h = base_plate_z,
+                    r = base_plate_rounding_r,
+                    rounding_r = base_plate_top_rounding_r,
+                    round_top = true,
+                    round_bottom = false
+                    );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
