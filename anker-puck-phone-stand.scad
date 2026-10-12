@@ -1,6 +1,7 @@
 include <modules/utils.scad>
 include <modules/rounded-cube.scad>
 include <modules/rounded-cylinder.scad>
+include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -28,6 +29,14 @@ phone_rounding_r = 10;
 render_mode = "preview";
 // render_mode = "print-base";
 // render_mode = "print-holder";
+
+// the version is engraved on the back of the holder, left of the cord slot and below the puck
+// opening
+phone_case_holder_version_offset_x = 16;
+phone_case_holder_version_offset_y = 43;
+
+// the version is engraved on the front of the base core, this far down from its top edge
+base_core_version_offset_y = 15;
 
 anker_puck_cord_preview_length = 30;
 
@@ -71,10 +80,15 @@ base_plate_offset_y = 10;
 base_plate_z = 2;
 base_plate_rounding_r = 10;
 
+version_label_font = "Liberation Sans:style=Bold";
+version_label_font_size = 6;
+version_label_depth = 0.4;
+
 // space between the parts in the print previews
 print_preview_gap = 20;
 
-// TODO: notch to keep the puck in place
+// THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
+BUILD_SCRIPT_VERSION = "v2";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -365,6 +379,24 @@ module PhoneCaseHolder()
                             square([ cord_curve_r, anker_puck_cord_strain_relief_r * 2 ]);
                     }
         }
+
+        // the version, engraved into the back of the holder; it reads from above like the holder is
+        // when it is looked at from behind, with the cord slot at the bottom
+        translate([
+            phone_case_holder_version_offset_x,
+            phone_case_holder_version_offset_y,
+            phone_case_holder_thickness_z - version_label_depth
+            ])
+            rotate([ 0, 0, 180 ])
+                TextLabel(
+                    BUILD_SCRIPT_VERSION,
+                    depth = version_label_depth + DIFFERENCE_CLEARANCE,
+                    font_size = version_label_font_size,
+                    font = version_label_font,
+                    color = undef,
+                    halign = "center",
+                    valign = "center"
+                    );
     }
 
     // where the base core's rear face is above the bottom corners; it starts at the base core's top
@@ -517,6 +549,21 @@ module _PhoneCaseBaseCore( for_difference = false )
                         r = base_core_cord_r + base_core_cord_clearance,
                         h = base_plate_y
                         );
+
+            // the version, engraved into the front face of the core, near its top edge; the face
+            // leans back by the holder angle, so tip the text onto it
+            translate( ( inset_point_list[ 0 ] + inset_point_list[ 1 ] ) / 2 )
+                rotate([ 90 - phone_case_holder_angle, 0, 0 ])
+                    translate([ 0, -base_core_version_offset_y, -version_label_depth ])
+                        TextLabel(
+                            BUILD_SCRIPT_VERSION,
+                            depth = version_label_depth + DIFFERENCE_CLEARANCE,
+                            font_size = version_label_font_size,
+                            font = version_label_font,
+                            color = undef,
+                            halign = "center",
+                            valign = "center"
+                            );
         }
     }
 }
