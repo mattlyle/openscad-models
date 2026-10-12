@@ -112,9 +112,11 @@ cord_hook_arm_extra = 1;
 // distance from the center to the outer face of the cord hooks just inside the alignment guides
 alignment_cord_hook_r = 65;
 
-// how much longer the arm of the hook to the left of the weight module reaches, toward its opening,
-// than the arms of the others
-left_cord_hook_extra_length = 2;
+// how wide the cord hooks are, along the cord
+cord_hook_width = 4;
+
+// space between the two cord hooks to the left of the weight module holder
+left_cord_hook_pair_gap = 2;
 
 weight_module_offset_z = 1.0;
 
@@ -498,7 +500,7 @@ module ScaleBase( scale_r, label, use_cord_clips )
     // holder side, so its opening faces away from the holder
     for( side = [ -1, 1 ] )
         translate([
-            -side * load_cell_wall_width / 2,
+            -side * cord_hook_width / 2,
             side * (
                 weight_module_holder_y / 2
                 + weight_module_cord_clip_gap
@@ -510,21 +512,22 @@ module ScaleBase( scale_r, label, use_cord_clips )
             rotate([ 0, 0, -side * 90 ])
                 _CordHook();
 
-    // cord hook to the left of the weight module holder, standing up and down with its opening at
-    // the bottom. the cord runs through it side to side, level with the middle of the holder
+    // two cord hooks to the left of the weight module holder, standing up and down, one with its
+    // opening at the bottom and the other at the top. the cord runs through them side to side,
+    // level with the middle of the holder
     translate([
         -( weight_module_holder_x / 2 + weight_module_cord_clip_gap ),
         0,
         base_lid_z - DIFFERENCE_CLEARANCE
         ])
         rotate([ 0, 0, 90 ])
-            _CordHook( extra_arm = left_cord_hook_extra_length );
+            _CordHookPair();
 
     // cord hooks just inside the alignment guides, with their openings toward the center
     for( i = alignment_guide_angle_list )
         rotate([ 0, 0, i ])
             translate([
-                load_cell_wall_width / 2,
+                cord_hook_width / 2,
                 alignment_cord_hook_r - cord_hook_inner_x - load_cell_wall_width,
                 base_lid_z - DIFFERENCE_CLEARANCE
                 ])
@@ -758,16 +761,33 @@ module _VersionLabel( depth )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // a cord hook at the size used on the scale, with its post on the +x side and the cord along y
-module _CordHook( extra_arm = 0 )
+module _CordHook()
 {
     CordHook(
         cord_width = load_cell_wire_hook_x,
         cord_z = weight_module_cord_hook_z,
         wall_thickness = load_cell_wall_width,
-        length = load_cell_wall_width,
+        length = cord_hook_width,
         show_preview = false,
         clearance = cord_clip_clearance,
-        arm_extra = cord_hook_arm_extra + extra_arm
+        arm_extra = cord_hook_arm_extra
+        );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// two cord hooks at the size used on the scale, the second turned around, with the gap between them
+module _CordHookPair()
+{
+    CordHookPair(
+        cord_width = load_cell_wire_hook_x,
+        cord_z = weight_module_cord_hook_z,
+        wall_thickness = load_cell_wall_width,
+        length = cord_hook_width,
+        spacing = left_cord_hook_pair_gap,
+        show_preview = false,
+        clearance = cord_clip_clearance,
+        arm_extra = cord_hook_arm_extra
         );
 }
 

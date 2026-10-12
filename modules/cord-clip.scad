@@ -87,15 +87,17 @@ module CordHookPair(
     wall_thickness,
     length,
     spacing,
-    show_preview = true
+    show_preview = true,
+    clearance = 0.2,
+    arm_extra = 0
     )
 {
-    CordHook( cord_width, cord_z, wall_thickness, length, show_preview = false );
+    CordHook( cord_width, cord_z, wall_thickness, length, false, clearance, arm_extra );
 
     translate([ 0, length + spacing + length / 2, 0 ])
         rotate([ 0, 0, 180 ])
             translate([ 0, -length / 2, 0 ])
-                CordHook( cord_width, cord_z, wall_thickness, length, show_preview = false );
+                CordHook( cord_width, cord_z, wall_thickness, length, false, clearance, arm_extra );
 
     if( show_preview )
         _CordPreview( cord_width, cord_z, length * 2 + spacing, ( length * 2 + spacing ) / 2 );
