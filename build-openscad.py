@@ -20,6 +20,18 @@ N is one more than the highest version of this model already in the renders
 directory (v0 if there are none), so every run is a new version and parts of a
 multi-part design always line up. Existing files are never overwritten.
 
+Pass --dry-run to render everything (so failures still surface) without writing
+anything to the output directory - useful for checking a model before committing
+it to a real version number.
+
+If the model has a line like
+
+    BUILD_SCRIPT_VERSION = "v0";
+
+the new version is rendered into it ("v<N>", matching the filenames), so it can be used as a label in the
+model. The renders get it via -D, and once everything has rendered the string in the .scad file is updated
+to match; with --dry-run the file is left alone. Models without the line are built as usual.
+
 The render modes come from the model's settings block:
 
     render_mode = "preview";
@@ -56,6 +68,10 @@ MULTI_COLOR_MODE = "print-3mf"
 EXCLUDED_DIRS = ( "modules", "archive" )
 
 RENDER_MODE_PATTERN = re.compile( r'^\s*(?://\s*)?render_mode\s*=\s*"([^"]+)"\s*;', re.MULTILINE )
+
+# a model opts in to having its version written into it by defining this string
+VERSION_VARIABLE = "BUILD_SCRIPT_VERSION"
+VERSION_PATTERN = re.compile( r'^(\s*' + VERSION_VARIABLE + r'\s*=\s*")[^"]*(")', re.MULTILINE )
 
 ########################################################################################################################
 
@@ -146,14 +162,44 @@ def IsMultiColorMode( mode ):
 ########################################################################################################################
 
 
+def VersionLabel( version ):
+    return "v%d" % version
+
+########################################################################################################################
+
+
+def HasVersionVariable( model_path ):
+    with open( model_path, newline = "" ) as model_file:
+        return VERSION_PATTERN.search( model_file.read() ) is not None
+
+########################################################################################################################
+
+
+def UpdateVersionVariable( model_path, version ):
+    """Writes the version into the model's BUILD_SCRIPT_VERSION string. Returns False if it was already that."""
+    # newline = "" keeps the file's line endings exactly as they are
+    with open( model_path, newline = "" ) as model_file:
+        text = model_file.read()
+
+    updated = VERSION_PATTERN.sub( lambda match: match.group( 1 ) + VersionLabel( version ) + match.group( 2 ), text )
+    if updated == text:
+        return False
+
+    with open( model_path, "w", newline = "" ) as model_file:
+        model_file.write( updated )
+    return True
+
+########################################################################################################################
+
+
 def OutputName( model_name, mode, version ):
     if IsMultiColorMode( mode ):
         # the extension already says 3mf: print-3mf -> <model>-v<N>.3mf, print-3mf-<name> -> <model>-<name>-v<N>.3mf
         suffix = mode[ len( MULTI_COLOR_MODE ): ]
-        return "%s%s-v%d.3mf" % ( model_name, suffix, version )
+        return "%s%s-%s.3mf" % ( model_name, suffix, VersionLabel( version ) )
     suffix = "" if mode == "print" else "-" + mode[ len( "print-" ): ]
     extension = "stl"
-    return "%s%s-v%d.%s" % ( model_name, suffix, version, extension )
+    return "%s%s-%s.%s" % ( model_name, suffix, VersionLabel( version ), extension )
 
 ########################################################################################################################
 
@@ -186,10 +232,12 @@ def FindNextVersion( model_name, output_dir ):
 ########################################################################################################################
 
 
-def Render( openscad, model_path, mode, output_path ):
+def Render( openscad, model_path, mode, output_path, version_label = None ):
     command = [ openscad ]
     if IsMultiColorMode( mode ):
         command.append( "--enable=lazy-union" )
+    if version_label:
+        command += [ "-D", '%s="%s"' % ( VERSION_VARIABLE, version_label ) ]
     command += [
         "-D", 'render_mode="%s"' % mode,
         "-o", str( output_path ),
@@ -210,6 +258,9 @@ def main():
     parser = argparse.ArgumentParser(
         description = "Render every print mode of an OpenSCAD model to a new, versioned set of STL (and 3MF) files." )
     parser.add_argument( "model", help = "path to the .scad file, e.g. gridfinity/gridfinity-ruler-bin.scad" )
+    parser.add_argument(
+        "--dry-run", action = "store_true",
+        help = "render everything to verify it works, but don't write anything to the output directory" )
     args = parser.parse_args()
 
     model_path = Path( args.model )
@@ -228,14 +279,19 @@ def main():
         if target.exists():
             Fail( "refusing to overwrite existing file: %s" % target )
 
-    print( "%s v%d: rendering %d print mode(s) into %s" % ( model_name, version, len( targets ), output_dir ) )
+    # only models that define the version string get it rendered in
+    has_version_variable = HasVersionVariable( model_path )
+    version_label = VersionLabel( version ) if has_version_variable else None
+
+    dry_run_prefix = "[dry-run] " if args.dry_run else ""
+    print( "%s%s %s:" % ( dry_run_prefix, "Would build" if args.dry_run else "Building", VersionLabel( version ) ) )
 
     # render everything to a temporary directory first, so a failure never leaves a partial version behind
     with tempfile.TemporaryDirectory( prefix = "build-openscad-" ) as temp_dir:
         rendered = []
         for mode, target in targets:
             temp_path = Path( temp_dir ) / target.name
-            succeeded, elapsed, messages, stderr = Render( openscad, model_path, mode, temp_path )
+            succeeded, elapsed, messages, stderr = Render( openscad, model_path, mode, temp_path, version_label )
 
             print( "  %-32s %6.1fs  %s" % ( mode, elapsed, "ok" if succeeded else "FAILED" ) )
             for message in messages:
@@ -247,15 +303,24 @@ def main():
                 Fail( "render of %s failed - nothing was written" % mode )
             rendered.append( ( temp_path, target ) )
 
-        for temp_path, target in rendered:
-            with open( temp_path, "rb" ) as source, open( target, "xb" ) as destination:
-                shutil.copyfileobj( source, destination )
+        if not args.dry_run:
+            for temp_path, target in rendered:
+                with open( temp_path, "rb" ) as source, open( target, "xb" ) as destination:
+                    shutil.copyfileobj( source, destination )
+
+        if has_version_variable and not args.dry_run:
+            UpdateVersionVariable( model_path, version )
 
     print()
+    verb = "would write" if args.dry_run else "wrote"
     for _, target in rendered:
-        print( "  wrote %s" % target.name )
+        print( "  %s %s" % ( verb, target.name ) )
+    print( "  in %s" % output_dir )
+    if has_version_variable:
+        verb = "would set" if args.dry_run else "set"
+        print( "  %s %s = \"%s\" in %s" % ( verb, VERSION_VARIABLE, VersionLabel( version ), model_path.name ) )
     print()
-    print( "version: %s v%d" % ( model_name, version ) )
+    print( "%sversion: %s %s" % ( dry_run_prefix, model_name, VersionLabel( version ) ) )
 
 ########################################################################################################################
 
