@@ -41,6 +41,13 @@ phone_case_holder_thickness_back = 2;
 phone_case_holder_corner_r = 10;
 phone_case_holder_back_rounding_r = 3.0;
 
+// the radius of the curve that lifts the cord out of the holder, as a multiple of how deep the cord
+// sits
+phone_case_holder_cord_curve_r_scale = 2;
+
+// how far above the puck's cord the holder's cord channel sits, so the channel prints cleanly
+phone_case_holder_cord_offset_z = 1.0;
+
 // height the holder off the floor
 phone_case_holder_z = 100;
 
@@ -61,6 +68,10 @@ base_plate_rounding_r = 10;
 print_preview_gap = 20;
 
 // TODO: route the cord for the puck through the base
+
+// TODO: notch to keep the puck in place
+
+// TODO: add a small basket on the front
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -219,7 +230,19 @@ module PhoneCaseHolder()
         + phone_case_holder_above
         + phone_case_holder_below;
 
-    cord_z = ( anker_puck_front_z + anker_puck_body_z ) / 2;
+    cord_z = ( anker_puck_front_z + anker_puck_body_z ) / 2 + phone_case_holder_cord_offset_z;
+
+    // the cord runs straight for the length of the strain relief, then curves up out of the back;
+    // the curve is a quarter circle whose center is above the cord, and the cutout is done once the
+    // outside edge of the cord's channel comes up through the back
+    cord_depth_z = phone_case_holder_thickness_z - cord_z;
+    cord_curve_r = cord_depth_z * phone_case_holder_cord_curve_r_scale;
+    cord_curve_outer_r = cord_curve_r + anker_puck_cord_strain_relief_r;
+    cord_curve_start_y = anker_puck_body_r + anker_puck_cord_strain_relief_length;
+    cord_curve_end_y =
+        cord_curve_start_y
+        + cord_curve_outer_r * sin( acos( ( cord_curve_r - cord_depth_z ) / cord_curve_outer_r ) );
+    echo( str( "Holder (TPU) wall below the cord cutout:", holder_bottom_y - cord_curve_end_y ) );
 
     difference()
     {
@@ -272,7 +295,22 @@ module PhoneCaseHolder()
 
         translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
         {
-            AnkerPuckPreview();
+            // the puck, without the part of the cord that carries on past where the curve starts
+            intersection()
+            {
+                AnkerPuckPreview();
+
+                translate([
+                    -holder_x / 2,
+                    -holder_y,
+                    -phone_case_holder_thickness_z
+                    ])
+                    cube([
+                        holder_x,
+                        holder_y + cord_curve_start_y - DIFFERENCE_CLEARANCE,
+                        phone_case_holder_thickness_z * 3
+                        ]);
+            }
 
             // open the back above the puck body
             translate([ 0, 0, anker_puck_front_z + anker_puck_body_z - DIFFERENCE_CLEARANCE ])
@@ -285,16 +323,29 @@ module PhoneCaseHolder()
             translate([ 0, 0, cord_z ])
                 rotate([ -90, 0, 0 ])
                     cylinder(
-                        h = holder_bottom_y + DIFFERENCE_CLEARANCE,
+                        h = cord_curve_start_y + DIFFERENCE_CLEARANCE,
                         r = anker_puck_cord_strain_relief_r
                         );
 
             translate([ -anker_puck_cord_strain_relief_r, 0, cord_z ])
                 cube([
                     anker_puck_cord_strain_relief_r * 2,
-                    holder_bottom_y + DIFFERENCE_CLEARANCE,
+                    cord_curve_start_y + DIFFERENCE_CLEARANCE,
                     phone_case_holder_thickness_z
                     ]);
+
+            // the cord curving up out of the back: the cord's channel and everything above it,
+            // swept around the center of the curve, which is above the cord
+            translate([ 0, cord_curve_start_y, cord_z + cord_curve_r ])
+                rotate([ 0, 90, 0 ])
+                    rotate_extrude( angle = 90 )
+                    {
+                        translate([ cord_curve_r, 0 ])
+                            circle( r = anker_puck_cord_strain_relief_r );
+
+                        translate([ 0, -anker_puck_cord_strain_relief_r ])
+                            square([ cord_curve_r, anker_puck_cord_strain_relief_r * 2 ]);
+                    }
         }
     }
 
