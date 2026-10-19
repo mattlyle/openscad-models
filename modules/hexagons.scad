@@ -23,6 +23,21 @@ function CalculateHexagonOffsetY( row, r, spacing ) =
         ? ( 2 * r * ( 1 + row ) / 2 + spacing * row )
         : ( 2 * r * ( 1 + row ) / 2 + spacing * row );
 
+// how far to slide the pattern in x so a hexagon column lands in the middle of x; the pattern is
+// mirror symmetric about every column, so this balances the partial hexagons on the left and right
+// (columns repeat every half period because the odd rows sit halfway between the even ones)
+
+function CalculateHexagonCenterShiftX( x, r, spacing ) =
+    let ( half_period_x = ( 3 * CalculateHexagonR( r ) + 2 * spacing ) / 2 )
+    ( ( x / 2 - CalculateHexagonR( r ) ) % half_period_x + half_period_x ) % half_period_x;
+
+// how far to slide the pattern in y so a hexagon row lands in the middle of y; the pattern is
+// mirror symmetric about every row, so this balances the partial hexagons on the top and bottom
+
+function CalculateHexagonCenterShiftY( y, r, spacing ) =
+    let ( period_y = r + spacing )
+    ( ( y / 2 - r ) % period_y + period_y ) % period_y;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 module Hexagon( r, z )
@@ -41,9 +56,14 @@ module HexagonCube(
     left_edge = 0,
     right_edge = 0,
     top_edge = 0,
-    bottom_edge = 0
+    bottom_edge = 0,
+    center_x = false,
+    center_y = false
     )
 {
+    shift_x = center_x ? CalculateHexagonCenterShiftX( x, r, spacing ) : 0;
+    shift_y = center_y ? CalculateHexagonCenterShiftY( y, r, spacing ) : 0;
+
     union()
     {
         difference()
@@ -53,8 +73,8 @@ module HexagonCube(
             for ( row = [ -1 : y / ( r + spacing ) ] )
                 for ( col = [ -1 : x / ( r + spacing ) / 2 ] )
                     translate( [
-                        CalculateHexagonOffsetX( row, col, r, spacing ),
-                        CalculateHexagonOffsetY( row, r, spacing ),
+                        CalculateHexagonOffsetX( row, col, r, spacing ) + shift_x,
+                        CalculateHexagonOffsetY( row, r, spacing ) + shift_y,
                         -DIFFERENCE_CLEARANCE
                         ] )
                         Hexagon( r, z + DIFFERENCE_CLEARANCE * 2 );
