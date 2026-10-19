@@ -22,6 +22,9 @@ label_color = "black";
 back_cells_x = 10;
 back_cells_z = 3;
 
+// connector slots up the back, by cell: one slot across the top two cells, one in the bottom cell
+back_connector_row_setup_list = [ [ 3, 2 ], [ 1 ] ];
+
 plate_y = 120;
 plate_z = 3.6;
 
@@ -113,7 +116,7 @@ module MultiboardScrewdriversHolder()
             // multiboard back
             translate([ 0, plate_y + back_y, 0 ])
                 rotate([ 90, 0, 0 ])
-                    MultiboardConnectorBackAlt( back_x, back_z );
+                    MultiboardConnectorBackAlt2( back_x, back_z, back_connector_row_setup_list );
 
             // left arm
             _MultiboardScrewdriversHolderArm( true );
