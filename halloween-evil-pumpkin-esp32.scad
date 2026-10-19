@@ -76,6 +76,10 @@ electronics_holder_strut_x = 3.6;
 electronics_holder_strut_y = 24.0;
 electronics_holder_strut_z = 52.0;
 
+// on top of the disc at 9 o'clock, clear of the esp32 holder and strut, opposite the breadboard
+electronics_holder_version_label_angle = 180;
+electronics_holder_version_label_center_r = 32;
+
 evil_pumpkin_mount_screw_clearance = 0.2;
 
 base_board_screw_count = 4;
@@ -567,6 +571,15 @@ module ElectronicsHolder()
                     ]);
         }
     }
+
+    // raised, reading along the edge with the bottom of the text toward the center
+    rotate([ 0, 0, electronics_holder_version_label_angle + 90 ])
+        translate([
+            0,
+            -electronics_holder_version_label_center_r,
+            electronics_holder_z - DIFFERENCE_CLEARANCE
+            ])
+            _VersionLabel( version_label_depth + DIFFERENCE_CLEARANCE );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
