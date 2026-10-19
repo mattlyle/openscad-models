@@ -1,4 +1,5 @@
 include <modules/utils.scad>
+include <modules/text-label.scad>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
@@ -34,6 +35,17 @@ base_r = 120 / 2;
 base_screw_r = 2.8 / 2;
 base_screw_cone_z = 2.7;
 base_screw_cone_top = 6.5 / 2;
+
+// on top of the base, between the screws at 0 and 90 degrees
+version_label_angle = 45;
+version_label_font = "Liberation Sans:style=Bold";
+version_label_font_size = 5;
+version_label_depth = 0.5;
+version_label_area_x = 20;
+version_label_area_y = 8;
+
+// THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
+BUILD_SCRIPT_VERSION = "v0";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -105,6 +117,11 @@ module EvilPumpkinStand()
 
         _BaseScrewHoles();
     }
+
+    // raised, reading along the base with the bottom of the text toward the stand
+    rotate([ 0, 0, version_label_angle + 90 ])
+        translate([ 0, -( stand_base_r + base_r ) / 2, base_z - DIFFERENCE_CLEARANCE ])
+            _VersionLabel( version_label_depth + DIFFERENCE_CLEARANCE );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,6 +242,26 @@ module _BaseScrewHoles()
                         );
             }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _VersionLabel( depth )
+{
+    translate([
+        -version_label_area_x / 2,
+        -version_label_area_y / 2,
+        0
+        ])
+        CenteredTextLabel(
+            BUILD_SCRIPT_VERSION,
+            centered_in_area_x = version_label_area_x,
+            centered_in_area_y = version_label_area_y,
+            depth = depth,
+            font_size = version_label_font_size,
+            font = version_label_font,
+            color = undef
+            );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
