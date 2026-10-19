@@ -15,9 +15,9 @@ jackolantern_mount_screw_flange_r = 8.8 / 2;
 jackolantern_mount_screw_flange_z = 3.3;
 jackolantern_mount_screw_head_r = 4.2 / 2;
 
-esp32_x = 28.6;
-esp32_y = 51.5;
-esp32_z = 12.6;
+// esp32_x = 28.6;
+// esp32_y = 51.5;
+// esp32_z = 12.6;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
