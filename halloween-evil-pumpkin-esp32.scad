@@ -18,6 +18,7 @@ evil_pumpkin_mount_screw_head_r = 4.2 / 2;
 // esp32_x = 28.6;
 // esp32_y = 51.5;
 // esp32_z = 12.6;
+usb_cord_r = 11.7 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // settings
@@ -28,6 +29,8 @@ render_mode = "preview";
 stand_base_r = 100.0 / 2;
 stand_z = 100.0;
 stand_wall = 3.6;
+stand_usb_hole_offset_z = 50;
+stand_usb_hole_angle = 180;
 
 evil_pumpkin_mount_screw_clearance = 0.2;
 
@@ -118,6 +121,8 @@ module EvilPumpkinStand()
         _StandMountScrewHeadCutouts();
 
         _BaseScrewHoles();
+
+        _StandUSBHole();
     }
 
     // raised, reading along the base with the bottom of the text toward the stand
@@ -264,6 +269,18 @@ module _VersionLabel( depth )
             font = version_label_font,
             color = undef
             );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// out through the wall from the center, which is already hollow
+module _StandUSBHole()
+{
+    rotate([ 0, 0, stand_usb_hole_angle ])
+        translate([ 0, 0, stand_usb_hole_offset_z ])
+            rotate([ 90, 0, 90 ])
+                linear_extrude( stand_base_r + DIFFERENCE_CLEARANCE )
+                    Teardrop( usb_cord_r );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

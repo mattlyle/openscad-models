@@ -106,3 +106,20 @@ module OptionalColor( color = false )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2D circle with a 45 degree point on +y, so a horizontal hole prints without bridging its top
+
+module Teardrop( r )
+{
+    hull()
+    {
+        circle( r = r );
+
+        polygon([
+            [ -r * cos( 45 ), r * sin( 45 ) ],
+            [ r * cos( 45 ), r * sin( 45 ) ],
+            [ 0, r * sqrt( 2 ) ]
+            ]);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
