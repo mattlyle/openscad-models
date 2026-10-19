@@ -4,16 +4,16 @@ include <modules/text-label.scad>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // measurements
 
-jackolantern_mount_r = 84.9 / 2;
-jackolantern_mount_z = 2.5;
+evil_pumpkin_mount_r = 84.9 / 2;
+evil_pumpkin_mount_z = 2.5;
 
-jackolantern_mount_screw_r = 3.0 / 2;
-jackolantern_mount_screw_offset_r = 3.5;
-jackolantern_mount_screw_count = 3;
-// jackolantern_mount_base_z = 2.6;
-jackolantern_mount_screw_flange_r = 8.8 / 2;
-jackolantern_mount_screw_flange_z = 3.3;
-jackolantern_mount_screw_head_r = 4.2 / 2;
+evil_pumpkin_mount_screw_r = 3.0 / 2;
+evil_pumpkin_mount_screw_offset_r = 3.5;
+evil_pumpkin_mount_screw_count = 3;
+// evil_pumpkin_mount_base_z = 2.6;
+evil_pumpkin_mount_screw_flange_r = 12.5 / 2;
+evil_pumpkin_mount_screw_flange_z = 3.3;
+evil_pumpkin_mount_screw_head_r = 4.2 / 2;
 
 // esp32_x = 28.6;
 // esp32_y = 51.5;
@@ -28,6 +28,8 @@ render_mode = "preview";
 stand_base_r = 100.0 / 2;
 stand_z = 100.0;
 stand_wall = 3.6;
+
+evil_pumpkin_mount_screw_clearance = 0.2;
 
 base_board_screw_count = 4;
 base_z = 4.0;
@@ -52,11 +54,11 @@ BUILD_SCRIPT_VERSION = "v0";
 
 $fn = $preview ? 32 : 128;
 
-jackolantern_mount_screw_center_r = jackolantern_mount_r + jackolantern_mount_screw_offset_r;
+evil_pumpkin_mount_screw_center_r = evil_pumpkin_mount_r + evil_pumpkin_mount_screw_offset_r;
 
 // tall enough for a 45 degree support to reach from the rim out to the far edge of the flange
-jackolantern_mount_screw_support_z = jackolantern_mount_screw_offset_r
-    + jackolantern_mount_screw_flange_r;
+evil_pumpkin_mount_screw_support_z = evil_pumpkin_mount_screw_offset_r
+    + evil_pumpkin_mount_screw_flange_r;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -88,7 +90,7 @@ module EvilPumpkinStand()
                 {
                     cylinder(
                         r1 = stand_base_r,
-                        r2 = jackolantern_mount_r,
+                        r2 = evil_pumpkin_mount_r,
                         h = stand_z
                         );
 
@@ -101,7 +103,7 @@ module EvilPumpkinStand()
                 translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
                     cylinder(
                         r1 = stand_base_r - stand_wall,
-                        r2 = jackolantern_mount_r - stand_wall,
+                        r2 = evil_pumpkin_mount_r - stand_wall,
                         h = stand_z + DIFFERENCE_CLEARANCE * 2
                         );
             }
@@ -128,17 +130,17 @@ module EvilPumpkinStand()
 
 module _StandMountScrewFlanges()
 {
-    for( screw_index = [ 0 : jackolantern_mount_screw_count - 1 ] )
+    for( screw_index = [ 0 : evil_pumpkin_mount_screw_count - 1 ] )
     {
-        rotate([ 0, 0, screw_index * 360 / jackolantern_mount_screw_count ])
+        rotate([ 0, 0, screw_index * 360 / evil_pumpkin_mount_screw_count ])
             translate([
-                jackolantern_mount_screw_center_r,
+                evil_pumpkin_mount_screw_center_r,
                 0,
-                stand_z - jackolantern_mount_screw_flange_z
+                stand_z - evil_pumpkin_mount_screw_flange_z
                 ])
                 cylinder(
-                    r = jackolantern_mount_screw_flange_r,
-                    h = jackolantern_mount_screw_flange_z
+                    r = evil_pumpkin_mount_screw_flange_r,
+                    h = evil_pumpkin_mount_screw_flange_z
                     );
     }
 }
@@ -147,17 +149,17 @@ module _StandMountScrewFlanges()
 
 module _StandMountScrewHoles()
 {
-    for( screw_index = [ 0 : jackolantern_mount_screw_count - 1 ] )
+    for( screw_index = [ 0 : evil_pumpkin_mount_screw_count - 1 ] )
     {
-        rotate([ 0, 0, screw_index * 360 / jackolantern_mount_screw_count ])
+        rotate([ 0, 0, screw_index * 360 / evil_pumpkin_mount_screw_count ])
             translate([
-                jackolantern_mount_screw_center_r,
+                evil_pumpkin_mount_screw_center_r,
                 0,
-                stand_z - jackolantern_mount_screw_flange_z - DIFFERENCE_CLEARANCE
+                stand_z - evil_pumpkin_mount_screw_flange_z - DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
-                    r = jackolantern_mount_screw_r,
-                    h = jackolantern_mount_screw_flange_z + DIFFERENCE_CLEARANCE * 2
+                    r = evil_pumpkin_mount_screw_r + evil_pumpkin_mount_screw_clearance,
+                    h = evil_pumpkin_mount_screw_flange_z + DIFFERENCE_CLEARANCE * 2
                     );
     }
 }
@@ -166,7 +168,7 @@ module _StandMountScrewHoles()
 
 module _StandMountScrewSupports()
 {
-    for( screw_index = [ 0 : jackolantern_mount_screw_count - 1 ] )
+    for( screw_index = [ 0 : evil_pumpkin_mount_screw_count - 1 ] )
     {
         // a 45 degree collar around the rim, cut down to this flange's footprint
         intersection()
@@ -174,24 +176,24 @@ module _StandMountScrewSupports()
             translate([
                 0,
                 0,
-                stand_z - jackolantern_mount_screw_flange_z - jackolantern_mount_screw_support_z
+                stand_z - evil_pumpkin_mount_screw_flange_z - evil_pumpkin_mount_screw_support_z
                 ])
                 cylinder(
-                    r1 = jackolantern_mount_r,
-                    r2 = jackolantern_mount_r + jackolantern_mount_screw_support_z,
-                    h = jackolantern_mount_screw_support_z
+                    r1 = evil_pumpkin_mount_r,
+                    r2 = evil_pumpkin_mount_r + evil_pumpkin_mount_screw_support_z,
+                    h = evil_pumpkin_mount_screw_support_z
                     );
 
-            rotate([ 0, 0, screw_index * 360 / jackolantern_mount_screw_count ])
+            rotate([ 0, 0, screw_index * 360 / evil_pumpkin_mount_screw_count ])
                 translate([
-                    jackolantern_mount_screw_center_r,
+                    evil_pumpkin_mount_screw_center_r,
                     0,
-                    stand_z - jackolantern_mount_screw_flange_z
-                        - jackolantern_mount_screw_support_z
+                    stand_z - evil_pumpkin_mount_screw_flange_z
+                        - evil_pumpkin_mount_screw_support_z
                     ])
                     cylinder(
-                        r = jackolantern_mount_screw_flange_r,
-                        h = jackolantern_mount_screw_support_z
+                        r = evil_pumpkin_mount_screw_flange_r,
+                        h = evil_pumpkin_mount_screw_support_z
                         );
         }
     }
@@ -202,18 +204,18 @@ module _StandMountScrewSupports()
 // room under each flange for the screw head and a driver, up through the support
 module _StandMountScrewHeadCutouts()
 {
-    for( screw_index = [ 0 : jackolantern_mount_screw_count - 1 ] )
+    for( screw_index = [ 0 : evil_pumpkin_mount_screw_count - 1 ] )
     {
-        rotate([ 0, 0, screw_index * 360 / jackolantern_mount_screw_count ])
+        rotate([ 0, 0, screw_index * 360 / evil_pumpkin_mount_screw_count ])
             translate([
-                jackolantern_mount_screw_center_r,
+                evil_pumpkin_mount_screw_center_r,
                 0,
-                stand_z - jackolantern_mount_screw_flange_z
-                    - jackolantern_mount_screw_support_z - DIFFERENCE_CLEARANCE
+                stand_z - evil_pumpkin_mount_screw_flange_z
+                    - evil_pumpkin_mount_screw_support_z - DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
-                    r = jackolantern_mount_screw_head_r,
-                    h = jackolantern_mount_screw_support_z + DIFFERENCE_CLEARANCE * 2
+                    r = evil_pumpkin_mount_screw_head_r + evil_pumpkin_mount_screw_clearance,
+                    h = evil_pumpkin_mount_screw_support_z + DIFFERENCE_CLEARANCE * 2
                     );
     }
 }
