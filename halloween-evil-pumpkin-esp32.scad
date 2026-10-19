@@ -399,13 +399,14 @@ module ESP32Holder()
                         );
         }
 
-        // screw pilot holes, all the way through so the screw tips can poke out the back
+        // screw pilot holes, all the way through so the screw tips can poke out the back; teardrops
+        // pointing at the antenna end, which is up when the holder stands on the electronics holder
         _ESP32HolderAtMountHoles()
             translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
-                cylinder(
-                    r = esp32_screw_r - esp32_holder_screw_bite,
-                    h = esp32_holder_base_z + esp32_holder_standoff_z + DIFFERENCE_CLEARANCE * 2
-                    );
+                linear_extrude(
+                    esp32_holder_base_z + esp32_holder_standoff_z + DIFFERENCE_CLEARANCE * 2
+                    )
+                    Teardrop( esp32_screw_r - esp32_holder_screw_bite );
 
         // usb plug, through the -y wall down to the plate
         translate([
