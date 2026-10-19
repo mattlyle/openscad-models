@@ -51,8 +51,8 @@ render_mode = "preview";
 // render_mode = "print";
 // render_mode = "print-electronics-holder";
 
-stand_base_r = 100.0 / 2;
-stand_z = 100.0;
+stand_base_r = 120.0 / 2;
+stand_z = 140.0;
 stand_wall = 3.6;
 stand_usb_hole_offset_z = 30;
 stand_usb_hole_angle = 180;
@@ -84,7 +84,7 @@ evil_pumpkin_mount_screw_clearance = 0.2;
 
 base_board_screw_count = 4;
 base_z = 4.0;
-base_r = 120 / 2;
+base_r = 145 / 2;
 base_screw_r = 3.4 / 2;
 base_screw_cone_z = 2.7;
 base_screw_cone_top = 6.5 / 2;
