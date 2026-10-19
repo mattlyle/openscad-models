@@ -32,7 +32,7 @@ stand_wall = 3.6;
 base_board_screw_count = 4;
 base_z = 4.0;
 base_r = 120 / 2;
-base_screw_r = 2.8 / 2;
+base_screw_r = 3.4 / 2;
 base_screw_cone_z = 2.7;
 base_screw_cone_top = 6.5 / 2;
 
