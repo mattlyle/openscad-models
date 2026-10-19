@@ -70,6 +70,12 @@ electronics_holder_preview_lift_z = 20;
 electronics_holder_esp32_offset_y = -20;
 electronics_holder_cord_clearance = 0.3;
 
+// strut braces the back of the esp32 holder to the disc, opposite the cord slot; steeper than 45
+// degrees so it prints fine
+electronics_holder_strut_x = 3.6;
+electronics_holder_strut_y = 24.0;
+electronics_holder_strut_z = 52.0;
+
 evil_pumpkin_mount_screw_clearance = 0.2;
 
 base_board_screw_count = 4;
@@ -505,6 +511,25 @@ module ElectronicsHolder()
                                 )
                                 _ESP32HolderBottomSupport();
             }
+
+            // strut up the back of the riser
+            translate([ -electronics_holder_strut_x / 2, 0, 0 ])
+                rotate([ 90, 0, 90 ])
+                    linear_extrude( electronics_holder_strut_x )
+                        polygon([
+                            [
+                                electronics_holder_esp32_offset_y - DIFFERENCE_CLEARANCE,
+                                electronics_holder_z - DIFFERENCE_CLEARANCE
+                            ],
+                            [
+                                electronics_holder_esp32_offset_y + electronics_holder_strut_y,
+                                electronics_holder_z - DIFFERENCE_CLEARANCE
+                            ],
+                            [
+                                electronics_holder_esp32_offset_y - DIFFERENCE_CLEARANCE,
+                                electronics_holder_z + electronics_holder_strut_z
+                            ]
+                            ]);
 
             // esp32 holder, standing up with the usb end down and the board facing -y
             translate([
