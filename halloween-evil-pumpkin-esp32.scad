@@ -28,6 +28,12 @@ stand_base_r = 100.0 / 2;
 stand_z = 100.0;
 stand_wall = 3.6;
 
+base_board_screw_count = 4;
+base_z = 4.0;
+base_r = 120 / 2;
+base_screw_r = 2.8 / 2;
+base_screw_cone_z = 2.7;
+base_screw_cone_top = 6.5 / 2;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
@@ -66,11 +72,19 @@ module EvilPumpkinStand()
         {
             difference()
             {
-                cylinder(
-                    r1 = stand_base_r,
-                    r2 = jackolantern_mount_r,
-                    h = stand_z
-                    );
+                union()
+                {
+                    cylinder(
+                        r1 = stand_base_r,
+                        r2 = jackolantern_mount_r,
+                        h = stand_z
+                        );
+
+                    cylinder(
+                        r = base_r,
+                        h = base_z
+                        );
+                }
 
                 translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
                     cylinder(
@@ -88,6 +102,8 @@ module EvilPumpkinStand()
         _StandMountScrewHoles();
 
         _StandMountScrewHeadCutouts();
+
+        _BaseScrewHoles();
     }
 }
 
@@ -182,6 +198,32 @@ module _StandMountScrewHeadCutouts()
                     r = jackolantern_mount_screw_head_r,
                     h = jackolantern_mount_screw_support_z + DIFFERENCE_CLEARANCE * 2
                     );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// countersunk from the top, centered in the base between the stand and the edge
+module _BaseScrewHoles()
+{
+    for( screw_index = [ 0 : base_board_screw_count - 1 ] )
+    {
+        rotate([ 0, 0, screw_index * 360 / base_board_screw_count ])
+            translate([ ( stand_base_r + base_r ) / 2, 0, 0 ])
+            {
+                translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder(
+                        r = base_screw_r,
+                        h = base_z - base_screw_cone_z + DIFFERENCE_CLEARANCE * 2
+                        );
+
+                translate([ 0, 0, base_z - base_screw_cone_z ])
+                    cylinder(
+                        r1 = base_screw_r,
+                        r2 = base_screw_cone_top,
+                        h = base_screw_cone_z + DIFFERENCE_CLEARANCE
+                        );
+            }
     }
 }
 
