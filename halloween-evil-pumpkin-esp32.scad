@@ -63,9 +63,6 @@ stand_wall = 3.6;
 // the stand is a cone along its tilted axis, this wide at the bottom, square to the axis
 stand_bottom_r = 90.0;
 
-stand_usb_hole_offset_z = 30;
-stand_usb_hole_angle = 90;
-
 // the top of the stand, with everything on it, tips down toward -y, its center at stand_z; the
 // stand is a cone that leans with it, square to the top all the way down so the screws can
 // be driven straight up from below, so the top ends up off center toward -y over the base
@@ -128,7 +125,7 @@ evil_pumpkin_mount_screw_clearance = 0.2;
 evil_pumpkin_mount_screw_angle = 90;
 
 base_board_screw_count = 4;
-base_z = 4.0;
+base_z = 7.0;
 
 // how far the base flange reaches out past the foot of the stand; the base screws are centered in
 // that ring, so the flange grows with stand_bottom_r
@@ -146,6 +143,9 @@ stand_drain_y = 4.0;
 
 // straight sides this tall, then a pointed 45 degree roof so the channel prints without bridging
 stand_drain_z = 0.5;
+
+// the usb cord runs out under the base through a teardrop channel, under the version label
+stand_usb_channel_clearance = 0.3;
 
 // on top of the base, between the screws at 0 and 90 degrees
 version_label_angle = 45;
@@ -214,6 +214,8 @@ stand_tube_z = ( stand_z + stand_bottom_r * sin( stand_top_angle ) ) / cos( stan
 stand_footprint_r = stand_bottom_r / cos( stand_top_angle );
 
 base_r = stand_footprint_r + base_extra_r;
+
+stand_usb_channel_r = usb_cord_r + stand_usb_channel_clearance;
 base_screw_center_r = stand_footprint_r + base_extra_r / 2;
 
 stand_ledge_inner_r = evil_pumpkin_mount_r - stand_wall - stand_ledge;
@@ -256,6 +258,11 @@ assert(
 assert(
     stand_drain_z + stand_drain_y / 2 < base_z,
     "drain channel's pointed roof cuts through the base flange"
+    );
+
+assert(
+    stand_usb_channel_r * ( 1 + sqrt( 2 ) ) < base_z,
+    "usb cord channel's pointed roof cuts through the base flange"
     );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -352,7 +359,7 @@ module EvilPumpkinStand()
         _BaseScrewHoles();
 
         // usb cord
-        _StandUSBHole();
+        _StandUSBChannel();
 
         // drains
         _StandDrains();
@@ -530,14 +537,20 @@ module _StandDrains()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// out through the wall from the center, which is already hollow, as far as the edge of the base
-module _StandUSBHole()
+// out from the center, which is already hollow, under the wall and the base flange and the
+// version label; the cord lies on the floor with a teardrop roof over it
+module _StandUSBChannel()
 {
-    rotate([ 0, 0, stand_usb_hole_angle ])
-        translate([ 0, 0, stand_usb_hole_offset_z ])
-            rotate([ 90, 0, 90 ])
-                linear_extrude( base_r + DIFFERENCE_CLEARANCE )
-                    Teardrop( usb_plug_r );
+    rotate([ 0, 0, version_label_angle ])
+        rotate([ 90, 0, 90 ])
+            linear_extrude( base_r + DIFFERENCE_CLEARANCE )
+            {
+                translate([ 0, stand_usb_channel_r ])
+                    Teardrop( stand_usb_channel_r );
+
+                translate([ -stand_usb_channel_r, -DIFFERENCE_CLEARANCE ])
+                    square([ stand_usb_channel_r * 2, stand_usb_channel_r + DIFFERENCE_CLEARANCE ]);
+            }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
