@@ -63,7 +63,7 @@ stand_top_angle = 10;
 
 // the collar is the top of the stand that retrofits the pumpkin's old mount: the ring plus the 3
 // screw flanges, kept exactly as they were but only this tall
-stand_collar_z = 2.0;
+stand_collar_z = 3.0;
 
 // under the collar the stand is wider than the screw circle, so the screw heads are inside it; this
 // much room around each head for a driver
