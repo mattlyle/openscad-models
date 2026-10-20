@@ -5,20 +5,15 @@ include <modules/text-label.scad>
 // measurements
 
 evil_pumpkin_mount_r = 84.9 / 2;
-evil_pumpkin_mount_z = 2.5;
 
 evil_pumpkin_mount_screw_r = 3.0 / 2;
 evil_pumpkin_mount_screw_offset_r = 3.5;
 evil_pumpkin_mount_screw_count = 3;
-// evil_pumpkin_mount_base_z = 2.6;
 evil_pumpkin_mount_screw_flange_r = 12.5 / 2;
-evil_pumpkin_mount_screw_flange_z = 3.3;
 evil_pumpkin_mount_screw_head_r = 4.2 / 2;
 
 esp32_x = 28.6;
 esp32_y = 51.5;
-esp32_z = 12.6;
-esp32_mount_holes_r = 3.0 / 2;
 esp32_usb_x = 11.7;
 
 // center of the usb socket above the top of the board
@@ -41,10 +36,8 @@ esp32_power_pin_offset_y = 9.9;
 proto_board_x = 38.1;
 proto_board_y = 50.8;
 proto_board_z = 1.6;
-proto_board_mounting_hole_r = 2.3 / 2;
 proto_board_mounting_hole_corner_offset = 3.25;
 
-usb_plug_r = 10.6 / 2;
 usb_cord_r = 4.15 / 2;
 
 // from the board edge to where the plug's overmold ends and the cord starts
