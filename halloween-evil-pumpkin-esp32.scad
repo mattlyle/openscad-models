@@ -42,7 +42,7 @@ proto_board_x = 38.1;
 proto_board_y = 50.8;
 proto_board_z = 1.6;
 proto_board_mounting_hole_r = 2.3 / 2;
-proto_board_mounting_hole_corner_offset = 3.4;
+proto_board_mounting_hole_corner_offset = 3.25;
 
 usb_plug_r = 10.6 / 2;
 usb_cord_r = 4.15 / 2;
