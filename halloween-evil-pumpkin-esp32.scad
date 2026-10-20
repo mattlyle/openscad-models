@@ -312,15 +312,16 @@ module EvilPumpkinStand()
     {
         union()
         {
-            // cone, leaning with the top and cut off flat at the floor
+            // cone, leaning with the top and cut off flat at the floor; it runs up into the collar
+            // so its top isn't level with the electronics holder ledge
             intersection()
             {
                 _AtStandTop()
                     translate([ 0, 0, -stand_tube_z ])
                         cylinder(
                             r1 = stand_bottom_r,
-                            r2 = _StandOuterR( -stand_collar_z ),
-                            h = stand_tube_z - stand_collar_z
+                            r2 = _StandOuterR( -stand_collar_z + DIFFERENCE_CLEARANCE ),
+                            h = stand_tube_z - stand_collar_z + DIFFERENCE_CLEARANCE
                             );
 
                 translate([ -BUILD_PLATE_X, -BUILD_PLATE_Y, 0 ])
