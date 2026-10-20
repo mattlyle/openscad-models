@@ -149,6 +149,13 @@ stand_drain_z = 0.5;
 // the usb cord runs out under the base through a teardrop channel, under the version label
 stand_usb_channel_clearance = 0.3;
 
+// engraved into the bottom of the base at the front (-y, where the top dips), under the foot of the
+// cone and away from the base screw, so it's easy to tell which way round the stand goes when
+// assembling it upside down
+stand_front_label_text = "FRONT";
+stand_front_label_font_size = 5;
+stand_front_label_depth = 0.2;
+
 // on top of the base, between the screws at 0 and 90 degrees
 version_label_angle = 45;
 version_label_font = "Liberation Sans:style=Bold";
@@ -219,6 +226,9 @@ base_r = stand_footprint_r + base_extra_r;
 
 stand_usb_channel_r = usb_cord_r + stand_usb_channel_clearance;
 base_screw_center_r = stand_footprint_r + base_extra_r / 2;
+
+// centered on the foot of the cone, where its wall meets the base flange
+stand_front_label_center_r = stand_footprint_r;
 
 stand_ledge_inner_r = evil_pumpkin_mount_r - stand_wall - stand_ledge;
 
@@ -385,6 +395,18 @@ module EvilPumpkinStand()
 
         // drains
         _StandDrains();
+
+        // front label, mirrored so it reads from below
+        translate([ 0, -stand_front_label_center_r, -DIFFERENCE_CLEARANCE ])
+            mirror([ 1, 0, 0 ])
+                TextLabel(
+                    text_string = stand_front_label_text,
+                    depth = stand_front_label_depth + DIFFERENCE_CLEARANCE,
+                    font_size = stand_front_label_font_size,
+                    font = version_label_font,
+                    halign = "center",
+                    valign = "center"
+                    );
     }
 
     // raised, reading along the base with the bottom of the text toward the stand
