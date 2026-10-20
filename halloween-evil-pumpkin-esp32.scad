@@ -20,8 +20,8 @@ esp32_usb_x = 11.7;
 esp32_usb_offset_z = 1.5;
 esp32_pcb_z = 1.6;
 
-// M2x8 screws hold the board down
-esp32_screw_r = 1.98 / 2;
+// M2x8 screws hold down the esp32, the proto board and the electronics holder
+m2_screw_r = 1.98 / 2;
 
 // mount hole centers from the board edges, from the DOIT DevKit V1 KiCad footprint
 esp32_mount_hole_offset_x = 2.3;
@@ -170,7 +170,7 @@ esp32_holder_board_recess_z = 2.0;
 
 // the screw pilot holes are this much smaller than the screw, per side, so it threads into the
 // plastic; about the thread root for M2
-esp32_holder_screw_bite = 0.175;
+m2_screw_bite = 0.175;
 
 // held on with the same M2x8 screws as the esp32, walls down the sides only, so wires can come off
 // the top and bottom
@@ -364,7 +364,7 @@ module EvilPumpkinStand()
                     -stand_shoulder_z - DIFFERENCE_CLEARANCE
                     ])
                     cylinder(
-                        r = esp32_screw_r - esp32_holder_screw_bite,
+                        r = m2_screw_r - m2_screw_bite,
                         h = stand_shoulder_z - electronics_holder_z + DIFFERENCE_CLEARANCE * 2
                         );
 
@@ -617,7 +617,7 @@ module ESP32Holder()
                 linear_extrude(
                     esp32_holder_base_z + esp32_holder_standoff_z + DIFFERENCE_CLEARANCE * 2
                     )
-                    Teardrop( esp32_screw_r - esp32_holder_screw_bite );
+                    Teardrop( m2_screw_r - m2_screw_bite );
 
         // usb plug, through the -y wall down to the plate
         translate([
@@ -687,7 +687,7 @@ module ProtoBoardHolder()
                     proto_board_holder_base_z + proto_board_holder_standoff_z
                         + DIFFERENCE_CLEARANCE * 2
                     )
-                    Teardrop( esp32_screw_r - esp32_holder_screw_bite );
+                    Teardrop( m2_screw_r - m2_screw_bite );
     }
 }
 
@@ -873,7 +873,7 @@ module ElectronicsHolder()
         rotate([ 0, 0, electronics_holder_screw_angle ])
             translate([ electronics_holder_screw_center_r, 0, -DIFFERENCE_CLEARANCE ])
                 cylinder(
-                    r = esp32_screw_r + electronics_holder_clearance,
+                    r = m2_screw_r + electronics_holder_clearance,
                     h = electronics_holder_z + DIFFERENCE_CLEARANCE * 2
                     );
 
