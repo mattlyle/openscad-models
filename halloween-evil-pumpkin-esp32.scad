@@ -161,7 +161,7 @@ proto_board_holder_standoff_z = 3.0;
 proto_board_holder_board_recess_z = 2.0;
 
 // THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
-BUILD_SCRIPT_VERSION = "v2";
+BUILD_SCRIPT_VERSION = "v3";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
