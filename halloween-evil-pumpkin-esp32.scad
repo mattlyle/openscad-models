@@ -80,6 +80,12 @@ electronics_holder_preview_lift_z = 20;
 electronics_holder_esp32_offset_y = -20;
 electronics_holder_cord_clearance = 0.3;
 
+// drains near the low (-y) edge, either side of the cord slot and clear of the esp32 riser, inside
+// the stand's ledge so they empty straight down into the stand
+electronics_holder_drain_angle_list = [ 220, 320 ];
+electronics_holder_drain_r = 2.0;
+electronics_holder_drain_ledge_clearance = 2.0;
+
 // strut braces the back of the esp32 holder to the disc, opposite the cord slot; steeper than 45
 // degrees so it prints fine
 electronics_holder_strut_x = 3.6;
@@ -108,6 +114,15 @@ base_r = 145 / 2;
 base_screw_r = 3.4 / 2;
 base_screw_cone_z = 2.7;
 base_screw_cone_top = 6.5 / 2;
+
+// channels across the underside, from the hollow inside out past the base flange, so any water
+// that gets in can run out; clear of the base screws and the version label
+stand_drain_count = 2;
+stand_drain_angle = 135;
+stand_drain_y = 4.0;
+
+// straight sides this tall, then a pointed 45 degree roof so the channel prints without bridging
+stand_drain_z = 0.5;
 
 // on top of the base, between the screws at 0 and 90 degrees
 version_label_angle = 45;
@@ -171,6 +186,9 @@ stand_top_collar_z = evil_pumpkin_mount_screw_flange_z + evil_pumpkin_mount_scre
 
 stand_ledge_inner_r = evil_pumpkin_mount_r - stand_wall - stand_ledge;
 
+electronics_holder_drain_center_r = stand_ledge_inner_r - electronics_holder_drain_r
+    - electronics_holder_drain_ledge_clearance;
+
 // down from the top of the stand, square to the tilted top, to where the ledge underside meets the
 // wall
 stand_ledge_bottom_z = -electronics_holder_z - stand_ledge * tan( stand_top_overhang_angle );
@@ -185,6 +203,11 @@ proto_board_holder_x = proto_board_x + proto_board_holder_border * 2;
 proto_board_holder_y = proto_board_y + proto_board_holder_border * 2;
 proto_board_holder_z = proto_board_holder_base_z + proto_board_holder_standoff_z + proto_board_z
     + proto_board_holder_board_recess_z;
+
+assert(
+    stand_drain_z + stand_drain_y / 2 < base_z,
+    "drain channel's pointed roof cuts through the base flange"
+    );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
@@ -282,6 +305,9 @@ module EvilPumpkinStand()
 
         // usb cord
         _StandUSBHole();
+
+        // drains
+        _StandDrains();
     }
 
     // raised, reading along the base with the bottom of the text toward the stand
@@ -447,6 +473,26 @@ module _VersionLabel( depth )
             font = version_label_font,
             color = undef
             );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// out from the center, which is already hollow, under the wall and the base flange
+module _StandDrains()
+{
+    for( drain_index = [ 0 : stand_drain_count - 1 ] )
+    {
+        rotate([ 0, 0, stand_drain_angle + drain_index * 360 / stand_drain_count ])
+            rotate([ 90, 0, 90 ])
+                linear_extrude( base_r + DIFFERENCE_CLEARANCE )
+                    polygon([
+                        [ -stand_drain_y / 2, -DIFFERENCE_CLEARANCE ],
+                        [ stand_drain_y / 2, -DIFFERENCE_CLEARANCE ],
+                        [ stand_drain_y / 2, stand_drain_z ],
+                        [ 0, stand_drain_z + stand_drain_y / 2 ],
+                        [ -stand_drain_y / 2, stand_drain_z ]
+                        ]);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -753,6 +799,17 @@ module ElectronicsHolder()
                                 electronics_holder_z + electronics_holder_proto_board_strut_z
                             ]
                             ]);
+        }
+
+        // drains
+        for( drain_angle = electronics_holder_drain_angle_list )
+        {
+            rotate([ 0, 0, drain_angle ])
+                translate([ electronics_holder_drain_center_r, 0, -DIFFERENCE_CLEARANCE ])
+                    cylinder(
+                        r = electronics_holder_drain_r,
+                        h = electronics_holder_z + DIFFERENCE_CLEARANCE * 2
+                        );
         }
 
         // usb cord slot, in from the -y edge to under the usb socket
