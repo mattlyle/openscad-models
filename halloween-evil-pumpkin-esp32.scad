@@ -120,7 +120,7 @@ esp32_holder_board_recess_z = 2.0;
 esp32_holder_screw_bite = 0.175;
 
 // THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
-BUILD_SCRIPT_VERSION = "v1";
+BUILD_SCRIPT_VERSION = "v2";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
