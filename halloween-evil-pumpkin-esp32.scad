@@ -57,15 +57,34 @@ render_mode = "preview";
 // render_mode = "print";
 // render_mode = "print-electronics-holder";
 
-stand_base_r = 120.0 / 2;
 stand_z = 140.0;
 stand_wall = 3.6;
+
+// the stand is a cone along its tilted axis, this wide at the bottom, square to the axis
+stand_bottom_r = 90.0;
+
 stand_usb_hole_offset_z = 30;
 stand_usb_hole_angle = 90;
 
-// the top of the stand, with everything on it, tips down toward -y around its center, which stays
-// at stand_z; the top stays a perfect circle for the pumpkin's mount
-stand_top_tilt = 10;
+// the top of the stand, with everything on it, tips down toward -y, its center at stand_z; the
+// stand is a cone that leans with it, square to the top all the way down so the screws can
+// be driven straight up from below, so the top ends up off center toward -y over the base
+stand_top_angle = 10;
+
+// the collar is the top of the stand that retrofits the pumpkin's old mount: the ring plus the 3
+// screw flanges, kept exactly as they were but only this tall
+stand_collar_z = 2.0;
+
+// under the collar the stand is wider than the screw circle, so the screw heads are inside it; this
+// much room around each head for a driver
+stand_screw_access_clearance = 2.0;
+
+// preview-only screwdriver shafts, straight down each pumpkin mount screw from under the collar;
+// the stand has to stay clear of these so the screws can be driven from below
+stand_screw_driver_r = 6.0 / 2;
+stand_screw_driver_z = 150.0;
+stand_screw_driver_preview_color = "red";
+stand_screw_driver_preview_alpha = 0.4;
 
 // a separate disc that drops into the top of the stand onto a ledge, flush with the rim
 electronics_holder_z = 3.0;
@@ -110,7 +129,11 @@ evil_pumpkin_mount_screw_angle = 90;
 
 base_board_screw_count = 4;
 base_z = 4.0;
-base_r = 145 / 2;
+
+// how far the base flange reaches out past the foot of the stand; the base screws are centered in
+// that ring, so the flange grows with stand_bottom_r
+base_extra_r = 19.0;
+
 base_screw_r = 3.4 / 2;
 base_screw_cone_z = 2.7;
 base_screw_cone_top = 6.5 / 2;
@@ -171,27 +194,41 @@ $fn = $preview ? 32 : 128;
 evil_pumpkin_mount_screw_center_r = evil_pumpkin_mount_r + evil_pumpkin_mount_screw_offset_r;
 
 // overhangs at the top are this steep against the tilted top, so the low side still prints at 45
-stand_top_overhang_angle = 45 + stand_top_tilt;
+stand_top_overhang_angle = 45 + stand_top_angle;
 
-// the flange supports reach from the rim out to the far edge of each flange
-evil_pumpkin_mount_screw_support_r = evil_pumpkin_mount_screw_offset_r
-    + evil_pumpkin_mount_screw_flange_r;
-evil_pumpkin_mount_screw_support_z = evil_pumpkin_mount_screw_support_r
-    * tan( stand_top_overhang_angle );
+// the bores up to the screw heads fit the head and the driver shaft
+stand_screw_bore_r = max(
+    evil_pumpkin_mount_screw_head_r + evil_pumpkin_mount_screw_clearance,
+    stand_screw_driver_r
+    );
 
-// the top of the stand is a straight collar square to the tilted top, deep enough for the flange
-// supports, so everything up there sits on a plain cylinder; the body blends from the collar down
-// to the flat base
-stand_top_collar_z = evil_pumpkin_mount_screw_flange_z + evil_pumpkin_mount_screw_support_z;
+// outside of the cone at the top, wide enough that the screw bores and driver shafts run down
+// inside it; the cone only gets wider going down, so they stay clear
+stand_r = evil_pumpkin_mount_screw_center_r + stand_screw_bore_r + stand_screw_access_clearance
+    + stand_wall;
+
+// down the tilted cone from the top until all of it is below the floor, where it gets cut off flat
+stand_tube_z = ( stand_z + stand_bottom_r * sin( stand_top_angle ) ) / cos( stand_top_angle );
+
+// the cone cut flat at the floor is an oval, no longer than this from the center toward +/-y
+stand_footprint_r = stand_bottom_r / cos( stand_top_angle );
+
+base_r = stand_footprint_r + base_extra_r;
+base_screw_center_r = stand_footprint_r + base_extra_r / 2;
 
 stand_ledge_inner_r = evil_pumpkin_mount_r - stand_wall - stand_ledge;
 
+// under the collar the inside slopes from the ledge out to the cone's inner wall; this is how far
+// down from the top, square to it, the slope meets the wall
+stand_shoulder_z = (
+    stand_ledge_inner_r - electronics_holder_z / tan( stand_top_overhang_angle )
+        - _StandInnerR( 0 )
+    ) / (
+    ( _StandInnerR( 0 ) - _StandInnerR( 1 ) ) - 1 / tan( stand_top_overhang_angle )
+    );
+
 electronics_holder_drain_center_r = stand_ledge_inner_r - electronics_holder_drain_r
     - electronics_holder_drain_ledge_clearance;
-
-// down from the top of the stand, square to the tilted top, to where the ledge underside meets the
-// wall
-stand_ledge_bottom_z = -electronics_holder_z - stand_ledge * tan( stand_top_overhang_angle );
 
 esp32_holder_x = esp32_x + ( esp32_holder_clearance + esp32_holder_wall ) * 2;
 esp32_holder_y = esp32_y + ( esp32_holder_clearance + esp32_holder_wall ) * 2;
@@ -204,6 +241,18 @@ proto_board_holder_y = proto_board_y + proto_board_holder_border * 2;
 proto_board_holder_z = proto_board_holder_base_z + proto_board_holder_standoff_z + proto_board_z
     + proto_board_holder_board_recess_z;
 
+echo( str( ">>> Base: ", base_r * 2, " mm across, bed is ", BUILD_PLATE_X, " x ", BUILD_PLATE_Y ) );
+
+assert(
+    base_r * 2 <= min( BUILD_PLATE_X, BUILD_PLATE_Y ),
+    "base flange is wider than the build plate"
+    );
+
+assert(
+    stand_footprint_r < base_screw_center_r - base_screw_cone_top,
+    "base_extra_r is too small to fit the base screws outside the stand"
+    );
+
 assert(
     stand_drain_z + stand_drain_y / 2 < base_z,
     "drain channel's pointed roof cuts through the base flange"
@@ -215,6 +264,10 @@ assert(
 if( render_mode == "preview" )
 {
     EvilPumpkinStand();
+
+    color( stand_screw_driver_preview_color, stand_screw_driver_preview_alpha )
+        _AtStandTop()
+            _StandMountScrewDrivers();
 
     _AtStandTop()
         translate([ 0, 0, -electronics_holder_z + electronics_holder_preview_lift_z ])
@@ -250,43 +303,38 @@ module EvilPumpkinStand()
     {
         union()
         {
-            // stand body, from the flat base up to the bottom of the collar
-            hull()
+            // cone, leaning with the top and cut off flat at the floor
+            intersection()
             {
-                cylinder(
-                    r = stand_base_r,
-                    h = DIFFERENCE_CLEARANCE
-                    );
-
                 _AtStandTop()
-                    translate([ 0, 0, -stand_top_collar_z ])
+                    translate([ 0, 0, -stand_tube_z ])
                         cylinder(
-                            r = evil_pumpkin_mount_r,
-                            h = DIFFERENCE_CLEARANCE
+                            r1 = stand_bottom_r,
+                            r2 = _StandOuterR( -stand_collar_z ),
+                            h = stand_tube_z - stand_collar_z
                             );
+
+                translate([ -BUILD_PLATE_X, -BUILD_PLATE_Y, 0 ])
+                    cube([ BUILD_PLATE_X * 2, BUILD_PLATE_Y * 2, BUILD_PLATE_Z ]);
             }
 
-            // collar
+            // collar, the ring and the 3 screw flanges
             _AtStandTop()
-                translate([ 0, 0, -stand_top_collar_z ])
+            {
+                translate([ 0, 0, -stand_collar_z - DIFFERENCE_CLEARANCE ])
                     cylinder(
                         r = evil_pumpkin_mount_r,
-                        h = stand_top_collar_z
+                        h = stand_collar_z + DIFFERENCE_CLEARANCE
                         );
+
+                _StandMountScrewFlanges();
+            }
 
             // base flange
             cylinder(
                 r = base_r,
                 h = base_z
                 );
-
-            // pumpkin mount screw flanges
-            _AtStandTop()
-            {
-                _StandMountScrewFlanges();
-
-                _StandMountScrewSupports();
-            }
         }
 
         // hollow inside, leaving the ledge for the electronics holder
@@ -312,7 +360,7 @@ module EvilPumpkinStand()
 
     // raised, reading along the base with the bottom of the text toward the stand
     rotate([ 0, 0, version_label_angle + 90 ])
-        translate([ 0, -( stand_base_r + base_r ) / 2, base_z - DIFFERENCE_CLEARANCE ])
+        translate([ 0, -base_screw_center_r, base_z - DIFFERENCE_CLEARANCE ])
             _VersionLabel( version_label_depth + DIFFERENCE_CLEARANCE );
 }
 
@@ -331,11 +379,11 @@ module _StandMountScrewFlanges()
             translate([
                 evil_pumpkin_mount_screw_center_r,
                 0,
-                -evil_pumpkin_mount_screw_flange_z
+                -stand_collar_z - DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
                     r = evil_pumpkin_mount_screw_flange_r,
-                    h = evil_pumpkin_mount_screw_flange_z
+                    h = stand_collar_z + DIFFERENCE_CLEARANCE
                     );
     }
 }
@@ -355,57 +403,43 @@ module _StandMountScrewHoles()
             translate([
                 evil_pumpkin_mount_screw_center_r,
                 0,
-                -evil_pumpkin_mount_screw_flange_z - DIFFERENCE_CLEARANCE
+                -stand_collar_z - DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
                     r = evil_pumpkin_mount_screw_r + evil_pumpkin_mount_screw_clearance,
-                    h = evil_pumpkin_mount_screw_flange_z + DIFFERENCE_CLEARANCE * 2
+                    h = stand_collar_z + DIFFERENCE_CLEARANCE * 2
                     );
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module _StandMountScrewSupports()
+// a screwdriver shaft straight down each screw from the screw head, under the collar
+module _StandMountScrewDrivers()
 {
     for( screw_index = [ 0 : evil_pumpkin_mount_screw_count - 1 ] )
     {
-        // a sloped collar around the rim, cut down to this flange's footprint
-        intersection()
-        {
+        rotate([
+            0,
+            0,
+            evil_pumpkin_mount_screw_angle
+                + screw_index * 360 / evil_pumpkin_mount_screw_count
+            ])
             translate([
+                evil_pumpkin_mount_screw_center_r,
                 0,
-                0,
-                -evil_pumpkin_mount_screw_flange_z - evil_pumpkin_mount_screw_support_z
+                -stand_collar_z - stand_screw_driver_z
                 ])
                 cylinder(
-                    r1 = evil_pumpkin_mount_r,
-                    r2 = evil_pumpkin_mount_r + evil_pumpkin_mount_screw_support_r,
-                    h = evil_pumpkin_mount_screw_support_z
+                    r = stand_screw_driver_r,
+                    h = stand_screw_driver_z
                     );
-
-            rotate([
-                0,
-                0,
-                evil_pumpkin_mount_screw_angle
-                    + screw_index * 360 / evil_pumpkin_mount_screw_count
-                ])
-                translate([
-                    evil_pumpkin_mount_screw_center_r,
-                    0,
-                    -evil_pumpkin_mount_screw_flange_z - evil_pumpkin_mount_screw_support_z
-                    ])
-                    cylinder(
-                        r = evil_pumpkin_mount_screw_flange_r,
-                        h = evil_pumpkin_mount_screw_support_z
-                        );
-        }
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// room under each flange for the screw head and a driver, up through the support
+// room for each screw head and a driver, up through the shoulder to the underside of the collar
 module _StandMountScrewHeadCutouts()
 {
     for( screw_index = [ 0 : evil_pumpkin_mount_screw_count - 1 ] )
@@ -419,12 +453,11 @@ module _StandMountScrewHeadCutouts()
             translate([
                 evil_pumpkin_mount_screw_center_r,
                 0,
-                -evil_pumpkin_mount_screw_flange_z - evil_pumpkin_mount_screw_support_z
-                    - DIFFERENCE_CLEARANCE
+                -stand_shoulder_z - DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
-                    r = evil_pumpkin_mount_screw_head_r + evil_pumpkin_mount_screw_clearance,
-                    h = evil_pumpkin_mount_screw_support_z + DIFFERENCE_CLEARANCE * 2
+                    r = stand_screw_bore_r,
+                    h = stand_shoulder_z - stand_collar_z + DIFFERENCE_CLEARANCE * 2
                     );
     }
 }
@@ -437,7 +470,7 @@ module _BaseScrewHoles()
     for( screw_index = [ 0 : base_board_screw_count - 1 ] )
     {
         rotate([ 0, 0, screw_index * 360 / base_board_screw_count ])
-            translate([ ( stand_base_r + base_r ) / 2, 0, 0 ])
+            translate([ base_screw_center_r, 0, 0 ])
             {
                 translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
                     cylinder(
@@ -497,13 +530,13 @@ module _StandDrains()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// out through the wall from the center, which is already hollow
+// out through the wall from the center, which is already hollow, as far as the edge of the base
 module _StandUSBHole()
 {
     rotate([ 0, 0, stand_usb_hole_angle ])
         translate([ 0, 0, stand_usb_hole_offset_z ])
             rotate([ 90, 0, 90 ])
-                linear_extrude( stand_base_r + DIFFERENCE_CLEARANCE )
+                linear_extrude( base_r + DIFFERENCE_CLEARANCE )
                     Teardrop( usb_plug_r );
 }
 
@@ -867,11 +900,18 @@ module _ESP32HolderBottomSupport()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// places children square to the tilted top of the stand, with z = 0 at the top
+// radius of the cone at z, square to the tilted top with z = 0 at the top and negative going down
+function _StandOuterR( z ) = stand_r + ( stand_bottom_r - stand_r ) * -z / stand_tube_z;
+function _StandInnerR( z ) = _StandOuterR( z ) - stand_wall;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// places children square to the tilted top of the stand, with z = 0 at the top; the top sits off
+// center toward -y so the leaning tube under it lands centered on the base
 module _AtStandTop()
 {
-    translate([ 0, 0, stand_z ])
-        rotate([ stand_top_tilt, 0, 0 ])
+    translate([ 0, -stand_z * tan( stand_top_angle ), stand_z ])
+        rotate([ stand_top_angle, 0, 0 ])
             children();
 }
 
@@ -879,31 +919,17 @@ module _AtStandTop()
 
 module _StandHollow()
 {
-    // body, from the flat bottom up to the bottom of the collar
-    hull()
-    {
-        translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
-            cylinder(
-                r = stand_base_r - stand_wall,
-                h = DIFFERENCE_CLEARANCE
-                );
-
-        _AtStandTop()
-            translate([ 0, 0, -stand_top_collar_z - DIFFERENCE_CLEARANCE ])
-                cylinder(
-                    r = evil_pumpkin_mount_r - stand_wall,
-                    h = DIFFERENCE_CLEARANCE
-                    );
-    }
-
-    // up the collar, in under the ledge, then straight up through the recess the electronics
-    // holder sits in
+    // down the cone and out the bottom, sloping in under the ledge, then straight up through the
+    // recess the electronics holder sits in and out through the collar
     _AtStandTop()
         rotate_extrude()
             polygon([
-                [ 0, -stand_top_collar_z - DIFFERENCE_CLEARANCE ],
-                [ evil_pumpkin_mount_r - stand_wall, -stand_top_collar_z - DIFFERENCE_CLEARANCE ],
-                [ evil_pumpkin_mount_r - stand_wall, stand_ledge_bottom_z ],
+                [ 0, -stand_tube_z - DIFFERENCE_CLEARANCE ],
+                [
+                    _StandInnerR( -stand_tube_z - DIFFERENCE_CLEARANCE ),
+                    -stand_tube_z - DIFFERENCE_CLEARANCE
+                ],
+                [ _StandInnerR( -stand_shoulder_z ), -stand_shoulder_z ],
                 [ stand_ledge_inner_r, -electronics_holder_z ],
                 [ evil_pumpkin_mount_r - stand_wall, -electronics_holder_z ],
                 [ evil_pumpkin_mount_r - stand_wall, DIFFERENCE_CLEARANCE ],
