@@ -95,6 +95,15 @@ electronics_holder_drain_angle_list = [ 220, 320 ];
 electronics_holder_drain_r = 2.0;
 electronics_holder_drain_ledge_clearance = 2.0;
 
+// one M2 screw at the back (+y) holds the electronics holder down onto a pad in the stand, so it
+// can't fall out when it's assembled upside down; far enough out to clear the proto board holder
+electronics_holder_screw_angle = 90;
+electronics_holder_screw_center_r = 34.0;
+
+// the pad reaches this far in past the screw, and is this wide
+stand_electronics_holder_pad_extra_r = 4.0;
+stand_electronics_holder_pad_y = 8.0;
+
 // strut braces the back of the esp32 holder to the disc, opposite the cord slot; steeper than 45
 // degrees so it prints fine
 electronics_holder_strut_x = 3.6;
@@ -337,8 +346,27 @@ module EvilPumpkinStand()
                 );
         }
 
-        // hollow inside, leaving the ledge for the electronics holder
-        _StandHollow();
+        // hollow inside, leaving the ledge and the screw pad for the electronics holder
+        difference()
+        {
+            _StandHollow();
+
+            _AtStandTop()
+                _StandElectronicsHolderScrewPad();
+        }
+
+        // electronics holder screw pilot hole, down through the pad
+        _AtStandTop()
+            rotate([ 0, 0, electronics_holder_screw_angle ])
+                translate([
+                    electronics_holder_screw_center_r,
+                    0,
+                    -stand_shoulder_z - DIFFERENCE_CLEARANCE
+                    ])
+                    cylinder(
+                        r = esp32_screw_r - esp32_holder_screw_bite,
+                        h = stand_shoulder_z - electronics_holder_z + DIFFERENCE_CLEARANCE * 2
+                        );
 
         // pumpkin mount screws
         _AtStandTop()
@@ -439,7 +467,8 @@ module _StandMountScrewDrivers()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// room for each screw head and a driver, up through the shoulder to the underside of the collar
+// room for each screw head and a driver, all the way down the stand to the underside of the collar,
+// so nothing inside the stand ever ends up in a driver's way
 module _StandMountScrewHeadCutouts()
 {
     for( screw_index = [ 0 : evil_pumpkin_mount_screw_count - 1 ] )
@@ -453,11 +482,11 @@ module _StandMountScrewHeadCutouts()
             translate([
                 evil_pumpkin_mount_screw_center_r,
                 0,
-                -stand_shoulder_z - DIFFERENCE_CLEARANCE
+                -stand_tube_z - DIFFERENCE_CLEARANCE
                 ])
                 cylinder(
                     r = stand_screw_bore_r,
-                    h = stand_shoulder_z - stand_collar_z + DIFFERENCE_CLEARANCE * 2
+                    h = stand_tube_z - stand_collar_z + DIFFERENCE_CLEARANCE * 2
                     );
     }
 }
@@ -840,6 +869,14 @@ module ElectronicsHolder()
                             ]);
         }
 
+        // screw down into the pad in the stand
+        rotate([ 0, 0, electronics_holder_screw_angle ])
+            translate([ electronics_holder_screw_center_r, 0, -DIFFERENCE_CLEARANCE ])
+                cylinder(
+                    r = esp32_screw_r + electronics_holder_clearance,
+                    h = electronics_holder_z + DIFFERENCE_CLEARANCE * 2
+                    );
+
         // drains
         for( drain_angle = electronics_holder_drain_angle_list )
         {
@@ -919,6 +956,29 @@ module _AtStandTop()
     translate([ 0, -stand_z * tan( stand_top_angle ), stand_z ])
         rotate([ stand_top_angle, 0, 0 ])
             children();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// in the frame of the tilted top: a block under the ledge at the back, its top level with the
+// ledge, reaching in past the screw, with a sloped underside running back out into the wall
+module _StandElectronicsHolderScrewPad()
+{
+    inner_r = electronics_holder_screw_center_r - stand_electronics_holder_pad_extra_r;
+
+    rotate([ 0, 0, electronics_holder_screw_angle ])
+        translate([ 0, stand_electronics_holder_pad_y / 2, 0 ])
+            rotate([ 90, 0, 0 ])
+                linear_extrude( stand_electronics_holder_pad_y )
+                    polygon([
+                        [ inner_r, -electronics_holder_z ],
+                        [ stand_r, -electronics_holder_z ],
+                        [
+                            stand_r,
+                            -electronics_holder_z
+                                - ( stand_r - inner_r ) * tan( stand_top_overhang_angle )
+                        ]
+                        ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
