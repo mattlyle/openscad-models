@@ -38,6 +38,12 @@ esp32_pin_pitch = 2.54;
 esp32_power_pin_count = 3;
 esp32_power_pin_offset_y = 9.9;
 
+proto_board_x = 38.1;
+proto_board_y = 50.8;
+proto_board_z = 1.6;
+proto_board_mounting_hole_r = 2.3 / 2;
+proto_board_mounting_hole_corner_offset = 3.4;
+
 usb_plug_r = 10.6 / 2;
 usb_cord_r = 4.15 / 2;
 
@@ -84,6 +90,13 @@ electronics_holder_strut_z = 52.0;
 electronics_holder_version_label_angle = 180;
 electronics_holder_version_label_center_r = 32;
 
+// the proto board stands opposite the esp32 with its back this far out toward +y, facing out so
+// the screws can go in, braced from behind by a strut toward the center
+electronics_holder_proto_board_offset_y = 15;
+electronics_holder_proto_board_strut_x = 3.6;
+electronics_holder_proto_board_strut_y = 24.0;
+electronics_holder_proto_board_strut_z = 52.0;
+
 evil_pumpkin_mount_screw_clearance = 0.2;
 
 // the first pumpkin mount screw is on -y, the low side of the tilted top
@@ -118,6 +131,19 @@ esp32_holder_board_recess_z = 2.0;
 // the screw pilot holes are this much smaller than the screw, per side, so it threads into the
 // plastic; about the thread root for M2
 esp32_holder_screw_bite = 0.175;
+
+// held on with the same M2x8 screws as the esp32, walls down the sides only, so wires can come off
+// the top and bottom
+proto_board_holder_base_z = 2.0;
+proto_board_holder_border = 3.0;
+proto_board_holder_wall = 2.0;
+proto_board_holder_standoff_r = 3.0;
+
+// room for the solder joints and leads on the back of the board
+proto_board_holder_standoff_z = 3.0;
+
+// the board top sits this far below the top of the side walls
+proto_board_holder_board_recess_z = 2.0;
 
 // THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
 BUILD_SCRIPT_VERSION = "v2";
@@ -155,6 +181,11 @@ esp32_holder_y = esp32_y + ( esp32_holder_clearance + esp32_holder_wall ) * 2;
 esp32_holder_z = esp32_holder_base_z + esp32_holder_standoff_z + esp32_pcb_z
     + esp32_holder_board_recess_z;
 
+proto_board_holder_x = proto_board_x + proto_board_holder_border * 2;
+proto_board_holder_y = proto_board_y + proto_board_holder_border * 2;
+proto_board_holder_z = proto_board_holder_base_z + proto_board_holder_standoff_z + proto_board_z
+    + proto_board_holder_board_recess_z;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // models
 
@@ -171,6 +202,9 @@ if( render_mode == "preview" )
 
     translate([ base_r + esp32_holder_x, 0, 0 ])
         ESP32Holder();
+
+    translate([ base_r + esp32_holder_x * 2 + proto_board_holder_x / 2, 0, 0 ])
+        ProtoBoardHolder();
 }
 else if( render_mode == "print" )
 {
@@ -499,6 +533,70 @@ module ESP32Holder()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// centered on the board, the side that ends up on top when standing toward +y
+module ProtoBoardHolder()
+{
+    difference()
+    {
+        union()
+        {
+            // plate
+            translate([ -proto_board_holder_x / 2, -proto_board_holder_y / 2, 0 ])
+                cube([ proto_board_holder_x, proto_board_holder_y, proto_board_holder_base_z ]);
+
+            // side walls
+            for( side_x = [ -1, 1 ] )
+            {
+                translate([
+                    side_x * ( proto_board_holder_x - proto_board_holder_wall ) / 2
+                        - proto_board_holder_wall / 2,
+                    -proto_board_holder_y / 2,
+                    0
+                    ])
+                    cube([ proto_board_holder_wall, proto_board_holder_y, proto_board_holder_z ]);
+            }
+
+            // standoffs
+            _ProtoBoardHolderAtMountHoles()
+                translate([ 0, 0, proto_board_holder_base_z - DIFFERENCE_CLEARANCE ])
+                    cylinder(
+                        r = proto_board_holder_standoff_r,
+                        h = proto_board_holder_standoff_z + DIFFERENCE_CLEARANCE
+                        );
+        }
+
+        // screw pilot holes, all the way through; teardrops pointing +y, which is up when it stands
+        // on the electronics holder
+        _ProtoBoardHolderAtMountHoles()
+            translate([ 0, 0, -DIFFERENCE_CLEARANCE ])
+                linear_extrude(
+                    proto_board_holder_base_z + proto_board_holder_standoff_z
+                        + DIFFERENCE_CLEARANCE * 2
+                    )
+                    Teardrop( esp32_screw_r - esp32_holder_screw_bite );
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module _ProtoBoardHolderAtMountHoles()
+{
+    for( side_x = [ -1, 1 ] )
+    {
+        for( side_y = [ -1, 1 ] )
+        {
+            translate([
+                side_x * ( proto_board_x / 2 - proto_board_mounting_hole_corner_offset ),
+                side_y * ( proto_board_y / 2 - proto_board_mounting_hole_corner_offset ),
+                0
+                ])
+                children();
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 module _ESP32HolderAtMountHoles()
 {
     for( side_x = [ -1, 1 ] )
@@ -597,6 +695,64 @@ module ElectronicsHolder()
                 rotate([ 90, 0, 0 ])
                     translate([ 0, esp32_holder_y / 2, 0 ])
                         ESP32Holder();
+
+            // proto board riser, the back and side walls of the proto board holder carried down to
+            // the disc, open in front, so the board lines up with the esp32
+            translate([
+                -proto_board_holder_x / 2,
+                electronics_holder_proto_board_offset_y,
+                electronics_holder_z - DIFFERENCE_CLEARANCE
+                ])
+                difference()
+                {
+                    cube([
+                        proto_board_holder_x,
+                        proto_board_holder_z,
+                        usb_plug_z + DIFFERENCE_CLEARANCE * 2
+                        ]);
+
+                    translate([
+                        proto_board_holder_wall,
+                        proto_board_holder_base_z,
+                        -DIFFERENCE_CLEARANCE
+                        ])
+                        cube([
+                            proto_board_holder_x - proto_board_holder_wall * 2,
+                            proto_board_holder_z - proto_board_holder_base_z + DIFFERENCE_CLEARANCE,
+                            usb_plug_z + DIFFERENCE_CLEARANCE * 4
+                            ]);
+                }
+
+            // proto board holder, standing up opposite the esp32 with the board facing out, +y
+            translate([
+                0,
+                electronics_holder_proto_board_offset_y,
+                electronics_holder_z + usb_plug_z
+                ])
+                rotate([ 0, 0, 180 ])
+                    rotate([ 90, 0, 0 ])
+                        translate([ 0, proto_board_holder_y / 2, 0 ])
+                            ProtoBoardHolder();
+
+            // strut up the back of the proto board holder, on the center side
+            translate([ -electronics_holder_proto_board_strut_x / 2, 0, 0 ])
+                rotate([ 90, 0, 90 ])
+                    linear_extrude( electronics_holder_proto_board_strut_x )
+                        polygon([
+                            [
+                                electronics_holder_proto_board_offset_y + DIFFERENCE_CLEARANCE,
+                                electronics_holder_z - DIFFERENCE_CLEARANCE
+                            ],
+                            [
+                                electronics_holder_proto_board_offset_y
+                                    - electronics_holder_proto_board_strut_y,
+                                electronics_holder_z - DIFFERENCE_CLEARANCE
+                            ],
+                            [
+                                electronics_holder_proto_board_offset_y + DIFFERENCE_CLEARANCE,
+                                electronics_holder_z + electronics_holder_proto_board_strut_z
+                            ]
+                            ]);
         }
 
         // usb cord slot, in from the -y edge to under the usb socket
