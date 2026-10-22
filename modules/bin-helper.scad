@@ -145,15 +145,15 @@ module BinHelper( bin_x = 0, bin_y = 0, bin_z, cutout_list, cutout_location_list
 
             // a cutout that runs out through a wall overshoots it, so allow that much slack
             assert(
-                corner.x >= -DIFFERENCE_OFFSET && corner.y >= -DIFFERENCE_OFFSET,
+                corner.x >= -DIFFERENCE_CLEARANCE && corner.y >= -DIFFERENCE_CLEARANCE,
                 str( "cutout ", i, " starts outside the bin" )
                 );
             assert(
-                corner.x + footprint.x <= bin_x + DIFFERENCE_OFFSET,
+                corner.x + footprint.x <= bin_x + DIFFERENCE_CLEARANCE,
                 str( "cutout ", i, " is too wide for the bin" )
                 );
             assert(
-                corner.y + footprint.y <= bin_y + DIFFERENCE_OFFSET,
+                corner.y + footprint.y <= bin_y + DIFFERENCE_CLEARANCE,
                 str( "cutout ", i, " is too deep for the bin" )
                 );
         }
@@ -175,8 +175,8 @@ module _BinHelperCutout( cutout, location, bin_z )
 
     cut_through = cutout_z == 0;
 
-    cut_z = cut_through ? bin_z + DIFFERENCE_OFFSET * 2 : cutout_z + DIFFERENCE_OFFSET;
-    offset_z = cut_through ? -DIFFERENCE_OFFSET : bin_z - cutout_z;
+    cut_z = cut_through ? bin_z + DIFFERENCE_CLEARANCE * 2 : cutout_z + DIFFERENCE_CLEARANCE;
+    offset_z = cut_through ? -DIFFERENCE_CLEARANCE : bin_z - cutout_z;
 
     translate([ location.x, location.y, offset_z ])
     {

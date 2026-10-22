@@ -142,7 +142,7 @@ module FanttikLabel( is_cutout = false )
                 label_text,
                 centered_in_area_x = holder_size_vector.x,
                 centered_in_area_y = holder_size_vector.z,
-                depth = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth,
+                depth = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth,
                 font_size = label_font_size,
                 font = label_font,
                 color = is_cutout ? undef : label_color
@@ -155,7 +155,7 @@ module FanttikPreviews()
 {
     // the box sits inside its cutout by the clearance, the screwdriver is centered in its own,
     // and both lift off the floor they rest on so they don't fight with it in the preview
-    offset_z = wall_width + DIFFERENCE_OFFSET;
+    offset_z = wall_width + DIFFERENCE_CLEARANCE;
 
     translate([
         fanttik_cutout_location_list[ 0 ].x + clearance,

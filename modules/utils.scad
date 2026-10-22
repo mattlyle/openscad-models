@@ -4,19 +4,17 @@ BUILD_PLATE_X = 256.0;
 BUILD_PLATE_Y = 256.0;
 BUILD_PLATE_Z = 256.0;
 
-BUILD_PREVIEW_WIDTH = 0.01;
+BUILD_PLATE_PREVIEW_Z = 0.01;
 
 DIFFERENCE_CLEARANCE = 0.01;
-
-DIFFERENCE_OFFSET = 0.1;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // show a preview of the build plate
 
 module BuildPlatePreview()
 {
-    % translate([ 0, 0, -BUILD_PREVIEW_WIDTH ])
-        cube([ BUILD_PLATE_X, BUILD_PLATE_Y, BUILD_PREVIEW_WIDTH ]);
+    % translate([ 0, 0, -BUILD_PLATE_PREVIEW_Z ])
+        cube([ BUILD_PLATE_X, BUILD_PLATE_Y, BUILD_PLATE_PREVIEW_Z ]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

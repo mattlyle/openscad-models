@@ -155,7 +155,7 @@ module TapeMeasureHolderLabel( is_cutout = false )
                 label_text,
                 centered_in_area_x = holder_size_vector.x,
                 centered_in_area_y = holder_size_vector.z,
-                depth = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth,
+                depth = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth,
                 font_size = label_font_size,
                 font = label_font,
                 color = is_cutout ? undef : label_color
@@ -173,7 +173,7 @@ module TapeMeasurePreviews()
         translate([
             tape_measure_cutout_location_list[ i ].x + clearance,
             tape_measure_cutout_location_list[ i ].y + clearance,
-            wall_width + DIFFERENCE_OFFSET
+            wall_width + DIFFERENCE_CLEARANCE
             ])
             TapeMeasurePreview();
     }
