@@ -239,7 +239,7 @@ module PenHolderBin()
                     // the main shaft
                     translate([ 0, 0, pointed_tip_length ])
                         cylinder(
-                            h = bin_z - cutout_floor_z - pointed_tip_length + DIFFERENCE_OFFSET,
+                            h = bin_z - cutout_floor_z - pointed_tip_length + DIFFERENCE_CLEARANCE,
                             r = cutout_r
                             );
                 }
@@ -252,7 +252,7 @@ module PenHolderBin()
             wall_width,
             cutout_floor_z
             ])
-            cube([ post_it_slot_x, post_it_slot_y, bin_z - cutout_floor_z + DIFFERENCE_OFFSET ]);
+            cube([ post_it_slot_x, post_it_slot_y, bin_z - cutout_floor_z + DIFFERENCE_CLEARANCE ]);
 
         // remove the inset text
         _PenHolderLabelStraight( is_cutout = true );
@@ -275,7 +275,7 @@ module _PenHolderLabelStraight( is_cutout = false )
                 translate([ label[ 1 ], bin_z / 2, 0 ])
                     TextLabel(
                         label[ 0 ],
-                        depth = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth,
+                        depth = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth,
                         font_size = label_font_size,
                         font = label_font,
                         color = is_cutout ? undef : label_color,

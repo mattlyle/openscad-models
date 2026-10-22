@@ -112,7 +112,7 @@ module WireSpoolBin()
             cube([
                 wire_spools_x,
                 wire_spools_y,
-                holder_z - wire_spools_axis_z + DIFFERENCE_OFFSET
+                holder_z - wire_spools_axis_z + DIFFERENCE_CLEARANCE
                 ]);
 
         translate([ 0, 0, DIFFERENCE_CLEARANCE ])

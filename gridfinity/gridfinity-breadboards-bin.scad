@@ -123,7 +123,7 @@ module BreadboardsBin()
             RoundedCube(
                 x = pocket_x,
                 y = pocket_y,
-                z = pocket_z + DIFFERENCE_OFFSET,
+                z = pocket_z + DIFFERENCE_CLEARANCE,
                 r = GRIDFINITY_ROUNDING_R - bin_wall_xy,
                 round_top = false,
                 round_bottom = false
@@ -158,7 +158,7 @@ module BreadboardsBin()
 module BreadboardsTextLabel( is_cutout = false )
 {
     color_choice = is_cutout ? undef : label_color;
-    depth_choice = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
+    depth_choice = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth;
 
     translate([ label_margin, label_depth, GRIDFINITY_BASE_Z ])
         rotate([ 90, 0, 0 ])
