@@ -147,7 +147,7 @@ module MultiboardScrewdriversHolderLabel( is_cutout = false )
                 label_text,
                 centered_in_area_x = back_x,
                 centered_in_area_y = back_z - plate_z,
-                depth = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth,
+                depth = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth,
                 font_size = label_font_size,
                 font = label_font,
                 color = is_cutout ? undef : label_color

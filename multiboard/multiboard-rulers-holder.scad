@@ -220,7 +220,7 @@ module RulersBin()
             TriRulerCutout(
                 ruler_d_arm_x, ruler_d_arm_y,
                 clearance_x, clearance_y,
-                holder_z - bin_floor_z + DIFFERENCE_OFFSET
+                holder_z - bin_floor_z + DIFFERENCE_CLEARANCE
                 );
 
         RulersBinTextLabel( is_cutout = true );
@@ -239,7 +239,7 @@ module RulersBinTextLabel( is_cutout = false )
     label_area_y = label_font_size + 2;
 
     color_choice = is_cutout ? undef : label_color;
-    depth_choice = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
+    depth_choice = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth;
 
     translate([ 0, label_depth, 0 ])
         rotate([ 90, 0, 0 ])
