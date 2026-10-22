@@ -145,7 +145,7 @@ module FilesBin()
 module FilesTextLabel( is_cutout = false )
 {
     color_choice = is_cutout ? undef : label_color;
-    depth_choice = is_cutout ? label_depth + DIFFERENCE_OFFSET : label_depth;
+    depth_choice = is_cutout ? label_depth + DIFFERENCE_CLEARANCE : label_depth;
 
     translate([ label_margin, label_depth, GRIDFINITY_BASE_Z ])
         rotate([ 90, 0, 0 ])
