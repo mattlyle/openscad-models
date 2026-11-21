@@ -2,22 +2,32 @@
 """
 generate-garden-labels.py
 
-Renders a garden plant tag for every entry in LABELS from ../garden-plant-tags.scad:
+Renders a garden plant tag for every entry in LABELS from ../garden-plant-tags.scad, into a
+new folder garden-plant-tag-v<N> in the output directory:
 
     garden-plant-tag-<plant>-<variety>-<orientation>-v<N>-c0.stl    the tag body
     garden-plant-tag-<plant>-<variety>-<orientation>-v<N>-c1.stl    the text
     garden-plant-tag-<plant>-<variety>-<orientation>-v<N>.3mf       both, as a multi-color 3MF
 
-N is one more than the highest existing garden-plant-tag version in the output
-directory, shared by every tag in the run. Existing files are never overwritten.
+N is one more than the last garden-plant-tag version, shared by every tag in the run. It comes from
+the same version file as build-openscad.py (.build-versions.json in the output directory), so see
+that script for how the numbering works. Existing files and folders are never overwritten.
+
+Like build-openscad.py, a real run stops while the model, the files it includes, or this script have
+uncommitted changes (--allow-uncommitted overrides), and when nothing has changed since the last run
+(--force overrides). A dry run skips the uncommitted check.
+
+Pass --dry-run to render everything (so failures still surface) without writing anything.
 
 The output directory and OpenSCAD binary come from the same config file as
 build-openscad.py (~/.config/build-openscad/config.env, OUTPUT_DIR= and optional
 OPENSCAD=), and BUILD_OPENSCAD_OUTPUT_DIR overrides OUTPUT_DIR.
 """
 
+import argparse
+import contextlib
+import importlib.util
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -49,6 +59,9 @@ LABELS = [
 ]
 
 FILENAME_PREFIX = "garden-plant-tag-"
+
+# the name the version file and the build folders use for these, like a model's name
+MODEL_NAME = FILENAME_PREFIX.rstrip("-")
 
 ################################################################################
 
@@ -101,10 +114,12 @@ def find_openscad(config):
 ################################################################################
 
 
-def find_next_version(output_dir):
-    pattern = re.compile(r"^%s.+-v(\d+)(?:-c\d+)?\.(?:stl|3mf)$" % re.escape(FILENAME_PREFIX))
-    versions = [int(match.group(1)) for match in (pattern.match(path.name) for path in output_dir.iterdir()) if match]
-    return max(versions, default=-1) + 1
+def load_build_script():
+    """build-openscad.py, which does the version numbering for every build."""
+    spec = importlib.util.spec_from_file_location("build_openscad", SCAD_PATH.parent / "build-openscad.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 ################################################################################
@@ -149,15 +164,62 @@ def run_openscad(openscad, output_path, render_mode, label):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Render a garden plant tag for every entry in LABELS.")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="render everything to verify it works, but don't write anything to the output directory",
+    )
+    parser.add_argument("--force", action="store_true", help="run even if nothing has changed since the last run")
+    parser.add_argument(
+        "--allow-uncommitted",
+        action="store_true",
+        help="run even if the model, a file it includes, or this script has uncommitted changes",
+    )
+    args = parser.parse_args()
+
     config = read_config()
     output_dir = find_output_dir(config)
     openscad = find_openscad(config)
+    build = load_build_script()
 
-    version = find_next_version(output_dir)
+    # a dry run only reads the version file, so it doesn't take the lock
+    lock = contextlib.nullcontext() if args.dry_run else build.BuildLock(output_dir)
+    with lock:
+        render_tags(args, build, output_dir, openscad)
+
+
+################################################################################
+
+
+def render_tags(args, build, output_dir, openscad):
+    versions = build.ReadVersions(output_dir)
+
+    # the labels in this script and the orientation are inputs too, so editing them counts as a change
+    files = build.FindInputFiles(SCAD_PATH)
+    inputs = build.HashInputs(files, openscad, extra=repr(LABELS) + str(GENERATE_VERTICAL_TAGS))
+    checked_files = list(files) + [Path(__file__).resolve()]
+    build.CheckBuildIsWanted(
+        args.dry_run, args.force, args.allow_uncommitted, MODEL_NAME, output_dir, versions, checked_files, inputs
+    )
+
+    version = build.NextVersion(MODEL_NAME, output_dir, versions)
+    build_dir = output_dir / build.BuildFolderName(MODEL_NAME, version)
     orientation = "vertical" if GENERATE_VERTICAL_TAGS else "horizontal"
     orientation_tag = "vert" if GENERATE_VERTICAL_TAGS else "horiz"
 
-    print("garden plant tags v%d: rendering %d %s tags into %s" % (version, len(LABELS), orientation, output_dir))
+    if build_dir.exists():
+        fail(
+            "%s already exists, so the version file is out of step with the folders.\n"
+            "Fix the garden-plant-tag entry in %s, or delete it to count from the folders again"
+            % (build_dir, output_dir / build.VERSIONS_FILE_NAME)
+        )
+
+    dry_run_prefix = "[dry-run] " if args.dry_run else ""
+    print(
+        "%sgarden plant tags v%d: rendering %d %s tags into %s"
+        % (dry_run_prefix, version, len(LABELS), orientation, build_dir)
+    )
 
     # render everything to a temporary directory first, so a failure never leaves a partial version behind
     with tempfile.TemporaryDirectory(prefix="garden-labels-") as temp_dir:
@@ -179,20 +241,28 @@ def main():
             ]:
                 temp_path = Path(temp_dir) / file_name
                 run_openscad(openscad, temp_path, render_mode, label)
-                rendered.append((temp_path, output_dir / file_name))
+                rendered.append((temp_path, build_dir / file_name))
 
-        for _, target in rendered:
-            if target.exists():
-                fail("refusing to overwrite existing file: %s" % target)
+        if not args.dry_run:
+            build_dir.mkdir()
+            try:
+                for temp_path, target in rendered:
+                    with open(temp_path, "rb") as source, open(target, "xb") as destination:
+                        shutil.copyfileobj(source, destination)
 
-        for temp_path, target in rendered:
-            with open(temp_path, "rb") as source, open(target, "xb") as destination:
-                shutil.copyfileobj(source, destination)
+                # the version is only recorded once everything is written, so a failed run never uses up a number
+                versions[MODEL_NAME] = build.BuildRecord(version, inputs, build.CurrentCommit(SCAD_PATH))
+                build.WriteVersions(output_dir, versions)
+            except BaseException:
+                # the folder was just made by this run, so a half-written version is removed with it
+                shutil.rmtree(build_dir)
+                raise
 
     print()
-    print("wrote %d files" % len(rendered))
+    verb = "would write" if args.dry_run else "wrote"
+    print("%s%s %d files in %s" % (dry_run_prefix, verb, len(rendered), build_dir))
     print()
-    print("version: garden plant tags v%d" % version)
+    print("%sversion: garden plant tags v%d" % (dry_run_prefix, version))
 
 
 ################################################################################

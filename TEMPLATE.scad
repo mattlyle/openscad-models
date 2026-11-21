@@ -9,8 +9,8 @@ include <modules/utils.scad>
 render_mode = "preview";
 // render_mode = "print";
 
-// THIS IS AUTO UPDATED BY THE BUILD SCRIPT - DO NOT EDIT
-BUILD_SCRIPT_VERSION = "v0";
+// the build script passes in the real version when it renders, so leave this as a placeholder
+BUILD_SCRIPT_VERSION = "vXX";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // calculations
